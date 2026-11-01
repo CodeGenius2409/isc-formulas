@@ -104,3 +104,20 @@ Work is on a `rebuild` branch. `master` still holds your original files.
   Kowalski's guidance is explicit that such things should not animate.
 - **Quantity search counts constants as known.** "have u, theta want R" is an exact
   match for the range formula even though it also uses g.
+
+## Practice
+
+- **SM-2 for spaced repetition,** with one change: a missed item comes back the same
+  day rather than the next. `src/practice/srs.ts` documents the algorithm, and tests
+  check it against the published formula.
+- **localStorage rather than IndexedDB.** Progress is small (about 60 bytes per
+  formula, so under 1 MB if you review every formula) and simple keys are easy to back
+  up and inspect. Every read and write is guarded, so it still works with storage blocked.
+- **Backups merge rather than replace.** Importing can only add, and the more recently
+  reviewed schedule wins for each formula. That removes the risk of wiping progress by
+  importing an old file, and it means importing needs no confirmation step.
+- **2% tolerance on numeric answers,** to allow for rounding in intermediate steps.
+- **The unit list includes wrong kinds of unit on purpose,** since picking the right
+  unit is part of the question. A wrong kind is marked wrong with an explanation.
+- **The working area keeps its tab, and any practice session, while you move around
+  the book.**

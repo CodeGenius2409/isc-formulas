@@ -239,10 +239,48 @@
   }
 }
 
-/* On narrow pages the actions wait until the row is opened, to keep the list dense. */
-@container (max-width: 639px) {
+/* On touch, the actions wait until the row is opened, to keep the list dense. */
+@media (hover: none), (pointer: coarse) {
   .row:not([data-open='true']) .row-acts {
     display: none;
+  }
+}
+
+/* With a mouse there is room for a quiet cluster of icons beside the name, so the
+   actions are always visible and rows do not change height. */
+@media (hover: hover) and (pointer: fine) {
+  .act-label {
+    display: none;
+  }
+
+  .row-main {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-areas:
+      'name acts star'
+      'math math math'
+      'note note note';
+  }
+
+  .row-acts {
+    flex-wrap: nowrap;
+    margin: -0.3rem 0 -0.3rem 0;
+  }
+
+  .row-acts .btn {
+    min-height: 2rem;
+    width: 2rem;
+    padding: 0;
+    color: var(--ink-3);
+    border-radius: 3px;
+  }
+
+  @container (min-width: 640px) {
+    .row-main {
+      grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr) auto auto;
+      grid-template-areas:
+        'math name acts star'
+        'math note note note';
+    }
   }
 }
 

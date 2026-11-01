@@ -1,3 +1,403 @@
-export default function PracticePane({ formulaId }: { formulaId: string | null }) {
-  return <p className="work-hint">Practice arrives in phase 6. {formulaId}</p>;
+import { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState, type FormEvent } from 'react';
+import { CircleCheck, CircleX, ListChecks, Lightbulb, RotateCcw, Sparkles } from 'lucide-react';
+import { findFormula, getSubject, unitTitle } from '../../data/book';
+import type { Formula } from '../../data/types';
+import { useAsync } from '../../lib/hooks';
+import { answerFeedback, stepsReveal } from '../../lib/motion';
+import { href, useRoute } from '../../lib/router';
+import { useStore } from '../../lib/store';
+import { lastReadStore } from '../../state/library';
+import { mistakesStore, recordAnswer, srsStore, today } from '../../practice/progress';
+import { correctSummary, markNumeric, questionSummary, type McqQuestion, type NumericMark, type NumericQuestion, type Question, type RecallQuestion } from '../../practice/questions';
+import { QUALITY_CORRECT, QUALITY_WRONG, reviewOrder, type Quality } from '../../practice/srs';
+import { endSession, nextQuestion, noteResult, sessionStore, startMistakes, startNew, startReview, startUnit } from '../../practice/session';
+import { practiceBusyStore } from '../../practice/session-link';
+import { unitLabel } from '../../solver/unit-label';
+import { Math as MathTex } from '../Math';
+import { StepsList } from './StepsList';
+
+function topicOf(f: Formula | null): string {
+  return f ? `${unitTitle(f.unit)}, ${f.subtopic}` : '';
+}
+
+/** The working area's practice tab: choosing what to practise, then each question. */
+export default function PracticePane() {
+  const session = useStore(sessionStore);
+  const busy = useStore(practiceBusyStore);
+
+  if (busy) return <p className="text-ink-3">Preparing questions</p>;
+  if (!session) return <PracticeHome />;
+  if (session.index >= session.items.length) return <SessionSummary />;
+  const item = session.items[session.index];
+  return (
+    <div>
+      <div className="mb-2 flex items-center justify-between gap-2 text-step--1 text-ink-2">
+        <span>
+          {session.title}: <span className="num">{session.index + 1}</span> of <span className="num">{session.items.length}</span>
+        </span>
+        <button type="button" className="btn btn-quiet" onClick={endSession}>
+          End session
+        </button>
+      </div>
+      <QuestionCard key={`${session.index}-${item.question.formulaId}`} question={item.question} mistakeId={item.mistakeId} />
+    </div>
+  );
+}
+
+function PracticeHome() {
+  const srs = useStore(srsStore);
+  const mistakes = useStore(mistakesStore);
+  const last = useStore(lastReadStore);
+  const route = useRoute();
+  const due = useMemo(() => reviewOrder(Object.values(srs), today()).length, [srs]);
+  const open = mistakes.filter((m) => !m.resolved).length;
+  const [message, setMessage] = useState('');
+
+  // Practising what is on screen beats practising what was last open.
+  const here = route.path[0] === 'book' && route.path[3] != null ? { subject: route.path[1], level: route.path[2], unit: Number(route.path[3]) } : last ? { subject: last.subject, level: last.classLevel, unit: last.unitIndex ?? 0 } : null;
+
+  const run = async (start: () => Promise<unknown> | unknown, empty: string) => {
+    setMessage('');
+    const session = await start();
+    if (!session) setMessage(empty);
+  };
+
+  return (
+    <div>
+      <h2 className="work-title">Practice</h2>
+      <p className="work-hint">Numeric problems for formulas that can be calculated, and multiple choice and recall for the rest. Missed formulas come back sooner.</p>
+      <div className="mt-3 flex flex-col gap-2">
+        <button type="button" className={due ? 'btn btn-solid' : 'btn btn-line'} disabled={!due} onClick={() => void run(() => startReview(), 'Nothing is due right now.')}>
+          <ListChecks size={16} aria-hidden /> {due ? `Review ${due} due today` : 'Nothing due today'}
+        </button>
+        {here && (
+          <button type="button" className={due ? 'btn btn-line' : 'btn btn-solid'} onClick={() => void run(() => startUnit(here.subject as never, here.level as never, here.unit), 'That unit has no formulas to practise.')}>
+            <Sparkles size={16} aria-hidden /> Practise this unit
+          </button>
+        )}
+        <button type="button" className="btn btn-line" disabled={!open} onClick={() => void run(() => startMistakes(), 'No mistakes to retry.')}>
+          <RotateCcw size={16} aria-hidden /> {open ? `Retry ${open} ${open === 1 ? 'mistake' : 'mistakes'}` : 'No mistakes to retry'}
+        </button>
+        <button type="button" className="btn btn-line" onClick={() => void run(() => startNew(), 'You have seen every formula. Well done.')}>
+          Ten new formulas
+        </button>
+      </div>
+      {message && (
+        <p className="mt-2 text-ink-2" role="status">
+          {message}
+        </p>
+      )}
+      <p className="mt-3 text-step--1">
+        <a href={href('practice')}>See progress and mistakes</a>
+      </p>
+    </div>
+  );
+}
+
+function SessionSummary() {
+  const session = useStore(sessionStore)!;
+  const focus = useRef<HTMLButtonElement>(null);
+  useEffect(() => focus.current?.focus(), []);
+  return (
+    <div>
+      <h2 className="work-title">{session.title}: finished</h2>
+      <p className="mt-2 text-step-1">
+        <span className="num font-bold">{session.correct}</span> of <span className="num">{session.answered}</span> right.
+      </p>
+      <p className="work-hint">Anything you missed comes back sooner, and is in your mistakes list.</p>
+      <button ref={focus} type="button" className="btn btn-solid mt-3" onClick={endSession}>
+        Done
+      </button>
+    </div>
+  );
+}
+
+interface CardProps {
+  question: Question;
+  mistakeId?: string;
+}
+
+function useFormula(id: string) {
+  const state = useAsync(() => findFormula(id), id);
+  return state.status === 'ready' ? state.value : null;
+}
+
+/** Records the result against the schedule, the session and the mistakes log. */
+function useRecord(question: Question, mistakeId: string | undefined, formula: Formula | null) {
+  return (correct: boolean, quality: Quality, yourAnswer: string, yourAnswerIsLatex = false) => {
+    const right = correctSummary(question);
+    recordAnswer({
+      question,
+      correct,
+      quality,
+      asked: questionSummary(question),
+      yourAnswer,
+      yourAnswerIsLatex,
+      correctAnswer: right.text ?? right.latex ?? '',
+      correctAnswerIsLatex: !right.text,
+      formula: { name: formula?.name ?? question.formulaId, subject: formula?.subject ?? '', classLevel: formula?.classLevel ?? '', topic: topicOf(formula) },
+      mistakeId,
+    });
+    noteResult(correct);
+  };
+}
+
+function QuestionCard({ question, mistakeId }: CardProps) {
+  const formula = useFormula(question.formulaId);
+  const record = useRecord(question, mistakeId, formula);
+  useEffect(() => {
+    document.getElementById('work-panel')?.scrollTo({ top: 0 });
+  }, [question]);
+  return (
+    <div>
+      {question.kind === 'numeric' && <NumericCard question={question} formula={formula} record={record} />}
+      {question.kind === 'mcq' && <McqCard question={question} record={record} />}
+      {question.kind === 'recall' && <RecallCard question={question} record={record} />}
+      {formula && (
+        <p className="mt-3 text-step--1 text-ink-3" data-subject={formula.subject}>
+          {getSubject(formula.subject).label} {formula.classLevel}, {topicOf(formula)}
+        </p>
+      )}
+    </div>
+  );
+}
+
+function NextButton({ afterAnswer }: { afterAnswer: boolean }) {
+  const ref = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    if (afterAnswer) ref.current?.focus({ preventScroll: true });
+  }, [afterAnswer]);
+  return (
+    <button ref={ref} type="button" className="btn btn-solid mt-3 w-full" onClick={nextQuestion}>
+      Next question
+    </button>
+  );
+}
+
+type Record = (correct: boolean, quality: Quality, yourAnswer: string, yourAnswerIsLatex?: boolean) => void;
+
+function NumericCard({ question, formula, record }: { question: NumericQuestion; formula: Formula | null; record: Record }) {
+  const [value, setValue] = useState('');
+  const [unit, setUnit] = useState('');
+  const [mark, setMark] = useState<NumericMark | null>(null);
+  const [hint, setHint] = useState(false);
+  const noticeRef = useRef<HTMLDivElement>(null);
+  const stepsRef = useRef<HTMLOListElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => inputRef.current?.focus({ preventScroll: true }), []);
+
+  useLayoutEffect(() => {
+    if (!mark) return;
+    answerFeedback(noticeRef.current, mark.correct);
+    if (stepsRef.current) stepsReveal([...stepsRef.current.children]);
+  }, [mark]);
+
+  const onSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    if (mark) return;
+    const result = markNumeric(question, value, unit);
+    setMark(result);
+    record(result.correct, result.correct ? QUALITY_CORRECT : QUALITY_WRONG, result.shown);
+  };
+
+  return (
+    <form onSubmit={onSubmit} noValidate>
+      <h2 className="work-title">
+        Find {question.unknownName} <MathTex latex={question.unknownTex} />
+      </h2>
+      <dl className="readouts mt-2">
+        {question.givens.map((g) => (
+          <Fragment key={g.symbol}>
+            <dt>
+              <MathTex latex={g.symbol} /> {g.name}
+            </dt>
+            <dd>
+              {g.raw}
+              {g.unit === 'deg' ? '°' : g.unit ? ` ${unitLabel(g.unit)}` : ''}
+            </dd>
+          </Fragment>
+        ))}
+      </dl>
+
+      {!hint && !mark && (
+        <button type="button" className="btn btn-quiet -ml-2 mt-1" onClick={() => setHint(true)}>
+          <Lightbulb size={15} aria-hidden /> Show the formula
+        </button>
+      )}
+      {(hint || mark) && formula && (
+        <div className="math-host mt-2">
+          <MathTex latex={formula.latex} />
+        </div>
+      )}
+
+      <div className="mt-3 grid gap-2" style={{ gridTemplateColumns: question.unit ? 'minmax(0, 1fr) 7rem' : 'minmax(0, 1fr)' }}>
+        <div>
+          <label className="lbl" htmlFor="answer-value">
+            Your answer
+          </label>
+          <input ref={inputRef} id="answer-value" className="field num" autoComplete="off" spellCheck={false} value={value} disabled={Boolean(mark)} onChange={(e) => setValue(e.target.value)} />
+        </div>
+        {question.unit && (
+          <div>
+            <label className="lbl" htmlFor="answer-unit">
+              Unit
+            </label>
+            <select id="answer-unit" className="field" value={unit} disabled={Boolean(mark)} onChange={(e) => setUnit(e.target.value)}>
+              <option value="">Choose</option>
+              {question.unitChoices.map((u) => (
+                <option key={u} value={u}>
+                  {unitLabel(u)}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+      </div>
+
+      {!mark && (
+        <button type="submit" className="btn btn-solid mt-3 w-full">
+          Check answer
+        </button>
+      )}
+
+      {mark && (
+        <>
+          <div ref={noticeRef} className="notice" data-tone={mark.correct ? 'good' : 'bad'} role={mark.correct ? 'status' : 'alert'}>
+            {mark.correct ? <CircleCheck size={18} aria-hidden /> : <CircleX size={18} aria-hidden />}
+            <p>
+              {mark.correct ? `Right. ${question.answerText}.` : `Not quite. You gave ${mark.shown}. The answer is ${question.answerText}.`} {mark.reason}
+            </p>
+          </div>
+          <NextButton afterAnswer />
+          <StepsList ref={stepsRef} steps={question.steps} />
+        </>
+      )}
+    </form>
+  );
+}
+
+function McqCard({ question, record }: { question: McqQuestion; record: Record }) {
+  const [chosen, setChosen] = useState<number | null>(null);
+  const noticeRef = useRef<HTMLDivElement>(null);
+  const firstRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => firstRef.current?.focus({ preventScroll: true }), []);
+
+  const choose = (i: number) => {
+    if (chosen !== null) return;
+    setChosen(i);
+    const option = question.options[i];
+    record(option.correct, option.correct ? QUALITY_CORRECT : QUALITY_WRONG, option.text ?? option.latex ?? '', !option.text);
+  };
+
+  useLayoutEffect(() => {
+    if (chosen !== null) answerFeedback(noticeRef.current, question.options[chosen].correct);
+  }, [chosen, question]);
+
+  // Number keys choose an option, so the keyboard stays quick.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const n = Number(e.key);
+      if (chosen === null && n >= 1 && n <= question.options.length && !/^(INPUT|SELECT|TEXTAREA)$/.test((e.target as HTMLElement).tagName)) {
+        e.preventDefault();
+        choose(n - 1);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  });
+
+  const isRight = chosen !== null && question.options[chosen].correct;
+
+  return (
+    <div>
+      <h2 className="work-title">{question.prompt}</h2>
+      {question.promptLatex && (
+        <div className="math-host mt-2">
+          <MathTex latex={question.promptLatex} />
+        </div>
+      )}
+      <div className="mt-2" role="group" aria-label="Options">
+        {question.options.map((option, i) => {
+          const state = chosen === null ? undefined : option.correct ? 'right' : chosen === i ? 'wrong' : undefined;
+          return (
+            <button key={i} ref={i === 0 ? firstRef : undefined} type="button" className="choice" data-state={state} disabled={chosen !== null} onClick={() => choose(i)}>
+              <span className="choice-key">{i + 1}</span>
+              {option.latex ? <MathTex latex={option.latex} /> : option.text}
+              {state === 'right' && <span className="sr-only"> (correct answer)</span>}
+              {state === 'wrong' && <span className="sr-only"> (your answer, incorrect)</span>}
+            </button>
+          );
+        })}
+      </div>
+      {chosen !== null && (
+        <>
+          <div ref={noticeRef} className="notice" data-tone={isRight ? 'good' : 'bad'} role={isRight ? 'status' : 'alert'}>
+            {isRight ? <CircleCheck size={18} aria-hidden /> : <CircleX size={18} aria-hidden />}
+            <p>{isRight ? 'Right.' : 'Not quite. The correct answer is outlined.'}</p>
+          </div>
+          <NextButton afterAnswer />
+        </>
+      )}
+    </div>
+  );
+}
+
+function RecallCard({ question, record }: { question: RecallQuestion; record: Record }) {
+  const [revealed, setRevealed] = useState(false);
+  const [graded, setGraded] = useState(false);
+  const revealRef = useRef<HTMLButtonElement>(null);
+  const firstGrade = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => revealRef.current?.focus({ preventScroll: true }), []);
+  useEffect(() => {
+    if (revealed) firstGrade.current?.focus({ preventScroll: true });
+  }, [revealed]);
+
+  const grade = (quality: Quality, label: string) => {
+    if (graded) return;
+    setGraded(true);
+    record(quality >= 3, quality, label);
+  };
+
+  return (
+    <div>
+      <h2 className="work-title">Can you recall this?</h2>
+      <p className="mt-2 text-step-1 font-semibold">{question.name}</p>
+      {question.note && <p className="mt-1 text-ink-2">{question.note}</p>}
+      {!revealed ? (
+        <button ref={revealRef} type="button" className="btn btn-solid mt-3 w-full" onClick={() => setRevealed(true)}>
+          Show the formula
+        </button>
+      ) : (
+        <>
+          <div className="big-formula math-host mt-3">
+            <MathTex latex={question.latex} />
+          </div>
+          {!graded ? (
+            <>
+              <p className="lbl mt-3">How well did you know it?</p>
+              <div className="grid grid-cols-2 gap-2" role="group" aria-label="Rate your recall">
+                <button ref={firstGrade} type="button" className="btn btn-line" onClick={() => grade(1, 'Did not recall it')}>
+                  Forgot it
+                </button>
+                <button type="button" className="btn btn-line" onClick={() => grade(3, 'Recalled with difficulty')}>
+                  Hard
+                </button>
+                <button type="button" className="btn btn-line" onClick={() => grade(4, 'Recalled it')}>
+                  Knew it
+                </button>
+                <button type="button" className="btn btn-line" onClick={() => grade(5, 'Recalled it easily')}>
+                  Easy
+                </button>
+              </div>
+            </>
+          ) : (
+            <NextButton afterAnswer />
+          )}
+        </>
+      )}
+    </div>
+  );
 }

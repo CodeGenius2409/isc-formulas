@@ -3,7 +3,7 @@ import { SUBJECT_IDS } from './data/book';
 import type { ClassLevel, SubjectId } from './data/types';
 import { useMediaQuery } from './lib/hooks';
 import { viewEnter } from './lib/motion';
-import { closeWork, useRoute, type Route, type WorkTab } from './lib/router';
+import { closeWork, useRoute, workState, type Route } from './lib/router';
 import { useStore } from './lib/store';
 import { lastReadStore } from './state/library';
 import { contentsSheetStore, closeContentsSheet, openPalette } from './state/ui';
@@ -111,7 +111,7 @@ export function App() {
 
   const workBeside = useMediaQuery('(min-width: 1280px)');
   const contentsBeside = useMediaQuery('(min-width: 1024px)');
-  const workTab: WorkTab = route.work ?? 'solve';
+  const workTab = workState(route).tab;
 
   // Keys typed into a form must stay in the form.
   useEffect(() => {
@@ -155,7 +155,7 @@ export function App() {
       </a>
       <Rail route={route} activeSubject={place.inBook ? place.subject : null} />
       {contentsBeside && (
-        <div className="contents">
+        <div className="toc-col">
           <Contents subject={place.subject} level={place.level} unitIndex={place.unitIndex} subtopicIndex={place.subtopicIndex} />
         </div>
       )}

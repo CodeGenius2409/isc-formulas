@@ -43,7 +43,7 @@ export function BookSheet({ subject, level, unitIndex, subtopicIndex }: Props) {
             <X size={20} aria-hidden />
           </button>
         </div>
-        <div className="contents min-h-0 flex-1" style={{ borderRight: 0 }}>
+        <div className="toc-col min-h-0 flex-1" style={{ borderRight: 0 }}>
           <Contents subject={subject} level={level} unitIndex={unitIndex} subtopicIndex={subtopicIndex} onNavigate={closeContentsSheet} />
         </div>
       </div>

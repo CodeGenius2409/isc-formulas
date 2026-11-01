@@ -1,6 +1,6 @@
 import { lazy, Suspense, useRef, type KeyboardEvent } from 'react';
 import { X } from 'lucide-react';
-import { closeWork, openWork, type Route, type WorkTab } from '../../lib/router';
+import { closeWork, openWork, workState, type Route, type WorkTab } from '../../lib/router';
 
 const SolvePane = lazy(() => import('./SolvePane'));
 const CheckPane = lazy(() => import('./CheckPane'));
@@ -52,9 +52,9 @@ export function WorkArea({ route, tab, closable }: Props) {
       </div>
       <div className="work-body" role="tabpanel" id="work-panel" aria-labelledby={`work-tab-${tab}`}>
         <Suspense fallback={<p className="text-ink-3">Opening</p>}>
-          {tab === 'solve' && <SolvePane formulaId={route.workFormula} initialUnknown={route.query.get('find')} />}
+          {tab === 'solve' && <SolvePane formulaId={workState(route).formula} initialUnknown={route.query.get('find')} />}
           {tab === 'check' && <CheckPane />}
-          {tab === 'practice' && <PracticePane formulaId={route.workFormula} />}
+          {tab === 'practice' && <PracticePane />}
         </Suspense>
       </div>
     </>

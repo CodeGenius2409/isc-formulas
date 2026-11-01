@@ -4,7 +4,9 @@ import { canonicalId } from '../../data/aliases';
 import { findFormula } from '../../data/book';
 import { useAsync } from '../../lib/hooks';
 import { stepsReveal } from '../../lib/motion';
-import { openWork } from '../../lib/router';
+import { clearWorkFormula } from '../../lib/router';
+import { startPracticeOn } from '../../practice/session-link';
+import { unitLabel as displayUnit } from '../../solver/unit-label';
 import { getEntry } from '../../solver/registry';
 import { defaultUnknown, equationTex, solve, varTex, type SolveInput, type SolveOutcome } from '../../solver/solve';
 import type { ResolvedEntry, ResolvedVar } from '../../solver/types';
@@ -14,10 +16,6 @@ import { FormulaPicker } from './FormulaPicker';
 function unitOptions(v: ResolvedVar): string[] {
   const list = v.show && v.show !== v.unit ? [v.show, v.unit, ...v.alt] : [v.unit, ...v.alt];
   return [...new Set(list)].filter(Boolean);
-}
-
-function displayUnit(unit: string): string {
-  return unit.replace(/\^2/g, '²').replace(/\^3/g, '³').replace(/\^-1/g, '⁻¹').replace(/\*/g, '·').replace('degC', '°C').replace('deg', '°').replace('ohm', 'Ω').replace('hour', 'h').replace(/^u/, 'μ');
 }
 
 function initialInputs(entry: ResolvedEntry): Record<string, SolveInput> {
@@ -50,10 +48,10 @@ function NotSolvable({ id }: { id: string }) {
         <p>This one can't be solved numerically. It is a definition, a rule or a reaction, not a calculation with values to fill in. You can still practise it.</p>
       </div>
       <div className="mt-3 flex flex-wrap gap-2">
-        <button type="button" className="btn btn-solid" onClick={() => openWork('practice', id)}>
+        <button type="button" className="btn btn-solid" onClick={() => startPracticeOn(id)}>
           Practise this formula
         </button>
-        <button type="button" className="btn btn-line" onClick={() => { window.location.hash = window.location.hash.replace(/([?&])wf=[^&]*/, '$1').replace(/[?&]$/, ''); }}>
+        <button type="button" className="btn btn-line" onClick={clearWorkFormula}>
           Find a formula to solve
         </button>
       </div>
@@ -101,7 +99,7 @@ function Solver({ entry, initialUnknown }: { entry: ResolvedEntry; initialUnknow
 
   return (
     <form onSubmit={onSubmit} noValidate>
-      <button type="button" className="btn btn-quiet -ml-2 mb-1" onClick={() => { window.location.hash = window.location.hash.replace(/([?&])wf=[^&]*/, '$1').replace(/[?&]$/, ''); }}>
+      <button type="button" className="btn btn-quiet -ml-2 mb-1" onClick={clearWorkFormula}>
         <ArrowLeft size={16} aria-hidden /> All formulas
       </button>
       <h2 className="work-title">{formula?.name ?? 'Formula'}</h2>
@@ -224,7 +222,7 @@ function Solver({ entry, initialUnknown }: { entry: ResolvedEntry; initialUnknow
             )
           )}
           {outcome.ok && (
-            <button type="button" className="btn btn-line mt-2" onClick={() => openWork('practice', entry.id)}>
+            <button type="button" className="btn btn-line mt-2" onClick={() => startPracticeOn(entry.id)}>
               Practise this formula
             </button>
           )}

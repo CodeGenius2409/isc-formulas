@@ -2,7 +2,6 @@ import { useEffect } from 'react';
 import { manifest } from '../data/book';
 import { useStore } from '../lib/store';
 import { contrastStore, themeStore, type ContrastChoice, type ThemeChoice } from '../state/prefs';
-import { BackupControls } from '../components/BackupControls';
 import { OfflineStatus } from '../components/OfflineStatus';
 
 const THEMES: { id: ThemeChoice; label: string }[] = [
@@ -49,7 +48,13 @@ export default function Settings() {
           </div>
         </section>
 
-        <BackupControls />
+        <section className="today-section" aria-labelledby="data-h">
+          <h2 id="data-h">Your data</h2>
+          <p className="mt-2 text-ink-2">
+            Your progress stays on this device. To back it up or move it, go to <a href="#/practice">Progress</a>.
+          </p>
+        </section>
+
         <OfflineStatus />
 
         <section className="today-section" aria-labelledby="about-h">

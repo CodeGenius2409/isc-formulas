@@ -33,10 +33,35 @@ function splitOnce(value: string, sep: string): [string, string] {
 let current = parseHash(window.location.hash);
 const listeners = new Set<() => void>();
 
+/** The working area remembers its tab and formula while you move around the book. */
+const workMemory: { tab: WorkTab; formula: string | null } = { tab: 'solve', formula: null };
+
+function rememberWork(route: Route): void {
+  if (route.work) workMemory.tab = route.work;
+  if (route.workFormula) workMemory.formula = route.workFormula;
+}
+
+rememberWork(current);
+
 window.addEventListener('hashchange', () => {
   current = parseHash(window.location.hash);
+  rememberWork(current);
   listeners.forEach((l) => l());
 });
+
+export function workState(route: Route): { tab: WorkTab; formula: string | null } {
+  return { tab: route.work ?? workMemory.tab, formula: route.workFormula ?? workMemory.formula };
+}
+
+/** Back to the formula list in the Solve tab. */
+export function clearWorkFormula(): void {
+  workMemory.formula = null;
+  const params = new URLSearchParams(current.query);
+  params.delete('wf');
+  params.delete('find');
+  params.set('work', 'solve');
+  window.location.hash = `/${current.path.map(encodeURIComponent).join('/')}?${params.toString()}`;
+}
 
 export function useRoute(): Route {
   return useSyncExternalStore(

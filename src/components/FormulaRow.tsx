@@ -70,29 +70,33 @@ export const FormulaRow = memo(function FormulaRow({ formula: f, open, onToggle,
             <button
               type="button"
               className="btn btn-quiet"
+              title="Solve"
+              aria-label={`Solve with ${f.name}`}
               onClick={() => {
                 noteRecent(f.id);
                 openWork('solve', f.id);
               }}
             >
-              <Calculator size={15} aria-hidden /> Solve
+              <Calculator size={15} aria-hidden /> <span className="act-label">Solve</span>
             </button>
           )}
           <button
             type="button"
             className="btn btn-quiet"
+            title="Practise"
+            aria-label={`Practise ${f.name}`}
             onClick={() => {
               noteRecent(f.id);
               startPracticeOn(f.id);
             }}
           >
-            <ListChecks size={15} aria-hidden /> Practise
+            <ListChecks size={15} aria-hidden /> <span className="act-label">Practise</span>
           </button>
-          <button type="button" className="btn btn-quiet" onClick={() => void copyText(f.latex, 'Copied LaTeX')}>
-            <Copy size={15} aria-hidden /> Copy LaTeX
+          <button type="button" className="btn btn-quiet" title="Copy LaTeX" aria-label={`Copy LaTeX of ${f.name}`} onClick={() => void copyText(f.latex, 'Copied LaTeX')}>
+            <Copy size={15} aria-hidden /> <span className="act-label">Copy LaTeX</span>
           </button>
-          <a className="btn btn-quiet" href={href(`f/${f.id}`)} onClick={() => noteRecent(f.id)}>
-            <ExternalLink size={15} aria-hidden /> Open
+          <a className="btn btn-quiet" title="Open" aria-label={`Open ${f.name}`} href={href(`f/${f.id}`)} onClick={() => noteRecent(f.id)}>
+            <ExternalLink size={15} aria-hidden /> <span className="act-label">Open</span>
           </a>
         </div>
       </div>
