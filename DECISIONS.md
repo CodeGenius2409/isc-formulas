@@ -31,3 +31,24 @@ scripts ran. Nothing in the build needs them.
 ## Git
 
 Work is on a `rebuild` branch. `master` still holds your original files.
+
+## Data and dedupe
+
+- **A merged entry still shows in other units.** You asked for one entry shown in
+  both places when two subjects need it. I applied the same rule across classes
+  and units: a Class XII reader's table of standard derivatives must not have
+  holes because the same rows exist in Class XI. It is stored once, so search,
+  favourites and practice each see it once, and each place is tagged with where
+  else it appears. Repeats inside the same unit collapse to one row. To change
+  this, edit `resolvePlacements` in `scripts/lib/dedupe.mjs`.
+- **Your near-duplicate example was kept apart.** `p-xi-1-11` and `p-xi-1-5` are
+  the definition and the propagation rule, so they are not repeats. See
+  `reports/dedupe-review.md`.
+- **Your group counts did not reproduce.** The total of 8,736 and the subject
+  split match, but I get 52 identical-LaTeX groups (you measured 65) and 199
+  same-name groups (you measured 143). `reports/dedupe-report.md` shows the counts.
+- **Conflicting entries were not merged.** Where two entries disagree on a fact,
+  such as the d-block configuration or the nitration temperature, merging would
+  silently pick one, so they went to the review file.
+- **Data stays in per-chunk JSON.** Entries shown in more than one unit live in
+  `shared.json`, which loads with any chunk.
