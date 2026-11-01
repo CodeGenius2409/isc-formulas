@@ -1,0 +1,137 @@
+/* Design tokens. DESIGN.md explains the system. Nothing outside this file may
+   hard-code a colour: components use these tokens, canvases read them at draw time. */
+
+:root {
+  --font-display: 'Besley Variable', 'Rockwell', Georgia, serif;
+  --font-body: 'Atkinson Hyperlegible Next Variable', 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'Atkinson Hyperlegible Mono Variable', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+
+  --step--1: 0.8125rem; /* 13px: margin numbers, meta */
+  --step-0: 0.9375rem; /* 15px: dense rows, controls */
+  --step-1: 1.0625rem; /* 17px: section heads */
+  --step-2: 1.375rem; /* 22px: sub-heads */
+  --step-3: 1.75rem; /* 28px: view titles */
+  --step-4: 2.25rem; /* 36px: Today only */
+
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+  --dur-press: 120ms;
+  --dur-fast: 160ms;
+  --dur-view: 200ms;
+  --dur-sheet: 240ms;
+
+  --rail: 76px;
+  --contents: 276px;
+  --work: 444px;
+  --margin-col: 4.5rem;
+  --dock: 60px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-top: env(safe-area-inset-top, 0px);
+}
+
+/* Paper: a ruled exercise book. Cool white, blue-black ink, feint blue rules, and
+   the carmine margin line. The accent is the teacher's red pen. */
+:root,
+:root[data-theme='paper'] {
+  color-scheme: light;
+  --paper: #f7f8f4;
+  --paper-2: #eef1ea;
+  --paper-3: #e4e8e0;
+  --ink: #15202b;
+  --ink-2: #414d59;
+  --ink-3: #5a6671;
+  --rule: #cdd8dd;
+  --rule-2: #76838e;
+  --margin: #c2283e;
+  --accent: #a8152d;
+  --on-accent: #ffffff;
+  --focus: #1457c4;
+  --good: #1a6a3c;
+  --bad: #a8152d;
+  --warn: #7c5200;
+  --physics: #1f4e8c;
+  --chemistry: #1b6a50;
+  --mathematics: #6b2f7e;
+  --computerscience: #8a5310;
+  --on-subject: #ffffff;
+  --mark: #fbe9a6;
+  --plot-grid: #dfe6e8;
+}
+
+/* Blackboard: designed on its own terms. Slate green, chalk white, coloured chalks. */
+:root[data-theme='board'] {
+  color-scheme: dark;
+  --paper: #1d2a26;
+  --paper-2: #24332e;
+  --paper-3: #2d3e38;
+  --ink: #eeece1;
+  --ink-2: #cdd0c4;
+  --ink-3: #a9b2a8;
+  --rule: #3b4c46;
+  --rule-2: #7d8d86;
+  --margin: #d9bd57;
+  --accent: #f0d264;
+  --on-accent: #1d2a26;
+  --focus: #8fc7f0;
+  --good: #92d8b0;
+  --bad: #f4a79d;
+  --warn: #f0d264;
+  --physics: #93c9f1;
+  --chemistry: #92d8b0;
+  --mathematics: #d9abe7;
+  --computerscience: #eeb582;
+  --on-subject: #17211e;
+  --mark: #5a5222;
+  --plot-grid: #33443e;
+}
+
+:root[data-theme='paper'][data-contrast='high'] {
+  --paper: #ffffff;
+  --paper-2: #ffffff;
+  --paper-3: #e8e8e8;
+  --ink: #000000;
+  --ink-2: #000000;
+  --ink-3: #1c1c1c;
+  --rule: #000000;
+  --rule-2: #000000;
+  --margin: #8f0016;
+  --accent: #8f0016;
+  --focus: #0037a8;
+  --good: #004d22;
+  --bad: #8f0016;
+  --warn: #5a3b00;
+  --physics: #0a2f66;
+  --chemistry: #00492f;
+  --mathematics: #4a1460;
+  --computerscience: #5e3600;
+  --plot-grid: #8a8a8a;
+}
+
+:root[data-theme='board'][data-contrast='high'] {
+  --paper: #000000;
+  --paper-2: #000000;
+  --paper-3: #222222;
+  --ink: #ffffff;
+  --ink-2: #ffffff;
+  --ink-3: #f0f0f0;
+  --rule: #ffffff;
+  --rule-2: #ffffff;
+  --margin: #ffe14d;
+  --accent: #ffe14d;
+  --on-accent: #000000;
+  --focus: #7fd0ff;
+  --good: #7dffb0;
+  --bad: #ffb3a8;
+  --warn: #ffe14d;
+  --physics: #a8dcff;
+  --chemistry: #a0ffc9;
+  --mathematics: #ecc4ff;
+  --computerscience: #ffcf9e;
+  --on-subject: #000000;
+  --plot-grid: #777777;
+}
+
+[data-subject='physics'] { --subject: var(--physics); }
+[data-subject='chemistry'] { --subject: var(--chemistry); }
+[data-subject='mathematics'] { --subject: var(--mathematics); }
+[data-subject='computerscience'] { --subject: var(--computerscience); }

@@ -1,10 +1,25 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="paper">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>ISC Formula Book</title>
     <meta name="description" content="Every ISC formula for Physics, Chemistry, Mathematics and Computer Science, with a problem solver, practice and simulators. Works offline." />
+    <script>
+      // Set the theme before first paint so the page never flashes the wrong one.
+      (function () {
+        var theme = 'system', contrast = 'normal';
+        try {
+          theme = localStorage.getItem('isc-theme') || 'system';
+          contrast = localStorage.getItem('isc-contrast') || 'normal';
+        } catch (e) {}
+        if (theme === 'light') theme = 'paper';
+        if (theme === 'dark') theme = 'board';
+        if (theme === 'system') theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'board' : 'paper';
+        document.documentElement.dataset.theme = theme;
+        document.documentElement.dataset.contrast = contrast;
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

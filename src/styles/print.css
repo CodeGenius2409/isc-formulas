@@ -1,0 +1,98 @@
+/* Printing: a clean formula sheet. All chrome goes, and the whole unit prints
+   rather than only the rows that were on screen. */
+
+@media print {
+  @page {
+    margin: 14mm 12mm;
+  }
+
+  :root,
+  :root[data-theme] {
+    color-scheme: light;
+    --paper: #ffffff;
+    --paper-2: #ffffff;
+    --ink: #000000;
+    --ink-2: #222222;
+    --ink-3: #444444;
+    --rule: #bbbbbb;
+    --rule-2: #666666;
+    --margin: #bbbbbb;
+    --physics: #000000;
+    --chemistry: #000000;
+    --mathematics: #000000;
+    --computerscience: #000000;
+  }
+
+  html,
+  body,
+  #root {
+    height: auto;
+    overflow: visible;
+    background: #ffffff;
+  }
+
+  .shell {
+    display: block;
+    height: auto;
+    padding: 0;
+  }
+
+  .shell > main {
+    overflow: visible;
+    height: auto;
+  }
+
+  .rail,
+  .contents,
+  .work,
+  .dock,
+  .toast,
+  .update-note,
+  .sheet,
+  .palette,
+  .running-head,
+  .row-star,
+  .row-acts,
+  .no-print {
+    display: none !important;
+  }
+
+  .page {
+    container-type: normal;
+  }
+
+  .row {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .row-main {
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    grid-template-areas:
+      'math name'
+      'math note';
+  }
+
+  .math-host {
+    overflow: visible;
+  }
+
+  .section-head {
+    break-after: avoid;
+    page-break-after: avoid;
+    padding-top: 0.75rem;
+  }
+
+  .print-list {
+    height: auto !important;
+  }
+
+  .print-list > * {
+    position: static !important;
+    transform: none !important;
+  }
+
+  a {
+    text-decoration: none;
+  }
+}

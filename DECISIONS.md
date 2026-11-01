@@ -52,3 +52,19 @@ Work is on a `rebuild` branch. `master` still holds your original files.
   silently pick one, so they went to the review file.
 - **Data stays in per-chunk JSON.** Entries shown in more than one unit live in
   `shared.json`, which loads with any chunk.
+
+## Design
+
+- **Theme names.** Light is "Paper" and dark is "Blackboard". The high-contrast
+  option is a separate switch, so it works with either.
+- **Hash URLs.** Addresses look like `#/book/physics/XI/1`. They work on GitHub Pages
+  and Vercel with no server rewrite rules.
+- **Heading font.** `ui-ux-pro-max` proposed Crimson Pro with Atkinson Hyperlegible.
+  I kept Atkinson and replaced Crimson Pro with Besley, because Crimson's thin
+  strokes break up on the dark theme.
+- **React Bits.** Only `AnimatedContent` is used, once, on the Today page. I trimmed
+  it to remove ScrollTrigger, blur and tilt. Its default timing (0.8 s, 100 px)
+  was far too loud for this design, so I changed it.
+- **No ScrollTrigger.** Nothing earned it.
+- **Browsers.** Playwright drives the installed Microsoft Edge, because Chrome is not
+  installed here and I did not download a browser. Edge uses the same engine.
