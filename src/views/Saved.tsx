@@ -22,6 +22,7 @@ export default function Saved({ scrollRef }: { scrollRef: RefObject<HTMLElement 
         <h1 style={{ color: 'var(--ink)' }}>Saved formulas</h1>
         <p>{ids.length ? `${ids.length} saved` : 'Nothing saved yet. Press the star on any formula to keep it here.'}</p>
       </header>
+      <h2 className="sr-only">Your saved formulas</h2>
       {items.length > 0 && <FormulaList items={items} scrollRef={scrollRef} showWhere />}
     </div>
   );

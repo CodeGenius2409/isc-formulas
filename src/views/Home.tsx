@@ -3,6 +3,7 @@ import { href } from '../lib/router';
 import { useStore } from '../lib/store';
 import { lastReadStore, recentsStore } from '../state/library';
 import { AnimatedContent } from '../components/AnimatedContent';
+import { OfflineLine } from '../components/OfflineStatus';
 import { RecentFormulas } from '../components/RecentFormulas';
 import { ReviewQueue } from '../components/ReviewQueue';
 
@@ -17,6 +18,7 @@ export default function Home() {
       <div className="page-pad">
         <AnimatedContent>
           <h1 className="today-date">{DATE_FORMAT.format(new Date())}</h1>
+          <OfflineLine />
 
           <ReviewQueue />
 

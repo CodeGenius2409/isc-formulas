@@ -3,7 +3,7 @@
 import type MiniSearch from 'minisearch';
 import { loadAllFormulas } from '../data/book';
 import type { Formula } from '../data/types';
-import { buildIndex, runSearch, toSearchDoc, type SearchDoc, type SearchFilters, type SearchHit } from './engine';
+import { toSearchDoc, type SearchDoc, type SearchFilters, type SearchHit } from './doc';
 import type { WorkerRequest, WorkerResponse } from './worker';
 
 export interface SearchResults {
@@ -13,10 +13,16 @@ export interface SearchResults {
 
 let formulas: Map<string, Formula> | null = null;
 let worker: Worker | null = null;
-let fallbackIndex: MiniSearch<SearchDoc> | null = null;
+let fallback: ((query: string, filters: SearchFilters, limit: number) => { hits: SearchHit[]; total: number }) | null = null;
 let ready: Promise<void> | null = null;
 let nextId = 1;
 const pending = new Map<number, (r: { hits: SearchHit[]; total: number }) => void>();
+
+async function useMainThread(docs: SearchDoc[]): Promise<void> {
+  const { buildIndex, runSearch } = await import('./engine');
+  const index: MiniSearch<SearchDoc> = buildIndex(docs);
+  fallback = (query, filters, limit) => runSearch(index, query, filters, limit);
+}
 
 /** Starts indexing. Safe to call repeatedly. */
 export function prepareSearch(): Promise<void> {
@@ -30,7 +36,7 @@ export function prepareSearch(): Promise<void> {
       worker = null;
     }
     if (!worker) {
-      fallbackIndex = buildIndex(docs);
+      await useMainThread(docs);
       return;
     }
     const active = worker;
@@ -46,8 +52,7 @@ export function prepareSearch(): Promise<void> {
       active.onerror = () => {
         // A worker that fails to start must not leave search broken.
         worker = null;
-        fallbackIndex = buildIndex(docs);
-        resolve();
+        void useMainThread(docs).then(resolve);
       };
       active.postMessage({ type: 'index', docs } satisfies WorkerRequest);
     });
@@ -66,7 +71,7 @@ export async function search(query: string, filters: SearchFilters = {}, limit =
       active.postMessage({ type: 'search', id, query, filters, limit } satisfies WorkerRequest);
     });
   } else {
-    result = fallbackIndex ? runSearch(fallbackIndex, query, filters, limit) : { hits: [], total: 0 };
+    result = fallback ? fallback(query, filters, limit) : { hits: [], total: 0 };
   }
   return {
     total: result.total,

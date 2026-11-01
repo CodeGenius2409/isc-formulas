@@ -31,6 +31,7 @@
     font-weight: 600;
     line-height: 1.2;
     text-wrap: balance;
+    overflow-wrap: anywhere;
     margin: 0;
   }
 
@@ -46,8 +47,10 @@
     text-underline-offset: 0.18em;
   }
 
-  a:hover {
-    text-decoration-color: currentColor;
+  @media (hover: hover) {
+    a:hover {
+      text-decoration-color: currentColor;
+    }
   }
 
   button,
@@ -120,7 +123,10 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* KaTeX's hidden MathML is positioned absolutely, so this box has to contain it, or
+   a wide formula stretches the page's scroll area. */
 .math-host {
+  position: relative;
   min-width: 0;
   max-width: 100%;
   overflow-x: auto;
@@ -221,6 +227,8 @@
 
 .seg {
   display: inline-flex;
+  flex-wrap: wrap;
+  max-width: 100%;
   border: 1px solid var(--rule-2);
   border-radius: 3px;
 }
@@ -262,14 +270,14 @@
   font-weight: 600;
 }
 
-/* For users who ask for less motion, transitions become near-instant cross-fades
-   and transforms stop. State changes stay visible. */
+/* For users who ask for less motion, colour and opacity still change gently, so a state
+   change stays easy to notice, but nothing moves. */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
     scroll-behavior: auto !important;
-    transition-duration: 1ms !important;
+    transition-property: color, background-color, border-color, opacity !important;
     animation-duration: 1ms !important;
     animation-iteration-count: 1 !important;
   }

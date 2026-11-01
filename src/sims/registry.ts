@@ -20,6 +20,7 @@ const opt = () => import('./optics');
 const mod = () => import('./modern');
 const chem = () => import('./chemistry');
 const maths = () => import('./maths');
+const mathsCalc = () => import('./maths-calc');
 const cs = () => import('./cs');
 
 export const SIMS: SimInfo[] = [
@@ -61,13 +62,13 @@ export const SIMS: SimInfo[] = [
   { id: 'trig', title: 'Trigonometric ratios', desc: 'sin, cos and tan of any angle, on the unit circle.', subject: 'mathematics', load: from(maths, 'Trig') },
   { id: 'complex', title: 'Complex numbers', desc: 'Modulus, argument and polar form.', subject: 'mathematics', load: from(maths, 'ComplexLab') },
   { id: 'vectors', title: 'Vectors in 2-D', desc: 'Resultant, dot product and the angle between.', subject: 'mathematics', load: from(maths, 'Vectors') },
-  { id: 'matrix', title: '2×2 matrix', desc: 'Determinant and inverse.', subject: 'mathematics', load: from(maths, 'Matrix2') },
-  { id: 'det3', title: '3×3 determinant', desc: 'Determinant by cofactor expansion.', subject: 'mathematics', load: from(maths, 'Det3') },
-  { id: 'derivative', title: 'Derivative at a point', desc: 'The slope of x², sin x and eˣ, with the tangent.', subject: 'mathematics', load: from(maths, 'DerivativeTool') },
-  { id: 'integral', title: 'Area under a curve', desc: 'Definite integrals of x², sin x and eˣ.', subject: 'mathematics', load: from(maths, 'IntegralTool') },
-  { id: 'limits', title: 'Limit explorer', desc: 'Approach x → a from both sides.', subject: 'mathematics', load: from(maths, 'Limits') },
-  { id: 'binomialprob', title: 'Binomial probability', desc: 'P(X = r) for n trials.', subject: 'mathematics', load: from(maths, 'BinomialProb') },
-  { id: 'combinatorics', title: 'Permutations and combinations', desc: 'ⁿPᵣ and ⁿCᵣ, exactly.', subject: 'mathematics', load: from(maths, 'Combinatorics') },
+  { id: 'matrix', title: '2×2 matrix', desc: 'Determinant and inverse.', subject: 'mathematics', load: from(mathsCalc, 'Matrix2') },
+  { id: 'det3', title: '3×3 determinant', desc: 'Determinant by cofactor expansion.', subject: 'mathematics', load: from(mathsCalc, 'Det3') },
+  { id: 'derivative', title: 'Derivative at a point', desc: 'The slope of x², sin x and eˣ, with the tangent.', subject: 'mathematics', load: from(mathsCalc, 'DerivativeTool') },
+  { id: 'integral', title: 'Area under a curve', desc: 'Definite integrals of x², sin x and eˣ.', subject: 'mathematics', load: from(mathsCalc, 'IntegralTool') },
+  { id: 'limits', title: 'Limit explorer', desc: 'Approach x → a from both sides.', subject: 'mathematics', load: from(mathsCalc, 'Limits') },
+  { id: 'binomialprob', title: 'Binomial probability', desc: 'P(X = r) for n trials.', subject: 'mathematics', load: from(mathsCalc, 'BinomialProb') },
+  { id: 'combinatorics', title: 'Permutations and combinations', desc: 'ⁿPᵣ and ⁿCᵣ, exactly.', subject: 'mathematics', load: from(mathsCalc, 'Combinatorics') },
 
   // Computer Science
   { id: 'logic', title: 'Logic gates', desc: 'Every gate, with live inputs and its truth table.', subject: 'computerscience', load: from(cs, 'LogicGates') },

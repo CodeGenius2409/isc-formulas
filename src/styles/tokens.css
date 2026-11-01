@@ -20,11 +20,12 @@
   --dur-view: 200ms;
   --dur-sheet: 240ms;
 
-  --rail: 76px;
-  --contents: 276px;
-  --work: 444px;
+  --rail: 4.75rem;
+  --contents: 17.25rem;
+  --work: 27.75rem;
   --margin-col: 4.5rem;
-  --dock: 60px;
+  --dock: 3.75rem;
+  --scrim: rgb(10 16 20 / 0.42);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-top: env(safe-area-inset-top, 0px);
 }

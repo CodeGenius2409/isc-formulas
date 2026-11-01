@@ -3,6 +3,8 @@
 .shell {
   display: grid;
   height: 100dvh;
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
   grid-template-columns: var(--rail) var(--contents) minmax(0, 1fr) var(--work);
   grid-template-rows: minmax(0, 1fr);
 }
@@ -23,19 +25,19 @@
   outline: none;
 }
 
-@media (max-width: 1279px) {
+@media (max-width: 79.99em) {
   .shell {
     grid-template-columns: var(--rail) var(--contents) minmax(0, 1fr);
   }
 }
 
-@media (max-width: 1023px) {
+@media (max-width: 63.99em) {
   .shell {
     grid-template-columns: var(--rail) minmax(0, 1fr);
   }
 }
 
-@media (min-width: 768px) {
+@media (min-width: 48em) {
   .shell[data-wide='true'] {
     grid-template-columns: var(--rail) minmax(0, 1fr);
   }
@@ -44,7 +46,7 @@
   }
 }
 
-@media (max-width: 767px) {
+@media (max-width: 47.99em) {
   .shell {
     grid-template-columns: minmax(0, 1fr);
     height: 100dvh;
@@ -138,7 +140,7 @@
   }
 }
 
-@media (max-width: 767px) {
+@media (max-width: 47.99em) {
   .rail {
     display: none;
   }
@@ -262,7 +264,7 @@
   }
 }
 
-@media (max-width: 1023px) {
+@media (max-width: 63.99em) {
   .shell > .toc-col {
     display: none;
   }
@@ -282,6 +284,12 @@
   display: flex;
   flex-shrink: 0;
   border-bottom: 1px solid var(--rule-2);
+}
+
+.work-tablist {
+  display: flex;
+  flex: 1;
+  min-width: 0;
 }
 
 .work-tab {
@@ -343,10 +351,10 @@ dialog:not([open]) {
 }
 
 .sheet::backdrop {
-  background: rgb(10 16 20 / 0.42);
+  background: var(--scrim);
 }
 
-@media (max-width: 767px) {
+@media (max-width: 47.99em) {
   .sheet {
     inset: auto 0 0 0;
     width: 100%;
@@ -362,7 +370,7 @@ dialog:not([open]) {
   background: var(--paper);
 }
 
-@media (min-width: 768px) {
+@media (min-width: 48em) {
   .sheet-contents {
     inset: 0 auto 0 0;
     width: min(340px, 92vw);
@@ -377,7 +385,7 @@ dialog:not([open]) {
   display: none;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 47.99em) {
   .dock {
     position: fixed;
     inset: auto 0 0 0;
@@ -429,10 +437,10 @@ dialog:not([open]) {
 }
 
 .palette::backdrop {
-  background: rgb(10 16 20 / 0.42);
+  background: var(--scrim);
 }
 
-@media (max-width: 767px) {
+@media (max-width: 47.99em) {
   .palette {
     inset: 0;
     transform: none;
@@ -470,10 +478,19 @@ dialog:not([open]) {
   opacity: 1;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 47.99em) {
   .toast {
     bottom: calc(var(--dock) + var(--safe-bottom) + 0.75rem);
   }
+}
+
+.offline-line {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.25rem;
+  color: var(--ink-2);
+  font-size: var(--step--1);
 }
 
 .update-note {
@@ -500,7 +517,7 @@ dialog:not([open]) {
   color: var(--ink);
 }
 
-@media (max-width: 767px) {
+@media (max-width: 47.99em) {
   .update-note {
     bottom: calc(var(--dock) + var(--safe-bottom) + 0.75rem);
   }
@@ -558,7 +575,8 @@ dialog:not([open]) {
 
 .palette-row[aria-selected='true'] {
   background: var(--paper-3);
-  box-shadow: inset 3px 0 0 var(--accent);
+  outline: 1px solid var(--rule-2);
+  outline-offset: -1px;
 }
 
 .palette-name {

@@ -88,7 +88,7 @@ function PracticeHome() {
         </p>
       )}
       <p className="mt-3 text-step--1">
-        <a href={href('practice')}>See progress and mistakes</a>
+        <a className="text-action" href={href('practice')}>See progress and mistakes</a>
       </p>
     </div>
   );

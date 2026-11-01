@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react';
 import { CircleAlert, Pause, Pencil, Play, SkipBack, SkipForward, StepBack, StepForward } from 'lucide-react';
-import { runProgram, type FrameView, type RunResult, type TraceRow, type TraceStep } from '../java/interp';
+import { runProgram, type FrameView, type RunResult, type TraceRow, type TraceStep } from '../java/trace';
 import { SAMPLES } from '../java/samples';
 import { readJson, writeJson } from '../lib/storage';
 
@@ -311,7 +311,7 @@ function Variables({ step, previous, frameIndex }: { step?: TraceStep; previous?
   if (!frame.vars.length) return <p className="tool-empty">{frame.method} has no variables yet.</p>;
   const before = previous && previous.depth === step?.depth ? selectedFrame(previous, frameIndex) : undefined;
   return (
-    <div className="table-scroll" tabIndex={0} role="region" aria-label="Variables">
+    <div className="table-scroll" tabIndex={0} role="region" aria-label="Table of variables">
       <table className="trace-table var-table">
         <thead>
           <tr>

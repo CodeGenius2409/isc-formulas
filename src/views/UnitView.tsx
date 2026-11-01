@@ -101,17 +101,17 @@ export default function UnitView({ subject, level, unitIndex, subtopicIndex, scr
       )}
 
       {unit && (
-        <nav aria-label="Other units" className="no-print flex justify-between gap-4 p-5">
+        <nav aria-label="Other units" className="no-print unit-nav">
           {prev ? (
             <a className="btn btn-line" href={href(`book/${subject}/${level}/${unitIndex - 1}`)}>
-              <ChevronLeft size={16} aria-hidden /> <span className="truncate max-w-[34vw]">{unitTitle(prev.name)}</span>
+              <ChevronLeft size={16} aria-hidden /> <span>{unitTitle(prev.name)}</span>
             </a>
           ) : (
             <span />
           )}
           {next && (
             <a className="btn btn-line" href={href(`book/${subject}/${level}/${unitIndex + 1}`)}>
-              <span className="truncate max-w-[34vw]">{unitTitle(next.name)}</span> <ChevronRight size={16} aria-hidden />
+              <span>{unitTitle(next.name)}</span> <ChevronRight size={16} aria-hidden />
             </a>
           )}
         </nav>

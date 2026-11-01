@@ -17,7 +17,7 @@ interface Props {
 /** The left edge of the book: a thumb index of subjects, then everything else. */
 export function Rail({ route, activeSubject }: Props) {
   const memory = useStore(classMemoryStore);
-  const workIsSheet = useMediaQuery('(max-width: 1279px)');
+  const workIsSheet = useMediaQuery('(max-width: 79.99em)');
   const section = route.path[0] ?? '';
   const link = (target: string) => (section === target ? 'true' : undefined);
 
@@ -27,7 +27,7 @@ export function Rail({ route, activeSubject }: Props) {
         {SUBJECT_IDS.map((id) => {
           const subject = getSubject(id);
           return (
-            <a key={id} className="thumb" data-subject={id} href={href(`book/${id}/${memory[id] ?? 'XI'}`)} aria-current={activeSubject === id ? 'true' : undefined} aria-label={subject.label} title={subject.label}>
+            <a key={id} className="thumb" data-subject={id} href={href(`book/${id}/${memory[id] ?? 'XI'}`)} aria-current={activeSubject === id ? 'true' : undefined} aria-label={`${THUMB_LABEL[id]}: ${subject.label}`} title={subject.label}>
               {THUMB_LABEL[id]}
             </a>
           );

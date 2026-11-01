@@ -30,6 +30,7 @@ export default function SearchView({ scrollRef }: { scrollRef: RefObject<HTMLEle
           Search again
         </button>
       </header>
+      <h2 className="sr-only">Results</h2>
       {items.length > 0 && <FormulaList items={items} scrollRef={scrollRef} showWhere />}
     </div>
   );

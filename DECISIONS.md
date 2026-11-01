@@ -124,7 +124,7 @@ Work is on a `rebuild` branch. `master` still holds your original files.
 
 ## Simulators
 
-- **The old app has 41 simulators, not 44.** I counted the `sim*` functions in
+- **The old app has 41 simulators, not 44.** I counted the `tool*` functions in
   `legacy/`. There are 41, plus one alias (`phscale`, which opened the pH tool). The
   number 44 did not reproduce.
 - **Merged, because they did the same job:**
@@ -161,3 +161,31 @@ Work is on a `rebuild` branch. `master` still holds your original files.
   added.
 - **Your own program is kept.** Typing into a sample turns it into "My program", which
   is saved in this browser. Picking a sample never overwrites it.
+
+## PWA and performance
+
+- **The service worker precaches everything,** including every data chunk, simulator
+  and font: about 3.3 MB, or 1.2 MB compressed. After one visit the whole app works
+  offline, which the offline test checks by opening every formula with the network off.
+- **Updates ask first.** A new version waits until "Update now" is pressed, because
+  reloading in the middle of a practice session would lose it.
+- **GSAP loads after first paint.** Motion is decoration, so the first screen never
+  waits for it. Until it arrives things just appear. This removed about 27 KB (gzip)
+  from the first load.
+- **MiniSearch loads only inside the search worker,** and the palette's own code loads
+  when the browser is idle. Together with GSAP, first-load JavaScript went from about
+  126 KB to about 92 KB gzip, and React DOM is most of what remains.
+  `reports/bundle-sizes.md` has the full table.
+- **iPhone splash screens are light only.** Dark versions would double the 10 images
+  for a screen shown for a moment. They aren't precached, since iOS reads them once at
+  install time.
+- **Status bar style is `default`.** The alternative, `black-translucent`, uses white
+  text, which would vanish against the paper theme.
+- **Lighthouse has no PWA category any more** (removed in version 12), so the
+  "installable" check uses the browser's own `Page.getInstallabilityErrors` in a real
+  profile. It was run in Edge. **I could not test on a real Android phone or iPhone,**
+  so Add to Home Screen itself is checked only by those signals and the tags.
+- **Performance is measured with compression on.** `vite preview` sends files
+  uncompressed, which a real host would not, so `scripts/lib/static-server.mjs` gzips
+  them for Lighthouse. Vercel and GitHub Pages compress by default, though GitHub
+  Pages uses a shorter cache lifetime than this server does.

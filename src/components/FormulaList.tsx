@@ -2,7 +2,6 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, typ
 import { flushSync } from 'react-dom';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import type { Formula } from '../data/types';
-import { listReveal } from '../lib/motion';
 import { FormulaRow } from './FormulaRow';
 
 export type ListItem =
@@ -63,13 +62,6 @@ export function FormulaList({ items, scrollRef, showWhere, scrollToIndex, onTopI
     // Only when the target changes, not on every measured-size change.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scrollToIndex, items, offset]);
-
-  useEffect(() => {
-    const root = listRef.current;
-    if (root) listReveal([...root.querySelectorAll('.row')]);
-    // Once per list.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [items]);
 
   const virtualItems = virtualizer.getVirtualItems();
   const top = useMemo(() => {

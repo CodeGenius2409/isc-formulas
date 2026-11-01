@@ -48,7 +48,7 @@ export function ReviewQueue() {
           {!seen && (
             <>
               {' '}
-              <button type="button" className="underline" onClick={() => openWork('practice')}>
+              <button type="button" className="underline text-action" onClick={() => openWork('practice')}>
                 Start practising
               </button>
             </>

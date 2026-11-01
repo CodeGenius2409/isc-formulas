@@ -3,7 +3,7 @@ import { AlertTriangle, ArrowLeft, CircleCheck, Info } from 'lucide-react';
 import { canonicalId } from '../../data/aliases';
 import { findFormula } from '../../data/book';
 import { useAsync } from '../../lib/hooks';
-import { stepsReveal } from '../../lib/motion';
+import { stepsReveal, usingKeyboard } from '../../lib/motion';
 import { clearWorkFormula } from '../../lib/router';
 import { startPracticeOn } from '../../practice/session-link';
 import { unitLabel as displayUnit } from '../../solver/unit-label';
@@ -74,6 +74,8 @@ function Solver({ entry, initialUnknown }: { entry: ResolvedEntry; initialUnknow
 
   useEffect(() => {
     document.getElementById('work-panel')?.scrollTo({ top: 0 });
+    // Someone at the keyboard who just chose a formula is here to type its values.
+    if (usingKeyboard()) firstField.current?.focus();
   }, [entry.id]);
 
   useLayoutEffect(() => {
@@ -122,13 +124,15 @@ function Solver({ entry, initialUnknown }: { entry: ResolvedEntry; initialUnknow
                   type="button"
                   className="var-sym"
                   aria-pressed={isUnknown}
-                  aria-label={`Solve for ${v.name}`}
                   onClick={() => {
                     setUnknown(v.symbol);
                     setOutcome(null);
                   }}
                 >
-                  <MathTex latex={varTex(v)} />
+                  <span aria-hidden="true">
+                    <MathTex latex={varTex(v)} />
+                  </span>
+                  <span className="sr-only">Solve for {v.name}</span>
                 </button>
                 {isUnknown ? (
                   <span className="font-semibold text-ink-2" style={{ gridColumn: '2 / -1' }}>

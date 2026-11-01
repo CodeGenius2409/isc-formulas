@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { runProgram } from '../../src/java/interp';
+import { runProgram } from '../../src/java/trace';
 import { SAMPLES } from '../../src/java/samples';
 
 const wrap = (body: string) => `class T { public static void main(String[] args) { ${body} } }`;

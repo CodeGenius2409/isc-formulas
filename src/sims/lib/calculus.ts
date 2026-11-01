@@ -59,3 +59,10 @@ export function roots(f: (x: number) => number, a: number, b: number, samples = 
 export function intersections(f: (x: number) => number, g: (x: number) => number, a: number, b: number): number[] {
   return roots((x) => f(x) - g(x), a, b);
 }
+
+/** nCr, built up term by term so that it stays exact for the sizes used here. */
+export function binomialCoefficient(n: number, r: number): number {
+  let out = 1;
+  for (let i = 1; i <= r; i++) out = (out * (n - r + i)) / i;
+  return Math.round(out);
+}

@@ -6,8 +6,7 @@
 // the component's defaults (0.8 s and 100 px, which are far too slow and loud here).
 // Used once, on the Today page. Never in the formula-reading area.
 import { useLayoutEffect, useRef, type ReactNode } from 'react';
-import { gsap } from 'gsap';
-import { prefersReducedMotion } from '../lib/motion';
+import { motionEngine, prefersReducedMotion } from '../lib/motion';
 
 interface Props {
   children: ReactNode;
@@ -22,7 +21,8 @@ export function AnimatedContent({ children, className, distance = 8, duration = 
 
   useLayoutEffect(() => {
     const el = ref.current;
-    if (!el || prefersReducedMotion()) return undefined;
+    const gsap = motionEngine();
+    if (!gsap || !el || prefersReducedMotion()) return undefined;
     const ctx = gsap.context(() => {
       gsap.fromTo(el.children, { y: distance, opacity: 0 }, { y: 0, opacity: 1, duration, stagger, ease: 'expo.out', clearProps: 'opacity,transform' });
     }, el);

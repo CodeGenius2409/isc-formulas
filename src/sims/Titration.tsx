@@ -153,7 +153,7 @@ export function Titration() {
           {suitable.length > 1 ? ` Also suitable: ${suitable.filter((i) => i !== best).map((i) => i.name).join(', ')}.` : ''}
           {suitable.length === 0 ? ' No indicator changes sharply for this titration, because the jump is too small.' : ''}
         </p>
-        <div className="table-scroll mt-2">
+        <div className="table-scroll mt-2" tabIndex={0} role="region" aria-label="Indicators">
           <table className="trace-table" style={{ fontFamily: 'var(--font-body)' }}>
             <thead>
               <tr>
@@ -168,7 +168,7 @@ export function Titration() {
               {INDICATORS.map((i) => (
                 <tr key={i.name}>
                   <td style={{ textAlign: 'left' }}>
-                    <label className="flex items-center gap-2">
+                    <label className="check-row">
                       <input type="radio" name="indicator" checked={indicator === i} onChange={() => setChosen(i.name)} />
                       {i.name}
                     </label>

@@ -14,7 +14,7 @@ interface Props {
 /** A modal side or bottom sheet. Native <dialog> gives it focus trapping, Esc, and an inert page. */
 export function Sheet({ open, onClose, label, side = 'right', className = '', children }: Props) {
   const ref = useRef<HTMLDialogElement>(null);
-  const phone = useMediaQuery('(max-width: 767px)');
+  const phone = useMediaQuery('(max-width: 47.99em)');
 
   useEffect(() => {
     const dialog = ref.current;

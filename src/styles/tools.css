@@ -46,7 +46,7 @@
 
 /* On a narrow screen the result comes first. A lone plot also stays on screen, so
    moving a slider further down still shows what it does. */
-@container (max-width: 760px) {
+@container (max-width: 47.5em) {
   .tool-layout {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -199,7 +199,6 @@ input[type='range'] {
 
 .code-line[data-current='true'] {
   background: var(--mark);
-  box-shadow: inset 3px 0 0 var(--ink);
 }
 
 .code-line[data-current='true'] > span:first-child {
@@ -207,8 +206,14 @@ input[type='range'] {
   font-weight: 700;
 }
 
-.code-line[data-error='true'] {
-  box-shadow: inset 3px 0 0 var(--bad);
+.code-line[data-error='true'] > span:first-child {
+  color: var(--bad);
+  font-weight: 700;
+}
+
+.code-line[data-error='true'] > code {
+  text-decoration: underline wavy var(--bad);
+  text-underline-offset: 0.2em;
 }
 
 .code-edit {
@@ -330,6 +335,7 @@ input[type='range'] {
 
 .tracer-go {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.375rem;
 }
 
@@ -378,7 +384,7 @@ input[type='range'] {
   margin-top: 0.5rem;
 }
 
-@container (max-width: 760px) {
+@container (max-width: 47.5em) {
   .tracer-bar,
   .tracer-grid {
     grid-template-columns: minmax(0, 1fr);
@@ -437,12 +443,14 @@ input[type='range'] {
 
 .call-stack button[aria-pressed='true'] {
   background: var(--paper-3);
-  box-shadow: inset 3px 0 0 var(--ink);
   font-weight: 700;
 }
 
 @media (pointer: coarse) {
   .call-stack button {
+    min-height: 2.75rem;
+  }
+  .tracer-input textarea {
     min-height: 2.75rem;
   }
 }
@@ -480,4 +488,21 @@ input[type='range'] {
 .trace-table .trace-wait {
   color: var(--ink-2);
   text-align: left;
+}
+
+/* A checkbox or radio with its label. The whole row is the target. */
+.check-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2rem;
+}
+
+@media (pointer: coarse) {
+  .check-row {
+    min-height: 2.75rem;
+  }
+  .slider input[type='range'] {
+    height: 2.75rem;
+  }
 }

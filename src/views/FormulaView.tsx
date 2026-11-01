@@ -35,10 +35,10 @@ export default function FormulaView({ id }: { id: string }) {
   const saved = favourites.includes(f.id);
   const canSolve = solvable.has(f.id);
   return (
-    <div className="page" data-subject={f.subject}>
+    <div className="page" data-subject={f.subject} data-formula={f.id}>
       <div className="page-pad">
         <p className="text-ink-2 text-step--1">
-          <a href={href(`book/${f.subject}/${f.classLevel}/${f.unitIndex}`, { s: String(f.subtopicIndex) })}>
+          <a className="crumb-link" href={href(`book/${f.subject}/${f.classLevel}/${f.unitIndex}`, { s: String(f.subtopicIndex) })}>
             {getSubject(f.subject).label} {f.classLevel}, {unitTitle(f.unit)}, {f.subtopic}
           </a>
         </p>
@@ -46,7 +46,7 @@ export default function FormulaView({ id }: { id: string }) {
           <span className="num mr-2 text-step-0 font-normal text-ink-3">{f.number}</span>
           {f.name}
         </h1>
-        <div className="big-formula mt-3 math-host" tabIndex={0} aria-label="Formula">
+        <div className="big-formula mt-3 math-host" tabIndex={0} role="group" aria-label="Formula">
           <Math latex={f.latex} />
         </div>
         {f.note && <p className="mt-3 max-w-[65ch]">{f.note}</p>}

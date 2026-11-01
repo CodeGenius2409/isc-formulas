@@ -48,7 +48,7 @@ export default function CheckPane() {
           <button
             key={ex}
             type="button"
-            className="num underline"
+            className="num underline text-action"
             onClick={() => {
               setSource(ex);
               setResult(null);

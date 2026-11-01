@@ -38,12 +38,14 @@ export function WorkArea({ route, tab, closable }: Props) {
 
   return (
     <>
-      <div className="work-tabs" role="tablist" aria-label="Working area" ref={tabsRef} onKeyDown={onKeyDown}>
-        {TABS.map((t) => (
-          <button key={t.id} type="button" role="tab" id={`work-tab-${t.id}`} aria-selected={tab === t.id} aria-controls="work-panel" tabIndex={tab === t.id ? 0 : -1} className="work-tab" onClick={() => openWork(t.id)}>
-            {t.label}
-          </button>
-        ))}
+      <div className="work-tabs">
+        <div className="work-tablist" role="tablist" aria-label="Working area" ref={tabsRef} onKeyDown={onKeyDown}>
+          {TABS.map((t) => (
+            <button key={t.id} type="button" role="tab" id={`work-tab-${t.id}`} aria-selected={tab === t.id} aria-controls="work-panel" tabIndex={tab === t.id ? 0 : -1} className="work-tab" onClick={() => openWork(t.id)}>
+              {t.label}
+            </button>
+          ))}
+        </div>
         {closable && (
           <button type="button" className="work-close" aria-label="Close working area" onClick={closeWork}>
             <X size={20} aria-hidden />

@@ -80,7 +80,7 @@ function BlockEditor({ block, labels, depth, onChange }: EditorProps) {
   if (block.type === 'resistor') {
     const name = labels.get(block.id) ?? 'R';
     return (
-      <div className="flex items-center gap-2 py-1">
+      <div className="flex flex-wrap items-center gap-2 py-1">
         <span className="num w-8 flex-none font-bold">{name}</span>
         <NumberInput label={`${name} in ohms`} value={block.r} onCommit={(r) => onChange(block.id, (b) => ({ ...b, r }) as Block)} />
         <span className="text-ink-2">Ω</span>
@@ -307,7 +307,7 @@ export function Circuits() {
           )}
 
           {solution.ok && (
-            <div className="table-scroll mt-3" style={{ maxHeight: 'none' }}>
+            <div className="table-scroll mt-3" style={{ maxHeight: 'none' }} tabIndex={0} role="region" aria-label="Current, voltage and power in each part">
               <table className="trace-table">
                 <thead>
                   <tr>

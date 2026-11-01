@@ -268,3 +268,21 @@ mark {
   color: inherit;
   border-radius: 1px;
 }
+
+/* Text-sized actions inside a sentence. Still a comfortable target. */
+.text-action {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.5rem;
+  padding: 0 0.125rem;
+  margin-right: 0.25rem;
+}
+
+@media (pointer: coarse) {
+  .text-action {
+    min-height: 2.75rem;
+  }
+  .var-sym {
+    min-height: 2.75rem;
+  }
+}

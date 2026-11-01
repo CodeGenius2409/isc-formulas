@@ -95,7 +95,7 @@ export function Choice<T extends string>({ label, value, options, onChange }: { 
 
 export function Toggle({ label, checked, onChange }: { label: ReactNode; checked: boolean; onChange: (v: boolean) => void }) {
   return (
-    <label className="flex min-h-[2rem] items-center gap-2 font-semibold">
+    <label className="check-row font-semibold">
       <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} />
       {label}
     </label>

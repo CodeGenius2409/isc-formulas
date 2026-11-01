@@ -10,7 +10,7 @@
   max-width: 62rem;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 47.99em) {
   .page-pad {
     padding: 1rem 1rem 2rem;
   }
@@ -45,8 +45,10 @@
   text-decoration: none;
 }
 
-.running-head .crumbs a:hover {
-  text-decoration: underline;
+@media (hover: hover) {
+  .running-head .crumbs a:hover {
+    text-decoration: underline;
+  }
 }
 
 .running-head .here {
@@ -54,7 +56,7 @@
   font-weight: 600;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 47.99em) {
   .running-head {
     padding-left: 1rem;
     padding-right: 0.25rem;
@@ -65,7 +67,7 @@
   padding: 1.25rem 1.25rem 1rem;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 47.99em) {
   .unit-title {
     padding: 1rem 1rem 0.75rem;
   }
@@ -101,7 +103,7 @@
 
 /* On a phone the margin is narrow. The section head carries "2.1", so rows only
    need their last part, ".4". Print always has the room for the full number. */
-@media screen and (max-width: 767px) {
+@media screen and (max-width: 47.99em) {
   .page {
     --margin-col: 2.75rem;
   }
@@ -143,7 +145,7 @@
   column-gap: 0.5rem;
 }
 
-@container (min-width: 640px) {
+@container (min-width: 40em) {
   .row-main {
     grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr) auto;
     grid-template-areas:
@@ -175,6 +177,20 @@
   text-align: left;
   text-decoration: none;
   overflow-wrap: anywhere;
+}
+
+/* A taller hit area on touch, without making the rows any further apart. */
+@media (pointer: coarse) {
+  .row-name button {
+    display: block;
+    width: 100%;
+    position: relative;
+  }
+  .row-name button::after {
+    content: '';
+    position: absolute;
+    inset: -0.75rem 0;
+  }
 }
 
 .row-star {
@@ -253,8 +269,10 @@
     display: none;
   }
 
+  /* The actions column keeps one width, room for all four buttons, even in rows with
+     fewer. Otherwise the formula names beside it start at different places. */
   .row-main {
-    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-columns: minmax(0, 1fr) 8.375rem auto;
     grid-template-areas:
       'name acts star'
       'math math math'
@@ -263,6 +281,7 @@
 
   .row-acts {
     flex-wrap: nowrap;
+    justify-content: flex-end;
     margin: -0.3rem 0 -0.3rem 0;
   }
 
@@ -274,12 +293,29 @@
     border-radius: 3px;
   }
 
-  @container (min-width: 640px) {
+  @container (min-width: 40em) {
     .row-main {
-      grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr) auto auto;
+      grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr) 8.375rem auto;
       grid-template-areas:
         'math name acts star'
         'math note note note';
+    }
+  }
+
+  /* A very narrow window, or very large text, has no room for them beside the name. */
+  @container (max-width: 27.99em) {
+    .row-main {
+      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-areas:
+        'name star'
+        'math math'
+        'note note'
+        'acts acts';
+    }
+    .row-acts {
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      margin: 0.3rem 0 -0.25rem -0.5rem;
     }
   }
 }
@@ -335,7 +371,13 @@
   color: var(--ink-3);
 }
 
+.leaders .ltitle {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
 .leaders .lcount {
+  flex: none;
   color: var(--ink-3);
 }
 
@@ -399,4 +441,30 @@ kbd {
   border: 1px solid var(--rule-2);
   border-radius: 2px;
   padding: 0 0.3rem;
+}
+
+.unit-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem;
+}
+
+.unit-nav .btn {
+  min-width: 0;
+}
+
+.unit-nav .btn > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (pointer: coarse) {
+  .crumb-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    margin-block: -0.5rem;
+  }
 }

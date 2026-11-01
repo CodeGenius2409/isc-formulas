@@ -332,9 +332,15 @@ export function drawPlot(ctx: CanvasRenderingContext2D, width: number, height: n
       const width = ctx.measureText(m.label).width;
       const fitsRight = px + 8 + width <= v.right - 2;
       const fitsLeft = px - 8 - width >= v.left + 2;
-      ctx.textAlign = fitsRight && (!fitsLeft || px <= (v.left + v.right) / 2) ? 'left' : 'right';
       ctx.textBaseline = 'bottom';
-      ctx.fillText(m.label, px + (ctx.textAlign === 'right' ? -8 : 8), py - 6);
+      if (fitsRight || fitsLeft) {
+        ctx.textAlign = fitsRight && (!fitsLeft || px <= (v.left + v.right) / 2) ? 'left' : 'right';
+        ctx.fillText(m.label, px + (ctx.textAlign === 'right' ? -8 : 8), py - 6);
+      } else {
+        // Too long for either side on a narrow plot, so it sits centred above the point.
+        ctx.textAlign = 'left';
+        ctx.fillText(m.label, Math.max(v.left + 2, Math.min(px - width / 2, v.right - width - 2)), py - 8);
+      }
     }
   }
   ctx.restore();

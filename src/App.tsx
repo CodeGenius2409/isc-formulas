@@ -6,7 +6,8 @@ import { viewEnter } from './lib/motion';
 import { closeWork, useRoute, workState, type Route } from './lib/router';
 import { useStore } from './lib/store';
 import { lastReadStore } from './state/library';
-import { contentsSheetStore, closeContentsSheet, openPalette } from './state/ui';
+import { contentsSheetStore, closeContentsSheet, openPalette, paletteStore } from './state/ui';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { Sheet } from './components/Sheet';
 import { BookSheet } from './components/shell/BookSheet';
 import { Contents } from './components/shell/Contents';
@@ -14,7 +15,6 @@ import { Dock } from './components/shell/Dock';
 import { Rail } from './components/shell/Rail';
 import { Toast } from './components/shell/Toast';
 import { WorkArea } from './components/work/WorkArea';
-import { FindPalette } from './components/FindPalette';
 import { UpdatePrompt } from './components/UpdatePrompt';
 import Home from './views/Home';
 
@@ -26,6 +26,7 @@ const Settings = lazy(() => import('./views/Settings'));
 const ProgressView = lazy(() => import('./views/ProgressView'));
 const ToolsView = lazy(() => import('./views/ToolsView'));
 const SearchView = lazy(() => import('./views/SearchView'));
+const FindPalette = lazy(() => import('./components/FindPalette').then((m) => ({ default: m.FindPalette })));
 
 interface BookPlace {
   subject: SubjectId;
@@ -103,6 +104,9 @@ export function App() {
   const route = useRoute();
   const last = useStore(lastReadStore);
   const contentsOpen = useStore(contentsSheetStore);
+  const paletteOpen = useStore(paletteStore);
+  const paletteUsed = useRef(false);
+  paletteUsed.current ||= paletteOpen;
   const fallback = { subject: last?.subject ?? ('physics' as SubjectId), level: last?.classLevel ?? ('XI' as ClassLevel) };
   const place = bookPlace(route, fallback);
   const mainRef = useRef<HTMLElement>(null);
@@ -111,8 +115,8 @@ export function App() {
 
   // A simulator needs the room more than it needs the book beside it.
   const wideTool = route.path[0] === 'tools' && route.path[1] !== undefined;
-  const workBeside = useMediaQuery('(min-width: 1280px)') && !wideTool;
-  const contentsBeside = useMediaQuery('(min-width: 1024px)') && !wideTool;
+  const workBeside = useMediaQuery('(min-width: 80em)') && !wideTool;
+  const contentsBeside = useMediaQuery('(min-width: 64em)') && !wideTool;
   const workTab = workState(route).tab;
 
   // Keys typed into a form must stay in the form.
@@ -157,30 +161,42 @@ export function App() {
       </a>
       <Rail route={route} activeSubject={place.inBook ? place.subject : null} />
       {contentsBeside && (
-        <div className="toc-col">
+        <aside className="toc-col" aria-label="Book contents">
           <Contents subject={place.subject} level={place.level} unitIndex={place.unitIndex} subtopicIndex={place.subtopicIndex} />
-        </div>
+        </aside>
       )}
       <main id="main" ref={mainRef} tabIndex={-1}>
         <div ref={viewRef}>
-          <Suspense fallback={<p className="spinner-line">Opening</p>}>
-            <View route={route} place={place} scrollRef={mainRef} />
-          </Suspense>
+          <ErrorBoundary resetKey={pathKey}>
+            <Suspense fallback={<p className="spinner-line">Opening</p>}>
+              <View route={route} place={place} scrollRef={mainRef} />
+            </Suspense>
+          </ErrorBoundary>
         </div>
       </main>
       {workBeside && (
         <aside className="work" aria-label="Working area">
-          <WorkArea route={route} tab={workTab} />
+          <ErrorBoundary label="The working area" resetKey={workTab}>
+            <WorkArea route={route} tab={workTab} />
+          </ErrorBoundary>
         </aside>
       )}
       {!workBeside && (
         <Sheet open={route.work !== null} onClose={closeWork} label="Working area" className="work">
-          <WorkArea route={route} tab={workTab} closable />
+          <ErrorBoundary label="The working area" resetKey={workTab}>
+            <WorkArea route={route} tab={workTab} closable />
+          </ErrorBoundary>
         </Sheet>
       )}
       {!contentsBeside && contentsOpen && <BookSheet subject={place.subject} level={place.level} unitIndex={place.unitIndex} subtopicIndex={place.subtopicIndex} />}
       <Dock route={route} />
-      <FindPalette />
+      {paletteUsed.current && (
+        <ErrorBoundary label="Find">
+          <Suspense fallback={null}>
+            <FindPalette />
+          </Suspense>
+        </ErrorBoundary>
+      )}
       <Toast />
       <UpdatePrompt />
     </div>

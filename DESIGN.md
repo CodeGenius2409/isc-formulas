@@ -98,7 +98,6 @@ smaller.
 | Press feedback | 120 ms | `--ease-out` | CSS, `scale(0.97)` |
 | Hover, colour | 160 ms | `ease` | CSS |
 | View change | 200 ms | `expo.out` | GSAP, `viewEnter` |
-| List reveal | 180 ms, 12 ms stagger, first 10 rows only | `expo.out` | GSAP, `listReveal` |
 | Solver steps | 200 ms, 40 ms stagger | `expo.out` | GSAP, `stepsReveal` |
 | Sheet | 240 ms | `expo.out` | GSAP, `sheetEnter` |
 | Today page entrance | 220 ms, 30 ms stagger | `expo.out` | GSAP, `AnimatedContent` (once) |
