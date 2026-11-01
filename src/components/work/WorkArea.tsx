@@ -52,7 +52,7 @@ export function WorkArea({ route, tab, closable }: Props) {
       </div>
       <div className="work-body" role="tabpanel" id="work-panel" aria-labelledby={`work-tab-${tab}`}>
         <Suspense fallback={<p className="text-ink-3">Opening</p>}>
-          {tab === 'solve' && <SolvePane formulaId={route.workFormula} />}
+          {tab === 'solve' && <SolvePane formulaId={route.workFormula} initialUnknown={route.query.get('find')} />}
           {tab === 'check' && <CheckPane />}
           {tab === 'practice' && <PracticePane formulaId={route.workFormula} />}
         </Suspense>

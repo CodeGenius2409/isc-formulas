@@ -93,3 +93,14 @@ Work is on a `rebuild` branch. `master` still holds your original files.
 - **Logs of concentrations.** `pH = −log[H⁺]` takes the value in mol/L as a pure number.
   These inputs are labelled that way, since a logarithm of a dimensioned quantity is
   not strictly meaningful.
+
+## Search
+
+- **MiniSearch in a web worker.** The main thread sends documents to the worker rather
+  than the worker importing the data, because importing would bundle the 1.4 MB of
+  formulas a second time. The index builds the first time find opens. If a worker
+  cannot start, the same engine runs on the main thread.
+- **Find opens with no animation.** It is used constantly from the keyboard, and Emil
+  Kowalski's guidance is explicit that such things should not animate.
+- **Quantity search counts constants as known.** "have u, theta want R" is an exact
+  match for the range formula even though it also uses g.

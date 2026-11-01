@@ -82,7 +82,7 @@ function View({ route, place, scrollRef }: { route: Route; place: BookPlace; scr
     case 'tools':
       return <ToolsView toolId={a ?? null} />;
     case 'find':
-      return <SearchView />;
+      return <SearchView scrollRef={scrollRef} />;
     default:
       return <NotFound />;
   }

@@ -2,7 +2,11 @@
 // chunk, so opening Physics XI never pays for Mathematics XII.
 import manifestJson from './generated/manifest.json';
 import { canonicalId } from './aliases';
-import type { Chunk, ChunkItem, ClassLevel, Formula, FormulaEntry, Manifest, ManifestClass, ManifestSubject, SharedEntry, SubjectId } from './types';
+import { resolveChunk, splitUnitName, type ResolvedUnit } from './resolve';
+import type { Chunk, ClassLevel, Formula, Manifest, ManifestClass, ManifestSubject, SharedEntry, SubjectId } from './types';
+
+export { splitUnitName };
+export type { ResolvedSubtopic, ResolvedUnit } from './resolve';
 
 export const manifest = manifestJson as Manifest;
 
@@ -14,12 +18,6 @@ export function getSubject(id: SubjectId): ManifestSubject {
 
 export function getClass(subject: SubjectId, level: ClassLevel): ManifestClass | undefined {
   return getSubject(subject).classes.find((c) => c.level === level);
-}
-
-/** "3. Laws of Motion" splits into { number: "3", title: "Laws of Motion" }. */
-export function splitUnitName(name: string): { number: string; title: string } {
-  const match = /^(\d+)\.\s*(.*)$/.exec(name);
-  return match ? { number: match[1], title: match[2] } : { number: '', title: name };
 }
 
 /** Drops the syllabus remark from a title. The status label says it instead. */
@@ -46,54 +44,6 @@ export function loadChunk(subject: SubjectId, level: ClassLevel): Promise<Chunk>
   chunkCache.set(key, promise);
   promise.catch(() => chunkCache.delete(key));
   return promise;
-}
-
-function resolveItem(item: ChunkItem, shared: Record<string, SharedEntry>): { entry: FormulaEntry; shared?: SharedEntry } {
-  if ('ref' in item) return { entry: shared[item.ref], shared: shared[item.ref] };
-  return { entry: item };
-}
-
-export interface ResolvedSubtopic {
-  name: string;
-  index: number;
-  formulas: Formula[];
-}
-
-export interface ResolvedUnit {
-  name: string;
-  index: number;
-  number: string;
-  subtopics: ResolvedSubtopic[];
-}
-
-/** Numbers every formula by unit, sub-topic and position, e.g. "2.3.14". */
-export function resolveChunk(chunk: Chunk, shared: Record<string, SharedEntry>): ResolvedUnit[] {
-  return chunk.units.map((unit, unitIndex) => {
-    const unitNumber = splitUnitName(unit.name).number || String(unitIndex + 1);
-    return {
-      name: unit.name,
-      index: unitIndex,
-      number: unitNumber,
-      subtopics: unit.subtopics.map((sub, subtopicIndex) => ({
-        name: sub.name,
-        index: subtopicIndex,
-        formulas: sub.items.map((item, itemIndex) => {
-          const { entry, shared: sharedEntry } = resolveItem(item, shared);
-          return {
-            ...entry,
-            subject: chunk.subject,
-            classLevel: chunk.classLevel,
-            unit: unit.name,
-            unitIndex,
-            subtopic: sub.name,
-            subtopicIndex,
-            number: `${unitNumber}.${subtopicIndex + 1}.${itemIndex + 1}`,
-            shared: sharedEntry,
-          };
-        }),
-      })),
-    };
-  });
 }
 
 const resolvedCache = new Map<string, Promise<ResolvedUnit[]>>();
@@ -135,13 +85,15 @@ export async function findFormula(rawId: string): Promise<Formula | null> {
   return null;
 }
 
+let allPromise: Promise<Formula[]> | null = null;
+
 /** Every formula in the book, once each. Used by search and practice. */
-export async function loadAllFormulas(): Promise<Formula[]> {
-  const seen = new Set<string>();
-  const out: Formula[] = [];
-  for (const subject of manifest.subjects) {
-    for (const cls of subject.classes) {
-      const units = await loadUnits(subject.id, cls.level);
+export function loadAllFormulas(): Promise<Formula[]> {
+  allPromise ??= (async () => {
+    const lists = await Promise.all(manifest.subjects.flatMap((subject) => subject.classes.map((cls) => loadUnits(subject.id, cls.level))));
+    const seen = new Set<string>();
+    const out: Formula[] = [];
+    for (const units of lists) {
       for (const unit of units) {
         for (const sub of unit.subtopics) {
           for (const f of sub.formulas) {
@@ -153,6 +105,10 @@ export async function loadAllFormulas(): Promise<Formula[]> {
         }
       }
     }
-  }
-  return out;
+    return out;
+  })();
+  allPromise.catch(() => {
+    allPromise = null;
+  });
+  return allPromise;
 }

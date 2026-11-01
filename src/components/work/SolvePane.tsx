@@ -24,12 +24,12 @@ function initialInputs(entry: ResolvedEntry): Record<string, SolveInput> {
   return Object.fromEntries(entry.vars.map((v) => [v.symbol, { raw: v.value !== undefined ? String(v.value) : '', unit: v.show && v.show !== v.unit ? v.show : v.unit }]));
 }
 
-export default function SolvePane({ formulaId }: { formulaId: string | null }) {
+export default function SolvePane({ formulaId, initialUnknown }: { formulaId: string | null; initialUnknown?: string | null }) {
   if (!formulaId) return <FormulaPicker />;
   const id = canonicalId(formulaId);
   const entry = getEntry(id);
   if (!entry) return <NotSolvable id={id} />;
-  return <Solver key={id} entry={entry} />;
+  return <Solver key={`${id}-${initialUnknown ?? ''}`} entry={entry} initialUnknown={initialUnknown} />;
 }
 
 function NotSolvable({ id }: { id: string }) {
@@ -64,10 +64,10 @@ function NotSolvable({ id }: { id: string }) {
   );
 }
 
-function Solver({ entry }: { entry: ResolvedEntry }) {
+function Solver({ entry, initialUnknown }: { entry: ResolvedEntry; initialUnknown?: string | null }) {
   const state = useAsync(() => findFormula(entry.id), entry.id);
   const formula = state.status === 'ready' ? state.value : null;
-  const [unknown, setUnknown] = useState(() => defaultUnknown(entry));
+  const [unknown, setUnknown] = useState(() => (initialUnknown && entry.vars.some((v) => v.symbol === initialUnknown) ? initialUnknown : defaultUnknown(entry)));
   const [inputs, setInputs] = useState(() => initialInputs(entry));
   const [outcome, setOutcome] = useState<SolveOutcome | null>(null);
   const stepsRef = useRef<HTMLOListElement>(null);
