@@ -109,8 +109,10 @@ export function App() {
   const viewRef = useRef<HTMLDivElement>(null);
   const pathKey = route.path.join('/');
 
-  const workBeside = useMediaQuery('(min-width: 1280px)');
-  const contentsBeside = useMediaQuery('(min-width: 1024px)');
+  // A simulator needs the room more than it needs the book beside it.
+  const wideTool = route.path[0] === 'tools' && route.path[1] !== undefined;
+  const workBeside = useMediaQuery('(min-width: 1280px)') && !wideTool;
+  const contentsBeside = useMediaQuery('(min-width: 1024px)') && !wideTool;
   const workTab = workState(route).tab;
 
   // Keys typed into a form must stay in the form.
@@ -149,7 +151,7 @@ export function App() {
   }, [pathKey]);
 
   return (
-    <div className="shell">
+    <div className="shell" data-wide={wideTool || undefined}>
       <a href="#main" className="sr-only-focusable btn btn-solid" style={{ position: 'fixed', zIndex: 50, top: 8, left: 8 }} onClick={(e) => { e.preventDefault(); mainRef.current?.focus(); }}>
         Skip to content
       </a>

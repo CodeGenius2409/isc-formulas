@@ -35,6 +35,15 @@
   }
 }
 
+@media (min-width: 768px) {
+  .shell[data-wide='true'] {
+    grid-template-columns: var(--rail) minmax(0, 1fr);
+  }
+  .shell[data-wide='true'] .page-pad {
+    max-width: 92rem;
+  }
+}
+
 @media (max-width: 767px) {
   .shell {
     grid-template-columns: minmax(0, 1fr);

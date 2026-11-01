@@ -121,3 +121,43 @@ Work is on a `rebuild` branch. `master` still holds your original files.
   unit is part of the question. A wrong kind is marked wrong with an explanation.
 - **The working area keeps its tab, and any practice session, while you move around
   the book.**
+
+## Simulators
+
+- **The old app has 41 simulators, not 44.** I counted the `sim*` functions in
+  `legacy/`. There are 41, plus one alias (`phscale`, which opened the pH tool). The
+  number 44 did not reproduce.
+- **Merged, because they did the same job:**
+  - `projectile2` into Projectile, whose comparison feature replaces it.
+  - `truth` and `truthtable` into Logic gates and truth tables.
+  - `vector` and `vectoradd` into Vectors.
+  - `ohms` into the DC circuit builder, since one resistor and one cell is Ohm's law.
+
+  LCR stayed separate, because AC behaviour is a different lesson from DC circuits. Old
+  links still work: `src/sims/registry.ts` maps each old id to its new home.
+- **Added:** DC circuit builder, Titration curves, Graph plotter and Java program
+  tracer. Projectile was rebuilt with RK4 air drag and comparison. Those merges and
+  additions happen to bring the total back to 41.
+- **Simulator pages hide the contents and the working area on desktop.** A plot beside
+  its controls is worth more than the book beside it, and the rail is still there.
+- **On a phone the result comes above the controls,** and a lone plot stays on screen
+  while you scroll, so moving a slider shows what it does.
+
+### Java tracer
+
+- **It runs the whole program first and records it,** so Back works the same as Step,
+  and a program using `Math.random` shows the same numbers when you step back.
+- **Limits:** 500,000 steps before it reports a likely infinite loop, the first 20,000
+  of those can be stepped through, and 5,000 nested calls before `StackOverflowError`.
+  Method calls run on an explicit stack, so deep recursion cannot crash the page.
+- **Type errors appear when the line is reached,** not before the program starts. A
+  real compiler would reject `int x = 3.5;` even on a line that never runs. The message
+  uses javac's wording, but a mistake on an unreached line goes unnoticed here. This is
+  the biggest difference from running `javac`.
+- **Outside the subset,** each with a message naming the construct: inheritance,
+  interfaces, abstract classes, enums, generics and collections such as `ArrayList`,
+  try/catch, lambdas and nested classes. **The ISC Class XII syllabus does cover
+  inheritance,** though the brief's subset did not ask for it. Tell me if you want it
+  added.
+- **Your own program is kept.** Typing into a sample turns it into "My program", which
+  is saved in this browser. Picking a sample never overwrites it.
