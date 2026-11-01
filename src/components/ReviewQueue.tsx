@@ -43,17 +43,16 @@ export function ReviewQueue() {
           </button>
         </>
       ) : (
-        <p className="empty">
-          {seen ? `Nothing due today. ${seen} ${seen === 1 ? 'formula is' : 'formulas are'} scheduled for later.` : 'Nothing to review yet. Practise any formula and it joins this queue, returning just before you would forget it.'}
+        <>
+          <p className="empty">
+            {seen ? `Nothing due today. ${seen} ${seen === 1 ? 'formula is' : 'formulas are'} scheduled for later.` : 'Nothing to review yet. Practise any formula and it joins this queue, returning just before you would forget it.'}
+          </p>
           {!seen && (
-            <>
-              {' '}
-              <button type="button" className="underline text-action" onClick={() => openWork('practice')}>
-                Start practising
-              </button>
-            </>
+            <button type="button" className="btn btn-line mt-2" onClick={() => openWork('practice')}>
+              Start practising
+            </button>
           )}
-        </p>
+        </>
       )}
     </section>
   );

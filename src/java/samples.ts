@@ -259,6 +259,29 @@ class SumOfDigits {
     expected: 'The Quick Brown Fox\n',
   },
   {
+    id: 'word-count',
+    title: 'Longest word, with StringTokenizer',
+    topic: 'String handling',
+    code: `import java.util.StringTokenizer;
+
+class LongestWord {
+    public static void main(String[] args) {
+        String line = "ISC papers love string handling";
+        StringTokenizer st = new StringTokenizer(line);
+        int words = st.countTokens();
+        String longest = "";
+        while (st.hasMoreTokens()) {
+            String w = st.nextToken();
+            if (w.length() > longest.length()) {
+                longest = w;
+            }
+        }
+        System.out.println(words + " words, longest: " + longest);
+    }
+}`,
+    expected: '5 words, longest: handling\n',
+  },
+  {
     id: 'bubble-sort',
     title: 'Bubble sort',
     topic: 'Arrays',

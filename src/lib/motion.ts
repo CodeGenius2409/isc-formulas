@@ -1,5 +1,5 @@
-// Motion rules live here (see DESIGN.md). GSAP drives view changes, sheets and
-// solver steps. Press and hover feedback are CSS transitions in the stylesheets.
+// Motion rules live here (see DESIGN.md). GSAP drives view changes, list reveals
+// and solver steps. Press and hover feedback are CSS transitions in the stylesheets.
 //
 //  - Under 250 ms, and ease-out on entry, so the interface answers immediately.
 //  - Nothing animates after a keyboard action, since those repeat hundreds of times.
@@ -46,6 +46,12 @@ function shouldAnimate(): boolean {
 export function viewEnter(el: Element | null): void {
   if (!gsap || !el || !shouldAnimate()) return;
   gsap.fromTo(el, { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.2, ease: EASE, clearProps: 'opacity,transform' });
+}
+
+/** The first rows of a list arriving. Only rows on screen, and only briefly. */
+export function listReveal(rows: Element[]): void {
+  if (!gsap || !rows.length || !shouldAnimate()) return;
+  gsap.fromTo(rows.slice(0, 10), { opacity: 0, y: 4 }, { opacity: 1, y: 0, duration: 0.18, stagger: 0.012, ease: EASE, clearProps: 'opacity,transform' });
 }
 
 /** Solver steps appear in order, so the working reads top to bottom. */

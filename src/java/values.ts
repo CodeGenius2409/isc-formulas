@@ -13,7 +13,7 @@ export type JValue =
   | { t: 'null' }
   | { t: 'array'; elem: TypeRef; items: JValue[]; id: number }
   | { t: 'object'; cls: string; fields: Map<string, Slot>; id: number }
-  | { t: 'native'; kind: string; id: number; state: { text?: string } }
+  | { t: 'native'; kind: string; id: number; state: { text?: string; tokens?: string[]; next?: number } }
   | { t: 'void' };
 
 /** A variable or field: its declared type, and its current value. */
@@ -46,13 +46,15 @@ export function formatDouble(d: number): string {
     const s = String(d);
     return s.includes('.') ? s : `${s}.0`;
   }
-  const [mantissa, exponent] = d.toExponential().split('e');
-  return `${mantissa.includes('.') ? mantissa : `${mantissa}.0`}E${Number(exponent)}`;
+  let [mantissa, exponent] = d.toExponential().split('e');
+  // Java always shows two digits, and picks the closest pair: 5e-324 is 4.9E-324.
+  if (!mantissa.includes('.')) [mantissa, exponent] = d.toExponential(1).split('e');
+  return `${mantissa}E${Number(exponent)}`;
 }
 
 export function formatFloat(f: number): string {
   if (!Number.isFinite(f) || f === 0) return formatDouble(f);
-  for (let p = 1; p <= 9; p++) {
+  for (let p = 2; p <= 9; p++) {
     const candidate = Number(f.toPrecision(p));
     if (Math.fround(candidate) === f) return formatDouble(candidate);
   }
@@ -324,12 +326,20 @@ export function castTo(v: JValue, type: TypeRef, line: number): JValue {
       return { t: 'char', v: trunc() & 0xffff };
     case 'long':
       if (v.t === 'long') return v;
-      return { t: 'long', v: Number.isNaN(n) ? 0n : !Number.isFinite(n) ? (n > 0 ? 9223372036854775807n : -9223372036854775808n) : BigInt.asIntN(64, BigInt(Math.trunc(n))) };
+      return { t: 'long', v: doubleToLong(n) };
     case 'float':
       return { t: 'float', v: Math.fround(n) };
     default:
       return { t: 'double', v: n };
   }
+}
+
+/** Java's conversion to long: NaN is 0, and values out of range stop at the limits. */
+export function doubleToLong(n: number): bigint {
+  if (Number.isNaN(n)) return 0n;
+  if (n >= 9223372036854775807) return 9223372036854775807n;
+  if (n <= -9223372036854775808) return -9223372036854775808n;
+  return BigInt(Math.trunc(n));
 }
 
 export function isPrimitiveName(name: string): boolean {

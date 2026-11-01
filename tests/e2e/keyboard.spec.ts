@@ -106,6 +106,7 @@ for (const [label, viewport] of [
 
 test('skip link and Escape behave', async ({ page }) => {
   await page.goto('/');
+  await expect(page.locator('main h1')).toBeVisible();
   await page.keyboard.press('Tab');
   await expect(page.getByRole('link', { name: 'Skip to content' })).toBeFocused();
   await page.keyboard.press('Enter');

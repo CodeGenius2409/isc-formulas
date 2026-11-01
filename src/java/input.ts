@@ -23,19 +23,17 @@ export class ProgramInput {
 
   nextLine(line: number): string {
     const s = this.state;
-    if (s.pos > s.text.length || (s.pos === s.text.length && !s.text.endsWith('\n'))) {
+    if (s.pos >= s.text.length) {
       throw runtimeError('java.util.NoSuchElementException: the program asked for another line, but the Input box has run out.', line);
     }
     const end = s.text.indexOf('\n', s.pos);
     const out = end < 0 ? s.text.slice(s.pos) : s.text.slice(s.pos, end);
-    s.pos = end < 0 ? s.text.length + 1 : end + 1;
+    s.pos = end < 0 ? s.text.length : end + 1;
     return out.replace(/\r$/, '');
   }
 
   readLine(line: number): JValue {
-    const s = this.state;
-    if (s.pos > s.text.length || (s.pos === s.text.length && !s.text.endsWith('\n'))) return NULL;
-    return str(this.nextLine(line));
+    return this.state.pos >= this.state.text.length ? NULL : str(this.nextLine(line));
   }
 
   scanner(name: string, line: number): JValue {

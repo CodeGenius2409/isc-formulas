@@ -2,6 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, typ
 import { flushSync } from 'react-dom';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import type { Formula } from '../data/types';
+import { listReveal } from '../lib/motion';
 import { FormulaRow } from './FormulaRow';
 
 export type ListItem =
@@ -40,6 +41,13 @@ export function FormulaList({ items, scrollRef, showWhere, scrollToIndex, onTopI
       setOffset(list - scroller + scrollRef.current.scrollTop);
     }
   }, [scrollRef, items]);
+
+  useEffect(() => {
+    const root = listRef.current;
+    if (root) listReveal([...root.querySelectorAll('.row')]);
+    // Once per list.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [items]);
 
   // A virtual list holds only what is on screen, but a print needs every row.
   useEffect(() => {

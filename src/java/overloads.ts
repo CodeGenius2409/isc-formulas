@@ -9,13 +9,15 @@ function argFit(arg: JValue, type: TypeRef): number {
     if (type.name === 'boolean') return arg.t === 'boolean' ? 3 : -1;
     if (!isNumeric(arg)) return -1;
     if (arg.t === type.name) return 3;
+    // Widening. A char sits level with a short, but neither widens to the other.
+    if (type.name === 'char' || (arg.t === 'char' && type.name === 'short')) return -1;
     const order = ['byte', 'short', 'int', 'long', 'float', 'double'];
-    const from = arg.t === 'char' ? order.indexOf('int') : order.indexOf(arg.t);
+    const from = order.indexOf(arg.t === 'char' ? 'short' : arg.t);
     const to = order.indexOf(type.name);
-    if (type.name === 'char') return -1;
-    return to > from ? 2 : -1;
+    // The closer type wins, as javac picks the most specific overload.
+    return to > from ? 2 - (to - from) * 0.1 : -1;
   }
-  if (type.name === 'Object') return 1;
+  if (type.name === 'Object') return 0.5;
   if (arg.t === 'null') return 1;
   if (type.name === 'String') return arg.t === 'String' ? 3 : -1;
   if (arg.t === 'object') return arg.cls === type.name ? 3 : -1;

@@ -333,14 +333,23 @@ export function drawPlot(ctx: CanvasRenderingContext2D, width: number, height: n
       const fitsRight = px + 8 + width <= v.right - 2;
       const fitsLeft = px - 8 - width >= v.left + 2;
       ctx.textBaseline = 'bottom';
+      let labelX: number;
+      let labelY = py - 6;
       if (fitsRight || fitsLeft) {
         ctx.textAlign = fitsRight && (!fitsLeft || px <= (v.left + v.right) / 2) ? 'left' : 'right';
-        ctx.fillText(m.label, px + (ctx.textAlign === 'right' ? -8 : 8), py - 6);
+        labelX = px + (ctx.textAlign === 'right' ? -8 : 8);
       } else {
         // Too long for either side on a narrow plot, so it sits centred above the point.
         ctx.textAlign = 'left';
-        ctx.fillText(m.label, Math.max(v.left + 2, Math.min(px - width / 2, v.right - width - 2)), py - 8);
+        labelX = Math.max(v.left + 2, Math.min(px - width / 2, v.right - width - 2));
+        labelY = py - 8;
       }
+      // A halo keeps the label readable where a curve runs behind it.
+      ctx.strokeStyle = token('paper');
+      ctx.lineWidth = 3;
+      ctx.lineJoin = 'round';
+      ctx.strokeText(m.label, labelX, labelY);
+      ctx.fillText(m.label, labelX, labelY);
     }
   }
   ctx.restore();

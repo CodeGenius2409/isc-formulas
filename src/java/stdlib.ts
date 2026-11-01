@@ -1,6 +1,6 @@
 // The parts of the Java library used at ISC level.
 import { arrayToString } from './stdlib-format';
-import { asNumber, bool, chr, dbl, describeType, formatDouble, int, isNumeric, NULL, runtimeError, str, toJavaString, VOID, type JValue } from './values';
+import { asNumber, bool, chr, dbl, describeType, doubleToLong, formatDouble, int, isNumeric, NULL, runtimeError, str, toJavaString, VOID, type JValue } from './values';
 export { formatPrintf } from './stdlib-format';
 
 const NOT_SUPPORTED = (what: string, line: number) => runtimeError(`${what} is not supported in this tracer.`, line);
@@ -68,7 +68,7 @@ export function callMath(name: string, args: JValue[], line: number): JValue {
       one();
       // Java rounds halves up, towards positive infinity, and so does Math.round.
       if (args[0].t === 'float') return int(Math.round(n(0)));
-      return { t: 'long', v: Number.isNaN(n(0)) ? 0n : BigInt.asIntN(64, BigInt(Number.isFinite(n(0)) ? Math.round(n(0)) : n(0) > 0 ? 9223372036854775807n : -9223372036854775808n)) };
+      return { t: 'long', v: doubleToLong(Math.round(n(0))) };
     case 'random':
       argCount('Math.random', args, 0, line);
       return dbl(Math.random());
@@ -327,8 +327,8 @@ export function callString(self: string, name: string, args: JValue[], line: num
       return str(self.replace(new RegExp(s(0)), s(1)));
     case 'split': {
       const parts = self.split(new RegExp(s(0)));
-      // Java drops empty strings from the end of the result.
-      while (parts.length > 1 && parts[parts.length - 1] === '') parts.pop();
+      // Java drops empty strings from the end of the result, unless nothing matched.
+      if (parts.length > 1) while (parts.length && parts[parts.length - 1] === '') parts.pop();
       return { t: 'array', elem: { name: 'String', dims: 0 }, items: parts.map(str), id: nextId() };
     }
     case 'toCharArray':
@@ -339,7 +339,6 @@ export function callString(self: string, name: string, args: JValue[], line: num
       return int(h);
     }
     case 'toString':
-    case 'intern':
       return str(self);
     default:
       throw NOT_SUPPORTED(`String.${name}`, line);
@@ -397,6 +396,38 @@ export function callBuffer(self: Extract<JValue, { t: 'native' }>, name: string,
       return callString(text, name, args, line);
     default:
       throw NOT_SUPPORTED(`${self.kind}.${name}`, line);
+  }
+}
+
+/** Splits on any of the delimiter characters, and never returns an empty token. */
+export function tokenize(text: string, delimiters = ' \t\n\r\f'): string[] {
+  const tokens: string[] = [];
+  let current = '';
+  for (const c of text) {
+    if (delimiters.includes(c)) {
+      if (current) tokens.push(current);
+      current = '';
+    } else current += c;
+  }
+  if (current) tokens.push(current);
+  return tokens;
+}
+
+export function callTokenizer(self: Extract<JValue, { t: 'native' }>, name: string, line: number): JValue {
+  const tokens = self.state.tokens ?? [];
+  const next = self.state.next ?? 0;
+  switch (name) {
+    case 'hasMoreTokens':
+    case 'hasMoreElements':
+      return bool(next < tokens.length);
+    case 'countTokens':
+      return int(tokens.length - next);
+    case 'nextToken':
+      if (next >= tokens.length) throw runtimeError('java.util.NoSuchElementException: there are no more tokens.', line);
+      self.state.next = next + 1;
+      return str(tokens[next]);
+    default:
+      throw NOT_SUPPORTED(`StringTokenizer.${name}`, line);
   }
 }
 

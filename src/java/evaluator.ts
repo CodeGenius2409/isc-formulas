@@ -6,14 +6,20 @@ import { ProgramInput } from './input';
 import { JavaError } from './lexer';
 import { bestOverload } from './overloads';
 import { MAX_ARRAY, MAX_OUTPUT, UNSET, type Frame, type Gen } from './runtime';
-import { callBuffer, callString, nextId, staticField } from './stdlib';
+import { conditionalType, isConstant, type TypeScope } from './static-types';
+import { callBuffer, callString, callTokenizer, nextId, staticField, tokenize } from './stdlib';
 import { arithmetic, assignConvert, bitwise, bool, castTo, compare, dbl, defaultValue, describeType, int, isNumeric, isPrimitiveName, javaEquals, NULL, runtimeError, str, toJavaString, typeName, VOID, type JValue, type Slot } from './values';
+
+/** These return the same object when nothing changed, which == can tell apart. */
+const SAME_WHEN_UNCHANGED = new Set(['toString', 'trim', 'strip', 'substring', 'concat', 'replace', 'toUpperCase', 'toLowerCase']);
 
 export abstract class Evaluator {
   protected classes = new Map<string, ClassDecl>();
   protected statics = new Map<string, Map<string, Slot>>();
   protected frames: Frame[] = [];
   protected input: ProgramInput;
+  /** String literals with the same text are one object, so "a" == "a" is true. */
+  private internedStrings = new Map<string, JValue>();
   output = '';
 
   constructor(
@@ -32,6 +38,32 @@ export abstract class Evaluator {
 
   get frameList(): readonly Frame[] {
     return this.frames;
+  }
+
+  protected interned(text: string): JValue {
+    let value = this.internedStrings.get(text);
+    if (!value) {
+      value = str(text);
+      this.internedStrings.set(text, value);
+    }
+    return value;
+  }
+
+  /** Java calls an object's toString wherever it needs text. */
+  protected *textOf(v: JValue, line: number): Gen<string> {
+    const method = v.t === 'object' ? this.classes.get(v.cls)?.methods.find((m) => m.name === 'toString' && !m.params.length) : undefined;
+    return toJavaString(method ? yield* this.invoke(method, [], v as Extract<JValue, { t: 'object' }>, line) : v);
+  }
+
+  /** The same for values going to the library, which can't call back into the program. */
+  protected *withText(args: JValue[], line: number, intoArrays = false): Gen<JValue[]> {
+    const out: JValue[] = [];
+    for (const v of args) {
+      if (v.t === 'object') out.push(str(yield* this.textOf(v, line)));
+      else if (intoArrays && v.t === 'array') out.push({ ...v, items: yield* this.withText(v.items, line, true) });
+      else out.push(v);
+    }
+    return out;
   }
 
   print(text: string, line: number): void {
@@ -124,7 +156,7 @@ export abstract class Evaluator {
     switch (e.k) {
       case 'lit':
         if (e.t === 'null') return NULL;
-        if (e.t === 'String') return { t: 'String', v: e.v as string };
+        if (e.t === 'String') return this.interned(e.v as string);
         if (e.t === 'boolean') return bool(e.v as boolean);
         if (e.t === 'long') return { t: 'long', v: e.v as bigint };
         return { t: e.t, v: e.v as number };
@@ -186,8 +218,12 @@ export abstract class Evaluator {
         return yield* this.evalAssign(e, frame);
       case 'ternary': {
         const c = this.truth(yield* this.eval(e.cond, frame), e.line);
-        const a = yield* this.eval(c ? e.a : e.b, frame);
-        return a;
+        const taken = c ? e.a : e.b;
+        const value = yield* this.eval(taken, frame);
+        if (!isNumeric(value)) return value;
+        const scope: TypeScope = { lookup: (name) => this.lookup(name, frame), cls: frame.cls, classes: this.classes };
+        const type = conditionalType(value.t, taken, c ? e.b : e.a, scope);
+        return type && type !== value.t ? castTo(value, { name: type, dims: 0 }, e.line) : value;
       }
       case 'cast':
         return castTo(yield* this.eval(e.expr, frame), e.type, e.line);
@@ -205,6 +241,10 @@ export abstract class Evaluator {
     }
     const a = yield* this.eval(e.a, frame);
     const b = yield* this.eval(e.b, frame);
+    if (e.op === '+' && (a.t === 'String' || b.t === 'String')) {
+      const text = (yield* this.textOf(a, e.line)) + (yield* this.textOf(b, e.line));
+      return isConstant(e) ? this.interned(text) : str(text);
+    }
     return this.binary(e.op, a, b, e.line);
   }
 
@@ -243,7 +283,7 @@ export abstract class Evaluator {
     if (before === UNSET) throw runtimeError('This variable might not have been initialized.', e.line);
     const right = yield* this.eval(e.value, frame);
     const op = e.op.slice(0, -1);
-    const combined = this.binary(op, before, right, e.line);
+    const combined = op === '+' && (before.t === 'String' || right.t === 'String') ? str((yield* this.textOf(before, e.line)) + (yield* this.textOf(right, e.line))) : this.binary(op, before, right, e.line);
     // Compound assignment casts back to the variable's type, as Java does.
     const value = lv.type.dims === 0 && isPrimitiveName(lv.type.name) ? castTo(combined, lv.type, e.line) : assignConvert(combined, lv.type, e.line);
     lv.set(value);
@@ -290,7 +330,7 @@ export abstract class Evaluator {
   protected *evalCall(e: Extract<Expr, { k: 'call' }>, frame: Frame): Gen<JValue> {
     // System.out.println and friends
     if (e.target?.k === 'field' && e.target.target.k === 'name' && e.target.target.name === 'System' && (e.target.name === 'out' || e.target.name === 'err') && !this.lookup('System', frame)) {
-      const args = yield* this.evalArgs(e.args, frame);
+      const args = yield* this.withText(yield* this.evalArgs(e.args, frame), e.line);
       return systemOut(e.name, args, e.line, (text, line) => this.print(text, line));
     }
     if (e.target === null) {
@@ -310,6 +350,9 @@ export abstract class Evaluator {
         if (!method.isStatic) throw runtimeError(`${e.name} is not static, so it must be called on an object of ${clsName}.`, e.line);
         return yield* this.invoke(method, args, null, e.line);
       }
+      if (clsName === 'String' || (clsName === 'Arrays' && /toString$/i.test(e.name))) {
+        return callBuiltin(clsName, e.name, yield* this.withText(args, e.line, clsName === 'Arrays'), e.line);
+      }
       return callBuiltin(clsName, e.name, args, e.line);
     }
     const target = yield* this.eval(e.target, frame);
@@ -321,8 +364,11 @@ export abstract class Evaluator {
     switch (target.t) {
       case 'null':
         throw runtimeError(`java.lang.NullPointerException: cannot call ${name}() on null.`, line);
-      case 'String':
-        return callString(target.v, name, args, line);
+      case 'String': {
+        if (name === 'intern') return this.interned(target.v);
+        const result = callString(target.v, name, args, line);
+        return result.t === 'String' && result.v === target.v && SAME_WHEN_UNCHANGED.has(name) ? target : result;
+      }
       case 'object': {
         const cls = this.classes.get(target.cls)!;
         if (name === 'toString' && !cls.methods.some((m) => m.name === 'toString')) return str(toJavaString(target));
@@ -335,7 +381,7 @@ export abstract class Evaluator {
         if (name === 'length') throw runtimeError('For an array, length is a variable: use length without brackets.', line);
         throw runtimeError(`Arrays have no method ${name}.`, line);
       case 'native':
-        return this.callNative(target, name, args, line);
+        return this.callNative(target, name, yield* this.withText(args, line), line);
       default:
         throw runtimeError(`A ${describeType(target)} has no methods. It is a primitive value.`, line);
     }
@@ -348,6 +394,8 @@ export abstract class Evaluator {
         return callBuffer(target, name, args, line);
       case 'Scanner':
         return this.input.scanner(name, line);
+      case 'StringTokenizer':
+        return callTokenizer(target, name, line);
       case 'BufferedReader':
       case 'InputStreamReader':
         if (name === 'readLine') return this.input.readLine(line);
@@ -378,6 +426,9 @@ export abstract class Evaluator {
           const init = args[0];
           return { t: 'native', kind: e.cls, id: nextId(), state: { text: init && init.t === 'String' ? init.v : '' } };
         }
+        case 'StringTokenizer':
+          if (args[0]?.t !== 'String') throw runtimeError('new StringTokenizer needs the text to split.', e.line);
+          return { t: 'native', kind: e.cls, id: nextId(), state: { tokens: tokenize(args[0].v, args[1]?.t === 'String' ? args[1].v : undefined), next: 0 } };
         case 'String':
           if (!args.length) return str('');
           if (args[0].t === 'String') return { t: 'String', v: args[0].v };

@@ -96,3 +96,35 @@ test('printing a unit shows every formula and none of the interface', async ({ p
   const pdf = await page.pdf({ format: 'A4' });
   expect(pdf.length).toBeGreaterThan(10_000);
 });
+
+test('the same build works from a sub-path, as on GitHub Pages, including offline', async ({ browser }) => {
+  const dir = mkdtempSync(join(tmpdir(), 'isc-subpath-'));
+  cpSync('dist', join(dir, 'isc-formulas'), { recursive: true });
+  const server = await serveStatic(dir);
+  const context = await browser.newContext();
+  const page = await context.newPage();
+  const problems = watchProblems(page);
+  try {
+    await page.goto(`${server.url}isc-formulas/`);
+    await expect(page.locator('main h1')).toBeVisible();
+    await waitForServiceWorker(page);
+    const scope = await page.evaluate(async () => (await navigator.serviceWorker.ready).scope);
+    expect(scope).toBe(`${server.url}isc-formulas/`);
+
+    await context.setOffline(true);
+    await page.reload();
+    await page.evaluate(() => {
+      location.hash = '#/book/physics/XI/1';
+    });
+    await expect(page.locator('main .katex').first()).toBeVisible();
+    await page.evaluate(() => {
+      location.hash = '#/tools/java';
+    });
+    await expect(page.locator('.code-pane')).toBeVisible();
+    expect(problems).toEqual([]);
+  } finally {
+    await context.close();
+    await server.close();
+    rmSync(dir, { recursive: true, force: true });
+  }
+});

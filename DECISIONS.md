@@ -16,7 +16,7 @@ as plain data and followed it by hand. Nothing from those repos was executed.
 | Emil Kowalski's motion skills | Not installed, text read | Followed `emil-design-eng`, `animate`, `review-animations`, `animation-performance` and `mobile-native` from `emilkowalski/skills`. |
 | `impeccable` | Not installed, text read | `/audit` and `/polish` cannot be run as commands, and its 62-rule detector binary was not run. I followed `audit.md`, `polish.md` and `craft-floor.md` by hand. See `reports/` for the results. |
 | `gsap`, `lucide-react` | Installed | Normal npm dependencies. |
-| React Bits | Copied in by hand | See the section below once it is used. |
+| React Bits | Copied in by hand | `AnimatedContent` only, on the Today page. Details under Design. |
 
 To install the skills properly on your own machine, run these from the project root:
 
@@ -159,6 +159,17 @@ Work is on a `rebuild` branch. `master` still holds your original files.
   try/catch, lambdas and nested classes. **The ISC Class XII syllabus does cover
   inheritance,** though the brief's subset did not ask for it. Tell me if you want it
   added.
+- **Checked against a real JDK.** `tests/unit/java-jdk.test.ts` runs every sample and
+  about 50 more programs through both the tracer and `javac` and `java`, and requires
+  identical output, including how crashes end. It used Java 26 here, and it skips itself
+  on a machine without Java 19 or newer. My hand-written tests had all passed, yet this
+  found 9 bugs, now fixed. `"a" == "a"` was false, `true ? 1 : 2.0` printed `1`,
+  `println(object)` ignored its `toString`, `%.2f` rounded 1.005 down, and overloads
+  skipped the closest type.
+- **`StringTokenizer` is included,** though the brief didn't list it, because ISC string
+  programs use it so often.
+- **One known difference from Java remains:** strings built from `final` variables aren't
+  shared, so `final String a = "x"; (a + "y") == "xy"` gives false where Java gives true.
 - **Your own program is kept.** Typing into a sample turns it into "My program", which
   is saved in this browser. Picking a sample never overwrites it.
 
@@ -189,3 +200,35 @@ Work is on a `rebuild` branch. `master` still holds your original files.
   uncompressed, which a real host would not, so `scripts/lib/static-server.mjs` gzips
   them for Lighthouse. Vercel and GitHub Pages compress by default, though GitHub
   Pages uses a shorter cache lifetime than this server does.
+
+## Audit and polish
+
+- **The audit and polish were done by hand, once.** `impeccable` couldn't be installed,
+  so its `/audit` and `/polish` commands and its detector never ran. I followed its
+  written instructions and wrote my own checks for what the detector looks for. You
+  asked for a pass at the end of the UI phase and another at the very end. **Only the
+  final pass happened.** During the UI phase I only followed its design rules while
+  building. `reports/impeccable-audit.md` has the findings and scores. I scored my own
+  work, so install the real tool (commands above) if you want an independent check.
+- **List reveals stayed, against one motion guideline.** Emil Kowalski's guidance says
+  not to animate what you see constantly, and I briefly removed them on that basis.
+  Your brief asks for them by name, so they're back: first 10 rows only, and never
+  after a keyboard action.
+- **The interpreter and parser are split across files.** `interp.ts` had reached 1,074
+  lines. A few files are still just over 400 lines, such as the Java standard library
+  and the sample programs. Each does one job, so I left them.
+- **Long formula names wrap to three lines at 1440 px.** The contents and work columns
+  share that screen. I kept the room for the formulas, since they are the content.
+
+## What could not be tested
+
+- **Real phones.** Android and iPhone behaviour was checked by emulating touch and
+  screen size in Edge, plus the install signals and iOS tags. Nobody has actually
+  tapped Add to Home Screen on a device.
+- **Other browsers.** Everything ran in Edge, which shares Chrome's engine. Safari and
+  Firefox were not run.
+- **A screen reader.** axe and the keyboard run pass, but no one has listened to it with
+  VoiceOver or NVDA.
+- **The GitHub Pages workflow.** It can only run on GitHub. I tested what it does, from
+  a fresh clone on this machine: install, test, build, and serving that build from a
+  sub-path. The workflow file itself hasn't run.

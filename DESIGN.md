@@ -23,7 +23,13 @@ and names the section under it as you scroll.
 **Layout.** Rail, contents, reading page, work page: the book open on the left and
 your working on the facing page. Below 1280 px the work page becomes a sheet, and
 below 1024 px so do the contents. Below 768 px the rail becomes a bottom dock, so
-everything sits within thumb reach.
+everything sits within thumb reach. Simulator pages drop the contents and work page,
+because a plot needs the room. On a narrow screen their result comes above the
+controls, and a lone plot stays on screen while you scroll.
+
+Those breakpoints are written in `em`, and shell sizes in `rem`, so someone who sets
+a larger text size in their browser gets the layout that fits it. Keep to that when
+adding one: 1280 px is `80em`.
 
 ## Colour
 
@@ -98,6 +104,7 @@ smaller.
 | Press feedback | 120 ms | `--ease-out` | CSS, `scale(0.97)` |
 | Hover, colour | 160 ms | `ease` | CSS |
 | View change | 200 ms | `expo.out` | GSAP, `viewEnter` |
+| List reveal | 180 ms, 12 ms stagger, first 10 rows only | `expo.out` | GSAP, `listReveal` |
 | Solver steps | 200 ms, 40 ms stagger | `expo.out` | GSAP, `stepsReveal` |
 | Sheet | 240 ms | `expo.out` | GSAP, `sheetEnter` |
 | Today page entrance | 220 ms, 30 ms stagger | `expo.out` | GSAP, `AnimatedContent` (once) |
@@ -108,15 +115,18 @@ Rules:
 - Nothing animates after a keyboard action. The find palette opens instantly, always.
 - Never use ease-in on interface motion, or start from `scale(0)`.
 - Animate only `transform` and `opacity`.
-- With `prefers-reduced-motion`, things appear in place with no movement. State
-  changes stay visible.
+- With `prefers-reduced-motion`, colour and opacity still change gently, so a state
+  change is easy to notice, but nothing moves. GSAP isn't even fetched.
+- GSAP loads after first paint. Motion is decoration, so nothing may wait for it, and
+  until it arrives things just appear.
 
 ## Accessibility floor
 
 - WCAG AA contrast in every theme. `tests/e2e` runs axe on the main views.
 - Visible focus through `:focus-visible`, in the `--focus` colour.
 - Every feature is reachable by keyboard. `/` and Ctrl or ⌘ K open find.
-- Landmarks: subject nav, main nav, contents nav, `main`, and the work `aside`.
+- Landmarks: subject nav, main nav, the contents `aside`, `main`, and the work `aside`.
+- A failure is explained, never blank. Pages sit inside `ErrorBoundary`.
 - Right and wrong are shown with an icon and words, never colour alone.
 
 ## Printing
@@ -130,3 +140,5 @@ virtual list renders every row on `beforeprint`.
 - A new colour: don't. Pick a token.
 - Long lists go through `FormulaList`, which virtualises them.
 - Never use a React Bits component in the formula-reading area.
+- A selected item is marked by background and weight, not by a coloured bar down its
+  side.
