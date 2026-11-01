@@ -68,3 +68,28 @@ Work is on a `rebuild` branch. `master` still holds your original files.
 - **No ScrollTrigger.** Nothing earned it.
 - **Browsers.** Playwright drives the installed Microsoft Edge, because Chrome is not
   installed here and I did not download a browser. Edge uses the same engine.
+
+## Solver
+
+- **468 formulas are in the registry**, more than the 300 you asked for. Adding one
+  is a single line in `src/solver/registry/`. A test then fails if the id is not in
+  the book or if the dimensions do not balance.
+- **Own expression tree.** mathjs parses expressions and handles units. Rearranging,
+  evaluating and printing use a small tree in `src/solver/expr.ts`, so each step of
+  the working can be shown.
+- **How the unknown is found.** If it appears once, each operation is undone in turn.
+  If it appears more than once, a polynomial is collected and the linear or quadratic
+  formula used. If neither works, a numeric search runs and the step says so.
+- **Roots.** Every root is substituted back into the original equation, which removes
+  false solutions from squaring. Unphysical roots, such as a negative time, are shown
+  as "Rejected" with the reason, because a student should see why.
+- **Significant figures.** Results use the fewest significant figures among the values
+  you typed, but always between 3 and 5. A strict "5 × 3 → 1 s.f." is correct but
+  useless for checking working.
+- **Chemistry units.** Mass is in grams and concentration in mol/L, as chemistry states
+  them. A few equations only hold in stated units, such as the 1000 in
+  `M₂ = 1000·K_b·w₂/(ΔT·w₁)`. These are marked `convention: true`, which skips only the
+  unit-factor test. The dimension test still applies to them.
+- **Logs of concentrations.** `pH = −log[H⁺]` takes the value in mol/L as a pure number.
+  These inputs are labelled that way, since a logarithm of a dimensioned quantity is
+  not strictly meaningful.

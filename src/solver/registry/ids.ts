@@ -1,2 +1,3 @@
-// Placeholder until the solver registry exists (phase 4).
-export const solvableIds: string[] = [];
+import { RAW_ENTRIES } from './index';
+
+export const solvableIds: string[] = RAW_ENTRIES.map((e) => e.id);
