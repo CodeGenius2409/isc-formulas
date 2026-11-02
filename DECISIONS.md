@@ -7,6 +7,8 @@ Newest work last. Each task gets two lines: what was decided, and why.
 - **Quoting the syllabus.** `src/data/syllabus/` quotes CISCE's wording, as you asked, and the repo is public while the PDFs say all rights reserved. Your call whether to keep this public.
 - **Task 5, live location.** The list works out the current section from the scroll offset and the virtualiser's position for every row, so it holds for rows not in the DOM, and the URL follows with `replaceState`. After a click that section stays current until the reader next scrolls, because the last section of a unit often can't reach the top.
   The router now counts real navigations separately, so opening the working area doesn't move the page, and clicking the section you're already in takes you back to its start, which it didn't before.
+- **Task 6, search on a tablet.** Nothing was clipped: the panel is a native `<dialog>` in the top layer, and Edge and WebKit lay it out correctly at every iPad size. The cause is the on-screen keyboard, because `dvh` doesn't shrink for it: in landscape 1–2 results showed above the keyboard, and at every size the last results could never be scrolled into view.
+  The panel now takes its height from `visualViewport`. This was measured with typical iPad keyboard heights and a simulated keyboard, not on a real tablet, so please check yours.
 
 ---
 

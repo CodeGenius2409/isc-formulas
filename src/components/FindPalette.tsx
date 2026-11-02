@@ -2,6 +2,7 @@ import { useCallback, useEffect, useId, useMemo, useRef, useState, type Keyboard
 import { Search, X } from 'lucide-react';
 import { getSubject, manifest, unitTitle } from '../data/book';
 import type { ClassLevel, Formula, SubjectId } from '../data/types';
+import { useVisibleViewport } from '../lib/hooks';
 import { href, navigate, openWork } from '../lib/router';
 import { useStore } from '../lib/store';
 import { getFormula, prepareSearch, search } from '../search/client';
@@ -50,6 +51,7 @@ export function FindPalette() {
   const [active, setActive] = useState(0);
   const [preparing, setPreparing] = useState(false);
   const requestRef = useRef(0);
+  useVisibleViewport(dialogRef, open);
 
   useEffect(() => {
     const dialog = dialogRef.current;

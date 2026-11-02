@@ -423,17 +423,27 @@ dialog:not([open]) {
 
 /* Find palette ------------------------------------------------------------- */
 
+/* --visible-height and --visible-top come from visualViewport while the panel is open,
+   so the on-screen keyboard can't hide the results. These are the values before that. */
 .palette {
+  --visible-height: 100vh;
+  --visible-top: 0px;
   position: fixed;
-  inset: 8dvh auto auto 50%;
+  inset: calc(var(--visible-top) + var(--visible-height) * 0.08) auto auto 50%;
   transform: translateX(-50%);
   margin: 0;
   padding: 0;
   width: min(720px, calc(100vw - 2rem));
-  max-height: 78dvh;
+  max-height: calc(var(--visible-height) * 0.84);
   border: 1px solid var(--rule-2);
   border-radius: 4px;
   background: var(--paper);
+}
+
+@supports (height: 100dvh) {
+  .palette {
+    --visible-height: 100dvh;
+  }
 }
 
 .palette[open] {
@@ -441,16 +451,35 @@ dialog:not([open]) {
   flex-direction: column;
 }
 
+.palette[data-short] {
+  top: var(--visible-top);
+  max-height: var(--visible-height);
+}
+
+.palette[data-short] .palette-filters {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+}
+
+.palette[data-short] .palette-filters .seg {
+  flex: none;
+}
+
+.palette[data-short] .palette-row {
+  padding-block: 0.25rem;
+}
+
 .palette::backdrop {
   background: var(--scrim);
 }
 
 @media (max-width: 47.99em) {
-  .palette {
-    inset: 0;
+  .palette,
+  .palette[data-short] {
+    inset: var(--visible-top) 0 auto 0;
     transform: none;
     width: 100%;
-    height: 100dvh;
+    height: var(--visible-height);
     max-width: none;
     max-height: none;
     border: 0;
@@ -561,7 +590,7 @@ dialog:not([open]) {
 }
 
 .palette-results {
-  flex: 1;
+  flex: 1 1 auto;
   min-height: 3rem;
   overflow-y: auto;
   overscroll-behavior: contain;

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore, type RefObject } from 'react';
 
 export function useMediaQuery(query: string): boolean {
   return useSyncExternalStore(
@@ -60,4 +60,31 @@ export function useFocusableOverflow(label: string, ready: boolean) {
     return () => observer.disconnect();
   }, [label, ready]);
   return ref;
+}
+
+/** Below this, there is only room for the panel if it gives up its margins. */
+const SHORT_VIEWPORT = 560;
+
+/**
+ * Gives a dialog the height that can actually be seen. An on-screen keyboard shrinks the
+ * visual viewport only, and dvh doesn't follow it, so anything sized with dvh runs underneath.
+ */
+export function useVisibleViewport(ref: RefObject<HTMLElement | null>, active: boolean) {
+  useEffect(() => {
+    const el = ref.current;
+    const viewport = window.visualViewport;
+    if (!el || !viewport || !active) return;
+    const apply = () => {
+      el.style.setProperty('--visible-height', `${viewport.height}px`);
+      el.style.setProperty('--visible-top', `${viewport.offsetTop}px`);
+      el.toggleAttribute('data-short', viewport.height < SHORT_VIEWPORT);
+    };
+    apply();
+    viewport.addEventListener('resize', apply);
+    viewport.addEventListener('scroll', apply);
+    return () => {
+      viewport.removeEventListener('resize', apply);
+      viewport.removeEventListener('scroll', apply);
+    };
+  }, [ref, active]);
 }
