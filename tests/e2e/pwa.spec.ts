@@ -90,8 +90,8 @@ test('printing a unit shows every formula and none of the interface', async ({ p
   await page.emulateMedia({ media: 'print' });
   await page.evaluate(() => window.dispatchEvent(new Event('beforeprint')));
   await expect.poll(() => page.locator('main .row').count()).toBeGreaterThan(virtualRows);
-  // Unit 2 of Physics XI has 225 formulas in the manifest.
-  expect(await page.locator('main .row').count()).toBe(225);
+  // Unit 2 of Physics XI has 191 formulas in the manifest.
+  expect(await page.locator('main .row').count()).toBe(191);
   await expect(page.locator('.rail, .dock').first()).toBeHidden();
   const pdf = await page.pdf({ format: 'A4' });
   expect(pdf.length).toBeGreaterThan(10_000);

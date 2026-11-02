@@ -20,9 +20,8 @@ export function getClass(subject: SubjectId, level: ClassLevel): ManifestClass |
   return getSubject(subject).classes.find((c) => c.level === level);
 }
 
-/** Drops the syllabus remark from a title. The status label says it instead. */
 export function unitTitle(name: string): string {
-  return splitUnitName(name).title.replace(/\s*\((?:not in 2028 syllabus|supplementary)\)\s*$/i, '');
+  return splitUnitName(name).title;
 }
 
 const chunkLoaders = import.meta.glob<{ default: Chunk }>(['./generated/*-XI.json', './generated/*-XII.json']);

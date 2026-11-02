@@ -5,8 +5,7 @@ import { href } from '../../lib/router';
 import { openPalette } from '../../state/ui';
 
 export const STATUS_LABEL: Partial<Record<UnitStatus, string>> = {
-  'not-in-syllabus': 'Not in 2028 syllabus',
-  supplementary: 'Supplementary',
+  practical: 'Practical, no theory marks',
 };
 
 interface Props {

@@ -1,0 +1,189 @@
+{
+  "subject": "physics",
+  "code": "861",
+  "edition": "ISC Examination Year 2028, Physics (861). CISCE Research, Development and Curriculum Division, January 2026.",
+  "classes": [
+    {
+      "level": "XI",
+      "paper": "Paper I, Theory: 3 hours, 70 marks. Paper II: Practical 15, Project Work 10, Practical File 5.",
+      "markGroups": [
+        { "units": [1, 2, 3], "marks": 23 },
+        { "units": [4, 5, 6], "marks": 17 },
+        { "units": [7, 8, 9], "marks": 20 },
+        { "units": [10], "marks": 10 }
+      ],
+      "units": [
+        {
+          "number": 1,
+          "name": "Physical World and Measurement",
+          "topics": [
+            { "key": "a", "name": "Units and Measurements", "wording": "Measurement: need for measurement; units of measurement; systems of units: fundamental and derived units in SI; measurement of length, mass and time; errors in measurement; significant figures." },
+            { "key": "b", "name": "Dimensions", "wording": "Dimensional formulae of physical quantities and constants, dimensional analysis and its applications." },
+            { "key": "p", "name": "Paper II: measuring instruments", "wording": "Vernier calipers, micrometer screw gauge and spherometer experiments." }
+          ]
+        },
+        {
+          "number": 2,
+          "name": "Kinematics",
+          "topics": [
+            { "key": "a", "name": "Motion in a Straight Line", "wording": "Frame of references, Motion in a straight line (one dimension): Position-time graph, speed and velocity. Elementary concepts of differentiation and integration for describing motion, uniform and non-uniform motion, average speed, velocity, average velocity, instantaneous velocity and uniformly accelerated motion, velocity - time and position - time graphs. Relations for uniformly accelerated motion (graphical treatment)." },
+            { "key": "b", "name": "Motion in a Plane", "wording": "Scalar and Vector quantities with examples. Position and displacement vectors, general vectors and their notations; equality of vectors, addition and subtraction of vectors, Unit vector; resolution of a vector in a plane, rectangular components, Scalar and Vector product of two vectors. Projectile motion and uniform circular motion." }
+          ]
+        },
+        {
+          "number": 3,
+          "name": "Laws of Motion",
+          "topics": [
+            { "key": "a", "name": "Newton's laws and momentum", "wording": "General concept of force, inertia, Newton's first law of motion; momentum and Newton's second law of motion; impulse; Newton's third law of motion. Law of conservation of linear momentum and its applications." },
+            { "key": "b", "name": "Equilibrium and friction", "wording": "Equilibrium of concurrent forces. Friction: Static and kinetic friction, laws of friction, rolling friction, lubrication." },
+            { "key": "c", "name": "Circular motion", "wording": "Dynamics of uniform circular motion: Centripetal force, examples of circular motion (vehicle on a level circular road, vehicle on a banked road)." }
+          ]
+        },
+        {
+          "number": 4,
+          "name": "Work, Power and Energy",
+          "topics": [
+            { "key": "a", "name": "Work, energy and power", "wording": "Work done by a constant force and a variable force; kinetic energy, work-energy theorem, power. Potential energy, potential energy of a spring, conservative forces: conservation of mechanical energy (kinetic and potential energies); Conservative and non-conservative forces." },
+            { "key": "b", "name": "Collisions", "wording": "Concept of collision: elastic and inelastic collisions in one and two dimensions." }
+          ]
+        },
+        {
+          "number": 5,
+          "name": "Motion of System of Particles and Rigid Body",
+          "topics": [
+            { "key": "a", "name": "Centre of mass", "wording": "Idea of centre of mass: centre of mass of a two-particle system, momentum conservation and centre of mass motion. Centre of mass of a rigid body; centre of mass of a uniform rod." },
+            { "key": "b", "name": "Torque and angular momentum", "wording": "Moment of a force, torque, angular momentum, laws of conservation of angular momentum and its applications. Equilibrium of rigid bodies, rigid body rotation and equations of rotational motion, comparative study of linear and rotational motions." },
+            { "key": "c", "name": "Moment of inertia", "wording": "Moment of inertia, radius of gyration, moments of inertia for simple geometrical objects (no derivation). Statement of parallel and perpendicular axes theorems and their applications." }
+          ]
+        },
+        {
+          "number": 6,
+          "name": "Gravitation",
+          "topics": [
+            { "key": "a", "name": "Gravity and its variation", "wording": "Kepler's laws of planetary motion, universal law of gravitation. Acceleration due to gravity (g) and its variation with altitude, latitude and depth." },
+            { "key": "b", "name": "Potential, escape velocity and satellites", "wording": "Gravitational potential and gravitational potential energy, escape velocity, orbital velocity of a satellite, Geo-stationary satellites." }
+          ]
+        },
+        {
+          "number": 7,
+          "name": "Properties of Bulk Matter",
+          "topics": [
+            { "key": "a", "name": "Mechanical Properties of Solids", "wording": "Elastic behaviour of solids, Stress-strain relationship, Hooke's law, Young's modulus, bulk modulus, shear modulus of rigidity, Poisson's ratio; elastic energy (qualitative treatment only)." },
+            { "key": "b", "name": "Mechanical Properties of Fluids", "wording": "Pressure due to a fluid column; Pascal's law and its applications (hydraulic lift and hydraulic brakes), effect of gravity on fluid pressure. Viscosity, Stokes' law, terminal velocity, streamline and turbulent flow, critical velocity, Bernoulli's theorem and its applications." },
+            { "key": "c", "name": "Surface tension", "wording": "Surface energy and surface tension, angle of contact, excess of pressure across a curved surface, application of surface tension ideas to drops, bubbles and capillary rise." }
+          ]
+        },
+        {
+          "number": 8,
+          "name": "Heat and Thermodynamics",
+          "topics": [
+            { "key": "a", "name": "Thermal Properties of Matter", "wording": "Heat, temperature, thermal expansion; thermal expansion of solids, liquids and gases, anomalous expansion of water; specific heat capacity, calorimetry; change of state, specific latent heat capacity. Heat transfer-conduction, convection and radiation, thermal conductivity, qualitative ideas of Blackbody radiation, Wien's displacement Law and Stefan's law." },
+            { "key": "b", "name": "Thermodynamics", "wording": "Thermal equilibrium and definition of temperature (zeroth law of thermodynamics), heat, work and internal energy. First law of thermodynamics, isothermal and adiabatic processes. Second law of thermodynamics: reversible and irreversible processes." }
+          ]
+        },
+        {
+          "number": 9,
+          "name": "Behaviour of Perfect Gases and Kinetic Theory of Gases",
+          "topics": [
+            { "key": "a", "name": "Kinetic Theory", "wording": "Equation of state of a perfect gas, work done in compressing a gas. Kinetic theory of gases - assumptions, concept of pressure. Kinetic interpretation of temperature; rms speed of gas molecules; degrees of freedom, law of equi-partition of energy (statement only) and application to specific heat capacities of gases; concept of mean free path, Avogadro's number." }
+          ]
+        },
+        {
+          "number": 10,
+          "name": "Oscillations and Waves",
+          "topics": [
+            { "key": "a", "name": "Oscillations", "wording": "Periodic motion, time period, frequency, displacement as a function of time, periodic functions. Simple harmonic motion (S.H.M) and its equation; phase; oscillations of a spring, restoring force and force constant; energy in S.H.M., Kinetic and potential energies; simple pendulum and derivation of expression for its time period." },
+            { "key": "b", "name": "Waves", "wording": "Wave motion, Transverse and longitudinal waves, speed of wave motion, displacement relation for a progressive wave, principle of superposition of waves, reflection of waves, standing waves in strings and organ pipes, fundamental mode and harmonics, Beats." }
+          ]
+        }
+      ]
+    },
+    {
+      "level": "XII",
+      "paper": "Paper I, Theory: 3 hours, 70 marks. Paper II: Practical 15, Project Work 10, Practical File 5.",
+      "markGroups": [
+        { "units": [1, 2], "marks": 14 },
+        { "units": [3, 4], "marks": 16 },
+        { "units": [5], "marks": 2 },
+        { "units": [6], "marks": 18 },
+        { "units": [7], "marks": 7 },
+        { "units": [8], "marks": 6 },
+        { "units": [9], "marks": 7 }
+      ],
+      "units": [
+        {
+          "number": 1,
+          "name": "Electrostatics",
+          "topics": [
+            { "key": "a", "name": "Electric Charges and Fields", "wording": "Electric charges; conservation and quantisation of charge, Coulomb's law; superposition principle and continuous charge distribution. Electric field: electric field due to a point charge, electric field lines, electric dipole, electric field due to a dipole, torque on a dipole in uniform electric field. Electric flux, Gauss's theorem in Electrostatics and its applications to find field due to infinitely long straight wire, uniformly charged infinite plane sheet and uniformly charged thin spherical shell." },
+            { "key": "b", "name": "Electrostatic Potential, Potential Energy and Capacitance", "wording": "Electric potential, potential difference, electric potential due to a point charge, a dipole and system of charges; equipotential surfaces, electrical potential energy of a system of two point charges and of electric dipole in an electrostatic field. Conductors and insulators, free charges and bound charges inside a conductor. Dielectrics and electric polarisation, capacitors and capacitance, combination of capacitors in series and in parallel. Capacitance of a parallel plate capacitor, energy stored in a capacitor (No derivation, formulae only)." }
+          ]
+        },
+        {
+          "number": 2,
+          "name": "Current Electricity",
+          "topics": [
+            { "key": "a", "name": "Conduction, Ohm's law and power", "wording": "Mechanism of flow of current in conductors. Mobility, drift velocity and its relation with electric current; Ohm's law and its proof, resistance and resistivity and their relation to drift velocity of electrons; V-I characteristics (linear and non-linear), electrical energy and power, electrical resistivity and conductivity. Temperature dependence of resistance and resistivity." },
+            { "key": "b", "name": "Cells, Kirchhoff's laws and bridges", "wording": "Internal resistance of a cell, potential difference and emf of a cell, combination of cells in series and in parallel, Kirchhoff's laws and simple applications, Wheatstone bridge, metre bridge. Potentiometer - principle and its applications to measure potential difference, to compare emf of two cells; to measure internal resistance of a cell." }
+          ]
+        },
+        {
+          "number": 3,
+          "name": "Magnetic Effects of Current and Magnetism",
+          "topics": [
+            { "key": "a", "name": "Moving charges and magnetism", "wording": "Concept of magnetic field, Oersted's experiment. Biot - Savart law and its application. Ampere's Circuital law and its applications to infinitely long straight wire, straight solenoids (only qualitative treatment). Force on a moving charge in uniform magnetic and electric fields. Force on a current-carrying conductor in a uniform magnetic field, force between two parallel current-carrying conductors - definition of an ampere, torque experienced by a current loop in a uniform magnetic field; moving coil galvanometer - its sensitivity. Conversion of galvanometer into an ammeter and a voltmeter." },
+            { "key": "b", "name": "Magnetism and Matter", "wording": "A current loop as a magnetic dipole, its magnetic dipole moment, magnetic dipole moment of a revolving electron, magnetic field intensity due to a magnetic dipole (bar magnet) on the axial line and equatorial line (Qualitative only) torque on a magnetic dipole (bar magnet) in a uniform magnetic field; bar magnet as an equivalent solenoid. Magnetic field lines. Diamagnetic, paramagnetic, and ferromagnetic substances, with examples. Electromagnets and factors affecting their strengths, permanent magnets." }
+          ]
+        },
+        {
+          "number": 4,
+          "name": "Electromagnetic Induction and Alternating Currents",
+          "topics": [
+            { "key": "a", "name": "Electromagnetic Induction", "wording": "Faraday's laws induced emf and current; Lenz's law, eddy currents. Self-induction and mutual induction. Transformer." },
+            { "key": "b", "name": "Alternating Current", "wording": "Peak value, mean value and RMS value of alternating current/voltage; their relation in sinusoidal case; reactance and impedance; LC oscillations (qualitative treatment only), LCR series circuit, resonance; power in AC circuits, wattless current. AC generator." }
+          ]
+        },
+        {
+          "number": 5,
+          "name": "Electromagnetic Waves",
+          "topics": [
+            { "key": "a", "name": "Electromagnetic Waves", "wording": "Basic idea of displacement current. Electromagnetic waves, their characteristics, their transverse nature (qualitative ideas only). Complete electromagnetic spectrum starting from radio waves to gamma rays: elementary facts of electromagnetic waves and their uses." }
+          ]
+        },
+        {
+          "number": 6,
+          "name": "Optics",
+          "topics": [
+            { "key": "a", "name": "Ray Optics", "wording": "Reflection of light by spherical mirrors, mirror formula, refraction of light at plane surfaces, total internal reflection and its applications, optical fibres, refraction at spherical surfaces, lenses, thin lens formula, lens maker's formula, magnification, power of a lens, combination of thin lenses in contact, combination of a lens and a mirror, refraction and dispersion of light through a prism." },
+            { "key": "b", "name": "Optical instruments", "wording": "Microscopes and astronomical telescopes (reflecting and refracting) and their magnifying powers." },
+            { "key": "c", "name": "Wave Optics", "wording": "Wave front and Huygen's principle. Proof of laws of reflection and refraction using Huygen's principle. Interference, Young's double slit experiment and expression for fringe width, coherent sources and sustained interference of light, Fraunhofer diffraction due to a single slit, width of central maximum." },
+            { "key": "p", "name": "Paper II: ray optics experiments", "wording": "Experiments based on ray optics, including removing parallax between a needle and the real image of another needle." }
+          ]
+        },
+        {
+          "number": 7,
+          "name": "Dual Nature of Radiation and Matter",
+          "topics": [
+            { "key": "a", "name": "Dual Nature of Radiation and Matter", "wording": "Wave particle duality; photoelectric effect, Hertz and Lenard's observations; Einstein's photoelectric equation - particle nature of light. Matter waves - wave nature of particles, de-Broglie relation; conclusion from Davisson-Germer experiment (Qualitative only)." }
+          ]
+        },
+        {
+          "number": 8,
+          "name": "Atoms and Nuclei",
+          "topics": [
+            { "key": "a", "name": "Atoms", "wording": "Alpha-particle scattering experiment; Rutherford's atomic model; Bohr's atomic model, energy levels, hydrogen spectrum." },
+            { "key": "b", "name": "Nuclei", "wording": "Composition and size of nucleus. Mass-energy relation, mass defect; binding energy per nucleon and its variation with mass number; Nuclear reactions, nuclear fission and nuclear fusion." }
+          ]
+        },
+        {
+          "number": 9,
+          "name": "Electronic Devices",
+          "topics": [
+            { "key": "a", "name": "Semiconductor Electronics", "wording": "Materials, Devices and Simple Circuits. Energy bands in conductors, semiconductors and insulators (qualitative ideas only). Intrinsic and extrinsic semiconductors. P and n type, p-n junction." },
+            { "key": "b", "name": "Semiconductor diode", "wording": "I-V characteristics in forward and reverse bias, diode as a rectifier; Special types of junction diodes: LED, photodiode and solar cell and Zener diode and its characteristics, Zener diode as a voltage regulator." }
+          ]
+        }
+      ]
+    }
+  ]
+}

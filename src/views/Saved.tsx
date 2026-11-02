@@ -3,7 +3,7 @@ import { findFormula } from '../data/book';
 import type { Formula } from '../data/types';
 import { useAsync } from '../lib/hooks';
 import { useStore } from '../lib/store';
-import { favouritesStore } from '../state/library';
+import { favouritesStore, removedFavourites } from '../state/library';
 import { FormulaList, type ListItem } from '../components/FormulaList';
 
 export default function Saved({ scrollRef }: { scrollRef: RefObject<HTMLElement | null> }) {
@@ -21,6 +21,11 @@ export default function Saved({ scrollRef }: { scrollRef: RefObject<HTMLElement 
       <header className="unit-title">
         <h1 style={{ color: 'var(--ink)' }}>Saved formulas</h1>
         <p>{ids.length ? `${ids.length} saved` : 'Nothing saved yet. Press the star on any formula to keep it here.'}</p>
+        {removedFavourites > 0 && (
+          <p>
+            {removedFavourites === 1 ? '1 saved formula is' : `${removedFavourites} saved formulas are`} no longer in the book, because {removedFavourites === 1 ? 'it is' : 'they are'} outside the 2028 syllabus.
+          </p>
+        )}
       </header>
       <h2 className="sr-only">Your saved formulas</h2>
       {items.length > 0 && <FormulaList items={items} scrollRef={scrollRef} showWhere />}

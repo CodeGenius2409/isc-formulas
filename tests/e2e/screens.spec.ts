@@ -1,4 +1,4 @@
-// Every main page at three widths in both themes. Saves screenshots for a person to look
+// Every main page at four widths in both themes. Saves screenshots for a person to look
 // at, and fails on console errors, off-site requests or sideways scrolling.
 import { expect, test } from '@playwright/test';
 import { openRoute, setTheme, watchProblems } from './helpers';
@@ -6,6 +6,7 @@ import { openRoute, setTheme, watchProblems } from './helpers';
 const WIDTHS = [
   { width: 375, height: 780, touch: true },
   { width: 768, height: 1024, touch: true },
+  { width: 1024, height: 768, touch: true },
   { width: 1440, height: 900, touch: false },
 ];
 const THEMES = ['paper', 'board'] as const;

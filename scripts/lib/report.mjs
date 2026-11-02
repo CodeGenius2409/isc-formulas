@@ -87,7 +87,7 @@ export function writeDedupeReport(file, { rows, groups, reason, shared, entryOf,
   out.push('');
 
   out.push('## Units outside the 2028 syllabus', '');
-  out.push('These stay in the book. The label is visible in the contents and at the top of the unit.', '');
+  out.push('This is the state after removing repeats. The syllabus step that follows takes these units out of the app: see \`reports/syllabus-report.md\`.', '');
   out.push('| Subject | Class | Unit | Status | Formulas |', '|---|---|---|---|---:|');
   const units = new Map();
   for (const r of rows) {

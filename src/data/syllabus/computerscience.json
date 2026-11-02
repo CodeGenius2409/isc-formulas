@@ -1,0 +1,88 @@
+{
+  "subject": "computerscience",
+  "code": "868",
+  "edition": "ISC Examination Year 2028, Computer Science (868). CISCE Research, Development and Curriculum Division, January 2026.",
+  "classes": [
+    {
+      "level": "XI",
+      "paper": "Paper I, Theory: 3 hours, 70 marks (Section A Hardware 25, Section B Java 30, Section C Python and conceptual aspects 15). Paper II: Practical, 30 marks, in Java.",
+      "markGroups": [
+        { "units": [1, 2, 3], "marks": 25, "label": "Section A: Hardware" },
+        { "units": [4, 5, 6, 7, 8, 9, 10, 11], "marks": 30, "label": "Section B: Java" },
+        { "units": [12, 13], "marks": 15, "label": "Section C: Python and conceptual aspects" }
+      ],
+      "units": [
+        { "number": 1, "name": "System of Numeration", "topics": [{ "key": "a", "name": "System of Numeration", "wording": "Representation of numbers in different bases and interconversion between them (e.g. binary, octal, decimal, hexadecimal). Addition, subtraction and multiplication operations for numbers in different bases." }] },
+        { "number": 2, "name": "Encodings", "topics": [{ "key": "a", "name": "Encodings", "wording": "Characters and their encodings (e.g. ASCII, ISCII, Unicode)." }] },
+        {
+          "number": 3,
+          "name": "Propositional logic, Hardware implementation, Arithmetic operations",
+          "topics": [
+            { "key": "a", "name": "Propositional logic", "wording": "Propositional logic, well-formed formulae, truth values and interpretation of well formed formulae, truth tables." },
+            { "key": "b", "name": "Logic and hardware", "wording": "Logic and hardware, basic gates (AND, NOT, OR) and their universality, other gates (NAND, NOR, XOR, XNOR), half adder, full adder." }
+          ]
+        },
+        { "number": 4, "name": "Introduction to Object Oriented Programming using Java", "topics": [{ "key": "a", "name": "Introduction", "wording": "Note that topics 5 to 11 should be introduced almost simultaneously along with Classes and their definitions." }] },
+        {
+          "number": 5,
+          "name": "Objects",
+          "topics": [
+            { "key": "a", "name": "Objects and the JVM", "wording": "Objects as data (attributes) + behaviour (methods); object as an instance of a class. Analysis of some real-world programming examples in terms of objects and classes. Basic concept of a virtual machine; Java Virtual Machine (JVM); compilation and execution of Java programs (the javac and java programs)." },
+            { "key": "b", "name": "Errors and exceptions", "wording": "Compile time and run time errors; basic concept of an exception, the Exception class, try-catch, throw, throws and finally." }
+          ]
+        },
+        { "number": 6, "name": "Primitive values, Wrapper classes, Types and casting", "topics": [{ "key": "a", "name": "Primitive values, Wrapper classes, Types and casting", "wording": "Primitive values and types: byte, int, short, long, float, double, boolean, char. Corresponding wrapper classes for each primitive type. Class as type of the object. Class as mechanism for user defined types. Changing types through user defined casting and automatic type coercion for some primitive types." }] },
+        { "number": 7, "name": "Variables, Expressions", "topics": [{ "key": "a", "name": "Variables, Expressions", "wording": "Variables as names for values; named constants (final), expressions (arithmetic and logical) and their evaluation (operators, associativity, precedence). Assignment operation; difference between left-hand side and right-hand side of assignment." }] },
+        { "number": 8, "name": "Statements, Scope", "topics": [{ "key": "a", "name": "Statements, Scope", "wording": "Statements; conditional (if, if else, if else if, switch case) ternary operator, looping (for, while, do while), continue, break; grouping statements in blocks, scope and visibility of variables." }] },
+        { "number": 9, "name": "Methods and Constructors", "topics": [{ "key": "a", "name": "Methods and Constructors", "wording": "Methods and Constructors (as abstractions for complex user defined operations on objects), methods as mechanisms for side effects; formal arguments and actual arguments in methods; different behaviour of primitive arguments. Static methods and variables. The this operator. Examples of algorithmic problem solving using methods (number problems, finding roots of algebraic equations etc.)." }] },
+        { "number": 10, "name": "Arrays, Strings", "topics": [{ "key": "a", "name": "Arrays, Strings", "wording": "Structured data types - arrays (single and multi-dimensional), Strings. Example algorithms that use structured data types (searching, finding maximum/minimum, sorting techniques, solving systems of linear equations, substring, concatenation, length, access to char in string, etc.)." }] },
+        {
+          "number": 11,
+          "name": "Basic input/output and Text File Handling",
+          "topics": [
+            { "key": "a", "name": "Basic input/output using Scanner class", "wording": "Input/output exceptions. Tokens in an input stream, concept of whitespace, extracting tokens from an input stream (String Tokenizer class). The Scanner class can be used for input of various types of data." },
+            { "key": "b", "name": "Data File Handling", "wording": "Need for Data file, Input Stream, Output Stream, Character Stream (FileReader, FileWriter), Operations- Creation, Reading, Writing, Appending, and Searching." }
+          ]
+        },
+        { "number": 12, "name": "Introduction to Python", "topics": [{ "key": "a", "name": "Introduction to Python", "wording": "Fundamentals of Python programming, data types, data processing, operators and expressions, flow of control: conditional statements (if, if-else, if-elif-else), iterative statements (for loop, range(), while loop), break and continue statements, nested loop." }] },
+        { "number": 13, "name": "Trends in computing and ethical issues", "topics": [{ "key": "a", "name": "Trends in computing and ethical issues", "wording": "Artificial Intelligence, Internet of Things, Virtual Reality and Augmented Reality. Cyber Security, privacy, netiquette, spam, phishing, Digital arrest. Intellectual property, Software copyright and patents and Free Software Foundation." }] }
+      ]
+    },
+    {
+      "level": "XII",
+      "paper": "Paper I, Theory: 3 hours, 70 marks (Section A Hardware 25, Section B Java 30, Section C Python and conceptual aspects 15). Paper II: Practical, 30 marks.",
+      "markGroups": [
+        { "units": [1, 2], "marks": 25, "label": "Section A: Hardware" },
+        { "units": [3, 4, 5, 6], "marks": 30, "label": "Section B: Java" },
+        { "units": [7, 8, 9], "marks": 15, "label": "Section C: Python and conceptual aspects" }
+      ],
+      "units": [
+        { "number": 1, "name": "Boolean Algebra", "topics": [
+          { "key": "a", "name": "Propositional logic", "wording": "Propositional logic, well formed formulae, truth values and interpretation of well formed formulae (wff), truth tables, satisfiable, unsatisfiable and valid formulae. Equivalence laws and their use in simplifying wffs." },
+          { "key": "b", "name": "Boolean algebra and Karnaugh maps", "wording": "Binary valued quantities; basic postulates of Boolean algebra; operations AND, OR and NOT; truth tables. Basic theorems of Boolean algebra (e.g. duality, idempotence, commutativity, associativity, distributivity, operations with 0 and 1, complements, absorption, involution); De Morgan's theorem and its applications; reducing Boolean expressions to sum of products and product of sums forms; Karnaugh maps (up to four variables)." }
+        ] },
+        { "number": 2, "name": "Computer Hardware", "topics": [
+          { "key": "a", "name": "Logic gates", "wording": "Elementary logic gates (NOT, AND, OR, NAND, NOR, XOR, XNOR) and their use, performance, expression, truth table and symbol." },
+          { "key": "b", "name": "Applications", "wording": "Applications of Boolean algebra and logic gates to half adders, full adders, encoders, decoders, multiplexers, half subtractors, full subtractors, NAND, NOR as universal gates." }
+        ] },
+        { "number": 3, "name": "Methods - Object as parameter and return data type", "topics": [{ "key": "a", "name": "Methods", "wording": "Methods (as abstractions for complex user defined operations on objects), formal arguments and actual arguments in methods; different behaviour of primitive and object arguments. Static method and variables. The this Operator - as a reference of the current object. Passing objects /arrays as parameters to a method and returning an object / array." }] },
+        { "number": 4, "name": "Arrays (Single and Double dimensional), String handling", "topics": [
+          { "key": "a", "name": "Arrays", "wording": "Structured data types - arrays (single and multi-dimensional), address calculations. Algorithms that use structured data types (e.g. searching, finding maximum/minimum, sorting techniques, solving systems of linear equations)." },
+          { "key": "b", "name": "String handling", "wording": "String handling - substring, concatenation, length, access to char in string, etc. The class StringBuffer should be introduced for those applications that involve heavy manipulation of strings." }
+        ] },
+        { "number": 5, "name": "Recursion", "topics": [{ "key": "a", "name": "Recursion", "wording": "Concept of recursion, simple recursive methods (e.g. factorial, GCD, binary search, conversion of representations of numbers between different bases)." }] },
+        { "number": 6, "name": "Inheritance and Interfaces", "topics": [
+          { "key": "a", "name": "Inheritance", "wording": "Inheritance; super and derived classes; member access in derived classes; redefinition of variables and methods in subclasses; abstract classes; class Object; protected visibility. Subclass polymorphism and dynamic binding." },
+          { "key": "b", "name": "Interfaces in Java (Only Conceptual)", "wording": "Emphasize the difference between the Java language construct interface and the word interface often used to describe the set of method prototypes of a class." }
+        ] },
+        { "number": 7, "name": "Programming in Python", "topics": [
+          { "key": "a", "name": "Strings", "wording": "Strings: introduction, string operations (concatenation, repetition, membership and slicing), traversing a string using loops, built-in functions/methods." },
+          { "key": "b", "name": "Lists", "wording": "Lists: introduction, indexing, list operations (concatenation, repetition, membership and slicing), traversing a list using loops, built-in functions/methods; nested lists." },
+          { "key": "c", "name": "Tuples", "wording": "Tuples: introduction, indexing, tuple operations (concatenation, repetition, membership and slicing); built-in functions/methods; tuple assignment, nested tuple." }
+        ] },
+        { "number": 8, "name": "Data structures - Binary trees", "topics": [{ "key": "a", "name": "Binary trees [Conceptual]", "wording": "Binary trees: apart from the definition the following concepts should be covered: root, internal nodes, external nodes (leaves), height (tree, node), depth (tree, node), level, size, degree, siblings, sub tree, traversals (pre, post and in-order)." }] },
+        { "number": 9, "name": "Complexity and Big O notation", "topics": [{ "key": "a", "name": "Complexity and Big O notation", "wording": "Concrete computational complexity; concept of input size; estimating complexity in terms of methods; importance of dominant term; constants, best, average and worst case. Big O notation for computational complexity; analysis of complexity of example algorithms using the big O notation (e.g. various searching and sorting algorithms, algorithm for solution of linear equations, etc.)." }] }
+      ]
+    }
+  ]
+}

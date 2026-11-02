@@ -45,11 +45,7 @@ export const CHEMISTRY: SolverEntry[] = [
   { id: 'c-xi-4-3', topic: A, eq: 'mu = q*d', vars: { mu: 'dipole moment|dipole', q: ['charge', 'charge', { gen: [1e-20, 1.6e-19] }], d: ['bond length', 'length', { gen: [1e-10, 3e-10] }] } },
 
   // Gas laws
-  { id: 'c-xi-5-4', topic: G, eq: '(P + a*n^2/V^2)*(V - n*b) = n*R*T', ask: 'P', vars: { P: 'pressure|pressure', a: ['van der Waals a', 'vdwA', {}], n: 'amount|amount', V: ['volume', 'volume', { gen: [0.01, 0.1] }], b: ['van der Waals b', 'vdwB', {}], R: 'c:R', T: 'temperature|temperature' } },
   { id: 'c-xi-5-9', topic: G, eq: 'P*M = d*R*T', ask: 'd', vars: { P: 'pressure|pressure', M: 'molar mass|molarmassSI', d: ['density', 'density', { gen: [0.5, 5] }], R: 'c:R', T: 'temperature|temperature' } },
-  { id: 'c-xi-5-12', topic: G, eq: 'p_i = x_i*P', vars: { p_i: 'partial pressure|pressure', x_i: 'mole fraction|fraction', P: 'total pressure|pressure' } },
-  { id: 'c-xi-5-13', topic: G, eq: 'p_i = n_i*R*T/V', vars: { p_i: 'partial pressure|pressure', n_i: 'moles of the gas|amount', R: 'c:R', T: 'temperature|temperature', V: 'volume|volume' } },
-  { id: 'c-xi-5-17', topic: G, eq: 'Z = P*V/(n*R*T)', vars: { Z: 'compressibility factor|positive', P: 'pressure|pressure', V: 'volume|volume', n: 'amount|amount', R: 'c:R', T: 'temperature|temperature' } },
 
   // Thermodynamics
   { id: 'c-xi-6-1', topic: T, eq: 'DeltaU = q + w', vars: { DeltaU: 'change in internal energy|energy', q: 'heat absorbed|energy', w: 'work done on the system|energy' } },
@@ -63,7 +59,6 @@ export const CHEMISTRY: SolverEntry[] = [
   { id: 'c-xi-6-47', topic: T, eq: 'q = m*c*DeltaT', vars: { q: 'heat|energy', m: 'mass|mass', c: 'specific heat|specheat', DeltaT: 'temperature change|tempdiff' } },
   { id: 'c-xi-6-92', topic: T, eq: 'DeltaS = DeltaH/T', vars: { DeltaS: 'entropy of fusion|molarEntropy', DeltaH: 'enthalpy of fusion|molarEnergy', T: 'melting point|temperature' } },
   { id: 'c-xi-6-93', topic: T, eq: 'DeltaS = DeltaH/T', vars: { DeltaS: 'entropy of vaporisation|molarEntropy', DeltaH: 'enthalpy of vaporisation|molarEnergy', T: 'boiling point|temperature' } },
-  { id: 'c-xi-6-96', topic: T, eq: 'DeltaS = n*C_P*log(T_2/T_1)', ask: 'DeltaS', vars: { DeltaS: 'entropy change|entropy', n: 'amount|amount', C_P: 'molar heat capacity|molarheat', T_2: 'final temperature|temperature', T_1: 'initial temperature|temperature' } },
   { id: 'c-xi-6-124', topic: T, eq: 'T = DeltaH/DeltaS', vars: { T: 'transition temperature|temperature', DeltaH: ['enthalpy change', 'molarEnergy', { gen: [1e4, 1e5], min: 0, exclusiveMin: true }], DeltaS: ['entropy change', 'molarEntropy', { gen: [30, 300], min: 0, exclusiveMin: true }] } },
   { id: 'c-xi-6-127', topic: T, eq: 'DeltaG0 = -n*F*E0', ask: 'DeltaG0', vars: { DeltaG0: 'standard Gibbs energy change|molarEnergy', n: ['electrons transferred', 'count', { gen: [1, 6] }], F: 'c:F', E0: ['standard cell potential', 'voltage', { gen: [0.1, 3] }] } },
 
@@ -119,12 +114,10 @@ export const CHEMISTRY: SolverEntry[] = [
   { id: 'c-xii-4-2', topic: K, eq: 'k = (2.303/t)*log10(A_0/A)', ask: 'k', vars: { k: 'rate constant|rate1', t: ['time', 'period', { gen: [10, 600] }], A_0: ['initial concentration', 'molarity', { gen: [0.5, 2] }], A: ['concentration at time t', 'molarity', { gen: [0.05, 0.4] }] } },
   { id: 'c-xii-4-39', topic: K, eq: 't_half = 0.693/k', vars: { t_half: 'half-life|period', k: 'rate constant|rate1' } },
   { id: 'c-xii-4-40', topic: K, eq: 'k = 0.693/t_half', vars: { k: 'rate constant|rate1', t_half: 'half-life|period' } },
-  { id: 'c-xii-4-4', topic: K, eq: 'k = (1/t)*(1/A - 1/A_0)', ask: 'k', vars: { k: 'rate constant|rate2', t: ['time', 'period', { gen: [10, 600] }], A: ['concentration at time t', 'molarity', { gen: [0.05, 0.4] }], A_0: ['initial concentration', 'molarity', { gen: [0.5, 2] }] } },
   { id: 'c-xii-4-5', topic: K, eq: 'k = A*exp(-E_a/(R*T))', ask: 'k', vars: { k: 'rate constant|rate1', A: ['frequency factor', 'rate1', { gen: [1e8, 1e13] }], E_a: 'activation energy|activation', R: 'c:R', T: 'temperature|temperature' } },
   { id: 'c-xii-4-6', topic: K, eq: 'log10(k_2/k_1) = (E_a/(2.303*R))*(1/T_1 - 1/T_2)', ask: 'E_a', vars: { k_2: ['rate constant at T₂', 'rate1', { gen: [0.1, 0.5] }], k_1: ['rate constant at T₁', 'rate1', { gen: [0.001, 0.05] }], E_a: 'activation energy|activation', R: 'c:R', T_1: ['lower temperature', 'temperature', { gen: [280, 320] }], T_2: ['higher temperature', 'temperature', { gen: [330, 400] }] } },
   { id: 'c-xii-4-7', topic: K, eq: 'A = A_0 - k*t', ask: 'A', vars: { A: 'concentration at time t|molarity', A_0: ['initial concentration', 'molarity', { gen: [1, 2] }], k: ['rate constant', 'rate0', { gen: [0.001, 0.01] }], t: ['time', 'time', { gen: [1, 60] }] } },
   { id: 'c-xii-4-8', topic: K, eq: 't_half = A_0/(2*k)', vars: { t_half: 'half-life|period', A_0: 'initial concentration|molarity', k: 'rate constant|rate0' } },
-  { id: 'c-xii-4-9', topic: K, eq: 't_half = 1/(k*A_0)', vars: { t_half: 'half-life|period', k: 'rate constant|rate2', A_0: 'initial concentration|molarity' } },
   { id: 'c-xii-4-34', topic: K, eq: 'C = C_0*exp(-k*t)', ask: 'C', vars: { C: 'concentration at time t|molarity', C_0: 'initial concentration|molarity', k: 'rate constant|rate1', t: ['time', 'time', { gen: [1, 100] }] } },
   { id: 'c-xii-4-62', topic: K, eq: 'DeltaH = E_f - E_r', vars: { DeltaH: 'enthalpy change|molarEnergy', E_f: 'forward activation energy|activation', E_r: 'reverse activation energy|activation' } },
 ];

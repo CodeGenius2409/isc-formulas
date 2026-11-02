@@ -1,0 +1,209 @@
+{
+  "subject": "chemistry",
+  "code": "862",
+  "edition": "ISC Examination Year 2028, Chemistry (862). CISCE Research, Development and Curriculum Division, January 2026.",
+  "classes": [
+    {
+      "level": "XI",
+      "paper": "Paper I, Theory: 3 hours, 70 marks (Physical 41, Inorganic 6, Organic 23). Paper II: Practical 15, Project Work 10, Practical File 5.",
+      "markGroups": [
+        { "units": [1, 2, 5, 6, 7], "marks": 41, "label": "Physical Chemistry" },
+        { "units": [3, 4], "marks": 6, "label": "Inorganic Chemistry" },
+        { "units": [8, 9], "marks": 23, "label": "Organic Chemistry" }
+      ],
+      "units": [
+        {
+          "number": 1,
+          "name": "Some Basic Concepts of Chemistry",
+          "topics": [
+            { "key": "a", "name": "Matter, laws and measurement", "wording": "General introduction: Importance and scope of chemistry. Study of matter. Understanding laws of chemical combination. Dalton's atomic theory: concept of elements, atoms and molecules. Precision and accuracy: quantities and their measurements in Chemistry, significant figures, SI units. Dimensional analysis: conversion of units, numericals and applications of units." },
+            { "key": "b", "name": "Mole concept and stoichiometry", "wording": "Isotopic (atomic) and molecular masses, mole concept and molar mass, percentage composition, empirical and molecular formula. Stoichiometry and calculations based on chemical reactions. Stoichiometric calculations based on mass-mass, mass-volume, volume-volume relationships and limiting reagent." },
+            { "key": "c", "name": "Chemical equivalents and volumetric calculations", "wording": "Chemical equivalents, volumetric calculations in terms of normality. Terms used in volumetric calculations such as percentage (w/w and w/v), normality, molarity, molality, mole fraction, etc." }
+          ]
+        },
+        {
+          "number": 2,
+          "name": "Structure of Atom",
+          "topics": [
+            { "key": "a", "name": "Particles and atomic models", "wording": "Discovery of fundamental particles (electron, proton and neutron), atomic number, isotopes and isobars. Thomson's model and its limitations. Rutherford's experimental model and its limitations. Dual nature of matter and light. Bohr's atomic model and its limitations (de Broglie's equation, Heisenberg's uncertainty principle)." },
+            { "key": "b", "name": "Quantum numbers and electronic configuration", "wording": "Concept of shells, subshells, orbitals. Quantum numbers, shapes of s, p and d orbitals. Rules for filling electrons in orbitals - aufbau principle, Pauli's exclusion principle and Hund's rule of maximum multiplicity. Electronic configuration of atoms, stability of half-filled and completely filled orbitals." }
+          ]
+        },
+        {
+          "number": 3,
+          "name": "Classification of Elements and Periodicity in Properties",
+          "topics": [
+            { "key": "a", "name": "Periodic law and periodic trends", "wording": "Significance of classification; study of Mendeleev's periodic law and its limitations; Modern Periodic Law and the present form of periodic table leading to periodic trends in properties of elements - atomic radii, ionic radii, valency, ionisation enthalpy, electron gain enthalpy, electronegativity. Nomenclature of elements with atomic number greater than 100." }
+          ]
+        },
+        {
+          "number": 4,
+          "name": "Chemical Bonding and Molecular Structure",
+          "topics": [
+            { "key": "a", "name": "Ionic and covalent bonding", "wording": "Valence electrons, ionic bond character, covalent bond, bond parameters, Lewis structure, polar character of covalent bond. Coordinate bond. Resonance and hydrogen bond." },
+            { "key": "b", "name": "VSEPR, hybridisation and molecular orbitals", "wording": "VSEPR theory, geometry of covalent molecules, valence bond theory, concept of hybridisation involving s, p and d orbitals and shapes of some simple molecules. Molecular orbital theory of homonuclear diatomic molecules (qualitative idea only)." }
+          ]
+        },
+        {
+          "number": 5,
+          "name": "Chemical Thermodynamics",
+          "topics": [
+            { "key": "a", "name": "Systems and the First Law", "wording": "Introduction, concepts, types of system, surroundings, extensive, intensive properties and state functions. First Law of Thermodynamics and its significance, work, heat, internal energy, enthalpy, heat capacity and specific heat. Hess's law of constant heat summation, enthalpy of bond dissociation, combustion, formation, atomisation, sublimation, phase transition, ionisation, solution and dilution." },
+            { "key": "b", "name": "Second and Third Laws", "wording": "Second Law of Thermodynamics and its significance, spontaneity of a chemical change; Entropy, Free Energy. Third Law of Thermodynamics - statement only." }
+          ]
+        },
+        {
+          "number": 6,
+          "name": "Equilibrium",
+          "topics": [
+            { "key": "a", "name": "Chemical Equilibrium", "wording": "Introduction of physical and chemical equilibrium and its characteristics. Dynamic nature of equilibrium, law of mass action, equilibrium constant and factors affecting equilibrium. Le Chatelier's principle and its applications." },
+            { "key": "b", "name": "Ionic equilibrium", "wording": "Introduction, electrolyte (strong and weak), non-electrolyte, ionisation, degree of ionisation of polybasic acids, acid strength, concept of pH, pH indicators, buffer solution, common ion effect (with illustrative examples). Henderson equation, hydrolysis of salts, solubility and solubility product." }
+          ]
+        },
+        {
+          "number": 7,
+          "name": "Redox Reactions",
+          "topics": [
+            { "key": "a", "name": "Redox Reactions", "wording": "Concept of oxidation and reduction, redox reactions, oxidation number, change in oxidation number, balancing redox reactions (in terms of loss and gain of electrons). Applications of redox in various types of chemical reactions." }
+          ]
+        },
+        {
+          "number": 8,
+          "name": "Organic Chemistry: Some Basic Principles and Techniques",
+          "topics": [
+            { "key": "a", "name": "Classification, nomenclature and isomerism", "wording": "General introduction, classification and IUPAC nomenclature of organic compounds and isomerism." },
+            { "key": "b", "name": "Purification and analysis", "wording": "Methods of purification, qualitative and quantitative analysis." },
+            { "key": "c", "name": "Electronic effects and reaction types", "wording": "Electron displacement in a covalent bond: inductive effect, electromeric effect, resonance and hyperconjugation. Homolytic and heterolytic bond fission of a covalent bond: free radicals, carbocations, carbanions, electrophiles and nucleophiles, types of organic reactions." }
+          ]
+        },
+        {
+          "number": 9,
+          "name": "Hydrocarbons",
+          "topics": [
+            { "key": "a", "name": "Alkanes", "wording": "Nomenclature, isomerism, conformation (methane and ethane), physical properties, chemical properties including free radical mechanism of halogenation, combustion and pyrolysis." },
+            { "key": "b", "name": "Alkenes", "wording": "Nomenclature, structure of double bond (ethene), isomerism; methods of preparation; physical properties, chemical properties; addition of hydrogen, halogen, water, hydrogen halides (Markownikoff's addition and peroxide effect), ozonolysis, oxidation, mechanism of electrophilic addition." },
+            { "key": "c", "name": "Alkynes", "wording": "Nomenclature, structure of triple bond (ethyne), methods of preparation; physical properties, chemical properties: acidic character of alkynes, addition reactions - hydrogen, halogens, hydrogen halides and water." },
+            { "key": "d", "name": "Aromatic Hydrocarbons", "wording": "Introduction, IUPAC nomenclature, benzene: resonance, aromaticity, chemical properties: mechanism of electrophilic substitution. Nitration, sulphonation, halogenation, Friedel Crafts alkylation and acylation, directive influence of functional group in monosubstituted benzene. Carcinogenicity and toxicity." }
+          ]
+        },
+        {
+          "number": 10,
+          "name": "Paper II: Practical Work",
+          "practical": true,
+          "topics": [
+            { "key": "a", "name": "Titration", "wording": "Acid-base titration involving molarity: sodium carbonate solution with dil. H2SO4 or dil. HCl using methyl orange indicator; NaOH or KOH solution with dil. H2SO4 or dil. HCl using methyl orange indicator. Calculations involving molarity, concentration in grams per litre, number of ions, water of crystallisation and percentage purity." },
+            { "key": "b", "name": "Qualitative analysis", "wording": "Identification of single salt containing one anion and one cation. Anions: CO3 2-, NO2-, S2-, SO3 2-, SO4 2-, NO3-, CH3COO-, Cl-, Br-, I-, C2O4 2-, PO4 3-. Cations: NH4+, Pb2+, Cu2+, Al3+, Fe3+, Zn2+, Mn2+, Ni2+, Co2+, Ba2+, Sr2+, Ca2+, Mg2+." },
+            { "key": "c", "name": "Preparation of inorganic compounds", "wording": "Preparation of potash alum/Mohr's salt. Preparation of crystalline FeSO4/CuSO4." },
+            { "key": "d", "name": "Paper Chromatography", "wording": "Preparation of chromatogram, separation of pigments from extracts of leaves and flowers/ink mixtures; determination of Rf value." }
+          ]
+        }
+      ]
+    },
+    {
+      "level": "XII",
+      "paper": "Paper I, Theory: 3 hours, 70 marks (Physical 25, Inorganic 14, Organic 31). Paper II: Practical 15, Project Work 10, Practical File 5.",
+      "markGroups": [
+        { "units": [1, 2, 3], "marks": 25, "label": "Physical Chemistry" },
+        { "units": [4, 5], "marks": 14, "label": "Inorganic Chemistry" },
+        { "units": [6, 7, 8, 9, 10], "marks": 31, "label": "Organic Chemistry" }
+      ],
+      "units": [
+        {
+          "number": 1,
+          "name": "Solutions",
+          "topics": [
+            { "key": "a", "name": "Solutions and colligative properties", "wording": "Study of concentration of solutions of solids in liquids, liquid in liquid, solubility of gases in liquids, solid solutions, Colligative properties - Raoult's law of relative lowering of vapour pressure, elevation of boiling point, depression of freezing point and osmotic pressure. Use of colligative properties in determining molecular masses of solutes, abnormal molecular mass association and dissociation, van't Hoff factor." }
+          ]
+        },
+        {
+          "number": 2,
+          "name": "Electrochemistry",
+          "topics": [
+            { "key": "a", "name": "Cells and potentials", "wording": "Electrolytic and electrochemical cells. Redox reactions in electrochemical cells. Electromotive Force (emf) of a cell, standard electrode potential, Nernst equation and its application to chemical cells. Relation between Gibbs energy change and emf of a cell." },
+            { "key": "b", "name": "Conductance and electrolysis", "wording": "Conductance in electrolytic solutions, specific, equivalent and molar conductivity, variations of conductivity with concentration, graphs; Kohlrausch's Law of electrolysis and Faraday's Laws of electrolysis." },
+            { "key": "c", "name": "Batteries and corrosion", "wording": "Dry cell and lead accumulator, fuel cells, corrosion." }
+          ]
+        },
+        {
+          "number": 3,
+          "name": "Chemical Kinetics",
+          "topics": [
+            { "key": "a", "name": "Rate, order and integrated rate equations", "wording": "Meaning of Chemical Kinetics - slow and fast reactions. Rate of a reaction - average and instantaneous rate (graphical representation). Factors affecting rate of reaction: surface area, nature of reactants, concentration, temperature, catalyst and radiation. Order and molecularity of a reaction, rate law and specific rate constant. Integrated rate equations and half-life (only for zero and first order reactions)." },
+            { "key": "b", "name": "Collision theory and activation energy", "wording": "Concept of collision theory (elementary idea, no mathematical treatment). Concept of threshold and activation energy, Arrhenius equation." }
+          ]
+        },
+        {
+          "number": 4,
+          "name": "d- and f- Block Elements",
+          "topics": [
+            { "key": "a", "name": "Transition elements, lanthanoids and actinoids", "wording": "Position in the periodic table, occurrence, electronic configuration and characteristics of transition metals, general trends in properties of the 3d-series of transition metals - metallic character, ionisation enthalpy, oxidation states, ionic radii, colour of ions, catalytic property, magnetic properties, interstitial compounds, alloy formation. Lanthanoids and actinoids." },
+            { "key": "b", "name": "K2Cr2O7 and KMnO4", "wording": "Preparation and properties of K2Cr2O7 and KMnO4." }
+          ]
+        },
+        {
+          "number": 5,
+          "name": "Coordination Compounds",
+          "topics": [
+            { "key": "a", "name": "Coordination Compounds", "wording": "Concept of complexes, definition of ligands, coordination number, oxidation number. IUPAC nomenclature of mononuclear coordination compounds. Isomerism (structural and stereo). Bonding, Werner's theory, VBT and CFT. Colour, magnetic properties and shapes. Importance of coordination compounds (in qualitative analysis, extraction of metals and biological system)." }
+          ]
+        },
+        {
+          "number": 6,
+          "name": "Haloalkanes and Haloarenes",
+          "topics": [
+            { "key": "a", "name": "Haloalkanes", "wording": "General formula, nomenclature and classification. Nature of C-X bond, physical and chemical properties, mechanism of substitution reactions, optical rotation." },
+            { "key": "b", "name": "Haloarenes", "wording": "Basic idea, nature of C-X bond, substitution reactions (directive influence of halogen in monosubstituted compounds only)." },
+            { "key": "c", "name": "Polyhalogen compounds", "wording": "Uses and environmental effects of - dichloromethane, trichloromethane, tetra-chloromethane, iodoform, freons and DDT." }
+          ]
+        },
+        {
+          "number": 7,
+          "name": "Alcohols, Phenols and Ethers",
+          "topics": [
+            { "key": "a", "name": "Alcohols", "wording": "Classification, general formula, structure and nomenclature. Methods of preparation, physical and chemical properties (of primary alcohols only), identification of primary, secondary and tertiary alcohols, mechanism of dehydration, uses with special reference to methanol and ethanol." },
+            { "key": "b", "name": "Phenols", "wording": "Classification and nomenclature. Methods of preparation, physical and chemical properties, acidic nature of phenol, electrophilic substitution reactions, uses of phenols." },
+            { "key": "c", "name": "Ethers", "wording": "Aliphatic Ethers: General formula, structure and nomenclature. Methods of preparation, physical and chemical properties, uses. Aryl ethers." }
+          ]
+        },
+        {
+          "number": 8,
+          "name": "Aldehydes, Ketones and Carboxylic Acids",
+          "topics": [
+            { "key": "a", "name": "Aldehydes and Ketones", "wording": "Nomenclature, structure of methods of preparation of aldehydes and ketones, physical and chemical properties, mechanism of nucleophilic addition, reactivity of alpha hydrogen in aldehydes and uses." },
+            { "key": "b", "name": "Carboxylic Acids", "wording": "Classification, general formula and structure of carboxylic group. Nomenclature, acidic nature, methods of preparation, physical and chemical properties and uses." }
+          ]
+        },
+        {
+          "number": 9,
+          "name": "Organic Compounds containing Nitrogen",
+          "topics": [
+            { "key": "a", "name": "Aliphatic Amines and Aniline", "wording": "Aliphatic Amines: General formula and classification of amines. Structure of the amino group, nomenclature. Methods of preparation, physical and chemical properties, uses, identification of primary, secondary and tertiary amines. Aniline: preparation, properties, tests and uses." },
+            { "key": "b", "name": "Cyanides and Isocyanides", "wording": "Methods of preparation of cyanides (from alkyl halide, from amide) and isocyanides (from alkyl halide, from primary amines)." },
+            { "key": "c", "name": "Diazonium salts", "wording": "Preparation, chemical reactions and importance in synthetic organic chemistry." }
+          ]
+        },
+        {
+          "number": 10,
+          "name": "Biomolecules",
+          "topics": [
+            { "key": "a", "name": "Carbohydrates", "wording": "Definition, Classification (aldoses and ketoses), monosaccharides (glucose and fructose), D-L configuration, oligosaccharides (sucrose, lactose, maltose), polysaccharides (starch, cellulose, glycogen); Importance of carbohydrates." },
+            { "key": "b", "name": "Proteins", "wording": "Structural units of proteins. Basic idea of amino acids, peptide bond, polypeptides, proteins, structure of proteins - primary, secondary, tertiary structure and quaternary structures (qualitative idea only), denaturation of proteins. Enzymes, hormones - elementary idea only." },
+            { "key": "c", "name": "Vitamins", "wording": "Classification and functions." },
+            { "key": "d", "name": "Nucleic Acids", "wording": "DNA and RNA." }
+          ]
+        },
+        {
+          "number": 11,
+          "name": "Paper II: Practical Work",
+          "practical": true,
+          "topics": [
+            { "key": "a", "name": "Titrations", "wording": "Oxidation-reduction titrations: potassium manganate (VII) / ammonium iron (II) sulphate; potassium manganate (VII) / oxalic acid. Calculate molarity, concentration in grams per litre / molecular mass, number of molecules of water of crystallisation / percentage purity." },
+            { "key": "b", "name": "Rate of reaction, pH and cells", "wording": "Study of the rate of reaction (sodium thiosulphate and hydrochloric acid; magnesium and dilute acid). Experiments related to pH change using pH paper or universal indicator. Setting up a simple voltaic cell, and variation of cell potential in Zn/Zn2+//Cu2+/Cu with change in concentration." },
+            { "key": "c", "name": "Identifying compounds and functional groups", "wording": "Alcoholic group (glycerol), aldehyde group (formaldehyde), ketonic group (acetone), carboxylic group (benzoic acid), amino group (aniline). Characteristic tests of carbohydrates (glucose) and proteins (powdered milk)." },
+            { "key": "d", "name": "Qualitative analysis", "wording": "Identification of single salt containing one anion and one cation. Anions: CO3 2-, NO2-, S2-, SO3 2-, SO4 2-, NO3-, CH3COO-, Cl-, Br-, I-, C2O4 2-, PO4 3-. Cations: NH4+, Pb2+, Cu2+, Al3+, Fe3+, Zn2+, Mn2+, Ni2+, Co2+, Ba2+, Sr2+, Ca2+, Mg2+." }
+          ]
+        }
+      ]
+    }
+  ]
+}

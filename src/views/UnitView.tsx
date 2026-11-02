@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useMemo, useState, type RefObject } from 'react';
 import { ChevronLeft, ChevronRight, Printer } from 'lucide-react';
-import { getClass, getSubject, loadUnits, unitTitle } from '../data/book';
+import { getClass, getSubject, loadUnits, unitTitle, splitUnitName } from '../data/book';
 import type { ClassLevel, SubjectId } from '../data/types';
 import { useAsync } from '../lib/hooks';
 import { href } from '../lib/router';
 import { lastReadStore, rememberClass } from '../state/library';
 import { FormulaList, type ListItem } from '../components/FormulaList';
 import { STATUS_LABEL } from '../components/shell/Contents';
+import { SyllabusNote } from '../components/SyllabusNote';
 
 interface Props {
   subject: SubjectId;
@@ -92,6 +93,7 @@ export default function UnitView({ subject, level, unitIndex, subtopicIndex, scr
           {meta.count} formulas in {meta.subtopics.length} sections
         </p>
         {STATUS_LABEL[meta.status] && <p className="status-label">{STATUS_LABEL[meta.status]}</p>}
+        <SyllabusNote subject={subject} level={level} number={Number(splitUnitName(meta.name).number)} />
       </header>
 
       {state.status === 'loading' && <p className="spinner-line">Opening {unitTitle(meta.name)}</p>}

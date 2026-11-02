@@ -187,10 +187,10 @@ describe('any variable as the unknown', () => {
     expect(answers(outcome)[0]).toBeCloseTo(20, 0);
   });
 
-  it('solves the van der Waals equation for volume', () => {
-    const outcome = run('c-xi-5-4', 'V', { P: '124604', n: '1', a: '0.14', b: '3.9e-5', T: '300' });
+  it('solves a cubic for the variable inside it', () => {
+    const outcome = run('c-xi-7-178', 's', { K_sp: '4e-12' });
     expect(outcome.ok).toBe(true);
-    expect(answers(outcome).some((v) => Math.abs(v - 0.02) < 2e-4)).toBe(true);
+    expect(answers(outcome).some((v) => Math.abs(v - 1e-4) < 1e-6)).toBe(true);
   });
 });
 

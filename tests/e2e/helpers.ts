@@ -33,7 +33,7 @@ export function bookRoutes(): { contents: string[]; units: UnitRoute[] } {
   for (const subject of manifest.subjects) {
     for (const cls of subject.classes) {
       contents.push(`book/${subject.id}/${cls.level}`);
-      cls.units.forEach((unit, i) => units.push({ path: `book/${subject.id}/${cls.level}/${i}`, title: unit.name.replace(/^\d+\.\s*/, '').replace(/\s*\((?:not in 2028 syllabus|supplementary)\)\s*$/i, '') }));
+      cls.units.forEach((unit, i) => units.push({ path: `book/${subject.id}/${cls.level}/${i}`, title: unit.name.replace(/^\d+\.\s*/, '') }));
     }
   }
   return { contents, units };

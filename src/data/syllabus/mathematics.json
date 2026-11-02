@@ -1,0 +1,135 @@
+{
+  "subject": "mathematics",
+  "code": "860",
+  "edition": "ISC Examination Year 2028, Mathematics (860). CISCE Research, Development and Curriculum Division, January 2026.",
+  "classes": [
+    {
+      "level": "XI",
+      "paper": "Paper I, Theory: 3 hours, 80 marks. Paper II: Project Work, 20 marks.",
+      "markGroups": [
+        { "units": [1], "marks": 18 },
+        { "units": [2], "marks": 26 },
+        { "units": [3], "marks": 20 },
+        { "units": [4], "marks": 8 },
+        { "units": [5], "marks": 8 }
+      ],
+      "units": [
+        {
+          "number": 1,
+          "name": "Sets and Functions",
+          "topics": [
+            { "key": "a", "name": "Sets", "wording": "Sets and their representations. Empty set. Finite and Infinite sets. Equal sets. Subsets. Subsets of a set of real numbers especially intervals (with notations). Power set. Universal set. Venn diagrams. Union and Intersection of sets. Difference of sets. Complement of a set. Properties of Complement of Sets." },
+            { "key": "b", "name": "Relations & Functions", "wording": "Ordered pairs. Cartesian product of sets. Number of elements in the cartesian product of two finite sets. Definition of relation, pictorial diagrams, domain, co-domain and range of a relation. Function as a special type of relation. Real valued functions, domain and range of these functions, constant, identity, polynomial, rational, modulus, signum, exponential, logarithmic and greatest integer functions. Sum, difference, product and quotient of functions." },
+            { "key": "c", "name": "Trigonometry", "wording": "Positive and negative angles. Measuring angles in radians and in degrees and conversion from one measure to another. Definition of trigonometric functions with the help of unit circle. Signs of trigonometric functions. Domain and range of trigonometric functions and their graphs. Expressing sin (x ± y) and cos (x ± y) in terms of sin x, sin y, cos x and cos y and their simple applications. Identities related to sin 2x, cos 2x, tan 2x, sin 3x, cos 3x and tan 3x." }
+          ]
+        },
+        {
+          "number": 2,
+          "name": "Algebra",
+          "topics": [
+            { "key": "a", "name": "Complex Numbers", "wording": "Introduction of complex numbers and their representation, Algebraic properties of complex numbers. Argand plane and polar representation of complex numbers. Square root of a complex number. Cube root of unity." },
+            { "key": "b", "name": "Quadratic Equations", "wording": "Statement of Fundamental Theorem of Algebra, solution of quadratic equations (with real coefficients). Nature of roots, quadratic functions, sign of quadratic, linear and quadratic inequalities." },
+            { "key": "c", "name": "Permutations and Combinations", "wording": "Fundamental principle of counting. Factorial n (n!). Permutations and combinations, derivation of formulae for nPr and nCr, their connections, and applications." },
+            { "key": "d", "name": "Binomial Theorem", "wording": "History, statement and proof of the binomial theorem for positive integral indices. Pascal's triangle, General and middle term(s) in binomial expansion, applications." },
+            { "key": "e", "name": "Sequence and Series", "wording": "Sequence and Series. Arithmetic Progression (A.P.). Arithmetic Mean (A.M.). Geometric Progression (G.P.), general term of a G.P., sum of first n terms of a G.P., infinite G.P. and its sum, geometric mean (G.M.), relation between A.M. and G.M. Formulae for the following special sums: sum of n, sum of n squared, sum of n cubed." }
+          ]
+        },
+        {
+          "number": 3,
+          "name": "Coordinate Geometry",
+          "topics": [
+            { "key": "a", "name": "Straight Lines", "wording": "Brief recall of two-dimensional geometry from earlier classes. Shifting of origin. Slope of a line and angle between two lines. Various forms of equations of a line: parallel to axis, point-slope form, slope-intercept form, two-point form, intercept form and normal form. General equation of a line. Equation of family of lines passing through the point of intersection of two lines. Distance of a point from a line." },
+            { "key": "b", "name": "Circles", "wording": "Equations of a circle in standard form, diameter form, general form and parametric form. Given the equation of a circle, to find the centre and the radius. Finding the equation of a circle. Intercepts made by the circle on the axes. Relative position of two circles." },
+            { "key": "c", "name": "Conic Section", "wording": "Sections of a cone, ellipse, parabola, hyperbola, a point, a straight line and a pair of intersecting lines as a degenerated case of a conic section. Standard equations and simple properties of parabola, ellipse and hyperbola." },
+            { "key": "d", "name": "Introduction to three-dimensional Geometry", "wording": "Coordinate axes and coordinate planes in three dimensions. Coordinates of a point. Distance between two points and section formula." }
+          ]
+        },
+        {
+          "number": 4,
+          "name": "Calculus",
+          "topics": [
+            { "key": "a", "name": "Limits and Derivatives", "wording": "Derivative introduced as rate of change both as that of distance function and geometrically. Intuitive idea of limit. Limits of polynomials and rational functions trigonometric, exponential and logarithmic functions. Definition of derivative, relate it to slope of tangent of the curve, Derivative of sum, difference, product and quotient of functions. Derivatives of polynomial and trigonometric functions." }
+          ]
+        },
+        {
+          "number": 5,
+          "name": "Statistics and Probability",
+          "topics": [
+            { "key": "a", "name": "Statistics", "wording": "Measures of dispersion: range, mean deviation, variance and standard deviation of ungrouped/grouped data." },
+            { "key": "b", "name": "Probability", "wording": "Random experiments; outcomes, sample spaces (set representation). Events; occurrence of events, 'not', 'and' and 'or' events, exhaustive events, mutually exclusive events, Axiomatic (set theoretic) probability, connections with other theories studied in earlier classes. Probability of an event, probability of 'not', 'and' and 'or' events." }
+          ]
+        }
+      ]
+    },
+    {
+      "level": "XII",
+      "paper": "Paper I, Theory: 3 hours, 80 marks. Paper II: Project Work, 20 marks.",
+      "markGroups": [
+        { "units": [1], "marks": 10 },
+        { "units": [2], "marks": 10 },
+        { "units": [3], "marks": 35 },
+        { "units": [4], "marks": 5 },
+        { "units": [5], "marks": 6 },
+        { "units": [6], "marks": 5 },
+        { "units": [7], "marks": 9 }
+      ],
+      "units": [
+        {
+          "number": 1,
+          "name": "Relations and Functions",
+          "topics": [
+            { "key": "a", "name": "Types of relations and functions", "wording": "Types of relations: reflexive, symmetric, transitive and equivalence relations. One to one and onto functions, composite function and inverse of a function." },
+            { "key": "b", "name": "Inverse Trigonometric Functions", "wording": "Definition, domain, range, principal value branch. Graphs of inverse trigonometric functions. Elementary properties of inverse trigonometric functions." }
+          ]
+        },
+        {
+          "number": 2,
+          "name": "Algebra",
+          "topics": [
+            { "key": "a", "name": "Matrices", "wording": "Concept, notation, order, equality, types of matrices, zero and identity matrix, transpose of a matrix, symmetric and skew symmetric matrices. Operation on matrices: Addition and multiplication and multiplication with a scalar. Simple properties of addition, multiplication and scalar multiplication. Non-commutativity of multiplication of matrices and existence of non-zero matrices whose product is the zero matrix (restrict to square matrices of order upto 3). Invertible matrices and proof of the uniqueness of inverse, if it exists." },
+            { "key": "b", "name": "Determinants", "wording": "Determinant of a square matrix (up to 3×3 matrices), properties of determinants, minors, co-factors, and applications of determinants in finding the area of a triangle. Adjoint and inverse of a square matrix. Consistency, inconsistency and number of solutions of system of linear equations by examples, solving system of linear equations in two or three variables (having unique solution) using inverse of a matrix." }
+          ]
+        },
+        {
+          "number": 3,
+          "name": "Calculus",
+          "topics": [
+            { "key": "a", "name": "Continuity, Differentiability and Differentiation", "wording": "Continuity and differentiability, derivative of composite functions, chain rule, derivatives of inverse trigonometric functions, derivative of implicit functions. Derivatives of logarithmic and exponential functions. Logarithmic differentiation, derivative of functions expressed in parametric forms. Second order derivatives." },
+            { "key": "b", "name": "Applications of Derivatives", "wording": "Rate of change of quantities, increasing/decreasing functions, tangent and normal, maxima and minima (first derivative test motivated geometrically and second derivative test given as a provable tool). Problems that illustrate basic principles and understanding of the subject as well as real-life situations." },
+            { "key": "c", "name": "Integrals", "wording": "Integration as inverse process of differentiation. Integration of a variety of functions by substitution, by partial fractions and by parts. Fundamental Theorem of Calculus (without proof). Basic properties of definite integrals and evaluation of definite integrals." },
+            { "key": "d", "name": "Application of Integrals", "wording": "Area under the curve. Application in finding the area bounded by simple curves and coordinate axes. Area enclosed between two curves." },
+            { "key": "e", "name": "Differential Equations", "wording": "Definition, order and degree, general and particular solutions of a differential equation. Solution of differential equations by method of separation of variables, solutions of homogeneous differential equations of first order and first degree. Solutions of linear differential equation of the type dy/dx + Py = Q, and dx/dy + Px = Q." }
+          ]
+        },
+        {
+          "number": 4,
+          "name": "Vector Algebra",
+          "topics": [
+            { "key": "a", "name": "Vector Algebra", "wording": "Vectors and scalars, magnitude and direction of a vector. Direction cosines and direction ratios of a vector. Types of vectors (equal, unit, zero, parallel and collinear vectors), position vector of a point, negative of a vector, components of a vector, addition of vectors, multiplication of a vector by a scalar, position vector of a point dividing a line segment in a given ratio. Definition, Geometrical Interpretation, properties and application of scalar (dot) product of vectors, vector (cross) product of vectors." }
+          ]
+        },
+        {
+          "number": 5,
+          "name": "Three-dimensional Geometry",
+          "topics": [
+            { "key": "a", "name": "Three-dimensional Geometry", "wording": "Direction cosines and direction ratios of a line joining two points. Cartesian equation and vector equation of a line, coplanar and skew lines, shortest distance between two lines. Cartesian and vector equation of a plane. Angle between (i) two lines, (ii) two planes, (iii) a line and a plane. Distance of a point from a plane." }
+          ]
+        },
+        {
+          "number": 6,
+          "name": "Linear Programming",
+          "topics": [
+            { "key": "a", "name": "Linear Programming", "wording": "Introduction, related terminology such as constraints, objective function, optimization, different types of linear programming (L.P.) problems, mathematical formulation of L.P. problems, graphical method of solution for problems in two variables, feasible (bounded and unbounded) and infeasible regions, feasible and infeasible solutions, optimal feasible solutions (up to three non-trivial constraints)." }
+          ]
+        },
+        {
+          "number": 7,
+          "name": "Probability",
+          "topics": [
+            { "key": "a", "name": "Probability", "wording": "Conditional probability, multiplication theorem on probability, independent events, total probability, Bayes' theorem, Random variable and its probability distribution, mean of random variable." }
+          ]
+        }
+      ]
+    }
+  ]
+}

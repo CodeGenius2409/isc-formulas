@@ -6,7 +6,7 @@
   "description": "ISC 2028 formula reference, problem solver, practice and simulators for Physics, Chemistry, Mathematics and Computer Science. Installable, fully offline.",
   "scripts": {
     "dev": "vite",
-    "data": "node scripts/migrate-data.mjs",
+    "data": "node scripts/migrate-data.mjs && node scripts/apply-syllabus.mjs",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview --port 4173 --strictPort",
     "typecheck": "tsc --noEmit",

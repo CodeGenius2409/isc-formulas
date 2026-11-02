@@ -2,6 +2,8 @@ import { memo } from 'react';
 import { Calculator, Copy, ExternalLink, ListChecks, Star } from 'lucide-react';
 import { getSubject, unitTitle } from '../data/book';
 import type { Formula, Placement } from '../data/types';
+import { useFocusableOverflow } from '../lib/hooks';
+import { useKatexReady } from '../lib/katex';
 import { href, openWork } from '../lib/router';
 import { useStore } from '../lib/store';
 import { favouritesStore, noteRecent, toggleFavourite } from '../state/library';
@@ -27,6 +29,7 @@ export const FormulaRow = memo(function FormulaRow({ formula: f, open, onToggle,
   const saved = favourites.includes(f.id);
   const elsewhere = f.shared?.placements.filter((p) => !(p.subject === f.subject && p.classLevel === f.classLevel && p.unit === f.unit)) ?? [];
   const solvable = useSolvableIds().has(f.id);
+  const mathRef = useFocusableOverflow(`Formula for ${f.name}, scrolls sideways`, useKatexReady());
 
   return (
     <article className="row" data-open={open} data-subject={f.subject}>
@@ -35,7 +38,7 @@ export const FormulaRow = memo(function FormulaRow({ formula: f, open, onToggle,
         {f.number.slice(f.number.lastIndexOf('.'))}
       </div>
       <div className="row-main">
-        <div className="row-math math-host">
+        <div ref={mathRef} className="row-math math-host">
           <Math latex={f.latex} />
         </div>
         <h3 className="row-name">

@@ -6,8 +6,8 @@ import { describe, expect, it } from 'vitest';
 import { flatten, loadLegacyFormulas } from '../../scripts/lib/dedupe.mjs';
 // @ts-expect-error plain JS helper, shared with the migration script
 import { REVIEW } from '../../scripts/dedupe-decisions.mjs';
-import { canonicalId, migrateIds } from '../../src/data/aliases';
-import type { Chunk, ChunkItem, Manifest, SharedEntry } from '../../src/data/types';
+import { canonicalId, isRemovedId, migrateIds } from '../../src/data/aliases';
+import type { Chunk, ChunkItem, Manifest, SharedEntry, Syllabus } from '../../src/data/types';
 
 const root = path.resolve(__dirname, '../..');
 const genDir = path.join(root, 'src/data/generated');
@@ -16,7 +16,7 @@ const readJson = <T,>(file: string): T => JSON.parse(fs.readFileSync(path.join(g
 const rows: { id: string; name: string; latex: string; subject: string; cls: string; unit: string }[] = flatten(loadLegacyFormulas(path.join(root, 'legacy/script.js')));
 const manifest = readJson<Manifest>('manifest.json');
 const shared = readJson<Record<string, SharedEntry>>('shared.json');
-const aliases = readJson<Record<string, string>>('idAliases.json');
+const aliases = readJson<Record<string, string | null>>('idAliases.json');
 const chunks = manifest.subjects.flatMap((s) => s.classes.map((c) => readJson<Chunk>(c.chunk)));
 
 const stored = new Map<string, { latex: string; name: string; aka?: string[] }>(Object.entries(shared));
@@ -47,10 +47,11 @@ describe('dedupe reconciliation', () => {
     expect([by('physics'), by('chemistry'), by('mathematics'), by('computerscience')]).toEqual([2530, 2586, 2754, 866]);
   });
 
-  it('old count minus removed duplicates equals new count', () => {
-    const removed = Object.keys(aliases).length;
-    expect(stored.size).toBe(rows.length - removed);
-    expect(manifest.totals).toMatchObject({ legacy: rows.length, removed, entries: stored.size });
+  it('old count minus merged minus archived equals new count', () => {
+    const { merged, archived } = manifest.totals;
+    expect(stored.size).toBe(rows.length - merged - archived);
+    expect(manifest.totals).toMatchObject({ legacy: rows.length, entries: stored.size });
+    expect(Object.keys(aliases).length).toBe(rows.filter((r) => !stored.has(r.id)).length);
     expect(inlineCount + Object.keys(shared).length).toBe(stored.size);
   });
 
@@ -60,15 +61,23 @@ describe('dedupe reconciliation', () => {
     for (const id of Object.keys(aliases)) expect(ids.has(id)).toBe(false);
   });
 
-  it('resolves every old id to a stored entry', () => {
-    for (const r of rows) expect(stored.has(canonicalId(r.id)), r.id).toBe(true);
+  it('resolves every old id to a stored entry, unless it was taken out', () => {
+    for (const r of rows) {
+      if (isRemovedId(r.id)) expect(stored.has(r.id), r.id).toBe(false);
+      else expect(stored.has(canonicalId(r.id)), r.id).toBe(true);
+    }
   });
 
-  it('keeps every old entry reachable from the unit it was in', () => {
-    for (const r of rows) {
-      const ids = unitIds.get(`${r.subject}|${r.cls}|${r.unit}`);
-      expect(ids?.has(canonicalId(r.id)), `${r.id} missing from ${r.unit}`).toBe(true);
+  it('accounts for every merge: an alias is either live or removed, never dangling', () => {
+    for (const [id, target] of Object.entries(aliases)) {
+      if (target === null) expect(stored.has(id), id).toBe(false);
+      else expect(stored.has(target), `${id} -> ${target}`).toBe(true);
     }
+  });
+
+  it('lists every live entry under a unit', () => {
+    const listed = new Set([...unitIds.values()].flatMap((ids) => [...ids]));
+    for (const id of stored.keys()) expect(listed.has(id), id).toBe(true);
   });
 
   it('never rewrites LaTeX: every stored formula matches its legacy source', () => {
@@ -111,11 +120,76 @@ describe('favourites migration', () => {
   });
 });
 
-describe('syllabus labels', () => {
-  it('flags the units outside the 2028 syllabus', () => {
-    const units = manifest.subjects.flatMap((s) => s.classes.flatMap((c) => c.units));
-    expect(units.filter((u) => u.status === 'not-in-syllabus').length).toBe(2);
-    expect(units.filter((u) => u.status === 'supplementary').length).toBe(1);
+describe('the 2028 syllabus', () => {
+  const archive: { id: string; verdict: string; reason: string }[] = JSON.parse(fs.readFileSync(path.join(root, 'archive/removed-formulas.json'), 'utf8'));
+  const classification: Record<string, { verdict: string; topics?: string[] }> = JSON.parse(fs.readFileSync(path.join(root, 'archive/classification.json'), 'utf8'));
+  const syllabusOf = (subject: string) => JSON.parse(fs.readFileSync(path.join(root, `src/data/syllabus/${subject}.json`), 'utf8')) as Syllabus;
+
+  it('balances: old count − merged − archived = new count', () => {
+    const { legacy, merged, archived, entries } = manifest.totals;
+    expect(legacy).toBe(8736);
+    expect(legacy - merged - archived).toBe(entries);
+    expect(stored.size).toBe(entries);
+    expect(archive.length).toBe(archived);
+  });
+
+  it('classifies every entry from the old app, once', () => {
+    expect(Object.keys(classification).length).toBe(manifest.totals.entries + manifest.totals.archived);
+    for (const v of Object.values(classification)) expect(['core', 'supporting', 'review', 'out', 'not-needed']).toContain(v.verdict);
+  });
+
+  it('ships nothing that was archived, and gives a reason for each', () => {
+    for (const e of archive) {
+      expect(stored.has(e.id), e.id).toBe(false);
+      expect(e.reason.length).toBeGreaterThan(10);
+      expect(['out', 'not-needed']).toContain(e.verdict);
+    }
+  });
+
+  it('removes the units that are not in the syllabus', () => {
+    const names = manifest.subjects.flatMap((s) => s.classes.flatMap((c) => c.units.map((u) => u.name)));
+    for (const gone of [/Databases/, /Networking/, /States of Matter/, /Solid State/, /Surface Chemistry/, /Polymers/, /s-Block/]) {
+      expect(names.some((n) => gone.test(n)), String(gone)).toBe(false);
+    }
+  });
+
+  it('uses the official unit names and numbers, and every section links to a real topic', () => {
+    for (const subject of manifest.subjects) {
+      const syllabus = syllabusOf(subject.id);
+      expect(syllabus.edition).toMatch(/Examination Year 2028/);
+      for (const cls of subject.classes) {
+        const official = syllabus.classes.find((c) => c.level === cls.level)!;
+        for (const unit of cls.units) {
+          const [, number, title] = /^(\d+)\. (.*)$/.exec(unit.name)!;
+          const match = official.units.find((u) => u.number === Number(number))!;
+          expect(match?.name, unit.name).toBe(title);
+          for (const sub of unit.subtopics) expect(match.topics.some((t) => t.key === sub.topic), `${unit.name}: ${sub.name}`).toBe(true);
+        }
+      }
+    }
+  });
+
+  it('sums each syllabus to its paper total', () => {
+    const expected: Record<string, number> = { physics: 70, chemistry: 70, mathematics: 80, computerscience: 70 };
+    for (const [subject, total] of Object.entries(expected)) {
+      for (const cls of syllabusOf(subject).classes) {
+        expect(cls.markGroups.reduce((n, g) => n + g.marks, 0), `${subject} ${cls.level}`).toBe(total);
+      }
+    }
+  });
+
+  it('maps every removed id so favourites and progress can migrate', () => {
+    for (const e of archive) expect(aliases[e.id], e.id).toBeNull();
+    expect(migrateIds([archive[0].id, 'p-xi-2-1'])).toEqual(['p-xi-2-1']);
+    expect(isRemovedId(archive[0].id)).toBe(true);
+  });
+
+  it('keeps the uncertain items in the app, for the student to decide', () => {
+    const uncertain = Object.entries(classification).filter(([, v]) => v.verdict === 'review');
+    expect(uncertain.length).toBeGreaterThan(0);
+    for (const [id] of uncertain) expect(stored.has(id), id).toBe(true);
+    const review = fs.readFileSync(path.join(root, 'reports/syllabus-review.md'), 'utf8');
+    for (const [id] of uncertain) expect(review, id).toContain(id);
   });
 });
 

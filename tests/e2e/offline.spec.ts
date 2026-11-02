@@ -60,7 +60,7 @@ test('search, the solver and practice work with no connection', async ({ page, c
 test('every formula opens and typesets with no connection', async ({ page, context }) => {
   test.setTimeout(1_500_000);
   const formulas = allFormulas();
-  expect(formulas.length).toBe(8422);
+  expect(formulas.length).toBe(7828);
   await page.goto('/');
   await waitForServiceWorker(page);
   await context.setOffline(true);

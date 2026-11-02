@@ -105,7 +105,6 @@ export const MECHANICS: SolverEntry[] = [
   { id: 'p-xi-5-10', topic: R, eq: 'I = (2/5)*M*R^2', vars: { I: 'moment of inertia|inertia', M: 'sphere mass|mass', R: 'radius|length' } },
   { id: 'p-xi-5-11', topic: R, eq: 'I = (2/3)*M*R^2', vars: { I: 'moment of inertia|inertia', M: 'shell mass|mass', R: 'radius|length' } },
   { id: 'p-xi-5-12', topic: R, eq: 'I = M*R^2', vars: { I: 'moment of inertia|inertia', M: 'ring mass|mass', R: 'radius|length' } },
-  { id: 'p-xi-5-16', topic: R, eq: 'K = (1/2)*m*v^2*(1 + k^2/R^2)', ask: 'K', vars: { K: 'total kinetic energy|energy', m: 'mass|mass', v: 'speed of centre|speed', k: 'radius of gyration|length', R: 'radius|length' } },
   { id: 'p-xi-5-17', topic: R, eq: 'I = I_cm + M*d^2', vars: { I: 'moment of inertia|inertia', I_cm: 'about the centre of mass|inertia', M: 'mass|mass', d: 'distance between axes|distance' } },
   { id: 'p-xi-5-18', topic: R, eq: 'I_z = I_x + I_y', vars: { I_z: 'about the z axis|inertia', I_x: 'about the x axis|inertia', I_y: 'about the y axis|inertia' } },
   { id: 'p-xi-5-22', topic: R, eq: 'I_1*omega_1 = I_2*omega_2', ask: 'omega_2', vars: { I_1: 'initial moment of inertia|inertia', omega_1: 'initial angular velocity|angvel', I_2: 'final moment of inertia|inertia', omega_2: 'final angular velocity|angvel' } },
@@ -139,7 +138,6 @@ export const MECHANICS: SolverEntry[] = [
   { id: 'p-xi-6-119', topic: G, eq: 'T^2 = (4*pi^2/(G*M))*a^3', ask: 'T', vars: { T: 'orbital period|period', G: 'c:G', M: 'mass of the central body|planetMass', a: 'semi-major axis|planetLength' } },
   { id: 'p-xi-6-123', topic: G, eq: 'a = (r_p + r_a)/2', vars: { a: 'semi-major axis|planetLength', r_p: 'perihelion distance|planetLength', r_a: 'aphelion distance|planetLength' } },
   { id: 'p-xi-6-124', topic: G, eq: 'e_c = (r_a - r_p)/(r_a + r_p)', ask: 'e_c', vars: { e_c: 'eccentricity|fraction', r_a: 'aphelion distance|planetLength', r_p: 'perihelion distance|planetLength' } },
-  { id: 'p-xi-6-127', topic: G, eq: 'v^2 = G*M*(2/r - 1/a)', ask: 'v', vars: { v: 'orbital speed|speed', G: 'c:G', M: 'mass of the central body|planetMass', r: ['distance from the body', 'planetLength', { gen: [7e6, 2e7] }], a: ['semi-major axis', 'planetLength', { gen: [2.5e7, 4e7] }] } },
 
   // Properties of matter
   { id: 'p-xi-7-1', topic: B, eq: 'Y = F*L/(A*DeltaL)', vars: { Y: "Young's modulus|modulus", F: 'force|force', L: 'length|length', A: 'cross-section area|area', DeltaL: 'extension|smallLength' } },

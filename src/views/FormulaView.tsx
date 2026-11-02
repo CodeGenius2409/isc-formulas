@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { Calculator, Copy, ListChecks, Star } from 'lucide-react';
+import { isRemovedId } from '../data/aliases';
 import { findFormula, getSubject, unitTitle } from '../data/book';
 import { useAsync } from '../lib/hooks';
 import { href, openWork } from '../lib/router';
@@ -24,6 +25,14 @@ export default function FormulaView({ id }: { id: string }) {
   }, [f]);
 
   if (state.status === 'loading') return <p className="spinner-line">Opening formula</p>;
+  if (!f && isRemovedId(id)) {
+    return (
+      <div className="page-pad">
+        <h1 className="text-step-3">This formula has left the book</h1>
+        <p className="mt-2 text-ink-2">It is outside the official 2028 syllabus, or not needed for the exam. Try finding what you need by name.</p>
+      </div>
+    );
+  }
   if (!f) {
     return (
       <div className="page-pad">

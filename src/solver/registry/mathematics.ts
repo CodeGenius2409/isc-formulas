@@ -17,9 +17,7 @@ export const MATHEMATICS: SolverEntry[] = [
   { id: 'm-xi-2-133', topic: A, eq: 'b^2 = 4*a*c', ask: 'c', vars: { b: 'coefficient of x|real', a: ['coefficient of x²', 'positive', {}], c: 'constant term|real' } },
   { id: 'm-xi-2-468', topic: A, eq: 'L_a = log(x)/log(a)', ask: 'L_a', vars: { L_a: 'value of the logarithm|real', x: 'number|positive', a: ['base', 'positive', { gen: [2, 12] }] } },
   { id: 'm-xi-2-404', topic: A, eq: 'y = a^2 + 2*a*b + b^2', ask: 'y', vars: { y: 'value of (a + b)²|real', a: 'a|real', b: 'b|real' } },
-  { id: 'm-xi-2-260', topic: A, eq: 'H = 2*a*b/(a + b)', ask: 'H', vars: { H: 'harmonic mean|positive', a: 'first number|positive', b: 'second number|positive' } },
   { id: 'm-xi-2-243', topic: A, eq: 'G = sqrt(a*c)', vars: { G: 'geometric mean|positive', a: 'first number|positive', c: 'second number|positive' } },
-  { id: 'm-xi-2-261', topic: A, eq: 'G^2 = A_m*H', ask: 'G', vars: { G: 'geometric mean|positive', A_m: 'arithmetic mean|positive', H: 'harmonic mean|positive' } },
 
   // Sequences
   { id: 'm-xi-2-10', topic: S, eq: 'a_n = a + (n - 1)*d', vars: { a_n: 'nth term|real', a: 'first term|real', n: 'term number|count', d: 'common difference|real' } },

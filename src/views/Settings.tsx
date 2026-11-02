@@ -60,7 +60,7 @@ export default function Settings() {
         <section className="today-section" aria-labelledby="about-h">
           <h2 id="about-h">About this book</h2>
           <p className="mt-2 text-ink-2">
-            {manifest.totals.entries.toLocaleString('en-GB')} formulas for ISC 2028 Physics, Chemistry, Mathematics and Computer Science. {manifest.totals.removed} true repeats from the earlier version were merged, and saved formulas from it carry over automatically.
+            {manifest.totals.entries.toLocaleString('en-GB')} formulas for ISC 2028 Physics, Chemistry, Mathematics and Computer Science. The list follows the official 2028 syllabus. {manifest.totals.merged} true repeats from the earlier version were merged, {manifest.totals.archived} entries outside the syllabus or not needed were taken out, and saved formulas carry over.
           </p>
           <p className="mt-2 text-ink-2">Keyboard: press <kbd>/</kbd> or <kbd>Ctrl</kbd> <kbd>K</kbd> to find a formula.</p>
         </section>

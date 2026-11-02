@@ -98,7 +98,7 @@ Findings worth knowing:
 
 ## Units outside the 2028 syllabus
 
-These stay in the book. The label is visible in the contents and at the top of the unit.
+This is the state after removing repeats. The syllabus step that follows takes these units out of the app: see `reports/syllabus-report.md`.
 
 | Subject | Class | Unit | Status | Formulas |
 |---|---|---|---|---:|

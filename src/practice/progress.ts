@@ -1,6 +1,6 @@
 // Everything practice remembers: review schedule, mistakes and daily totals, stored
 // locally, and able to move between devices as a JSON backup.
-import { migrateIds, canonicalId } from '../data/aliases';
+import { canonicalId, isRemovedId, migrateIds } from '../data/aliases';
 import { createStore } from '../lib/store';
 import { readJson, writeJson } from '../lib/storage';
 import { favouritesStore, recentsStore } from '../state/library';
@@ -38,8 +38,16 @@ export interface Stats {
   byDay: Record<string, number>;
 }
 
-export const srsStore = createStore<Record<string, SrsItem>>(readJson(SRS_KEY, {}), (v) => writeJson(SRS_KEY, v));
-export const mistakesStore = createStore<Mistake[]>(readJson(MISTAKES_KEY, []), (v) => writeJson(MISTAKES_KEY, v));
+/** A formula taken out of the book takes its review schedule and mistakes with it. */
+function liveSchedule(saved: Record<string, SrsItem>): Record<string, SrsItem> {
+  return Object.fromEntries(Object.entries(saved).filter(([id]) => !isRemovedId(id)));
+}
+
+export const srsStore = createStore<Record<string, SrsItem>>(liveSchedule(readJson(SRS_KEY, {})), (v) => writeJson(SRS_KEY, v));
+export const mistakesStore = createStore<Mistake[]>(
+  readJson<Mistake[]>(MISTAKES_KEY, []).filter((m) => !isRemovedId(m.formulaId)),
+  (v) => writeJson(MISTAKES_KEY, v),
+);
 export const statsStore = createStore<Stats>(readJson(STATS_KEY, { answered: 0, correct: 0, byDay: {} }), (v) => writeJson(STATS_KEY, v));
 
 export function today(): string {
@@ -155,6 +163,7 @@ export function importBackup(backup: Backup): { items: number; mistakes: number;
   srsStore.set((current) => {
     const merged = { ...current };
     for (const [rawId, item] of Object.entries(backup.srs)) {
+      if (isRemovedId(rawId)) continue;
       const id = canonicalId(rawId);
       const mine = merged[id];
       if (!mine || (item.lastReviewed ?? '') > (mine.lastReviewed ?? '')) {
@@ -167,7 +176,7 @@ export function importBackup(backup: Backup): { items: number; mistakes: number;
 
   mistakesStore.set((current) => {
     const seen = new Set(current.map((m) => m.id));
-    const incoming = backup.mistakes.filter((m) => isObject(m) && !seen.has(m.id)).map((m) => ({ ...m, formulaId: canonicalId(m.formulaId) }));
+    const incoming = backup.mistakes.filter((m) => isObject(m) && !seen.has(m.id) && !isRemovedId(m.formulaId)).map((m) => ({ ...m, formulaId: canonicalId(m.formulaId) }));
     return [...current, ...incoming].sort((a, b) => b.date.localeCompare(a.date)).slice(0, MISTAKE_LIMIT);
   });
 
