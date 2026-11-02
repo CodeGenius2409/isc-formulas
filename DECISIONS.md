@@ -11,6 +11,8 @@ Newest work last. Each task gets two lines: what was decided, and why.
   The panel now takes its height from `visualViewport`. This was measured with typical iPad keyboard heights and a simulated keyboard, not on a real tablet, so please check yours.
 - **Task 2, Java editor.** CodeMirror 6, loaded only when someone presses Edit code, so tracing a sample costs nothing extra; indentation comes from its Java grammar, and phones get a row of keys for Tab and brackets. A small tokeniser colours code that is only read, and a test holds it to the editor's result on every sample.
   Colours are ink tones and weight only, because `DESIGN.md` says subject colours mark a place in the book and nothing else. `--good` and `--accent` carry a second, code-only meaning here, which is written down in `DESIGN.md`.
+- **Task 3, Computer Science as Java.** 845 entries audited; 677 are now written as code, with words where they are descriptions, and 168 keep Boolean, K-map or O(n) notation, as you asked. About 230 were converted by hand, adding notes where integer division or a cast changes the answer, and a test runs the key ones through the Java interpreter to check they give the right result.
+  Code travels in the existing display string with a prefix, so rows, search, practice and saved mistakes needed no second path. Python units stay in Python, not Java, and old notes that wrote `^` as a power were rewritten, since in Java it means XOR.
 
 ---
 

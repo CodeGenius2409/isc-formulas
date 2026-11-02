@@ -11,6 +11,8 @@ export interface FormulaEntry {
   id: string;
   name: string;
   latex: string;
+  /** Computer Science written as code: words, `code` and $notation$. Used in place of latex there. */
+  body?: string;
   note?: string;
   /** Names of entries merged into this one, kept searchable. */
   aka?: string[];

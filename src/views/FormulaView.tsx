@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { Calculator, Copy, ListChecks, Star } from 'lucide-react';
 import { isRemovedId } from '../data/aliases';
 import { findFormula, getSubject, unitTitle } from '../data/book';
+import { copyableExpr, isBodyExpr } from '../data/expr';
 import { useAsync } from '../lib/hooks';
 import { href, openWork } from '../lib/router';
 import { useStore } from '../lib/store';
@@ -91,8 +92,8 @@ export default function FormulaView({ id }: { id: string }) {
           >
             <Star size={16} fill={saved ? 'currentColor' : 'none'} aria-hidden /> {saved ? 'Saved' : 'Save'}
           </button>
-          <button type="button" className="btn btn-line" onClick={() => void copyText(f.latex, 'Copied LaTeX')}>
-            <Copy size={16} aria-hidden /> Copy LaTeX
+          <button type="button" className="btn btn-line" onClick={() => void copyText(copyableExpr(f.latex), isBodyExpr(f.latex) ? 'Copied' : 'Copied LaTeX')}>
+            <Copy size={16} aria-hidden /> {isBodyExpr(f.latex) ? 'Copy' : 'Copy LaTeX'}
           </button>
         </div>
       </div>

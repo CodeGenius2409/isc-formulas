@@ -1,5 +1,6 @@
 // Turns a raw chunk into numbered formulas. Separate from book.ts so that it has no
 // bundler-specific imports, and scripts and tests can use it directly.
+import { bodyExpr } from './expr';
 import type { Chunk, ChunkItem, Formula, FormulaEntry, SharedEntry } from './types';
 
 /** "3. Laws of Motion" splits into { number: "3", title: "Laws of Motion" }. */
@@ -41,6 +42,8 @@ export function resolveChunk(chunk: Chunk, shared: Record<string, SharedEntry>):
           const { entry, shared: sharedEntry } = resolveItem(item, shared);
           return {
             ...entry,
+            // An entry shared with Mathematics keeps its LaTeX there, and shows its code here.
+            latex: chunk.subject === 'computerscience' && entry.body ? bodyExpr(entry.body, /Python/.test(unit.name) ? 'python' : 'java') : entry.latex,
             subject: chunk.subject,
             classLevel: chunk.classLevel,
             unit: unit.name,

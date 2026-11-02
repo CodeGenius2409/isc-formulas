@@ -1,6 +1,7 @@
 import { memo } from 'react';
 import { Calculator, Copy, ExternalLink, ListChecks, Star } from 'lucide-react';
 import { getSubject, unitTitle } from '../data/book';
+import { copyableExpr, isBodyExpr } from '../data/expr';
 import type { Formula, Placement } from '../data/types';
 import { useFocusableOverflow } from '../lib/hooks';
 import { useKatexReady } from '../lib/katex';
@@ -29,6 +30,8 @@ export const FormulaRow = memo(function FormulaRow({ formula: f, open, onToggle,
   const saved = favourites.includes(f.id);
   const elsewhere = f.shared?.placements.filter((p) => !(p.subject === f.subject && p.classLevel === f.classLevel && p.unit === f.unit)) ?? [];
   const solvable = useSolvableIds().has(f.id);
+  const isCode = isBodyExpr(f.latex);
+  const copyLabel = isCode ? 'Copy' : 'Copy LaTeX';
   const mathRef = useFocusableOverflow(`Formula for ${f.name}, scrolls sideways`, useKatexReady());
 
   return (
@@ -95,8 +98,8 @@ export const FormulaRow = memo(function FormulaRow({ formula: f, open, onToggle,
           >
             <ListChecks size={15} aria-hidden /> <span className="act-label">Practise</span>
           </button>
-          <button type="button" className="btn btn-quiet" title="Copy LaTeX" aria-label={`Copy LaTeX of ${f.name}`} onClick={() => void copyText(f.latex, 'Copied LaTeX')}>
-            <Copy size={15} aria-hidden /> <span className="act-label">Copy LaTeX</span>
+          <button type="button" className="btn btn-quiet" title={copyLabel} aria-label={`${copyLabel} of ${f.name}`} onClick={() => void copyText(copyableExpr(f.latex), isCode ? 'Copied' : 'Copied LaTeX')}>
+            <Copy size={15} aria-hidden /> <span className="act-label">{copyLabel}</span>
           </button>
           <a className="btn btn-quiet" title="Open" aria-label={`Open ${f.name}`} href={href(`f/${f.id}`)} onClick={() => noteRecent(f.id)}>
             <ExternalLink size={15} aria-hidden /> <span className="act-label">Open</span>

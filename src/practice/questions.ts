@@ -3,6 +3,7 @@
 //     tolerance, with unit checking and a worked solution.
 //   Tier 2 (every formula): multiple choice with distractors from the same topic,
 //     and recall cards.
+import { isBodyExpr } from '../data/expr';
 import type { Formula } from '../data/types';
 import { formatDim, parseDim, sameDim } from '../solver/dims';
 import { getEntry } from '../solver/registry';
@@ -214,6 +215,7 @@ export function answerTex(question: NumericQuestion): string {
 
 /** Splits at the first `=` outside any brackets, for "complete the formula". */
 export function splitAtEquals(latex: string): [string, string] | null {
+  if (isBodyExpr(latex)) return null;
   let depth = 0;
   for (let i = 0; i < latex.length; i++) {
     const c = latex[i];

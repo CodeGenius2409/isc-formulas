@@ -317,4 +317,20 @@
 
 .java-code {
   font-family: var(--font-mono);
+}
+
+/* Computer Science entries, written as code rather than typeset. */
+.body-expr {
+  display: block;
+  min-width: 0;
+}
+
+.body-line {
+  display: block;
+}
+
+/* Wraps rather than scrolls: a hidden scroll is easy to miss, and code cut off reads as wrong. */
+.body-expr .java-code {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }

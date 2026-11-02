@@ -6,6 +6,8 @@ import { describe, expect, it } from 'vitest';
 import { flatten, loadLegacyFormulas } from '../../scripts/lib/dedupe.mjs';
 // @ts-expect-error plain JS helper, shared with the migration script
 import { REVIEW } from '../../scripts/dedupe-decisions.mjs';
+// @ts-expect-error plain JS helper, shared with the data step
+import { MANUAL } from '../../scripts/cs/manual.mjs';
 import { canonicalId, isRemovedId, migrateIds } from '../../src/data/aliases';
 import type { Chunk, ChunkItem, Manifest, SharedEntry, Syllabus } from '../../src/data/types';
 
@@ -19,7 +21,7 @@ const shared = readJson<Record<string, SharedEntry>>('shared.json');
 const aliases = readJson<Record<string, string | null>>('idAliases.json');
 const chunks = manifest.subjects.flatMap((s) => s.classes.map((c) => readJson<Chunk>(c.chunk)));
 
-const stored = new Map<string, { latex: string; name: string; aka?: string[] }>(Object.entries(shared));
+const stored = new Map<string, { latex: string; body?: string; name: string; aka?: string[] }>(Object.entries(shared));
 const unitIds = new Map<string, Set<string>>();
 const addTo = (key: string, id: string) => (unitIds.get(key) ?? unitIds.set(key, new Set()).get(key)!).add(id);
 let inlineCount = 0;
@@ -82,7 +84,11 @@ describe('dedupe reconciliation', () => {
 
   it('never rewrites LaTeX: every stored formula matches its legacy source', () => {
     const legacy = new Map(rows.map((r) => [r.id, r]));
-    for (const [id, entry] of stored) expect(entry.latex, id).toBe(legacy.get(id)!.latex);
+    for (const [id, entry] of stored) {
+      // Computer Science is rewritten as Java on purpose. See tests/unit/cs-notation.test.ts.
+      if (id.startsWith('cs-') && (entry.body || MANUAL[id]?.latex)) continue;
+      expect(entry.latex, id).toBe(legacy.get(id)!.latex);
+    }
   });
 
   it('keeps the old names of merged entries searchable', () => {

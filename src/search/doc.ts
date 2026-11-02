@@ -1,5 +1,6 @@
 // What the index holds for each formula. Kept apart from engine.ts so the main thread
 // can prepare documents without loading MiniSearch, which only the worker needs.
+import { parseBodyExpr } from '../data/expr';
 import type { ClassLevel, Formula, SubjectId } from '../data/types';
 
 export interface SearchDoc {
@@ -51,15 +52,21 @@ function symbolWords(latex: string): string {
   return [...out].join(' ');
 }
 
+/** A variable in code is a whole word, so its letters aren't all symbols. */
+function codeSymbols(body: string): string {
+  return [...new Set(body.match(/\b[A-Za-z]\b/g) ?? [])].join(' ');
+}
+
 export function toSearchDoc(f: Formula): SearchDoc {
   const placements = f.shared?.placements ?? [];
+  const body = parseBodyExpr(f.latex);
   return {
     id: f.id,
     name: f.name,
     aka: (f.aka ?? []).join(' '),
     topic: `${f.unit.replace(/^\d+\.\s*/, '')} ${f.subtopic}`,
-    symbols: symbolWords(f.latex),
-    latexText: latexWords(f.latex),
+    symbols: body ? codeSymbols(body.text) : symbolWords(f.latex),
+    latexText: latexWords(body ? body.text.replace(/[`$]/g, ' ') : f.latex),
     note: f.note ?? '',
     subject: f.subject,
     classLevel: f.classLevel,

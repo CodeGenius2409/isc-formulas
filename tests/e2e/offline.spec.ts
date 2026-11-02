@@ -21,7 +21,7 @@ test('every page and simulator works with no connection', async ({ page, context
     await openRoute(page, path);
     await expect(page.locator('main h1').first(), path).toContainText(title);
     await expect(page.locator('main .row').first(), path).toBeVisible();
-    await expect(page.locator('main .katex').first(), `${path}: KaTeX`).toBeVisible();
+    await expect(page.locator('main .katex, main .body-expr').first(), `${path}: formula drawn`).toBeVisible();
   }
 
   const sims = simulatorIds();
@@ -75,12 +75,12 @@ test('every formula opens and typesets with no connection', async ({ page, conte
       location.hash = `#/f/${id}`;
       const opened = () => document.querySelector(`main [data-formula="${CSS.escape(id)}"]`);
       // Wait for this formula's own page, with its maths typeset.
-      for (let tries = 0; tries < 2000 && !opened()?.querySelector('.big-formula .katex, .big-formula .katex-error'); tries++) await pause();
+      for (let tries = 0; tries < 2000 && !opened()?.querySelector('.big-formula .katex, .big-formula .katex-error, .big-formula .body-expr'); tries++) await pause();
       const page = opened();
       if (!page) failed.push(`${id}: its page did not open`);
       else if (!page.querySelector('h1')?.textContent?.includes(name.trim())) failed.push(`${id}: heading "${page.querySelector('h1')?.textContent}" instead of "${name}"`);
       else if (page.querySelector('.big-formula .katex-error')) failed.push(`${id}: KaTeX could not typeset it`);
-      else if (!page.querySelector('.big-formula .katex')) failed.push(`${id}: no maths shown`);
+      else if (!page.querySelector('.big-formula .katex, .big-formula .body-expr')) failed.push(`${id}: nothing shown`);
     }
     return failed;
   }, formulas);
