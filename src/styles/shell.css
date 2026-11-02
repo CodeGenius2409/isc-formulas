@@ -227,13 +227,13 @@
   font-size: var(--step--1);
 }
 
-.toc-unit[aria-current='true'] {
+.toc-unit[data-open] {
   font-weight: 700;
   color: var(--subject);
 }
 
-.toc-unit[aria-current='true'] .toc-num,
-.toc-unit[aria-current='true'] .toc-count {
+.toc-unit[data-open] .toc-num,
+.toc-unit[data-open] .toc-count {
   color: var(--subject);
 }
 
@@ -244,9 +244,14 @@
   color: var(--ink-2);
 }
 
-.toc-sub[aria-current='true'] {
+.toc-sub[aria-current='location'] {
   color: var(--ink);
   font-weight: 700;
+  box-shadow: inset 2px 0 0 var(--subject);
+}
+
+.toc-sub[aria-current='location'] .toc-num {
+  color: var(--subject);
 }
 
 @media (hover: hover) {

@@ -10,6 +10,8 @@ export interface Route {
   /** Working-area state, kept in the URL so the back button closes the sheet. */
   work: WorkTab | null;
   workFormula: string | null;
+  /** Counts moves to a new place. Following the reader's scroll does not count. */
+  navigation: number;
 }
 
 export function parseHash(hash: string): Route {
@@ -22,6 +24,7 @@ export function parseHash(hash: string): Route {
     query,
     work: work === 'solve' || work === 'check' || work === 'practice' ? work : null,
     workFormula: query.get('wf'),
+    navigation: 0,
   };
 }
 
@@ -44,10 +47,33 @@ function rememberWork(route: Route): void {
 rememberWork(current);
 
 window.addEventListener('hashchange', () => {
-  current = parseHash(window.location.hash);
+  const next = parseHash(window.location.hash);
+  // Opening the working area changes the hash too, and that must not move the page.
+  const moved = next.path.join('/') !== current.path.join('/') || next.query.get('s') !== current.query.get('s');
+  current = { ...next, navigation: current.navigation + (moved ? 1 : 0) };
   rememberWork(current);
   listeners.forEach((l) => l());
 });
+
+/** Writes the section being read to the URL. It replaces the entry, so Back still leaves the unit. */
+export function trackSection(section: number | null): void {
+  const params = new URLSearchParams(current.query);
+  if (section == null) params.delete('s');
+  else params.set('s', String(section));
+  const q = params.toString();
+  const next = `#/${current.path.map(encodeURIComponent).join('/')}${q ? `?${q}` : ''}`;
+  if (next === window.location.hash) return;
+  window.history.replaceState(window.history.state, '', next);
+  current = { ...parseHash(next), navigation: current.navigation };
+  listeners.forEach((l) => l());
+}
+
+/** A link to where the URL already points fires no hashchange, but the reader still wants to go there. */
+export function goAgainIfHere(target: string): void {
+  if (window.location.hash !== target) return;
+  current = { ...current, navigation: current.navigation + 1 };
+  listeners.forEach((l) => l());
+}
 
 export function workState(route: Route): { tab: WorkTab; formula: string | null } {
   return { tab: route.work ?? workMemory.tab, formula: route.workFormula ?? workMemory.formula };

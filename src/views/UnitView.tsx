@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight, Printer } from 'lucide-react';
 import { getClass, getSubject, loadUnits, unitTitle, splitUnitName } from '../data/book';
 import type { ClassLevel, SubjectId } from '../data/types';
 import { useAsync } from '../lib/hooks';
-import { href } from '../lib/router';
+import { href, trackSection } from '../lib/router';
 import { lastReadStore, rememberClass } from '../state/library';
 import { FormulaList, type ListItem } from '../components/FormulaList';
 import { STATUS_LABEL } from '../components/shell/Contents';
@@ -14,16 +14,19 @@ interface Props {
   level: ClassLevel;
   unitIndex: number;
   subtopicIndex: number | null;
+  /** Changes on each real move to a place in this unit, as opposed to the reader scrolling. */
+  navigation: number;
   scrollRef: RefObject<HTMLElement | null>;
 }
 
-export default function UnitView({ subject, level, unitIndex, subtopicIndex, scrollRef }: Props) {
+export default function UnitView({ subject, level, unitIndex, subtopicIndex, navigation, scrollRef }: Props) {
   const state = useAsync(() => loadUnits(subject, level), `${subject}-${level}`);
   const info = getSubject(subject);
   const cls = getClass(subject, level);
   const meta = cls?.units[unitIndex];
   const unit = state.status === 'ready' ? state.value[unitIndex] : undefined;
-  const [topIndex, setTopIndex] = useState(0);
+  // Undefined until the list has reported, so a section in the URL isn't wiped while it restores.
+  const [topIndex, setTopIndex] = useState<number | null | undefined>(undefined);
 
   const items = useMemo<ListItem[]>(() => {
     if (!unit) return [];
@@ -45,7 +48,7 @@ export default function UnitView({ subject, level, unitIndex, subtopicIndex, scr
 
   // The running head follows the section at the top of the screen.
   const hereSection = useMemo(() => {
-    for (let i = Math.min(topIndex, items.length - 1); i >= 0; i--) {
+    for (let i = Math.min(topIndex ?? -1, items.length - 1); i >= 0; i--) {
       const item = items[i];
       if (item?.kind === 'section') return item;
     }
@@ -61,7 +64,11 @@ export default function UnitView({ subject, level, unitIndex, subtopicIndex, scr
     lastReadStore.set({ subject, classLevel: level, unit: meta.name, unitIndex, subtopic: hereSection?.name ?? null, subtopicIndex: hereSection?.subtopicIndex });
   }, [subject, level, unitIndex, meta, hereSection]);
 
-  const onTopItemChange = useCallback((i: number) => setTopIndex(i), []);
+  useEffect(() => {
+    if (topIndex !== undefined) trackSection(hereSection?.subtopicIndex ?? null);
+  }, [topIndex, hereSection]);
+
+  const onTopItemChange = useCallback((i: number | null) => setTopIndex(i), []);
 
   useEffect(() => {
     document.title = meta ? `${unitTitle(meta.name)}: ${info.label} ${level}` : 'ISC Formula Book';
@@ -99,7 +106,7 @@ export default function UnitView({ subject, level, unitIndex, subtopicIndex, scr
       {state.status === 'loading' && <p className="spinner-line">Opening {unitTitle(meta.name)}</p>}
       {state.status === 'error' && <p className="spinner-line">This unit could not load. Reload the page to try again.</p>}
       {unit && (
-        <FormulaList items={items} scrollRef={scrollRef} scrollToIndex={subtopicIndex != null ? (sectionPositions.get(subtopicIndex) ?? null) : null} onTopItemChange={onTopItemChange} />
+        <FormulaList items={items} scrollRef={scrollRef} scrollKey={navigation} scrollToIndex={subtopicIndex != null ? (sectionPositions.get(subtopicIndex) ?? null) : null} onTopItemChange={onTopItemChange} />
       )}
 
       {unit && (

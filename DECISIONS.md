@@ -5,6 +5,8 @@ Newest work last. Each task gets two lines: what was decided, and why.
 - **Task 7, syllabus.** Every entry is classified against the official 2028 syllabus; 594 went to `archive/`, 69 uncertain ones stayed in the app for you to decide (`reports/syllabus-review.md`). The book is now 8,736 − 314 merged − 594 archived = 7,828, in official unit order.
   An out-of-syllabus item that appears in an old paper goes to review, not to core or the archive, because papers back to 2017 test topics the 2028 syllabus has dropped. Saved formulas, schedules and mistakes for a removed id are dropped on load, and Saved says how many.
 - **Quoting the syllabus.** `src/data/syllabus/` quotes CISCE's wording, as you asked, and the repo is public while the PDFs say all rights reserved. Your call whether to keep this public.
+- **Task 5, live location.** The list works out the current section from the scroll offset and the virtualiser's position for every row, so it holds for rows not in the DOM, and the URL follows with `replaceState`. After a click that section stays current until the reader next scrolls, because the last section of a unit often can't reach the top.
+  The router now counts real navigations separately, so opening the working area doesn't move the page, and clicking the section you're already in takes you back to its start, which it didn't before.
 
 ---
 

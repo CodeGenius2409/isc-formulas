@@ -38,7 +38,7 @@ export function usingKeyboard(): boolean {
   return lastInputKeyboard;
 }
 
-function shouldAnimate(): boolean {
+export function shouldAnimate(): boolean {
   return !prefersReducedMotion() && !lastInputKeyboard;
 }
 

@@ -70,7 +70,7 @@ function View({ route, place, scrollRef }: { route: Route; place: BookPlace; scr
       return place.unitIndex == null ? (
         <BookContents subject={place.subject} level={place.level} />
       ) : (
-        <UnitView key={`${place.subject}-${place.level}-${place.unitIndex}`} subject={place.subject} level={place.level} unitIndex={place.unitIndex} subtopicIndex={place.subtopicIndex} scrollRef={scrollRef} />
+        <UnitView key={`${place.subject}-${place.level}-${place.unitIndex}`} subject={place.subject} level={place.level} unitIndex={place.unitIndex} subtopicIndex={place.subtopicIndex} navigation={route.navigation} scrollRef={scrollRef} />
       );
     case 'f':
       return a ? <FormulaView key={a} id={a} /> : <NotFound />;

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type RefObject } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type RefObject } from 'react';
 import { flushSync } from 'react-dom';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import type { Formula } from '../data/types';
@@ -13,17 +13,29 @@ interface Props {
   items: ListItem[];
   scrollRef: RefObject<HTMLElement | null>;
   showWhere?: boolean;
-  /** Index into `items` to bring to the top once rendered. */
+  /** Index into `items` to bring to the top, whenever `scrollKey` changes. Null means the page top. */
   scrollToIndex?: number | null;
-  onTopItemChange?: (index: number) => void;
+  scrollKey?: number;
+  /** Reports the item at the reading line, or null while the list is still below it. */
+  onTopItemChange?: (index: number | null) => void;
 }
 
+/** How long after the last scroll event a jump counts as finished. */
+const JUMP_SETTLE_MS = 120;
+
 /** Tall lists stay fast because only the rows near the screen exist. */
-export function FormulaList({ items, scrollRef, showWhere, scrollToIndex, onTopItemChange }: Props) {
+export function FormulaList({ items, scrollRef, showWhere, scrollToIndex, scrollKey, onTopItemChange }: Props) {
   const [openId, setOpenId] = useState<string | null>(null);
   const [printing, setPrinting] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
   const [offset, setOffset] = useState(0);
+  // The running head sits over the top of the list, so the reading line starts below it.
+  const [headHeight, setHeadHeight] = useState(0);
+  const [measured, setMeasured] = useState(false);
+  // While a jump is landing, and until the reader next scrolls, this is the current item. The
+  // last section of a unit often can't reach the top, and tracking would then contradict the click.
+  const jump = useRef<{ index: number; settledAt: number | null } | null>(null);
+  const servedKey = useRef<number | undefined>(undefined);
 
   const virtualizer = useVirtualizer({
     count: items.length,
@@ -31,15 +43,24 @@ export function FormulaList({ items, scrollRef, showWhere, scrollToIndex, onTopI
     estimateSize: (i) => (items[i].kind === 'section' ? 72 : 84),
     overscan: 8,
     scrollMargin: offset,
+    scrollPaddingStart: headHeight,
     getItemKey: (i) => items[i].key,
   });
 
+  // Measured again when anything above the list changes height, such as the syllabus note opening.
   useLayoutEffect(() => {
-    if (listRef.current && scrollRef.current) {
-      const list = listRef.current.getBoundingClientRect().top;
-      const scroller = scrollRef.current.getBoundingClientRect().top;
-      setOffset(list - scroller + scrollRef.current.scrollTop);
-    }
+    const list = listRef.current;
+    const scroller = scrollRef.current;
+    if (!list || !scroller) return;
+    const measure = () => {
+      setOffset(list.getBoundingClientRect().top - scroller.getBoundingClientRect().top + scroller.scrollTop);
+      setHeadHeight(scroller.querySelector<HTMLElement>('.running-head')?.offsetHeight ?? 0);
+    };
+    measure();
+    setMeasured(true);
+    const observer = new ResizeObserver(measure);
+    if (list.parentElement) observer.observe(list.parentElement);
+    return () => observer.disconnect();
   }, [scrollRef, items]);
 
   useEffect(() => {
@@ -64,23 +85,73 @@ export function FormulaList({ items, scrollRef, showWhere, scrollToIndex, onTopI
   const onToggle = useCallback((id: string) => setOpenId((cur) => (cur === id ? null : id)), []);
 
   useEffect(() => {
+    if (!measured || servedKey.current === scrollKey) return;
+    const first = servedKey.current === undefined;
+    servedKey.current = scrollKey;
     if (scrollToIndex != null && scrollToIndex >= 0 && scrollToIndex < items.length) {
+      jump.current = { index: scrollToIndex, settledAt: null };
       virtualizer.scrollToIndex(scrollToIndex, { align: 'start' });
+    } else if (!first) {
+      jump.current = null;
+      scrollRef.current?.scrollTo({ top: 0 });
     }
-    // Only when the target changes, not on every measured-size change.
+    // Only for a new request, not as the reading place changes or rows are measured.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [scrollToIndex, items, offset]);
+  }, [scrollKey, measured]);
+
+  // Works from the scroll offset and the virtualiser's positions for every row, so it holds for rows
+  // that aren't in the DOM. Runs at most once a frame, and renders only when the answer changes.
+  useEffect(() => {
+    const scroller = scrollRef.current;
+    if (!scroller || !onTopItemChange || !measured) return;
+    let frame = 0;
+    let settle = 0;
+    const report = () => {
+      frame = 0;
+      const scrollTop = scroller.scrollTop;
+      const current = jump.current;
+      if (current && (current.settledAt === null || Math.abs(scrollTop - current.settledAt) <= 2)) {
+        onTopItemChange(current.index);
+        return;
+      }
+      jump.current = null;
+      const line = scrollTop + headHeight + 1;
+      if (line < offset) {
+        onTopItemChange(null);
+        return;
+      }
+      const atEnd = scrollTop + scroller.clientHeight >= scroller.scrollHeight - 2;
+      onTopItemChange(atEnd ? items.length - 1 : (virtualizer.getVirtualItemForOffset(line)?.index ?? null));
+    };
+    const landing = () => {
+      window.clearTimeout(settle);
+      settle = window.setTimeout(() => {
+        if (jump.current) jump.current.settledAt = scroller.scrollTop;
+      }, JUMP_SETTLE_MS);
+    };
+    const onScroll = () => {
+      if (jump.current?.settledAt === null) landing();
+      if (!frame) frame = requestAnimationFrame(report);
+    };
+    // A hand on the page ends the jump straight away.
+    const release = () => {
+      jump.current = null;
+    };
+    scroller.addEventListener('scroll', onScroll, { passive: true });
+    scroller.addEventListener('wheel', release, { passive: true });
+    scroller.addEventListener('touchmove', release, { passive: true });
+    if (jump.current?.settledAt === null) landing();
+    report();
+    return () => {
+      scroller.removeEventListener('scroll', onScroll);
+      scroller.removeEventListener('wheel', release);
+      scroller.removeEventListener('touchmove', release);
+      cancelAnimationFrame(frame);
+      window.clearTimeout(settle);
+    };
+  }, [scrollRef, onTopItemChange, measured, items, offset, headHeight, virtualizer]);
 
   const virtualItems = virtualizer.getVirtualItems();
-  const top = useMemo(() => {
-    const scrollTop = (virtualizer.scrollOffset ?? 0) - offset + 48;
-    const hit = virtualItems.find((v) => v.end - offset > scrollTop);
-    return hit?.index ?? 0;
-  }, [virtualItems, virtualizer.scrollOffset, offset]);
-
-  useEffect(() => {
-    onTopItemChange?.(top);
-  }, [top, onTopItemChange]);
 
   const renderItem = (item: ListItem) =>
     item.kind === 'section' ? (

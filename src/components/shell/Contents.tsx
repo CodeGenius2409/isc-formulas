@@ -1,12 +1,17 @@
+import { useEffect, useRef } from 'react';
 import { Search } from 'lucide-react';
 import { getClass, getSubject, splitUnitName, unitTitle } from '../../data/book';
 import type { ClassLevel, SubjectId, UnitStatus } from '../../data/types';
-import { href } from '../../lib/router';
+import { shouldAnimate } from '../../lib/motion';
+import { goAgainIfHere, href } from '../../lib/router';
 import { openPalette } from '../../state/ui';
 
 export const STATUS_LABEL: Partial<Record<UnitStatus, string>> = {
   practical: 'Practical, no theory marks',
 };
+
+/** Room left around the current item, so its neighbours show too. */
+const TOC_MARGIN = 48;
 
 interface Props {
   subject: SubjectId;
@@ -20,6 +25,26 @@ interface Props {
 export function Contents({ subject, level, unitIndex, subtopicIndex, onNavigate }: Props) {
   const info = getSubject(subject);
   const cls = getClass(subject, level);
+  const toc = useRef<HTMLElement>(null);
+  const placed = useRef(false);
+
+  // The contents can be longer than the screen, so it keeps the reader's place in view.
+  // A frame later, because a sheet isn't laid out until its own effect has opened it.
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => {
+      const list = toc.current;
+      const here = list?.querySelector('[aria-current="location"]');
+      if (!list || !here) return;
+      const box = list.getBoundingClientRect();
+      const item = here.getBoundingClientRect();
+      const above = item.top - box.top - TOC_MARGIN;
+      const below = item.bottom - box.bottom + TOC_MARGIN;
+      const delta = above < 0 ? above : below > 0 ? below : 0;
+      if (delta) list.scrollBy({ top: delta, behavior: placed.current && shouldAnimate() ? 'smooth' : 'auto' });
+      placed.current = true;
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [unitIndex, subtopicIndex]);
 
   return (
     <>
@@ -44,13 +69,22 @@ export function Contents({ subject, level, unitIndex, subtopicIndex, onNavigate 
           <kbd aria-hidden>/</kbd>
         </button>
       </div>
-      <nav className="toc" aria-label={`${info.label} Class ${level} contents`} data-subject={subject}>
+      <nav ref={toc} className="toc" aria-label={`${info.label} Class ${level} contents`} data-subject={subject}>
         {cls?.units.map((unit, i) => {
           const { number } = splitUnitName(unit.name);
           const open = unitIndex === i;
           return (
             <div key={unit.name}>
-              <a className="toc-unit" href={href(`book/${subject}/${level}/${i}`)} aria-current={open && subtopicIndex == null ? 'true' : open ? 'true' : undefined} onClick={onNavigate}>
+              <a
+                className="toc-unit"
+                href={href(`book/${subject}/${level}/${i}`)}
+                data-open={open || undefined}
+                aria-current={open && subtopicIndex == null ? 'location' : undefined}
+                onClick={() => {
+                  goAgainIfHere(href(`book/${subject}/${level}/${i}`));
+                  onNavigate?.();
+                }}
+              >
                 <span className="toc-num num">{number}</span>
                 <span>
                   {unitTitle(unit.name)}
@@ -60,7 +94,16 @@ export function Contents({ subject, level, unitIndex, subtopicIndex, onNavigate 
               </a>
               {open &&
                 unit.subtopics.map((sub, j) => (
-                  <a key={sub.name} className="toc-sub" href={href(`book/${subject}/${level}/${i}`, { s: String(j) })} aria-current={subtopicIndex === j ? 'true' : undefined} onClick={onNavigate}>
+                  <a
+                    key={sub.name}
+                    className="toc-sub"
+                    href={href(`book/${subject}/${level}/${i}`, { s: String(j) })}
+                    aria-current={subtopicIndex === j ? 'location' : undefined}
+                    onClick={() => {
+                      goAgainIfHere(href(`book/${subject}/${level}/${i}`, { s: String(j) }));
+                      onNavigate?.();
+                    }}
+                  >
                     <span className="toc-num num">
                       {number}.{j + 1}
                     </span>
