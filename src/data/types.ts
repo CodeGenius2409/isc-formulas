@@ -17,6 +17,22 @@ export interface FormulaEntry {
   /** Names of entries merged into this one, kept searchable. */
   aka?: string[];
   tier?: FormulaTier;
+  /** Bond-line structures for this entry. The drawings themselves are in structures.json. */
+  structure?: EntryStructure;
+}
+
+/** One piece of a drawn reaction: a structure, words, a plus sign, or an arrow. */
+export type StructureToken = { s: string; c?: number } | { t: string; c?: number } | { op: 1 } | { r: string; b?: 1 };
+
+export interface EntryStructure {
+  /** Compounds shown side by side, with their names. */
+  list?: string[];
+  /** A reaction, one row to each line. */
+  rows?: StructureToken[][];
+  /** The entry is written with R, and this is a worked example of it. */
+  example?: 1;
+  /** No names under the list: a question is asking for the name. */
+  unnamed?: 1;
 }
 
 export interface Placement {

@@ -12,6 +12,7 @@ import { copyText, toast } from '../state/toast';
 import { useSolvableIds } from '../solver/index-lite';
 import { startPracticeOn } from '../practice/session-link';
 import { Math } from './Math';
+import { EntryStructures } from './Structures';
 
 function placementLabel(p: Placement): string {
   return `${getSubject(p.subject).label} ${p.classLevel}, ${unitTitle(p.unit)}`;
@@ -70,6 +71,11 @@ export const FormulaRow = memo(function FormulaRow({ formula: f, open, onToggle,
             )}
             {elsewhere.length > 0 && <span className="row-also">Also in {elsewhere.map(placementLabel).join('; ')}</span>}
           </p>
+        )}
+        {f.structure && (
+          <div className="row-structure">
+            <EntryStructures structure={f.structure} />
+          </div>
         )}
         <div className="row-acts">
           {solvable && (

@@ -5,7 +5,11 @@ import type { ClassLevel, Formula, SubjectId } from '../data/types';
 import { createStore } from '../lib/store';
 import { getEntry } from '../solver/registry';
 import { mistakesStore, srsStore, today } from './progress';
-import { conceptQuestion, numericQuestion, seededRng, type Question, type Rng } from './questions';
+import { conceptQuestion, numericQuestion, seededRng, type Question, type Rng, structureQuestion } from './questions';
+import { loadStructures } from '../data/structures';
+
+/** How often a Chemistry entry with a structure is asked by reading the structure. */
+const STRUCTURE_SHARE = 0.6;
 import { reviewOrder } from './srs';
 
 export interface SessionItem {
@@ -53,6 +57,10 @@ async function poolFor(formula: Formula): Promise<Formula[]> {
 
 /** Numeric if the formula can be computed and the dice say so, otherwise conceptual. */
 export async function questionFor(formula: Formula, rng: Rng, preferNumeric = false): Promise<Question> {
+  if (formula.structure && rng() < STRUCTURE_SHARE) {
+    const question = structureQuestion(formula, await loadStructures(), rng);
+    if (question) return question;
+  }
   const entry = getEntry(formula.id);
   if (entry && (preferNumeric || rng() < 0.7)) {
     const numeric = numericQuestion(entry, rng);
@@ -112,6 +120,10 @@ export async function startFormula(rawId: string): Promise<Session | null> {
     }
   }
   const pool = await poolFor(formula);
+  if (formula.structure) {
+    const question = structureQuestion(formula, await loadStructures(), rng);
+    if (question) items.push({ question });
+  }
   items.push({ question: conceptQuestion(formula, pool, rng) });
   return begin(formula.name, items);
 }

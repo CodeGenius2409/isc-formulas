@@ -11,6 +11,7 @@ import { copyText, toast } from '../state/toast';
 import { useSolvableIds } from '../solver/index-lite';
 import { startPracticeOn } from '../practice/session-link';
 import { Math } from '../components/Math';
+import { EntryStructures } from '../components/Structures';
 
 export default function FormulaView({ id }: { id: string }) {
   const state = useAsync(() => findFormula(id), id);
@@ -59,6 +60,7 @@ export default function FormulaView({ id }: { id: string }) {
         <div className="big-formula mt-3 math-host" tabIndex={0} role="group" aria-label="Formula">
           <Math latex={f.latex} />
         </div>
+        {f.structure && <EntryStructures structure={f.structure} scale={1.15} />}
         {f.note && <p className="mt-3 max-w-[65ch]">{f.note}</p>}
         {f.aka && f.aka.length > 0 && <p className="mt-2 text-ink-2">Also called {f.aka.join(', ')}.</p>}
         {f.shared && f.shared.placements.length > 1 && (

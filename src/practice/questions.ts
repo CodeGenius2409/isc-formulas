@@ -4,7 +4,8 @@
 //   Tier 2 (every formula): multiple choice with distractors from the same topic,
 //     and recall cards.
 import { isBodyExpr } from '../data/expr';
-import type { Formula } from '../data/types';
+import type { Compounds } from '../data/structures';
+import type { EntryStructure, Formula } from '../data/types';
 import { formatDim, parseDim, sameDim } from '../solver/dims';
 import { getEntry } from '../solver/registry';
 import { defaultUnknown, solve, varTex, type SolveInput, type Step } from '../solver/solve';
@@ -63,11 +64,14 @@ export interface NumericQuestion {
   answerText: string;
 }
 
-export type McqMode = 'which' | 'complete' | 'name';
+export type McqMode = 'which' | 'complete' | 'name' | 'structure';
 
 export interface McqOption {
   latex?: string;
+  /** Plain words. With a structure, its name: what the mistakes log records. */
   text?: string;
+  /** A compound to draw, in place of words. */
+  structure?: string;
   correct: boolean;
 }
 
@@ -77,6 +81,8 @@ export interface McqQuestion {
   mode: McqMode;
   prompt: string;
   promptLatex?: string;
+  /** A structure or reaction to read, drawn above the options. */
+  promptStructure?: EntryStructure;
   options: McqOption[];
 }
 
@@ -305,6 +311,77 @@ export function conceptQuestion(formula: Formula, pool: Formula[], rng: Rng): Qu
     }
   }
   return { kind: 'recall', formulaId: formula.id, name: formula.name, note: formula.note, latex: formula.latex };
+}
+
+function tokensOf(structure: EntryStructure): string[] {
+  return structure.list ?? (structure.rows ?? []).flat().flatMap((token) => ('s' in token ? [token.s] : []));
+}
+
+/** Wrong options that look most like the right one: sharing a functional group, then the rest. */
+function similarCompounds(key: string, compounds: Compounds, rng: Rng, avoid: Set<string> = new Set()): string[] {
+  const groups = new Set(compounds[key].g);
+  const others = shuffle(Object.keys(compounds), rng).filter((k) => k !== key && !avoid.has(k) && compounds[k].m !== compounds[key].m);
+  const score = (k: string) => compounds[k].g.filter((g) => groups.has(g)).length;
+  return [...others].sort((a, b) => score(b) - score(a));
+}
+
+/**
+ * A question that reads a structure: name this compound, identify its functional group, or for a
+ * reaction, draw the product. Null if this entry doesn't suit one.
+ */
+export function structureQuestion(formula: Formula, compounds: Compounds, rng: Rng): Question | null {
+  const structure = formula.structure;
+  if (!structure) return null;
+  const keys = [...new Set(tokensOf(structure))].filter((k) => compounds[k]);
+  if (!keys.length) return null;
+  const roll = rng();
+
+  // A reaction: everything up to the last arrow is the question, and its first structure the answer.
+  const row = structure.rows?.[structure.rows.length - 1];
+  const lastArrow = row ? row.map((t) => 'r' in t).lastIndexOf(true) : -1;
+  if (row && lastArrow >= 0 && roll < 0.5) {
+    const product = row.slice(lastArrow + 1).find((t): t is { s: string } => 's' in t)?.s;
+    const known = new Set(row.slice(0, lastArrow).flatMap((t) => ('s' in t ? [t.s] : [])));
+    if (product && compounds[product] && !known.has(product)) {
+      const wrong = similarCompounds(product, compounds, rng, known).slice(0, 3);
+      return {
+        kind: 'mcq',
+        formulaId: formula.id,
+        mode: 'structure',
+        prompt: 'Draw the product of this reaction on paper, then choose it.',
+        promptStructure: { rows: [[...row.slice(0, lastArrow + 1), { t: '?' }]] },
+        options: shuffle([product, ...wrong], rng).map((key) => ({ structure: key, text: compounds[key].n, correct: key === product })),
+      };
+    }
+  }
+
+  const key = pick(keys, rng);
+  const compound = compounds[key];
+  if (roll < 0.75 && compound.g.length) {
+    const present = new Set(compound.g);
+    const wrong = shuffle([...new Set(Object.values(compounds).flatMap((c) => c.g))], rng)
+      .filter((g) => !present.has(g))
+      .slice(0, 3);
+    if (wrong.length === 3) {
+      return {
+        kind: 'mcq',
+        formulaId: formula.id,
+        mode: 'structure',
+        prompt: 'Identify the functional group in this compound.',
+        promptStructure: { list: [key], unnamed: 1 },
+        options: shuffle([compound.g[0], ...wrong], rng).map((text) => ({ text, correct: text === compound.g[0] })),
+      };
+    }
+  }
+  const wrong = similarCompounds(key, compounds, rng).slice(0, 3);
+  return {
+    kind: 'mcq',
+    formulaId: formula.id,
+    mode: 'structure',
+    prompt: 'Name this compound.',
+    promptStructure: { list: [key], unnamed: 1 },
+    options: shuffle([key, ...wrong], rng).map((k) => ({ text: compounds[k].n, correct: k === key })),
+  };
 }
 
 /** Text of a question, for the mistakes log. */

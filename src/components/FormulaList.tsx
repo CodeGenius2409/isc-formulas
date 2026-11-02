@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type RefObject } from 'react';
 import { flushSync } from 'react-dom';
 import { useVirtualizer } from '@tanstack/react-virtual';
+import { useStructures } from '../data/structures';
 import type { Formula } from '../data/types';
 import { listReveal } from '../lib/motion';
 import { FormulaRow } from './FormulaRow';
@@ -98,6 +99,17 @@ export function FormulaList({ items, scrollRef, showWhere, scrollToIndex, scroll
     // Only for a new request, not as the reading place changes or rows are measured.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scrollKey, measured]);
+
+  // Structures arrive after the first layout and make their rows taller, which would move a landed jump.
+  const hasStructures = items.some((item) => item.kind === 'formula' && item.formula.structure);
+  const structuresReady = useStructures(hasStructures) !== null;
+  useEffect(() => {
+    if (!structuresReady || !jump.current) return;
+    jump.current.settledAt = null;
+    virtualizer.scrollToIndex(jump.current.index, { align: 'start' });
+    // Only when they arrive.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [structuresReady]);
 
   // Works from the scroll offset and the virtualiser's positions for every row, so it holds for rows
   // that aren't in the DOM. Runs at most once a frame, and renders only when the answer changes.

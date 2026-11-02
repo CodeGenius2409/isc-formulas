@@ -13,6 +13,8 @@ Newest work last. Each task gets two lines: what was decided, and why.
   Colours are ink tones and weight only, because `DESIGN.md` says subject colours mark a place in the book and nothing else. `--good` and `--accent` carry a second, code-only meaning here, which is written down in `DESIGN.md`.
 - **Task 3, Computer Science as Java.** 845 entries audited; 677 are now written as code, with words where they are descriptions, and 168 keep Boolean, K-map or O(n) notation, as you asked. About 230 were converted by hand, adding notes where integer division or a cast changes the answer, and a test runs the key ones through the Java interpreter to check they give the right result.
   Code travels in the existing display string with a prefix, so rows, search, practice and saved mistakes needed no second path. Python units stay in Python, not Java, and old notes that wrote `^` as a power were rewritten, since in Java it means XOR.
+- **Task 4, structures.** RDKit.js runs in the build, not on the phone: it checks each SMILES against its written formula and PubChem's InChIKey, and draws it, and the app ships only the finished paths in `currentColor`. A 7 MB engine for a few hundred fixed drawings would cost a mid-range phone for nothing; the drawings load on first need, cost 123 KB gzipped, and are precached for offline.
+  247 of 254 compounds match PubChem exactly, including stereo; the other 7 are listed in `reports/structures-report.md`. Inorganic and coordination compounds are left out, because the syllabus asks about their shapes and SMILES can't draw those truthfully.
 
 ---
 

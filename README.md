@@ -4,7 +4,7 @@ Every ISC 2028 formula for Physics, Chemistry, Mathematics and Computer Science,
 problem solver, practice with spaced repetition, and simulators. It installs as an app
 and works with no network after the first visit.
 
-7,828 formulas mapped to the official 2028 syllabus, 448 solvable for any variable, 41 simulators including a step-through Java
+7,828 formulas mapped to the official 2028 syllabus, with Computer Science written as Java and verified bond-line structures for organic chemistry, 448 solvable for any variable, 41 simulators including a step-through Java
 tracer.
 
 ## Run it

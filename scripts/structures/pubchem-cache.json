@@ -1,0 +1,1783 @@
+{
+ "Methane": {
+  "cid": 297,
+  "key": "VNWKTOKETHGBQD-UHFFFAOYSA-N",
+  "formula": "CH4",
+  "weight": 16.043,
+  "iupac": "methane"
+ },
+ "Ethane": {
+  "cid": 6324,
+  "key": "OTMSDBZUPAUEDD-UHFFFAOYSA-N",
+  "formula": "C2H6",
+  "weight": 30.07,
+  "iupac": "ethane"
+ },
+ "Propane": {
+  "cid": 6334,
+  "key": "ATUOYWHBWRKTHZ-UHFFFAOYSA-N",
+  "formula": "C3H8",
+  "weight": 44.1,
+  "iupac": "propane"
+ },
+ "Butane": {
+  "cid": 7843,
+  "key": "IJDNQMDRQITEOD-UHFFFAOYSA-N",
+  "formula": "C4H10",
+  "weight": 58.12,
+  "iupac": "butane"
+ },
+ "isobutane": {
+  "cid": 6360,
+  "key": "NNPPMTNAJDCUHE-UHFFFAOYSA-N",
+  "formula": "C4H10",
+  "weight": 58.12,
+  "iupac": "2-methylpropane"
+ },
+ "Hexane": {
+  "cid": 8058,
+  "key": "VLKZOEOYAKHREP-UHFFFAOYSA-N",
+  "formula": "C6H14",
+  "weight": 86.18,
+  "iupac": "hexane"
+ },
+ "Heptane": {
+  "cid": 8900,
+  "key": "IMNFDUFMRHMDMM-UHFFFAOYSA-N",
+  "formula": "C7H16",
+  "weight": 100.2,
+  "iupac": "heptane"
+ },
+ "Cyclopropane": {
+  "cid": 6351,
+  "key": "LVZWSLJZHVFIQJ-UHFFFAOYSA-N",
+  "formula": "C3H6",
+  "weight": 42.08,
+  "iupac": "cyclopropane"
+ },
+ "Cyclohexane": {
+  "cid": 8078,
+  "key": "XDTMQSROBMDMFD-UHFFFAOYSA-N",
+  "formula": "C6H12",
+  "weight": 84.16,
+  "iupac": "cyclohexane"
+ },
+ "ethylene": {
+  "cid": 6325,
+  "key": "VGGSQFUCUMXWEO-UHFFFAOYSA-N",
+  "formula": "C2H4",
+  "weight": 28.05,
+  "iupac": "ethene"
+ },
+ "Propene": {
+  "cid": 8252,
+  "key": "QQONPFPTGQHPMA-UHFFFAOYSA-N",
+  "formula": "C3H6",
+  "weight": 42.08,
+  "iupac": "prop-1-ene"
+ },
+ "1-butene": {
+  "cid": 7844,
+  "key": "VXNZUUAINFGPBY-UHFFFAOYSA-N",
+  "formula": "C4H8",
+  "weight": 56.11,
+  "iupac": "but-1-ene"
+ },
+ "2-butene": {
+  "cid": 62695,
+  "key": "IAQRGUVFOMOMEM-ONEGZZNKSA-N",
+  "formula": "C4H8",
+  "weight": 56.11,
+  "iupac": "(E)-but-2-ene"
+ },
+ "cis-2-butene": {
+  "cid": 5287573,
+  "key": "IAQRGUVFOMOMEM-ARJAWSKDSA-N",
+  "formula": "C4H8",
+  "weight": 56.11,
+  "iupac": "(Z)-but-2-ene"
+ },
+ "trans-2-butene": {
+  "cid": 62695,
+  "key": "IAQRGUVFOMOMEM-ONEGZZNKSA-N",
+  "formula": "C4H8",
+  "weight": 56.11,
+  "iupac": "(E)-but-2-ene"
+ },
+ "isobutylene": {
+  "cid": 8255,
+  "key": "VQTUBCCKSQIDNK-UHFFFAOYSA-N",
+  "formula": "C4H8",
+  "weight": 56.11,
+  "iupac": "2-methylprop-1-ene"
+ },
+ "vinyl chloride": {
+  "cid": 6338,
+  "key": "BZHJMEDXRYGGRV-UHFFFAOYSA-N",
+  "formula": "C2H3Cl",
+  "weight": 62.5,
+  "iupac": "chloroethene"
+ },
+ "vinyl bromide": {
+  "cid": 11641,
+  "key": "INLLPKCGLOXCIV-UHFFFAOYSA-N",
+  "formula": "C2H3Br",
+  "weight": 106.95,
+  "iupac": "bromoethene"
+ },
+ "tetrafluoroethylene": {
+  "cid": 8301,
+  "key": "BFKJFAAPBSQJPD-UHFFFAOYSA-N",
+  "formula": "C2F4",
+  "weight": 100.01,
+  "iupac": "1,1,2,2-tetrafluoroethene"
+ },
+ "1,2-dibromoethylene": {
+  "cid": 10897,
+  "key": "UWTUEMKLYAGTNQ-UHFFFAOYSA-N",
+  "formula": "C2H2Br2",
+  "weight": 185.85,
+  "iupac": "1,2-dibromoethene"
+ },
+ "vinylacetylene": {
+  "cid": 12720,
+  "key": "WFYPICNXBKQZGB-UHFFFAOYSA-N",
+  "formula": "C4H4",
+  "weight": 52.07,
+  "iupac": "but-1-en-3-yne"
+ },
+ "acrylonitrile": {
+  "cid": 7855,
+  "key": "NLHHRLWOUZZQLW-UHFFFAOYSA-N",
+  "formula": "C3H3N",
+  "weight": 53.06,
+  "iupac": "prop-2-enenitrile"
+ },
+ "Vinyl acetate": {
+  "cid": 7904,
+  "key": "XTXRWKRVRITETP-UHFFFAOYSA-N",
+  "formula": "C4H6O2",
+  "weight": 86.09,
+  "iupac": "ethenyl acetate"
+ },
+ "vinyl alcohol": {
+  "cid": 11199,
+  "key": "IMROMDMJAWUWLK-UHFFFAOYSA-N",
+  "formula": "C2H4O",
+  "weight": 44.05,
+  "iupac": "ethenol"
+ },
+ "acetylene": {
+  "cid": 6326,
+  "key": "HSFWRNGVRCDJHI-UHFFFAOYSA-N",
+  "formula": "C2H2",
+  "weight": 26.04,
+  "iupac": "acetylene"
+ },
+ "Propyne": {
+  "cid": 6335,
+  "key": "MWWATHDPGQKSAR-UHFFFAOYSA-N",
+  "formula": "C3H4",
+  "weight": 40.06,
+  "iupac": "prop-1-yne"
+ },
+ "Benzene": {
+  "cid": 241,
+  "key": "UHOVQNZJYSORNB-UHFFFAOYSA-N",
+  "formula": "C6H6",
+  "weight": 78.11,
+  "iupac": "benzene"
+ },
+ "Toluene": {
+  "cid": 1140,
+  "key": "YXFVVABEGXRONW-UHFFFAOYSA-N",
+  "formula": "C7H8",
+  "weight": 92.14,
+  "iupac": "toluene"
+ },
+ "Cumene": {
+  "cid": 7406,
+  "key": "RWGFKTVRMDUZSP-UHFFFAOYSA-N",
+  "formula": "C9H12",
+  "weight": 120.19,
+  "iupac": "cumene"
+ },
+ "Biphenyl": {
+  "cid": 7095,
+  "key": "ZUOUZKKEUPVFJK-UHFFFAOYSA-N",
+  "formula": "C12H10",
+  "weight": 154.21,
+  "iupac": "1,1'-biphenyl"
+ },
+ "2-Nitrotoluene": {
+  "cid": 6944,
+  "key": "PLAZTCDQAHEYBI-UHFFFAOYSA-N",
+  "formula": "C7H7NO2",
+  "weight": 137.14,
+  "iupac": "1-methyl-2-nitrobenzene"
+ },
+ "4-Nitrotoluene": {
+  "cid": 7473,
+  "key": "ZPTVNYMJQHSSEA-UHFFFAOYSA-N",
+  "formula": "C7H7NO2",
+  "weight": 137.14,
+  "iupac": "1-methyl-4-nitrobenzene"
+ },
+ "Chloromethane": {
+  "cid": 6327,
+  "key": "NEHMKBQYUWJMIP-UHFFFAOYSA-N",
+  "formula": "CH3Cl",
+  "weight": 50.49,
+  "iupac": "chloromethane"
+ },
+ "Bromomethane": {
+  "cid": 6323,
+  "key": "GZUXJHMPEANEGY-UHFFFAOYSA-N",
+  "formula": "CH3Br",
+  "weight": 94.94,
+  "iupac": "bromomethane"
+ },
+ "Iodomethane": {
+  "cid": 6328,
+  "key": "INQOMBQAUSQDDS-UHFFFAOYSA-N",
+  "formula": "CH3I",
+  "weight": 141.939,
+  "iupac": "iodomethane"
+ },
+ "Fluoromethane": {
+  "cid": 11638,
+  "key": "NBVXSUQYWXRMNV-UHFFFAOYSA-N",
+  "formula": "CH3F",
+  "weight": 34.033,
+  "iupac": "fluoromethane"
+ },
+ "Dichloromethane": {
+  "cid": 6344,
+  "key": "YMWUJEATGCHHMB-UHFFFAOYSA-N",
+  "formula": "CH2Cl2",
+  "weight": 84.93,
+  "iupac": "dichloromethane"
+ },
+ "chloroform": {
+  "cid": 6212,
+  "key": "HEDRZPFGACZZDS-UHFFFAOYSA-N",
+  "formula": "CHCl3",
+  "weight": 119.37,
+  "iupac": "chloroform"
+ },
+ "carbon tetrachloride": {
+  "cid": 5943,
+  "key": "VZGDMQKNWNREIO-UHFFFAOYSA-N",
+  "formula": "CCl4",
+  "weight": 153.8,
+  "iupac": "tetrachloromethane"
+ },
+ "iodoform": {
+  "cid": 6374,
+  "key": "OKJPEAGHQZHRQV-UHFFFAOYSA-N",
+  "formula": "CHI3",
+  "weight": 393.732,
+  "iupac": "iodoform"
+ },
+ "Chloroethane": {
+  "cid": 6337,
+  "key": "HRYZWHHZPQKTII-UHFFFAOYSA-N",
+  "formula": "C2H5Cl",
+  "weight": 64.51,
+  "iupac": "chloroethane"
+ },
+ "Bromoethane": {
+  "cid": 6332,
+  "key": "RDHPKYGYEGBMSE-UHFFFAOYSA-N",
+  "formula": "C2H5Br",
+  "weight": 108.97,
+  "iupac": "bromoethane"
+ },
+ "Iodoethane": {
+  "cid": 6340,
+  "key": "HVTICUPFWKNHNG-UHFFFAOYSA-N",
+  "formula": "C2H5I",
+  "weight": 155.97,
+  "iupac": "iodoethane"
+ },
+ "1-Bromopropane": {
+  "cid": 7840,
+  "key": "CYNYIHKIEHGYOZ-UHFFFAOYSA-N",
+  "formula": "C3H7Br",
+  "weight": 122.99,
+  "iupac": "1-bromopropane"
+ },
+ "2-Bromopropane": {
+  "cid": 6358,
+  "key": "NAMYKGVDVNBCFQ-UHFFFAOYSA-N",
+  "formula": "C3H7Br",
+  "weight": 122.99,
+  "iupac": "2-bromopropane"
+ },
+ "1-Chloropropane": {
+  "cid": 10899,
+  "key": "SNMVRZFUUCLYTO-UHFFFAOYSA-N",
+  "formula": "C3H7Cl",
+  "weight": 78.54,
+  "iupac": "1-chloropropane"
+ },
+ "2-Chloropropane": {
+  "cid": 6361,
+  "key": "ULYZAYCEDJDHCC-UHFFFAOYSA-N",
+  "formula": "C3H7Cl",
+  "weight": 78.54,
+  "iupac": "2-chloropropane"
+ },
+ "2-Bromobutane": {
+  "cid": 6554,
+  "key": "UPSXAPQYNGXVBF-UHFFFAOYSA-N",
+  "formula": "C4H9Br",
+  "weight": 137.02,
+  "iupac": "2-bromobutane"
+ },
+ "tert-butyl bromide": {
+  "cid": 10485,
+  "key": "RKSOPLXZQNSWAS-UHFFFAOYSA-N",
+  "formula": "C4H9Br",
+  "weight": 137.02,
+  "iupac": "2-bromo-2-methylpropane"
+ },
+ "tert-butyl chloride": {
+  "cid": 10486,
+  "key": "NBRKLOOSMBRFMH-UHFFFAOYSA-N",
+  "formula": "C4H9Cl",
+  "weight": 92.57,
+  "iupac": "2-chloro-2-methylpropane"
+ },
+ "tert-butyl iodide": {
+  "cid": 11206,
+  "key": "ANGGPYSFTXVERY-UHFFFAOYSA-N",
+  "formula": "C4H9I",
+  "weight": 184.02,
+  "iupac": "2-iodo-2-methylpropane"
+ },
+ "1,2-Dibromoethane": {
+  "cid": 7839,
+  "key": "PAAZPARNPHGIKF-UHFFFAOYSA-N",
+  "formula": "C2H4Br2",
+  "weight": 187.86,
+  "iupac": "1,2-dibromoethane"
+ },
+ "1,2-Dichloroethane": {
+  "cid": 11,
+  "key": "WSLDOOZREJYCGB-UHFFFAOYSA-N",
+  "formula": "C2H4Cl2",
+  "weight": 98.96,
+  "iupac": "1,2-dichloroethane"
+ },
+ "1,1-Dibromoethane": {
+  "cid": 11201,
+  "key": "APQIUTYORBAGEZ-UHFFFAOYSA-N",
+  "formula": "C2H4Br2",
+  "weight": 187.86,
+  "iupac": "1,1-dibromoethane"
+ },
+ "1,1,2,2-Tetrabromoethane": {
+  "cid": 6588,
+  "key": "QXSZNDIIPUOQMB-UHFFFAOYSA-N",
+  "formula": "C2H2Br4",
+  "weight": 345.65,
+  "iupac": "1,1,2,2-tetrabromoethane"
+ },
+ "2,2-Dibromopropane": {
+  "cid": 11658,
+  "key": "ARITXYXYCOZKMU-UHFFFAOYSA-N",
+  "formula": "C3H6Br2",
+  "weight": 201.89,
+  "iupac": "2,2-dibromopropane"
+ },
+ "2,2-Dichloropropane": {
+  "cid": 11660,
+  "key": "ZEOVXNVKXIPWMS-UHFFFAOYSA-N",
+  "formula": "C3H6Cl2",
+  "weight": 112.98,
+  "iupac": "2,2-dichloropropane"
+ },
+ "dichlorodifluoromethane": {
+  "cid": 6391,
+  "key": "PXBRQCKWGAHEHS-UHFFFAOYSA-N",
+  "formula": "CCl2F2",
+  "weight": 120.91,
+  "iupac": "dichloro(difluoro)methane"
+ },
+ "phosgene": {
+  "cid": 6371,
+  "key": "YGYAWVDWMABLBF-UHFFFAOYSA-N",
+  "formula": "CCl2O",
+  "weight": 98.91,
+  "iupac": "carbonyl dichloride"
+ },
+ "chloropicrin": {
+  "cid": 6423,
+  "key": "LFHISGNCFUNFFM-UHFFFAOYSA-N",
+  "formula": "CCl3NO2",
+  "weight": 164.37,
+  "iupac": "trichloro(nitro)methane"
+ },
+ "Chlorobenzene": {
+  "cid": 7964,
+  "key": "MVPPADPHJFYWMZ-UHFFFAOYSA-N",
+  "formula": "C6H5Cl",
+  "weight": 112.55,
+  "iupac": "chlorobenzene"
+ },
+ "Bromobenzene": {
+  "cid": 7961,
+  "key": "QARVLSVVCXYDNA-UHFFFAOYSA-N",
+  "formula": "C6H5Br",
+  "weight": 157.01,
+  "iupac": "bromobenzene"
+ },
+ "Iodobenzene": {
+  "cid": 11575,
+  "key": "SNHMUERNLJLMHN-UHFFFAOYSA-N",
+  "formula": "C6H5I",
+  "weight": 204.01,
+  "iupac": "iodobenzene"
+ },
+ "Benzal chloride": {
+  "cid": 7411,
+  "key": "CAHQGWAXKLQREW-UHFFFAOYSA-N",
+  "formula": "C7H6Cl2",
+  "weight": 161.03,
+  "iupac": "dichloromethylbenzene"
+ },
+ "1,2,3,4,5,6-hexachlorocyclohexane": {
+  "cid": 727,
+  "key": "JLYXXMFPNIAWKQ-UHFFFAOYSA-N",
+  "formula": "C6H6Cl6",
+  "weight": 290.8,
+  "iupac": "1,2,3,4,5,6-hexachlorocyclohexane"
+ },
+ "DDT": {
+  "cid": 3036,
+  "key": "YVGGHNCTFXOJCH-UHFFFAOYSA-N",
+  "formula": "C14H9Cl5",
+  "weight": 354.5,
+  "iupac": "1-chloro-4-[2,2,2-trichloro-1-(4-chlorophenyl)ethyl]benzene"
+ },
+ "chloral": {
+  "cid": 6407,
+  "key": "HFFLGKNGCAIQMO-UHFFFAOYSA-N",
+  "formula": "C2HCl3O",
+  "weight": 147.38,
+  "iupac": "2,2,2-trichloroacetaldehyde"
+ },
+ "1-Chloro-2-nitrobenzene": {
+  "cid": 6945,
+  "key": "BFCFYVKQTRLZHA-UHFFFAOYSA-N",
+  "formula": "C6H4ClNO2",
+  "weight": 157.55,
+  "iupac": "1-chloro-2-nitrobenzene"
+ },
+ "1-Chloro-4-nitrobenzene": {
+  "cid": 7474,
+  "key": "CZGCEKJOLUNIFY-UHFFFAOYSA-N",
+  "formula": "C6H4ClNO2",
+  "weight": 157.55,
+  "iupac": "1-chloro-4-nitrobenzene"
+ },
+ "2-Chlorotoluene": {
+  "cid": 7238,
+  "key": "IBSQPLPBRSHTTG-UHFFFAOYSA-N",
+  "formula": "C7H7Cl",
+  "weight": 126.58,
+  "iupac": "1-chloro-2-methylbenzene"
+ },
+ "4-Chlorotoluene": {
+  "cid": 7810,
+  "key": "NPDACUSDTOMAMK-UHFFFAOYSA-N",
+  "formula": "C7H7Cl",
+  "weight": 126.58,
+  "iupac": "1-chloro-4-methylbenzene"
+ },
+ "4-Chlorobenzenesulfonic acid": {
+  "cid": 7400,
+  "key": "RJWBTWIBUIGANW-UHFFFAOYSA-N",
+  "formula": "C6H5ClO3S",
+  "weight": 192.62,
+  "iupac": "4-chlorobenzenesulfonic acid"
+ },
+ "4'-chloroacetophenone": {
+  "cid": 7467,
+  "key": "BUZYGTVTZYSBCU-UHFFFAOYSA-N",
+  "formula": "C8H7ClO",
+  "weight": 154.59,
+  "iupac": "1-(4-chlorophenyl)ethanone"
+ },
+ "1-Chloro-2,4-dinitrobenzene": {
+  "cid": 6,
+  "key": "VYZAHLCBVHPDDF-UHFFFAOYSA-N",
+  "formula": "C6H3ClN2O4",
+  "weight": 202.55,
+  "iupac": "1-chloro-2,4-dinitrobenzene"
+ },
+ "2,4-Dinitrophenol": {
+  "cid": 1493,
+  "key": "UFBJCMHMOXMLKC-UHFFFAOYSA-N",
+  "formula": "C6H4N2O5",
+  "weight": 184.11,
+  "iupac": "2,4-dinitrophenol"
+ },
+ "Methanol": {
+  "cid": 887,
+  "key": "OKKJLVBELUTLKV-UHFFFAOYSA-N",
+  "formula": "CH4O",
+  "weight": 32.042,
+  "iupac": "methanol"
+ },
+ "Ethanol": {
+  "cid": 702,
+  "key": "LFQSCWFLJHTTHZ-UHFFFAOYSA-N",
+  "formula": "C2H6O",
+  "weight": 46.07,
+  "iupac": "ethanol"
+ },
+ "1-propanol": {
+  "cid": 1031,
+  "key": "BDERNNFJNOPAEC-UHFFFAOYSA-N",
+  "formula": "C3H8O",
+  "weight": 60.1,
+  "iupac": "propan-1-ol"
+ },
+ "isopropyl alcohol": {
+  "cid": 3776,
+  "key": "KFZMGEQAYNKOFK-UHFFFAOYSA-N",
+  "formula": "C3H8O",
+  "weight": 60.1,
+  "iupac": "propan-2-ol"
+ },
+ "tert-butanol": {
+  "cid": 6386,
+  "key": "DKGAVHZHDRPRBM-UHFFFAOYSA-N",
+  "formula": "C4H10O",
+  "weight": 74.12,
+  "iupac": "2-methylpropan-2-ol"
+ },
+ "ethylene glycol": {
+  "cid": 174,
+  "key": "LYCAIKOWRPUZTN-UHFFFAOYSA-N",
+  "formula": "C2H6O2",
+  "weight": 62.07,
+  "iupac": "ethane-1,2-diol"
+ },
+ "glycerol": {
+  "cid": 753,
+  "key": "PEDCQBHIVMGVHV-UHFFFAOYSA-N",
+  "formula": "C3H8O3",
+  "weight": 92.09,
+  "iupac": "propane-1,2,3-triol"
+ },
+ "nitroglycerin": {
+  "cid": 4510,
+  "key": "SNIOPGDIGTZGOP-UHFFFAOYSA-N",
+  "formula": "C3H5N3O9",
+  "weight": 227.09,
+  "iupac": "1,3-dinitrooxypropan-2-yl nitrate"
+ },
+ "2-Chloroethanol": {
+  "cid": 34,
+  "key": "SZIFAVKTNFCBPC-UHFFFAOYSA-N",
+  "formula": "C2H5ClO",
+  "weight": 80.51,
+  "iupac": "2-chloroethanol"
+ },
+ "Benzyl alcohol": {
+  "cid": 244,
+  "key": "WVDDGKGOMKODPV-UHFFFAOYSA-N",
+  "formula": "C7H8O",
+  "weight": 108.14,
+  "iupac": "phenylmethanol"
+ },
+ "Phenol": {
+  "cid": 996,
+  "key": "ISWSIDIOOBJBQZ-UHFFFAOYSA-N",
+  "formula": "C6H6O",
+  "weight": 94.11,
+  "iupac": "phenol"
+ },
+ "sodium phenolate": {
+  "cid": 4445035,
+  "key": "NESLWCLHZZISNB-UHFFFAOYSA-M",
+  "formula": "C6H5NaO",
+  "weight": 116.09,
+  "iupac": "sodium phenoxide"
+ },
+ "salicylic acid": {
+  "cid": 338,
+  "key": "YGSDEFSMJLZEOE-UHFFFAOYSA-N",
+  "formula": "C7H6O3",
+  "weight": 138.12,
+  "iupac": "2-hydroxybenzoic acid"
+ },
+ "Sodium salicylate": {
+  "cid": 16760658,
+  "key": "ABBQHOQBGMUPJH-UHFFFAOYSA-M",
+  "formula": "C7H5NaO3",
+  "weight": 160.1,
+  "iupac": "sodium 2-hydroxybenzoate"
+ },
+ "salicylaldehyde": {
+  "cid": 6998,
+  "key": "SMQUZDBALVYZAC-UHFFFAOYSA-N",
+  "formula": "C7H6O2",
+  "weight": 122.12,
+  "iupac": "2-hydroxybenzaldehyde"
+ },
+ "2,4,6-Tribromophenol": {
+  "cid": 1483,
+  "key": "BSWWXRFVMJHFBN-UHFFFAOYSA-N",
+  "formula": "C6H3Br3O",
+  "weight": 330.8,
+  "iupac": "2,4,6-tribromophenol"
+ },
+ "picric acid": {
+  "cid": 6954,
+  "key": "OXNIZHLAWKMVMX-UHFFFAOYSA-N",
+  "formula": "C6H3N3O7",
+  "weight": 229.1,
+  "iupac": "2,4,6-trinitrophenol"
+ },
+ "2-Bromophenol": {
+  "cid": 7244,
+  "key": "VADKRMSMGWJZCF-UHFFFAOYSA-N",
+  "formula": "C6H5BrO",
+  "weight": 173.01,
+  "iupac": "2-bromophenol"
+ },
+ "4-Bromophenol": {
+  "cid": 7808,
+  "key": "GZFGOTFRPZRKDS-UHFFFAOYSA-N",
+  "formula": "C6H5BrO",
+  "weight": 173.01,
+  "iupac": "4-bromophenol"
+ },
+ "2-Nitrophenol": {
+  "cid": 6947,
+  "key": "IQUPABOKLQSFBK-UHFFFAOYSA-N",
+  "formula": "C6H5NO3",
+  "weight": 139.11,
+  "iupac": "2-nitrophenol"
+ },
+ "4-Nitrophenol": {
+  "cid": 980,
+  "key": "BTJIUGUIPKRLHP-UHFFFAOYSA-N",
+  "formula": "C6H5NO3",
+  "weight": 139.11,
+  "iupac": "4-nitrophenol"
+ },
+ "Phenyl acetate": {
+  "cid": 31229,
+  "key": "IPBVNPXQWQGGJP-UHFFFAOYSA-N",
+  "formula": "C8H8O2",
+  "weight": 136.15,
+  "iupac": "phenyl acetate"
+ },
+ "p-benzoquinone": {
+  "cid": 4650,
+  "key": "AZQWKYJCGOJGHM-UHFFFAOYSA-N",
+  "formula": "C6H4O2",
+  "weight": 108.09,
+  "iupac": "cyclohexa-2,5-diene-1,4-dione"
+ },
+ "4-phenylazophenol": {
+  "cid": 15529,
+  "key": "BEYOBVMPDRKTNR-UHFFFAOYSA-N",
+  "formula": "C12H10N2O",
+  "weight": 198.22,
+  "iupac": "4-phenyldiazenylphenol"
+ },
+ "Cumene hydroperoxide": {
+  "cid": 6629,
+  "key": "YQHLDYVWEZKEOX-UHFFFAOYSA-N",
+  "formula": "C9H12O2",
+  "weight": 152.19,
+  "iupac": "2-hydroperoxypropan-2-ylbenzene"
+ },
+ "Benzenesulfonic acid": {
+  "cid": 7371,
+  "key": "SRSXLGNVWSONIS-UHFFFAOYSA-N",
+  "formula": "C6H6O3S",
+  "weight": 158.18,
+  "iupac": "benzenesulfonic acid"
+ },
+ "Sodium benzenesulfonate": {
+  "cid": 517327,
+  "key": "MZSDGDXXBZSFTG-UHFFFAOYSA-M",
+  "formula": "C6H5NaO3S",
+  "weight": 180.16,
+  "iupac": "sodium benzenesulfonate"
+ },
+ "dimethyl ether": {
+  "cid": 8254,
+  "key": "LCGLNKUTAGEVQW-UHFFFAOYSA-N",
+  "formula": "C2H6O",
+  "weight": 46.07,
+  "iupac": "methoxymethane"
+ },
+ "diethyl ether": {
+  "cid": 3283,
+  "key": "RTZKZFJDLAIYFH-UHFFFAOYSA-N",
+  "formula": "C4H10O",
+  "weight": 74.12,
+  "iupac": "ethoxyethane"
+ },
+ "methyl propyl ether": {
+  "cid": 11182,
+  "key": "VNKYTQGIUYNRMY-UHFFFAOYSA-N",
+  "formula": "C4H10O",
+  "weight": 74.12,
+  "iupac": "1-methoxypropane"
+ },
+ "anisole": {
+  "cid": 7519,
+  "key": "RDOXTESZEPMUJZ-UHFFFAOYSA-N",
+  "formula": "C7H8O",
+  "weight": 108.14,
+  "iupac": "anisole"
+ },
+ "methyl tert-butyl ether": {
+  "cid": 15413,
+  "key": "BZLVMXJERCGZMT-UHFFFAOYSA-N",
+  "formula": "C5H12O",
+  "weight": 88.15,
+  "iupac": "2-methoxy-2-methylpropane"
+ },
+ "ethylene oxide": {
+  "cid": 6354,
+  "key": "IAYPIBMASNFSPL-UHFFFAOYSA-N",
+  "formula": "C2H4O",
+  "weight": 44.05,
+  "iupac": "oxirane"
+ },
+ "Sodium ethoxide": {
+  "cid": 2723922,
+  "key": "QDRKDTQENPPHOJ-UHFFFAOYSA-N",
+  "formula": "C2H5NaO",
+  "weight": 68.05,
+  "iupac": "sodium ethanolate"
+ },
+ "Sodium methoxide": {
+  "cid": 10942334,
+  "key": "WQDUMFSSJAZKTM-UHFFFAOYSA-N",
+  "formula": "CH3NaO",
+  "weight": 54.024,
+  "iupac": "sodium methanolate"
+ },
+ "sodium 2-methylpropan-2-olate": {
+  "cid": 23676156,
+  "key": "MFRIHAYPQRLWNB-UHFFFAOYSA-N",
+  "formula": "C4H9NaO",
+  "weight": 96.1,
+  "iupac": "sodium 2-methylpropan-2-olate"
+ },
+ "Diethyl carbonate": {
+  "cid": 7766,
+  "key": "OIFBSDVPJOWBCH-UHFFFAOYSA-N",
+  "formula": "C5H10O3",
+  "weight": 118.13,
+  "iupac": "diethyl carbonate"
+ },
+ "2-Methylanisole": {
+  "cid": 33637,
+  "key": "DTFKRVXLBCAIOZ-UHFFFAOYSA-N",
+  "formula": "C8H10O",
+  "weight": 122.16,
+  "iupac": "1-methoxy-2-methylbenzene"
+ },
+ "4-Methylanisole": {
+  "cid": 7731,
+  "key": "CHLICZRVGGXEOD-UHFFFAOYSA-N",
+  "formula": "C8H10O",
+  "weight": 122.16,
+  "iupac": "1-methoxy-4-methylbenzene"
+ },
+ "2-Bromoanisole": {
+  "cid": 11358,
+  "key": "HTDQSWDEWGSAMN-UHFFFAOYSA-N",
+  "formula": "C7H7BrO",
+  "weight": 187.03,
+  "iupac": "1-bromo-2-methoxybenzene"
+ },
+ "4-Bromoanisole": {
+  "cid": 7730,
+  "key": "QJPJQTDYNZXKQF-UHFFFAOYSA-N",
+  "formula": "C7H7BrO",
+  "weight": 187.03,
+  "iupac": "1-bromo-4-methoxybenzene"
+ },
+ "2-Nitroanisole": {
+  "cid": 7048,
+  "key": "CFBYEGUGFPZCNF-UHFFFAOYSA-N",
+  "formula": "C7H7NO3",
+  "weight": 153.14,
+  "iupac": "1-methoxy-2-nitrobenzene"
+ },
+ "4-Nitroanisole": {
+  "cid": 7485,
+  "key": "BNUHAJGCKIQFGE-UHFFFAOYSA-N",
+  "formula": "C7H7NO3",
+  "weight": 153.14,
+  "iupac": "1-methoxy-4-nitrobenzene"
+ },
+ "4'-methoxyacetophenone": {
+  "cid": 7476,
+  "key": "NTPLXRHDUXRPNE-UHFFFAOYSA-N",
+  "formula": "C9H10O2",
+  "weight": 150.17,
+  "iupac": "1-(4-methoxyphenyl)ethanone"
+ },
+ "formaldehyde": {
+  "cid": 712,
+  "key": "WSFSSNUMVMOOMR-UHFFFAOYSA-N",
+  "formula": "CH2O",
+  "weight": 30.026,
+  "iupac": "formaldehyde"
+ },
+ "acetaldehyde": {
+  "cid": 177,
+  "key": "IKHGUXGNUITLKF-UHFFFAOYSA-N",
+  "formula": "C2H4O",
+  "weight": 44.05,
+  "iupac": "acetaldehyde"
+ },
+ "Propanal": {
+  "cid": 527,
+  "key": "NBBJYMSMWIIQGU-UHFFFAOYSA-N",
+  "formula": "C3H6O",
+  "weight": 58.08,
+  "iupac": "propanal"
+ },
+ "acetone": {
+  "cid": 180,
+  "key": "CSCPPACGZOOCGX-UHFFFAOYSA-N",
+  "formula": "C3H6O",
+  "weight": 58.08,
+  "iupac": "propan-2-one"
+ },
+ "Benzaldehyde": {
+  "cid": 240,
+  "key": "HUMNYLRZRPPJDN-UHFFFAOYSA-N",
+  "formula": "C7H6O",
+  "weight": 106.12,
+  "iupac": "benzaldehyde"
+ },
+ "Acetophenone": {
+  "cid": 7410,
+  "key": "KWOLFJPFCHCOCG-UHFFFAOYSA-N",
+  "formula": "C8H8O",
+  "weight": 120.15,
+  "iupac": "1-phenylethanone"
+ },
+ "3-hydroxybutanal": {
+  "cid": 7897,
+  "key": "HSJKGGMUJITCBW-UHFFFAOYSA-N",
+  "formula": "C4H8O2",
+  "weight": 88.11,
+  "iupac": "3-hydroxybutanal"
+ },
+ "crotonaldehyde": {
+  "cid": 447466,
+  "key": "MLUCVPSAIODCQM-NSCUHMNNSA-N",
+  "formula": "C4H6O",
+  "weight": 70.09,
+  "iupac": "(E)-but-2-enal"
+ },
+ "diacetone alcohol": {
+  "cid": 31256,
+  "key": "SWXVUIWOUIDPGS-UHFFFAOYSA-N",
+  "formula": "C6H12O2",
+  "weight": 116.16,
+  "iupac": "4-hydroxy-4-methylpentan-2-one"
+ },
+ "mesityl oxide": {
+  "cid": 8858,
+  "key": "SHOJXDKTYKFBRD-UHFFFAOYSA-N",
+  "formula": "C6H10O",
+  "weight": 98.14,
+  "iupac": "4-methylpent-3-en-2-one"
+ },
+ "benzalacetone": {
+  "cid": 637759,
+  "key": "BWHOZHOGCMHOBV-BQYQJAHWSA-N",
+  "formula": "C10H10O",
+  "weight": 146.19,
+  "iupac": "(E)-4-phenylbut-3-en-2-one"
+ },
+ "Benzoin": {
+  "cid": 8400,
+  "key": "ISAOCJYIOMOJEB-UHFFFAOYSA-N",
+  "formula": "C14H12O2",
+  "weight": 212.24,
+  "iupac": "2-hydroxy-1,2-diphenylethanone"
+ },
+ "chloroacetone": {
+  "cid": 6571,
+  "key": "BULLHNJGPPOUOX-UHFFFAOYSA-N",
+  "formula": "C3H5ClO",
+  "weight": 92.52,
+  "iupac": "1-chloropropan-2-one"
+ },
+ "1,1,1-trichloroacetone": {
+  "cid": 13514,
+  "key": "SMZHKGXSEAGRTI-UHFFFAOYSA-N",
+  "formula": "C3H3Cl3O",
+  "weight": 161.41,
+  "iupac": "1,1,1-trichloropropan-2-one"
+ },
+ "Acetone cyanohydrin": {
+  "cid": 6406,
+  "key": "MWFMGBPGAXYFAR-UHFFFAOYSA-N",
+  "formula": "C4H7NO",
+  "weight": 85.1,
+  "iupac": "2-hydroxy-2-methylpropanenitrile"
+ },
+ "mandelonitrile": {
+  "cid": 10758,
+  "key": "NNICRUQPODTGRU-UHFFFAOYSA-N",
+  "formula": "C8H7NO",
+  "weight": 133.15,
+  "iupac": "2-hydroxy-2-phenylacetonitrile"
+ },
+ "3-Nitrobenzaldehyde": {
+  "cid": 7449,
+  "key": "ZETIVVHRRQLWFW-UHFFFAOYSA-N",
+  "formula": "C7H5NO3",
+  "weight": 151.12,
+  "iupac": "3-nitrobenzaldehyde"
+ },
+ "3-Chlorobenzaldehyde": {
+  "cid": 11477,
+  "key": "SRWILAKSARHZPR-UHFFFAOYSA-N",
+  "formula": "C7H5ClO",
+  "weight": 140.56,
+  "iupac": "3-chlorobenzaldehyde"
+ },
+ "3-Formylbenzenesulfonic acid": {
+  "cid": 104693,
+  "key": "MRXZEDMLQMDMGB-UHFFFAOYSA-N",
+  "formula": "C7H6O4S",
+  "weight": 186.19,
+  "iupac": "3-formylbenzenesulfonic acid"
+ },
+ "Benzaldehyde oxime": {
+  "cid": 5324611,
+  "key": "VTWKXBJHBHYJBI-SOFGYWHQSA-N",
+  "formula": "C7H7NO",
+  "weight": 121.14,
+  "iupac": "(NE)-N-benzylidenehydroxylamine"
+ },
+ "Benzaldehyde phenylhydrazone": {
+  "cid": 6436752,
+  "key": "JGOAZQAXRONCCI-SDNWHVSQSA-N",
+  "formula": "C13H12N2",
+  "weight": 196.25,
+  "iupac": "N-[(E)-benzylideneamino]aniline"
+ },
+ "glyoxal": {
+  "cid": 7860,
+  "key": "LEQAOMBKQFMDFZ-UHFFFAOYSA-N",
+  "formula": "C2H2O2",
+  "weight": 58.04,
+  "iupac": "oxaldehyde"
+ },
+ "formic acid": {
+  "cid": 284,
+  "key": "BDAGIHXWWSANSR-UHFFFAOYSA-N",
+  "formula": "CH2O2",
+  "weight": 46.025,
+  "iupac": "formic acid"
+ },
+ "acetic acid": {
+  "cid": 176,
+  "key": "QTBSBXVTEAMEQO-UHFFFAOYSA-N",
+  "formula": "C2H4O2",
+  "weight": 60.05,
+  "iupac": "acetic acid"
+ },
+ "Propanoic acid": {
+  "cid": 1032,
+  "key": "XBDQKXXYIPTUBI-UHFFFAOYSA-N",
+  "formula": "C3H6O2",
+  "weight": 74.08,
+  "iupac": "propanoic acid"
+ },
+ "oxalic acid": {
+  "cid": 971,
+  "key": "MUBZPKHOEPUJKR-UHFFFAOYSA-N",
+  "formula": "C2H2O4",
+  "weight": 90.03,
+  "iupac": "oxalic acid"
+ },
+ "malonic acid": {
+  "cid": 867,
+  "key": "OFOBLEOULBTSOW-UHFFFAOYSA-N",
+  "formula": "C3H4O4",
+  "weight": 104.06,
+  "iupac": "propanedioic acid"
+ },
+ "succinic acid": {
+  "cid": 1110,
+  "key": "KDYFGRWQOYBRFD-UHFFFAOYSA-N",
+  "formula": "C4H6O4",
+  "weight": 118.09,
+  "iupac": "butanedioic acid"
+ },
+ "adipic acid": {
+  "cid": 196,
+  "key": "WNLRTRBMVRJNCN-UHFFFAOYSA-N",
+  "formula": "C6H10O4",
+  "weight": 146.14,
+  "iupac": "hexanedioic acid"
+ },
+ "lactic acid": {
+  "cid": 612,
+  "key": "JVTAAEKCZFNVCJ-UHFFFAOYSA-N",
+  "formula": "C3H6O3",
+  "weight": 90.08,
+  "iupac": "2-hydroxypropanoic acid"
+ },
+ "tartaric acid": {
+  "cid": 444305,
+  "key": "FEWJPZIEWOKRBE-JCYAYHJZSA-N",
+  "formula": "C4H6O6",
+  "weight": 150.09,
+  "iupac": "(2R,3R)-2,3-dihydroxybutanedioic acid"
+ },
+ "Benzoic acid": {
+  "cid": 243,
+  "key": "WPYMKLBDIGXBTP-UHFFFAOYSA-N",
+  "formula": "C7H6O2",
+  "weight": 122.12,
+  "iupac": "benzoic acid"
+ },
+ "phthalic acid": {
+  "cid": 1017,
+  "key": "XNGIFLGASWRNHJ-UHFFFAOYSA-N",
+  "formula": "C8H6O4",
+  "weight": 166.13,
+  "iupac": "phthalic acid"
+ },
+ "Phthalic anhydride": {
+  "cid": 6811,
+  "key": "LGRFSURHDFAFJT-UHFFFAOYSA-N",
+  "formula": "C8H4O3",
+  "weight": 148.11,
+  "iupac": "2-benzofuran-1,3-dione"
+ },
+ "chloroacetic acid": {
+  "cid": 300,
+  "key": "FOCAUTSVDIKZOP-UHFFFAOYSA-N",
+  "formula": "C2H3ClO2",
+  "weight": 94.5,
+  "iupac": "2-chloroacetic acid"
+ },
+ "dichloroacetic acid": {
+  "cid": 6597,
+  "key": "JXTHNDFMNIQAHM-UHFFFAOYSA-N",
+  "formula": "C2H2Cl2O2",
+  "weight": 128.94,
+  "iupac": "2,2-dichloroacetic acid"
+ },
+ "trichloroacetic acid": {
+  "cid": 6421,
+  "key": "YNJBWRMUSHSURL-UHFFFAOYSA-N",
+  "formula": "C2HCl3O2",
+  "weight": 163.38,
+  "iupac": "2,2,2-trichloroacetic acid"
+ },
+ "fluoroacetic acid": {
+  "cid": 5237,
+  "key": "QEWYKACRFQMRMB-UHFFFAOYSA-N",
+  "formula": "C2H3FO2",
+  "weight": 78.04,
+  "iupac": "2-fluoroacetic acid"
+ },
+ "bromoacetic acid": {
+  "cid": 6227,
+  "key": "KDPAWGWELVVRCH-UHFFFAOYSA-N",
+  "formula": "C2H3BrO2",
+  "weight": 138.95,
+  "iupac": "2-bromoacetic acid"
+ },
+ "iodoacetic acid": {
+  "cid": 5240,
+  "key": "JDNTWHVOXJZDSN-UHFFFAOYSA-N",
+  "formula": "C2H3IO2",
+  "weight": 185.95,
+  "iupac": "2-iodoacetic acid"
+ },
+ "cinnamic acid": {
+  "cid": 444539,
+  "key": "WBYWAXJHAXSJNI-VOTSOKGWSA-N",
+  "formula": "C9H8O2",
+  "weight": 148.16,
+  "iupac": "(E)-3-phenylprop-2-enoic acid"
+ },
+ "sodium formate": {
+  "cid": 2723810,
+  "key": "HLBBKKJFGFRGMU-UHFFFAOYSA-M",
+  "formula": "CHNaO2",
+  "weight": 68.007,
+  "iupac": "sodium formate"
+ },
+ "sodium acetate": {
+  "cid": 31372,
+  "key": "VMHLLURERBWHNL-UHFFFAOYSA-M",
+  "formula": "C2H3NaO2",
+  "weight": 82.03,
+  "iupac": "sodium acetate"
+ },
+ "Sodium benzoate": {
+  "cid": 517055,
+  "key": "WXMKPNITSTVMEF-UHFFFAOYSA-M",
+  "formula": "C7H5NaO2",
+  "weight": 144.1,
+  "iupac": "sodium benzoate"
+ },
+ "ammonium acetate": {
+  "cid": 517165,
+  "key": "USFZMSVCRYTOJT-UHFFFAOYSA-N",
+  "formula": "C2H7NO2",
+  "weight": 77.08,
+  "iupac": "azanium acetate"
+ },
+ "Ammonium benzoate": {
+  "cid": 15830,
+  "key": "VWSRWGFGAAKTQG-UHFFFAOYSA-N",
+  "formula": "C7H9NO2",
+  "weight": 139.15,
+  "iupac": "azanium benzoate"
+ },
+ "acetyl chloride": {
+  "cid": 6367,
+  "key": "WETWJCDKMRHUPV-UHFFFAOYSA-N",
+  "formula": "C2H3ClO",
+  "weight": 78.5,
+  "iupac": "acetyl chloride"
+ },
+ "Benzoyl chloride": {
+  "cid": 7412,
+  "key": "PASDCCFISLVPSO-UHFFFAOYSA-N",
+  "formula": "C7H5ClO",
+  "weight": 140.56,
+  "iupac": "benzoyl chloride"
+ },
+ "acetic anhydride": {
+  "cid": 7918,
+  "key": "WFDIJRYMOXRFFG-UHFFFAOYSA-N",
+  "formula": "C4H6O3",
+  "weight": 102.09,
+  "iupac": "acetyl acetate"
+ },
+ "ethyl acetate": {
+  "cid": 8857,
+  "key": "XEKOWRVHYACXOJ-UHFFFAOYSA-N",
+  "formula": "C4H8O2",
+  "weight": 88.11,
+  "iupac": "ethyl acetate"
+ },
+ "acetamide": {
+  "cid": 178,
+  "key": "DLFVBJFMPXGRIB-UHFFFAOYSA-N",
+  "formula": "C2H5NO",
+  "weight": 59.07,
+  "iupac": "acetamide"
+ },
+ "Benzamide": {
+  "cid": 2331,
+  "key": "KXDAEFPNCMNJSK-UHFFFAOYSA-N",
+  "formula": "C7H7NO",
+  "weight": 121.14,
+  "iupac": "benzamide"
+ },
+ "3-Nitrobenzoic acid": {
+  "cid": 8497,
+  "key": "AFPHTEQTJZKQAQ-UHFFFAOYSA-N",
+  "formula": "C7H5NO4",
+  "weight": 167.12,
+  "iupac": "3-nitrobenzoic acid"
+ },
+ "3-Sulfobenzoic acid": {
+  "cid": 8477,
+  "key": "QMWGSOMVXSRXQX-UHFFFAOYSA-N",
+  "formula": "C7H6O5S",
+  "weight": 202.19,
+  "iupac": "3-sulfobenzoic acid"
+ },
+ "3-Bromobenzoic acid": {
+  "cid": 11456,
+  "key": "VOIZNVUXCQLQHS-UHFFFAOYSA-N",
+  "formula": "C7H5BrO2",
+  "weight": 201.02,
+  "iupac": "3-bromobenzoic acid"
+ },
+ "4-Nitrobenzoic acid": {
+  "cid": 6108,
+  "key": "OTLNPYWUJOZPPA-UHFFFAOYSA-N",
+  "formula": "C7H5NO4",
+  "weight": 167.12,
+  "iupac": "4-nitrobenzoic acid"
+ },
+ "p-toluic acid": {
+  "cid": 7470,
+  "key": "LPNBBFKOUUSUDB-UHFFFAOYSA-N",
+  "formula": "C8H8O2",
+  "weight": 136.15,
+  "iupac": "4-methylbenzoic acid"
+ },
+ "methylamine": {
+  "cid": 6329,
+  "key": "BAVYZALUXZFZLV-UHFFFAOYSA-N",
+  "formula": "CH5N",
+  "weight": 31.057,
+  "iupac": "methanamine"
+ },
+ "ethylamine": {
+  "cid": 6341,
+  "key": "QUSNBJAOOMFDIB-UHFFFAOYSA-N",
+  "formula": "C2H7N",
+  "weight": 45.08,
+  "iupac": "ethanamine"
+ },
+ "Aniline": {
+  "cid": 6115,
+  "key": "PAYRUJLWNCNPSJ-UHFFFAOYSA-N",
+  "formula": "C6H7N",
+  "weight": 93.13,
+  "iupac": "aniline"
+ },
+ "N,N-Dimethylaniline": {
+  "cid": 949,
+  "key": "JLTDJTHDQAWBAV-UHFFFAOYSA-N",
+  "formula": "C8H11N",
+  "weight": 121.18,
+  "iupac": "N,N-dimethylaniline"
+ },
+ "acetanilide": {
+  "cid": 904,
+  "key": "FZERHIULMFGESH-UHFFFAOYSA-N",
+  "formula": "C8H9NO",
+  "weight": 135.16,
+  "iupac": "N-phenylacetamide"
+ },
+ "Benzanilide": {
+  "cid": 7168,
+  "key": "ZVSKZLHKADLHSD-UHFFFAOYSA-N",
+  "formula": "C13H11NO",
+  "weight": 197.23,
+  "iupac": "N-phenylbenzamide"
+ },
+ "Nitrobenzene": {
+  "cid": 7416,
+  "key": "LQNUZADURLCDLV-UHFFFAOYSA-N",
+  "formula": "C6H5NO2",
+  "weight": 123.11,
+  "iupac": "nitrobenzene"
+ },
+ "1,3-Dinitrobenzene": {
+  "cid": 7452,
+  "key": "WDCYWAQPCXBPJA-UHFFFAOYSA-N",
+  "formula": "C6H4N2O4",
+  "weight": 168.11,
+  "iupac": "1,3-dinitrobenzene"
+ },
+ "Nitromethane": {
+  "cid": 6375,
+  "key": "LYGJENNIWJXYER-UHFFFAOYSA-N",
+  "formula": "CH3NO2",
+  "weight": 61.04,
+  "iupac": "nitromethane"
+ },
+ "Nitroethane": {
+  "cid": 6587,
+  "key": "MCSAJNNLRCFZED-UHFFFAOYSA-N",
+  "formula": "C2H5NO2",
+  "weight": 75.07,
+  "iupac": "1-nitroethane"
+ },
+ "Ethyl nitrite": {
+  "cid": 8026,
+  "key": "QQZWEECEMNQSTG-UHFFFAOYSA-N",
+  "formula": "C2H5NO2",
+  "weight": 75.07,
+  "iupac": "ethyl nitrite"
+ },
+ "acetonitrile": {
+  "cid": 6342,
+  "key": "WEVYAHXRMPXWCK-UHFFFAOYSA-N",
+  "formula": "C2H3N",
+  "weight": 41.05,
+  "iupac": "acetonitrile"
+ },
+ "Propanenitrile": {
+  "cid": 7854,
+  "key": "FVSKHRXBFJPNKK-UHFFFAOYSA-N",
+  "formula": "C3H5N",
+  "weight": 55.08,
+  "iupac": "propanenitrile"
+ },
+ "Benzonitrile": {
+  "cid": 7505,
+  "key": "JFDZBHWFFUWGJE-UHFFFAOYSA-N",
+  "formula": "C7H5N",
+  "weight": 103.12,
+  "iupac": "benzonitrile"
+ },
+ "Methyl isocyanide": {
+  "cid": 11646,
+  "key": "ZRKSVHFXTRFQFL-UHFFFAOYSA-N",
+  "formula": "C2H3N",
+  "weight": 41.05,
+  "iupac": "isocyanomethane"
+ },
+ "isocyanoethane": {
+  "cid": 12226,
+  "key": "BPCWCZCOOFUXGQ-UHFFFAOYSA-N",
+  "formula": "C3H5N",
+  "weight": 55.08,
+  "iupac": "isocyanoethane"
+ },
+ "Phenyl isocyanide": {
+  "cid": 13606,
+  "key": "RCIBIGQXGCBBCT-UHFFFAOYSA-N",
+  "formula": "C7H5N",
+  "weight": 103.12,
+  "iupac": "isocyanobenzene"
+ },
+ "Benzenediazonium chloride": {
+  "cid": 60992,
+  "key": "CLRSZXHOSMKUIB-UHFFFAOYSA-M",
+  "formula": "C6H5ClN2",
+  "weight": 140.57,
+  "iupac": "benzenediazonium chloride"
+ },
+ "2,4,6-Tribromoaniline": {
+  "cid": 8986,
+  "key": "GVPODVKBTHCGFU-UHFFFAOYSA-N",
+  "formula": "C6H4Br3N",
+  "weight": 329.81,
+  "iupac": "2,4,6-tribromoaniline"
+ },
+ "4'-bromoacetanilide": {
+  "cid": 7683,
+  "key": "MSLICLMCQYQNPK-UHFFFAOYSA-N",
+  "formula": "C8H8BrNO",
+  "weight": 214.06,
+  "iupac": "N-(4-bromophenyl)acetamide"
+ },
+ "4-Bromoaniline": {
+  "cid": 7807,
+  "key": "WDFQBORIUYODSI-UHFFFAOYSA-N",
+  "formula": "C6H6BrN",
+  "weight": 172.02,
+  "iupac": "4-bromoaniline"
+ },
+ "4'-nitroacetanilide": {
+  "cid": 7691,
+  "key": "NQRLPDFELNCFHW-UHFFFAOYSA-N",
+  "formula": "C8H8N2O3",
+  "weight": 180.16,
+  "iupac": "N-(4-nitrophenyl)acetamide"
+ },
+ "4-Nitroaniline": {
+  "cid": 7475,
+  "key": "TYMLOMAKGOJONV-UHFFFAOYSA-N",
+  "formula": "C6H6N2O2",
+  "weight": 138.12,
+  "iupac": "4-nitroaniline"
+ },
+ "sulfanilic acid": {
+  "cid": 8479,
+  "key": "HVBSAKJJOYLTQU-UHFFFAOYSA-N",
+  "formula": "C6H7NO3S",
+  "weight": 173.19,
+  "iupac": "4-aminobenzenesulfonic acid"
+ },
+ "N,N-Dimethyl-4-nitrosoaniline": {
+  "cid": 8749,
+  "key": "CMEWLCATCRTSGF-UHFFFAOYSA-N",
+  "formula": "C8H10N2O",
+  "weight": 150.18,
+  "iupac": "N,N-dimethyl-4-nitrosoaniline"
+ },
+ "4-Aminoazobenzene": {
+  "cid": 6051,
+  "key": "QPQKUYVSJWQSDY-UHFFFAOYSA-N",
+  "formula": "C12H11N3",
+  "weight": 197.24,
+  "iupac": "4-phenyldiazenylaniline"
+ },
+ "Phenylhydrazine": {
+  "cid": 7516,
+  "key": "HKOOXMFOFWEVGF-UHFFFAOYSA-N",
+  "formula": "C6H8N2",
+  "weight": 108.14,
+  "iupac": "phenylhydrazine"
+ },
+ "Urea": {
+  "cid": 1176,
+  "key": "XSQUKJJJFZCRTK-UHFFFAOYSA-N",
+  "formula": "CH4N2O",
+  "weight": 60.056,
+  "iupac": "urea"
+ },
+ "Semicarbazide": {
+  "cid": 5196,
+  "key": "DUIOPKIIICUYRZ-UHFFFAOYSA-N",
+  "formula": "CH5N3O",
+  "weight": 75.07,
+  "iupac": "aminourea"
+ },
+ "2,4-Dinitrophenylhydrazine": {
+  "cid": 3772977,
+  "key": "HORQAOAYAYGIBM-UHFFFAOYSA-N",
+  "formula": "C6H6N4O4",
+  "weight": 198.14,
+  "iupac": "(2,4-dinitrophenyl)hydrazine"
+ },
+ "Phenylmagnesium bromide": {
+  "cid": 66852,
+  "key": "NIXOIRLDFIPNLJ-UHFFFAOYSA-M",
+  "formula": "C6H5BrMg",
+  "weight": 181.31,
+  "iupac": "magnesium;benzene;bromide"
+ },
+ "Ethylmagnesium bromide": {
+  "cid": 101914,
+  "key": "FRIJBUGBVQZNTB-UHFFFAOYSA-M",
+  "formula": "C2H5BrMg",
+  "weight": 133.27,
+  "iupac": "magnesium;ethane;bromide"
+ },
+ "Methylmagnesium bromide": {
+  "cid": 6349,
+  "key": "NXPHGHWWQRMDIA-UHFFFAOYSA-M",
+  "formula": "CH3BrMg",
+  "weight": 119.24,
+  "iupac": "magnesium;carbanide;bromide"
+ },
+ "dipotassium succinate": {
+  "cid": 164717,
+  "key": "CVOQYKPWIVSMDC-UHFFFAOYSA-L",
+  "formula": "C4H4K2O4",
+  "weight": 194.27,
+  "iupac": "dipotassium;butanedioate"
+ },
+ "dipotassium maleate": {
+  "notFound": true
+ },
+ "calcium acetate": {
+  "cid": 6116,
+  "key": "VSGNNIFQASZAOI-UHFFFAOYSA-L",
+  "formula": "C4H6CaO4",
+  "weight": 158.17,
+  "iupac": "calcium diacetate"
+ },
+ "calcium formate": {
+  "cid": 10997,
+  "key": "CBOCVOKPQGJKKJ-UHFFFAOYSA-L",
+  "formula": "C2H2CaO4",
+  "weight": 130.11,
+  "iupac": "calcium diformate"
+ },
+ "Benzenesulfonyl chloride": {
+  "cid": 7369,
+  "key": "CSKNSYBAZOQPLR-UHFFFAOYSA-N",
+  "formula": "C6H5ClO2S",
+  "weight": 176.62,
+  "iupac": "benzenesulfonyl chloride"
+ },
+ "Ethyl hydrogen sulfate": {
+  "cid": 6004,
+  "key": "KIWBPDUYBMNFTB-UHFFFAOYSA-N",
+  "formula": "C2H6O4S",
+  "weight": 126.13,
+  "iupac": "ethyl hydrogen sulfate"
+ },
+ "Silver benzoate": {
+  "cid": 164649,
+  "key": "CLDWGXZGFUNWKB-UHFFFAOYSA-M",
+  "formula": "C7H5AgO2",
+  "weight": 228.98,
+  "iupac": "silver benzoate"
+ },
+ "silver acetate": {
+  "cid": 11246,
+  "key": "CQLFBEKRDQMJLZ-UHFFFAOYSA-M",
+  "formula": "C2H3AgO2",
+  "weight": 166.91,
+  "iupac": "silver acetate"
+ },
+ "sodium acetylide": {
+  "cid": 2733336,
+  "key": "SFDZETWZUCDYMD-UHFFFAOYSA-N",
+  "formula": "C2HNa",
+  "weight": 48.02,
+  "iupac": "sodium ethyne"
+ },
+ "Maleic anhydride": {
+  "cid": 7923,
+  "key": "FPYJFEHAWHCUMM-UHFFFAOYSA-N",
+  "formula": "C4H2O3",
+  "weight": 98.06,
+  "iupac": "furan-2,5-dione"
+ },
+ "1-chloro-1-ethoxyethane": {
+  "cid": 23478,
+  "key": "URGLIMIKUNFFMT-UHFFFAOYSA-N",
+  "formula": "C4H9ClO",
+  "weight": 108.57,
+  "iupac": "1-chloro-1-ethoxyethane"
+ },
+ "Benzylidene diacetate": {
+  "cid": 68489,
+  "key": "XRYSDRCNTMEYFH-UHFFFAOYSA-N",
+  "formula": "C11H12O4",
+  "weight": 208.21,
+  "iupac": "[acetyloxy(phenyl)methyl] acetate"
+ },
+ "prop-1-en-2-ol": {
+  "cid": 141483,
+  "key": "NARVIWMVBMUEOG-UHFFFAOYSA-N",
+  "formula": "C3H6O",
+  "weight": 58.08,
+  "iupac": "prop-1-en-2-ol"
+ },
+ "N-Methylaniline": {
+  "cid": 7515,
+  "key": "AFBPFSWMIHJQDM-UHFFFAOYSA-N",
+  "formula": "C7H9N",
+  "weight": 107.15,
+  "iupac": "N-methylaniline"
+ },
+ "aniline hydrochloride": {
+  "cid": 8870,
+  "key": "MMCPOSDMTGQNKG-UHFFFAOYSA-N",
+  "formula": "C6H8ClN",
+  "weight": 129.59,
+  "iupac": "aniline;hydrochloride"
+ },
+ "Fluorobenzene": {
+  "cid": 10008,
+  "key": "PYLWMHQQBFSUBP-UHFFFAOYSA-N",
+  "formula": "C6H5F",
+  "weight": 96.1,
+  "iupac": "fluorobenzene"
+ },
+ "Phthalimide": {
+  "cid": 6809,
+  "key": "XKJCHHZQLQNZHY-UHFFFAOYSA-N",
+  "formula": "C8H5NO2",
+  "weight": 147.13,
+  "iupac": "isoindole-1,3-dione"
+ },
+ "Potassium phthalimide": {
+  "cid": 3356745,
+  "key": "FYRHIOVKTDQVFC-UHFFFAOYSA-M",
+  "formula": "C8H4KNO2",
+  "weight": 185.22,
+  "iupac": "potassium isoindol-2-ide-1,3-dione"
+ },
+ "N-Ethylphthalimide": {
+  "cid": 21120,
+  "key": "JZDSOQSUCWVBMV-UHFFFAOYSA-N",
+  "formula": "C10H9NO2",
+  "weight": 175.18,
+  "iupac": "2-ethylisoindole-1,3-dione"
+ },
+ "diethylamine": {
+  "cid": 8021,
+  "key": "HPNMFZURTQLUMO-UHFFFAOYSA-N",
+  "formula": "C4H11N",
+  "weight": 73.14,
+  "iupac": "N-ethylethanamine"
+ },
+ "Triethylamine": {
+  "cid": 8471,
+  "key": "ZMANZCXQSJIPKH-UHFFFAOYSA-N",
+  "formula": "C6H15N",
+  "weight": 101.19,
+  "iupac": "N,N-diethylethanamine"
+ },
+ "N-ethylacetamide": {
+  "cid": 12253,
+  "key": "PMDCZENCAXMSOU-UHFFFAOYSA-N",
+  "formula": "C4H9NO",
+  "weight": 87.12,
+  "iupac": "N-ethylacetamide"
+ },
+ "N-Ethylbenzenesulfonamide": {
+  "cid": 79279,
+  "key": "WNSXUAGCWVZDQC-UHFFFAOYSA-N",
+  "formula": "C8H11NO2S",
+  "weight": 185.25,
+  "iupac": "N-ethylbenzenesulfonamide"
+ },
+ "N,N-Diethylbenzenesulfonamide": {
+  "cid": 74367,
+  "key": "FZIFUJULXRFHBB-UHFFFAOYSA-N",
+  "formula": "C10H15NO2S",
+  "weight": 213.3,
+  "iupac": "N,N-diethylbenzenesulfonamide"
+ },
+ "aldehydo-D-glucose": {
+  "cid": 107526,
+  "key": "GZCGUPFRVQAUEE-SLPGGIOYSA-N",
+  "formula": "C6H12O6",
+  "weight": 180.16,
+  "iupac": "(2R,3S,4R,5R)-2,3,4,5,6-pentahydroxyhexanal"
+ },
+ "alpha-D-glucopyranose": {
+  "cid": 79025,
+  "key": "WQZGKKKJIJFFOK-DVKNGEFBSA-N",
+  "formula": "C6H12O6",
+  "weight": 180.16,
+  "iupac": "(2S,3R,4S,5S,6R)-6-(hydroxymethyl)oxane-2,3,4,5-tetrol"
+ },
+ "beta-D-glucopyranose": {
+  "cid": 64689,
+  "key": "WQZGKKKJIJFFOK-VFUOTHLCSA-N",
+  "formula": "C6H12O6",
+  "weight": 180.16,
+  "iupac": "(2R,3R,4S,5S,6R)-6-(hydroxymethyl)oxane-2,3,4,5-tetrol"
+ },
+ "keto-D-fructose": {
+  "cid": 5984,
+  "key": "BJHIKXHVCXFQLS-UYFOZJQFSA-N",
+  "formula": "C6H12O6",
+  "weight": 180.16,
+  "iupac": "(3S,4R,5R)-1,3,4,5,6-pentahydroxyhexan-2-one"
+ },
+ "beta-D-fructofuranose": {
+  "cid": 439709,
+  "key": "RFSUNEUAIZKAJO-ARQDHWQXSA-N",
+  "formula": "C6H12O6",
+  "weight": 180.16,
+  "iupac": "(2R,3S,4S,5R)-2,5-bis(hydroxymethyl)oxolane-2,3,4-triol"
+ },
+ "Sucrose": {
+  "cid": 5988,
+  "key": "CZMRCDWAGMRECN-UGDNZRGBSA-N",
+  "formula": "C12H22O11",
+  "weight": 342.3,
+  "iupac": "(2R,3R,4S,5S,6R)-2-[(2S,3S,4S,5R)-3,4-dihydroxy-2,5-bis(hydroxymethyl)oxolan-2-yl]oxy-6-(hydroxymethyl)oxane-3,4,5-triol"
+ },
+ "Maltose": {
+  "cid": 439186,
+  "key": "GUBGYTABKSRVRQ-PICCSMPSSA-N",
+  "formula": "C12H22O11",
+  "weight": 342.3,
+  "iupac": "(2R,3S,4S,5R,6R)-2-(hydroxymethyl)-6-[(2R,3S,4R,5R)-4,5,6-trihydroxy-2-(hydroxymethyl)oxan-3-yl]oxyoxane-3,4,5-triol"
+ },
+ "beta-lactose": {
+  "cid": 6134,
+  "key": "GUBGYTABKSRVRQ-DCSYEGIMSA-N",
+  "formula": "C12H22O11",
+  "weight": 342.3,
+  "iupac": "(2R,3R,4S,5R,6S)-2-(hydroxymethyl)-6-[(2R,3S,4R,5R,6R)-4,5,6-trihydroxy-2-(hydroxymethyl)oxan-3-yl]oxyoxane-3,4,5-triol"
+ },
+ "D-Gluconic acid": {
+  "cid": 10690,
+  "key": "RGHNJXZEOKUKBD-SQOUGZDYSA-N",
+  "formula": "C6H12O7",
+  "weight": 196.16,
+  "iupac": "(2R,3S,4R,5R)-2,3,4,5,6-pentahydroxyhexanoic acid"
+ },
+ "D-glucaric acid": {
+  "cid": 33037,
+  "key": "DSLZVSRJTYRBFB-LLEIAEIESA-N",
+  "formula": "C6H10O8",
+  "weight": 210.14,
+  "iupac": "(2S,3S,4S,5R)-2,3,4,5-tetrahydroxyhexanedioic acid"
+ },
+ "sorbitol": {
+  "cid": 5780,
+  "key": "FBPFZTCFMRRESA-JGWLITMVSA-N",
+  "formula": "C6H14O6",
+  "weight": 182.17,
+  "iupac": "(2R,3R,4R,5S)-hexane-1,2,3,4,5,6-hexol"
+ },
+ "aldehydo-D-ribose": {
+  "cid": 5311110,
+  "key": "PYMYPHUHKUWMLA-LMVFSUKVSA-N",
+  "formula": "C5H10O5",
+  "weight": 150.13,
+  "iupac": "(2R,3R,4R)-2,3,4,5-tetrahydroxypentanal"
+ },
+ "2-Deoxy-D-ribose": {
+  "cid": 5460005,
+  "key": "ASJSAQIRZKANQN-CRCLSJGQSA-N",
+  "formula": "C5H10O4",
+  "weight": 134.13,
+  "iupac": "(3S,4R)-3,4,5-trihydroxypentanal"
+ },
+ "Adenine": {
+  "cid": 190,
+  "key": "GFFGJBXGBJISGV-UHFFFAOYSA-N",
+  "formula": "C5H5N5",
+  "weight": 135.13,
+  "iupac": "7H-purin-6-amine"
+ },
+ "Guanine": {
+  "cid": 135398634,
+  "key": "UYTPUPDQBNUYGX-UHFFFAOYSA-N",
+  "formula": "C5H5N5O",
+  "weight": 151.13,
+  "iupac": "2-amino-1,7-dihydropurin-6-one"
+ },
+ "Cytosine": {
+  "cid": 597,
+  "key": "OPTASPLRGRRNAP-UHFFFAOYSA-N",
+  "formula": "C4H5N3O",
+  "weight": 111.1,
+  "iupac": "6-amino-1H-pyrimidin-2-one"
+ },
+ "Thymine": {
+  "cid": 1135,
+  "key": "RWQNBRDOKXIBIV-UHFFFAOYSA-N",
+  "formula": "C5H6N2O2",
+  "weight": 126.11,
+  "iupac": "5-methyl-1H-pyrimidine-2,4-dione"
+ },
+ "Uracil": {
+  "cid": 1174,
+  "key": "ISAKRJDGNUQOIC-UHFFFAOYSA-N",
+  "formula": "C4H4N2O2",
+  "weight": 112.09,
+  "iupac": "1H-pyrimidine-2,4-dione"
+ },
+ "Glycine": {
+  "cid": 750,
+  "key": "DHMQDGOQFOQNFH-UHFFFAOYSA-N",
+  "formula": "C2H5NO2",
+  "weight": 75.07,
+  "iupac": "2-aminoacetic acid"
+ },
+ "L-Alanine": {
+  "cid": 5950,
+  "key": "QNAYBMKLOCPYGJ-REOHCLBHSA-N",
+  "formula": "C3H7NO2",
+  "weight": 89.09,
+  "iupac": "(2S)-2-aminopropanoic acid"
+ },
+ "L-glycylalanine": {
+  "cid": 1551643,
+  "key": "VPZXBVLAVMBEQI-VKHMYHEASA-N",
+  "formula": "C5H10N2O3",
+  "weight": 146.14,
+  "iupac": "(2S)-2-[(2-aminoacetyl)amino]propanoic acid"
+ },
+ "potassium maleate": {
+  "cid": 6916256,
+  "key": "SHPKCSFVQGSAJU-UAIGNFCESA-L",
+  "formula": "C4H2K2O4",
+  "weight": 192.25,
+  "iupac": "dipotassium;(Z)-but-2-enedioate"
+ }
+}

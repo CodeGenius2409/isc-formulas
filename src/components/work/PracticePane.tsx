@@ -14,6 +14,8 @@ import { endSession, nextQuestion, noteResult, sessionStore, startMistakes, star
 import { practiceBusyStore } from '../../practice/session-link';
 import { unitLabel } from '../../solver/unit-label';
 import { Math as MathTex } from '../Math';
+import { EntryStructures, Molecule } from '../Structures';
+import { useStructures } from '../../data/structures';
 import { StepsList } from './StepsList';
 
 function topicOf(f: Formula | null): string {
@@ -313,6 +315,7 @@ function McqCard({ question, record }: { question: McqQuestion; record: Record }
   return (
     <div>
       <h2 className="work-title">{question.prompt}</h2>
+      {question.promptStructure && <EntryStructures structure={question.promptStructure} scale={1} />}
       {question.promptLatex && (
         <div className="math-host mt-2">
           <MathTex latex={question.promptLatex} />
@@ -324,7 +327,7 @@ function McqCard({ question, record }: { question: McqQuestion; record: Record }
           return (
             <button key={i} ref={i === 0 ? firstRef : undefined} type="button" className="choice" data-state={state} disabled={chosen !== null} onClick={() => choose(i)}>
               <span className="choice-key">{i + 1}</span>
-              {option.latex ? <MathTex latex={option.latex} /> : option.text}
+              {option.structure ? <OptionMolecule name={option.structure} /> : option.latex ? <MathTex latex={option.latex} /> : option.text}
               {state === 'right' && <span className="sr-only"> (correct answer)</span>}
               {state === 'wrong' && <span className="sr-only"> (your answer, incorrect)</span>}
             </button>
@@ -400,4 +403,9 @@ function RecallCard({ question, record }: { question: RecallQuestion; record: Re
       )}
     </div>
   );
+}
+
+function OptionMolecule({ name }: { name: string }) {
+  const compound = useStructures()?.[name];
+  return compound ? <Molecule compound={compound} scale={0.85} /> : null;
 }
