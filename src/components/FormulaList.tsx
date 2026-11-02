@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type RefObject } from 'react';
 import { flushSync } from 'react-dom';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { useStructures } from '../data/structures';
 import type { Formula } from '../data/types';
 import { listReveal } from '../lib/motion';
 import { FormulaRow } from './FormulaRow';
@@ -100,16 +99,20 @@ export function FormulaList({ items, scrollRef, showWhere, scrollToIndex, scroll
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scrollKey, measured]);
 
-  // Structures arrive after the first layout and make their rows taller, which would move a landed jump.
-  const hasStructures = items.some((item) => item.kind === 'formula' && item.formula.structure);
-  const structuresReady = useStructures(hasStructures) !== null;
+  // Rows change height after they first draw, as fonts, KaTeX and structures arrive. A jump keeps its
+  // section in place through all of that, until the reader scrolls.
+  const totalSize = virtualizer.getTotalSize();
   useEffect(() => {
-    if (!structuresReady || !jump.current) return;
-    jump.current.settledAt = null;
-    virtualizer.scrollToIndex(jump.current.index, { align: 'start' });
-    // Only when they arrive.
+    const current = jump.current;
+    const scroller = scrollRef.current;
+    if (!current || !scroller) return;
+    const wanted = virtualizer.getOffsetForIndex(current.index, 'start')?.[0];
+    if (wanted === undefined || Math.abs(scroller.scrollTop - wanted) <= 1) return;
+    current.settledAt = null;
+    virtualizer.scrollToIndex(current.index, { align: 'start' });
+    // Only when the list changes height.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [structuresReady]);
+  }, [totalSize, offset, headHeight]);
 
   // Works from the scroll offset and the virtualiser's positions for every row, so it holds for rows
   // that aren't in the DOM. Runs at most once a frame, and renders only when the answer changes.
@@ -189,7 +192,7 @@ export function FormulaList({ items, scrollRef, showWhere, scrollToIndex, scroll
   }
 
   return (
-    <div ref={listRef} className="ruled" style={{ height: virtualizer.getTotalSize() }}>
+    <div ref={listRef} className="ruled" style={{ height: totalSize }}>
       {virtualItems.map((v) => (
         <div
           key={v.key}
