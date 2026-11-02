@@ -1,8 +1,13 @@
-import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react';
+import { lazy, Suspense, useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react';
 import { CircleAlert, Pause, Pencil, Play, SkipBack, SkipForward, StepBack, StepForward } from 'lucide-react';
 import { runProgram, type FrameView, type RunResult, type TraceRow, type TraceStep } from '../java/trace';
 import { SAMPLES } from '../java/samples';
+import { tokenizeLines } from '../java/tokens';
+import { JavaTokens } from '../components/JavaCode';
 import { readJson, writeJson } from '../lib/storage';
+
+// Most people only trace the samples, so the editor loads when someone chooses to edit.
+const CodeEditor = lazy(() => import('./CodeEditor'));
 
 const OWN_KEY = 'isc-java-draft';
 const OWN_ID = 'own';
@@ -197,7 +202,9 @@ export function JavaTracer() {
           {run ? (
             <CodeView code={code} currentLine={currentLine ?? (run.error && !steps.length ? run.error.line : undefined)} errorLine={errorLine ?? (run.error && !steps.length ? run.error.line : undefined)} onKeyDown={onStepKeys} />
           ) : (
-            <textarea aria-labelledby="java-code-h" className="code-edit" rows={Math.min(Math.max(code.split('\n').length + 1, 10), 24)} autoComplete="off" autoCapitalize="off" spellCheck={false} value={code} onChange={(e) => editDraft({ code: e.target.value })} />
+            <Suspense fallback={<pre className="code-pane">{code}</pre>}>
+              <CodeEditor value={code} onChange={(next) => editDraft({ code: next })} onRun={() => startRun(code, input)} labelledBy="java-code-h" />
+            </Suspense>
           )}
 
           {run && steps.length > 0 && (
@@ -256,7 +263,7 @@ export function JavaTracer() {
 
 function CodeView({ code, currentLine, errorLine, onKeyDown }: { code: string; currentLine?: number; errorLine?: number; onKeyDown: (e: KeyboardEvent) => void }) {
   const pane = useRef<HTMLDivElement>(null);
-  const lines = useMemo(() => code.split('\n'), [code]);
+  const lines = useMemo(() => tokenizeLines(code), [code]);
 
   // Keep the current line in view by scrolling the pane only, never the page.
   useEffect(() => {
@@ -271,10 +278,10 @@ function CodeView({ code, currentLine, errorLine, onKeyDown }: { code: string; c
 
   return (
     <div ref={pane} className="code-pane" tabIndex={0} role="region" aria-label="Program code. Left and right arrow keys step through it." onKeyDown={onKeyDown}>
-      {lines.map((text, i) => (
+      {lines.map((tokens, i) => (
         <div key={i} className="code-line" data-current={currentLine === i + 1 || undefined} data-error={errorLine === i + 1 || undefined}>
           <span>{i + 1}</span>
-          <code>{text || ' '}</code>
+          <code>{tokens.length ? <JavaTokens tokens={tokens} /> : ' '}</code>
         </div>
       ))}
     </div>

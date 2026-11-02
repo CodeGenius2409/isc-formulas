@@ -49,7 +49,9 @@ test('a unit whose formulas cannot load says so', async ({ browser }) => {
 test('the Java tracer survives programs that never stop', async ({ page }) => {
   await page.goto('/#/tools/java');
   await page.getByRole('button', { name: 'Edit code' }).click();
-  await page.locator('textarea.code-edit').last().fill('class T {\n  static int f(int n) { return f(n + 1); }\n  public static void main(String[] a) {\n    int i = 0;\n    while (i < 5) { System.out.print(""); }\n  }\n}');
+  await page.locator('.cm-content').click();
+  await page.keyboard.press('Control+A');
+  await page.keyboard.insertText('class T {\n  static int f(int n) { return f(n + 1); }\n  public static void main(String[] a) {\n    int i = 0;\n    while (i < 5) { System.out.print(""); }\n  }\n}');
   await page.getByRole('button', { name: 'Trace', exact: true }).click();
   await page.getByRole('button', { name: 'Run to the end' }).click();
   await expect(page.locator('.notice[data-tone="bad"]')).toContainText('infinite loop');

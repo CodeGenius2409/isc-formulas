@@ -245,9 +245,9 @@
 }
 
 .toc-sub[aria-current='location'] {
+  background: var(--paper-3);
   color: var(--ink);
   font-weight: 700;
-  box-shadow: inset 2px 0 0 var(--subject);
 }
 
 .toc-sub[aria-current='location'] .toc-num {

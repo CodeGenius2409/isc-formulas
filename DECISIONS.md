@@ -9,6 +9,8 @@ Newest work last. Each task gets two lines: what was decided, and why.
   The router now counts real navigations separately, so opening the working area doesn't move the page, and clicking the section you're already in takes you back to its start, which it didn't before.
 - **Task 6, search on a tablet.** Nothing was clipped: the panel is a native `<dialog>` in the top layer, and Edge and WebKit lay it out correctly at every iPad size. The cause is the on-screen keyboard, because `dvh` doesn't shrink for it: in landscape 1–2 results showed above the keyboard, and at every size the last results could never be scrolled into view.
   The panel now takes its height from `visualViewport`. This was measured with typical iPad keyboard heights and a simulated keyboard, not on a real tablet, so please check yours.
+- **Task 2, Java editor.** CodeMirror 6, loaded only when someone presses Edit code, so tracing a sample costs nothing extra; indentation comes from its Java grammar, and phones get a row of keys for Tab and brackets. A small tokeniser colours code that is only read, and a test holds it to the editor's result on every sample.
+  Colours are ink tones and weight only, because `DESIGN.md` says subject colours mark a place in the book and nothing else. `--good` and `--accent` carry a second, code-only meaning here, which is written down in `DESIGN.md`.
 
 ---
 

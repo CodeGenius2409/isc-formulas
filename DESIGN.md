@@ -55,6 +55,10 @@ Subject colours are `--physics`, `--chemistry`, `--mathematics` and
 `--computerscience`. Setting `data-subject` on an element gives its children
 `--subject`. They mark where you are in the book and nothing else.
 
+Java uses only ink colours and weight: keywords `--accent` and semibold, primitive types
+`--ink` and semibold, strings `--good`, numbers and literals `--warn`, comments `--ink-3`
+in italic, operators `--ink-2`. Subject colours stay out of it. The classes are `.tok-*`.
+
 Blackboard is designed separately, not inverted: slate green rather than black,
 chalk white rather than grey, and subjects in coloured chalk. Don't derive one theme
 from the other.

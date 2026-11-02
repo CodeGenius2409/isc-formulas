@@ -284,4 +284,37 @@
   .btn:active:not(:disabled) {
     transform: none;
   }
+}
+
+/* Java, in the editor, the tracer and Computer Science entries. Subject colours mean a place in
+   the book and nothing else, so code leans on the ink colours and weight. */
+.tok-keyword {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.tok-type {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.tok-string {
+  color: var(--good);
+}
+
+.tok-number {
+  color: var(--warn);
+}
+
+.tok-comment {
+  color: var(--ink-3);
+  font-style: italic;
+}
+
+.tok-op {
+  color: var(--ink-2);
+}
+
+.java-code {
+  font-family: var(--font-mono);
 }
