@@ -630,4 +630,64 @@ input[type='range'] {
   .slider input[type='range'] {
     height: 2.75rem;
   }
+}
+
+.plot-preview {
+  margin-top: 0.25rem;
+  font-size: var(--step--1);
+  color: var(--ink-2);
+}
+
+.plot-preview .math-host {
+  color: var(--ink);
+  font-size: var(--step-0);
+  overflow-x: auto;
+}
+
+.keypad {
+  margin-top: 0.75rem;
+}
+
+.keypad-keys {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.keypad-key {
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  padding: 0 0.375rem;
+  border: 1px solid var(--rule-2);
+  border-radius: 3px;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color var(--dur-fast) ease, transform var(--dur-press) var(--ease-out);
+}
+
+.keypad-key:active {
+  transform: scale(0.97);
+}
+
+@media (hover: hover) {
+  .keypad-key:hover {
+    background: var(--paper-3);
+  }
+}
+
+.keypad-limits {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.keypad-limits label {
+  font-size: var(--step--1);
+  font-weight: 600;
 }

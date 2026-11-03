@@ -1,6 +1,7 @@
 // The graph plotter: intersections, reading coordinates, and calculus typed in.
+import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
-import { setTheme, watchProblems } from './helpers';
+import { setTheme, waitForServiceWorker, watchProblems } from './helpers';
 
 async function open(page: Page) {
   await page.goto('/#/tools/plotter');
@@ -182,3 +183,147 @@ for (const { width, height } of [{ width: 375, height: 780 }, { width: 768, heig
     });
   }
 }
+
+const box1 = (page: Page) => page.getByRole('textbox', { name: 'Function 1' });
+
+test('typing shows a live preview, and a clear error when it can\'t be read', async ({ page }) => {
+  const problems = watchProblems(page);
+  await open(page);
+  await box1(page).fill('2x sin(x)');
+  await expect(page.getByTestId('preview-f1').locator('.katex').first()).toBeVisible();
+  await box1(page).fill('sin(x');
+  await expect(page.getByTestId('error-f1')).toHaveText('A closing bracket ) is missing.');
+  await expect(page.getByTestId('preview-f1')).toHaveCount(0);
+  await box1(page).fill('y + 1');
+  await expect(page.getByTestId('error-f1')).toContainText('"y" has no value');
+  expect(problems).toEqual([]);
+});
+
+test('a derivative shows its symbolic form and draws its own curve', async ({ page }) => {
+  await open(page);
+  await box1(page).fill('d/dx(x^3)');
+  await expect(page.getByTestId('preview-f1').locator('.katex-mathml').first()).toContainText('3');
+  const text = await page.getByTestId('preview-f1').locator('annotation').first().textContent();
+  expect(text).toContain('3\\,x^{2}');
+  // Reading the curve at x = 2 gives 12, since the curve drawn is the derivative.
+  await page.locator('.plot').first().focus();
+  for (let i = 0; i < 11; i++) await page.keyboard.press('ArrowRight');
+  await expect(page.getByTestId('plot-readout')).toContainText('f1(x): (2, 12)');
+});
+
+const pixelAlpha = (page: Page, x: number, y: number) =>
+  page.locator('.plot canvas').first().evaluate(
+    (el, [wx, wy]) => {
+      const c = el as HTMLCanvasElement;
+      const css = c.getBoundingClientRect();
+      const v = { left: 52, right: css.width - 14, top: 12, bottom: css.height - 38 };
+      const px = v.left + ((wx + 10) / 20) * (v.right - v.left);
+      const py = v.bottom - ((wy + 6) / 12) * (v.bottom - v.top);
+      const scale = c.width / css.width;
+      // Takes a small patch, since hatching makes single pixels misleading.
+      const data = c.getContext('2d')!.getImageData(Math.round(px * scale) - 6, Math.round(py * scale) - 6, 12, 12).data;
+      let sum = 0;
+      for (let i = 3; i < data.length; i += 4) sum += data[i];
+      return sum / (data.length / 4);
+    },
+    [x, y],
+  );
+
+test('a definite integral shows its value, and shades both sides of the axis', async ({ page }) => {
+  await open(page);
+  await box1(page).fill('∫ from 0 to π of sin(x)');
+  await expect(page.getByTestId('area-f1')).toContainText('2.0000');
+  await box1(page).fill('∫ from -1 to 1 of x');
+  await page.getByRole('textbox', { name: 'Function 2' }).fill('');
+  await page.getByRole('button', { name: 'Hide intersections' }).click();
+  await expect(page.getByTestId('area-f1')).toHaveText('Value 0.0000: 0.5000 above the axis, take away 0.5000 below it.');
+  // Shaded just right of 0 above the axis, and just left of it below, with nothing outside.
+  expect(await pixelAlpha(page, 0.7, 0.3)).toBeGreaterThan(10);
+  expect(await pixelAlpha(page, -0.7, -0.3)).toBeGreaterThan(10);
+});
+
+test('an indefinite integral is labelled + C', async ({ page }) => {
+  await open(page);
+  await box1(page).fill('∫ x^2');
+  await expect(page.locator('.legend')).toContainText('∫ x^2 + C');
+  await expect(page.getByTestId('preview-f1')).toContainText('C = 0');
+  await box1(page).fill('∫ exp(x^2)');
+  await expect(page.getByTestId('preview-f1')).toContainText('Found numerically');
+  await expect(page.getByTestId('preview-f1')).toContainText('F(0) = 0');
+});
+
+test('the keypad inserts at the cursor, with the cursor inside', async ({ page }) => {
+  await open(page);
+  await box1(page).fill('2 + ');
+  await box1(page).focus();
+  await page.getByRole('button', { name: 'Insert square root' }).click();
+  await expect(box1(page)).toHaveValue('2 + sqrt()');
+  await expect(box1(page)).toBeFocused();
+  await page.keyboard.type('x');
+  await expect(box1(page)).toHaveValue('2 + sqrt(x)');
+  await box1(page).fill('');
+  await page.getByRole('button', { name: 'Insert d/dx, derivative' }).click();
+  await page.keyboard.type('x^2');
+  await expect(box1(page)).toHaveValue('d/dx(x^2)');
+  // Goes in the box last used, not always the first.
+  const second = page.getByRole('textbox', { name: 'Function 2' });
+  await second.fill('x');
+  await page.getByRole('button', { name: 'Insert pi' }).click();
+  await expect(second).toHaveValue('xπ');
+  // With limits. Text already in the box becomes what is integrated.
+  await second.fill('sin(x)');
+  await page.getByRole('button', { name: 'Insert integral' }).click();
+  await page.getByLabel('To', { exact: true }).fill('π/2');
+  await page.getByRole('button', { name: 'Insert with limits' }).click();
+  await expect(second).toHaveValue('∫ from 0 to π/2 of sin(x)');
+  await expect(page.getByTestId('area-f2')).toContainText('1.0000');
+});
+
+test('the keypad works from the keyboard alone', async ({ page }) => {
+  await open(page);
+  await box1(page).fill('');
+  await box1(page).focus();
+  const first = page.getByRole('button', { name: 'Insert x', exact: true });
+  await first.focus();
+  await page.keyboard.press('ArrowRight');
+  await expect(page.getByRole('button', { name: 'Insert pi' })).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(box1(page)).toHaveValue('π');
+  await expect(box1(page)).toBeFocused();
+});
+
+test('on a phone the keypad is a compact row that opens, with big enough keys', async ({ browser }) => {
+  const context = await browser.newContext({ viewport: { width: 375, height: 780 }, hasTouch: true, reducedMotion: 'reduce' });
+  const page = await context.newPage();
+  const problems = watchProblems(page);
+  await open(page);
+  await expect(page.getByRole('button', { name: 'Insert sin, sine' })).toHaveCount(0);
+  const more = page.getByRole('button', { name: 'More symbols' });
+  await expect(more).toHaveAttribute('aria-expanded', 'false');
+  await more.click();
+  await expect(page.getByRole('button', { name: 'Insert sin, sine' })).toBeVisible();
+  for (const key of await page.locator('.keypad-key').all()) {
+    const size = (await key.boundingBox())!;
+    expect(size.width).toBeGreaterThanOrEqual(44);
+    expect(size.height).toBeGreaterThanOrEqual(44);
+  }
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  expect(problems).toEqual([]);
+  await context.close();
+});
+
+test('the plotter passes axe, and still works offline, calculus included', async ({ page, context }) => {
+  await page.goto('/');
+  await waitForServiceWorker(page);
+  await context.setOffline(true);
+  await page.reload();
+  await open(page);
+  await box1(page).fill('∫ from 0 to π of sin(x)');
+  await expect(page.getByTestId('area-f1')).toContainText('2.0000');
+  await page.locator('.plot').first().focus();
+  await page.keyboard.press('ArrowRight');
+  await expect(page.getByTestId('plot-readout')).toBeVisible();
+  const { violations } = await new AxeBuilder({ page }).include('main').withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).exclude('.toast').analyze();
+  expect(violations.map((v) => `${v.id}: ${v.nodes[0].target.join(' ')}`)).toEqual([]);
+  await context.setOffline(false);
+});

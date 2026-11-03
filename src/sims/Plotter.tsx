@@ -1,8 +1,10 @@
-import { useCallback, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent } from 'react';
+import { useCallback, useLayoutEffect, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent } from 'react';
 import { Maximize, Minus, Plus, Trash2 } from 'lucide-react';
-import { evaluate, ExprError, parseExpr, symbolsIn } from '../solver/expr';
+import { Math as MathTex } from '../components/Math';
 import { GraphCursor, type GraphCursorHandle } from './GraphCursor';
 import { derivative, integrate, roots } from './lib/calculus';
+import { readLines, type GraphLine } from './lib/graph-input';
+import { CARET, SymbolKeypad } from './SymbolKeypad';
 import { formatPoint, intersectionPoints, placeLabels, type Curve, type GraphPoint } from './lib/graph-analysis';
 import { Canvas, drawPlot, makeViewport, token, type Marker, type PlotModel, type Series, type Viewport } from './lib/plot';
 import { fmt, Legend, Slider, Toggle, ToolLayout } from './lib/ui';
@@ -16,31 +18,47 @@ interface FnRow {
 
 interface Compiled {
   row: FnRow;
+  line: GraphLine;
   fn: ((x: number) => number) | null;
   error?: string;
   color: string;
 }
 
-function compile(row: FnRow, color: string): Compiled {
-  if (!row.source.trim()) return { row, fn: null, color };
-  try {
-    const expr = parseExpr(row.source);
-    const unknown = [...symbolsIn(expr)].filter((s) => s !== 'x' && s !== 'e');
-    if (unknown.length) return { row, fn: null, color, error: `Use only x here. "${unknown[0]}" has no value.` };
-    return {
-      row,
-      color,
-      fn: (x) => {
-        try {
-          return evaluate(expr, { x });
-        } catch {
-          return NaN;
-        }
-      },
-    };
-  } catch (err) {
-    return { row, fn: null, color, error: err instanceof ExprError ? err.message : 'That expression could not be read.' };
-  }
+function compile(rows: FnRow[]): Compiled[] {
+  const lines = readLines(rows.map((r) => r.source));
+  return rows.map((row, i) => {
+    const line = lines[i];
+    const color = COLOURS[i % COLOURS.length];
+    if (line.kind === 'empty') return { row, line, fn: null, color };
+    if (line.kind === 'error') return { row, line, fn: null, color, error: line.message };
+    return { row, line, fn: line.fn, color };
+  });
+}
+
+/** Four decimal places, without a −0.0000. */
+const area4 = (v: number) => (Math.abs(v) < 5e-5 ? '0.0000' : v.toFixed(4).replace('-', '−'));
+
+/** What this line was understood as, set as maths, with a word on anything worth knowing. */
+function LinePreview({ line, name }: { line: GraphLine; name: string }) {
+  if (line.kind === 'empty' || line.kind === 'error') return null;
+  return (
+    <div className="plot-preview" data-testid={`preview-${name}`}>
+      <div className="math-host">
+        <MathTex latex={line.tex} />
+      </div>
+      {line.kind === 'derivative' && !line.symbolic && <p>No formula for this one, so this is a numeric curve.</p>}
+      {line.kind === 'indefinite' && !line.symbolic && <p>Found numerically. The curve is drawn with F({line.from}) = 0, and any constant + C can be added.</p>}
+      {line.kind === 'indefinite' && line.symbolic && <p>The curve drawn is the one with C = 0.</p>}
+      {line.kind === 'definite' &&
+        (line.result.value === null ? (
+          <p role="status">This integral does not converge, so it has no value.</p>
+        ) : (
+          <p data-testid={`area-${name}`}>
+            Value <b className="num">{area4(line.result.value)}</b>: <span className="num">{area4(line.result.above)}</span> above the axis, take away <span className="num">{area4(line.result.below)}</span> below it.
+          </p>
+        ))}
+    </div>
+  );
 }
 
 const DEFAULT_VIEW = { x: [-10, 10] as [number, number], y: [-6, 6] as [number, number] };
@@ -86,7 +104,9 @@ function drawPointLabels(ctx: CanvasRenderingContext2D, v: Viewport, points: { x
     }
     return hits;
   };
-  const placed = placeLabels(requests, bounds, hitsCurve);
+  let placed = placeLabels(requests, bounds, hitsCurve);
+  // The note about hidden labels needs a strip of its own at the top.
+  if (placed.length < shown.length) placed = placeLabels(requests, { ...bounds, y: bounds.y + 18, h: bounds.h - 18 }, hitsCurve);
   ctx.textAlign = 'left';
   ctx.textBaseline = 'middle';
   ctx.lineJoin = 'round';
@@ -130,7 +150,41 @@ export function Plotter() {
   const pinch = useRef<{ dist: number; centre: { x: number; y: number }; view: typeof view } | null>(null);
   const cursor = useRef<GraphCursorHandle>(null);
 
-  const compiled = useMemo(() => rows.map((row, i) => compile(row, COLOURS[i % COLOURS.length])), [rows]);
+  const compiled = useMemo(() => compile(rows), [rows]);
+  const inputs = useRef(new Map<number, HTMLInputElement>());
+  const lastInput = useRef<number | null>(null);
+  const pendingCaret = useRef<{ id: number; start: number; end: number } | null>(null);
+
+  // Puts the cursor where a keypad insert wants it, once the new text is in the box.
+  useLayoutEffect(() => {
+    const pending = pendingCaret.current;
+    if (!pending) return;
+    pendingCaret.current = null;
+    const input = inputs.current.get(pending.id);
+    if (!input) return;
+    input.focus();
+    input.setSelectionRange(pending.start, pending.end);
+  });
+
+  const insert = (template: string) => {
+    const id = lastInput.current ?? rows[0].id;
+    const input = inputs.current.get(id);
+    const row = rows.find((r) => r.id === id);
+    if (!input || !row) return;
+    const start = input.selectionStart ?? row.source.length;
+    const end = input.selectionEnd ?? row.source.length;
+    const selected = row.source.slice(start, end);
+    // Calculus keys take the whole line as their subject, since they only work at the start of a line.
+    const wraps = /^(∫|d\/dx)/.test(template) && !selected && row.source.trim() && start === row.source.length;
+    const before = wraps ? '' : row.source.slice(0, start);
+    const after = wraps ? '' : row.source.slice(end);
+    const inner = wraps ? row.source.trim() : selected;
+    const at = template.indexOf(CARET);
+    const text = at < 0 ? template : template.replace(CARET, inner);
+    const caret = before.length + (at < 0 ? text.length : at + inner.length);
+    pendingCaret.current = { id, start: caret, end: caret };
+    setRows((list) => list.map((r) => (r.id === id ? { ...r, source: before + text + after } : r)));
+  };
   const active = compiled.filter((c): c is Compiled & { fn: (x: number) => number } => c.fn !== null);
   const first = active[0];
 
@@ -157,6 +211,8 @@ export function Plotter() {
     y: view.y,
     series,
     markers,
+    signedAreas: compiled.flatMap((c) => (c.line.kind === 'definite' && c.line.result.value !== null && c.fn ? [{ fn: c.fn, a: Math.min(c.line.a, c.line.b), b: Math.max(c.line.a, c.line.b), color: c.color }] : [])),
+    vlines: compiled.flatMap((c) => (c.line.kind === 'definite' ? [c.line.a, c.line.b].filter(Number.isFinite).map((x) => ({ x, color: c.color })) : [])),
     area: first && showArea ? { fn: first.fn, a: Math.min(areaA, areaB), b: Math.max(areaA, areaB), color: first.color } : undefined,
     xLabel: 'x',
     yLabel: 'y',
@@ -307,6 +363,13 @@ export function Plotter() {
                     f{i + 1}
                   </span>
                   <input
+                    ref={(el) => {
+                      if (el) inputs.current.set(c.row.id, el);
+                      else inputs.current.delete(c.row.id);
+                    }}
+                    onFocus={() => {
+                      lastInput.current = c.row.id;
+                    }}
                     className="field num"
                     aria-label={`Function ${i + 1}`}
                     autoComplete="off"
@@ -320,16 +383,19 @@ export function Plotter() {
                   </button>
                 </div>
                 {c.error && (
-                  <p className="var-warn mt-1" role="alert">
+                  <p className="var-warn mt-1" role="alert" data-testid={`error-f${i + 1}`}>
                     {c.error}
                   </p>
                 )}
+                <LinePreview line={c.line} name={`f${i + 1}`} />
               </div>
             ))}
             <button type="button" className="btn btn-line mt-1" disabled={rows.length >= 5} onClick={() => setRows((list) => [...list, { id: nextId.current++, source: '' }])}>
               <Plus size={15} aria-hidden /> Add a function
             </button>
           </fieldset>
+
+          <SymbolKeypad onInsert={insert} />
 
           <Toggle label="Show f1's derivative" checked={showDerivative} onChange={setShowDerivative} />
           <Toggle label="Tangent to f1" checked={showTangent} onChange={setShowTangent} />
@@ -419,9 +485,9 @@ export function Plotter() {
         </button>
         <span className="text-step--1 text-ink-2">Point at the graph to read it. On a touch screen, press and drag to read, and use two fingers to move or zoom. Otherwise drag to move, and scroll to zoom. With the keyboard, focus the graph and use the arrow keys.</span>
       </div>
-      <Legend items={[...active.map((c) => ({ label: c.row.source, color: c.color })), ...(first && showDerivative ? [{ label: "f1'(x)", color: first.color, dash: true }] : [])]} />
+      <Legend items={[...active.map((c) => ({ label: c.line.kind === 'indefinite' ? `${c.row.source} + C` : c.row.source, color: c.color })), ...(first && showDerivative ? [{ label: "f1'(x)", color: first.color, dash: true }] : [])]} />
       <p className="mt-2 text-step--1 text-ink-2">
-        Write functions as <code>sin(x)</code>, <code>x^2 + 3*x</code>, <code>exp(-x)</code>, <code>log(x)</code> (natural), <code>log10(x)</code>, <code>sqrt(x)</code>, <code>abs(x)</code> or <code>pi*x</code>.
+        Write functions as <code>sin x</code>, <code>2x^2 + 3x</code>, <code>exp(-x)</code>, <code>|x|</code>, or <code>log(x)</code> and <code>ln(x)</code>, which are both natural logs here (use <code>log10(x)</code> for base 10). For calculus, write <code>d/dx(x^3 sin(x))</code>, <code>∫ from 0 to π of sin(x)</code>, or <code>∫ x^2</code>. Earlier lines can be used as <code>f1</code>, as in <code>derivative of f1</code>.
       </p>
     </ToolLayout>
   );

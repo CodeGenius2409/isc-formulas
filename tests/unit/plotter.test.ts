@@ -1,5 +1,11 @@
 // The graph plotter's maths and placement, away from the screen.
+import { derivative as mathjsDerivative, parse as mathjsParse } from 'mathjs';
 import { describe, expect, it } from 'vitest';
+import { evaluate, parseExpr } from '../../src/solver/expr';
+import { toTex } from '../../src/solver/tex';
+import { cumulativeIntegral, definiteIntegral } from '../../src/sims/lib/calculus';
+import { normalise, readLine, readLines, type GraphLine } from '../../src/sims/lib/graph-input';
+import { antiderivative, differentiate, matchesIntegrand } from '../../src/sims/lib/symbolic';
 import { crossings, describePoint, formatCoord, formatPoint, intersectionPoints, nearestPoint, placeLabels, placeReadout, readCurves, rootPoints, turningPoints } from '../../src/sims/lib/graph-analysis';
 
 const rounded = (list: number[]) => list.map((v) => Number(v.toFixed(6)));
@@ -162,5 +168,191 @@ describe('reading the graph', () => {
     for (const y of ys) expect(y < spot.y - 5 || y > spot.y + frame.h + 5).toBe(true);
     expect(spot.x).toBeGreaterThanOrEqual(50);
     expect(spot.x + frame.w).toBeLessThanOrEqual(200);
+  });
+});
+
+describe('symbolic derivatives', () => {
+  const texOf = (source: string) => toTex(differentiate(parseExpr(source))!);
+
+  it('gives 3x² for x³', () => {
+    expect(texOf('x^3')).toBe('3\\,x^{2}');
+    expect(readLine('d/dx(x^3)', 'f1').kind).toBe('derivative');
+  });
+
+  it('agrees with mathjs and with the numbers, across the syllabus', () => {
+    const sources = ['x^3*sin(x)', 'sin(x)^2', 'cos(2*x+1)', 'tan(x)', 'exp(x)*x', 'log(x)', 'sqrt(x)', '1/x', 'x/(1+x^2)', 'asin(x/2)', 'acos(x/2)', 'atan(x)', 'e^(2*x)', '2^x', 'log(x^2+1)', 'x^x', 'sec(x)', 'cot(x)', 'csc(x)', 'sinh(x)', 'cosh(x)', 'log10(x)'];
+    for (const source of sources) {
+      const mine = differentiate(parseExpr(source))!;
+      expect(mine, source).not.toBeNull();
+      const theirs = mathjsDerivative(mathjsParse(source.replace(/\bcsc\b/, 'csc')), 'x').compile();
+      for (const x of [0.3, 0.7, 1.1, 1.6]) {
+        expect(evaluate(mine, { x }), `${source} at ${x}`).toBeCloseTo(theirs.evaluate({ x }) as number, 8);
+      }
+    }
+  });
+
+  it('says it has no formula for what has none', () => {
+    expect(differentiate(parseExpr('floor(x)'))).toBeNull();
+    const line = readLine('d/dx(floor(x))', 'f1');
+    expect(line.kind === 'derivative' && line.symbolic).toBe(false);
+  });
+});
+
+describe('antiderivatives', () => {
+  it('are right for standard forms, checked by differentiating back', () => {
+    for (const source of ['x', 'x^2', '3*x^2 + 2*x + 1', '1/x', 'sin(x)', 'cos(3*x)', 'exp(2*x)', 'e^x', '2^x', 'sqrt(x)', 'tan(x)', 'sec(x)^2', 'x*exp(x)', 'x*sin(x)', 'x^2*cos(x)', '1/(1+x^2)', '1/sqrt(1-x^2)', 'log(x)', '(2*x+1)^3', '1/(2*x+1)', '5']) {
+      const f = parseExpr(source);
+      const F = antiderivative(f);
+      expect(F, source).not.toBeNull();
+      expect(matchesIntegrand(F!, f), source).toBe(true);
+    }
+  });
+
+  it('refuses what it can\'t do, for a numeric curve to take over', () => {
+    expect(antiderivative(parseExpr('exp(x^2)'))).toBeNull();
+    expect(antiderivative(parseExpr('sin(x)/x'))).toBeNull();
+    const line = readLine('∫ exp(x^2)', 'f1');
+    expect(line.kind === 'indefinite' && line.symbolic).toBe(false);
+  });
+
+  it('a numeric curve starts from its reference point and adds up correctly', () => {
+    const F = cumulativeIntegral(Math.cos, 0);
+    for (const x of [0, 0.5, 1, -1, 3.2, -4]) expect(F(x)).toBeCloseTo(Math.sin(x), 4);
+    const G = cumulativeIntegral((x) => 1 / x, 1);
+    expect(G(2)).toBeCloseTo(Math.log(2), 4);
+    expect(G(-1)).toBeNaN();
+  });
+});
+
+describe('definite integrals', () => {
+  it('the integral of sin x from 0 to π is 2, to four decimal places', () => {
+    const r = definiteIntegral(Math.sin, 0, Math.PI);
+    expect(r.value!.toFixed(4)).toBe('2.0000');
+    expect(r.above.toFixed(4)).toBe('2.0000');
+    expect(r.below).toBeCloseTo(0, 8);
+  });
+
+  it('the integral of x from −1 to 1 is 0, with an area on each side', () => {
+    const r = definiteIntegral((x) => x, -1, 1);
+    expect(r.value).toBe(0);
+    expect(r.above).toBeCloseTo(0.5, 8);
+    expect(r.below).toBeCloseTo(0.5, 8);
+  });
+
+  it('is signed, and reversing the limits reverses it', () => {
+    expect(definiteIntegral(Math.sin, Math.PI, 2 * Math.PI).value).toBeCloseTo(-2, 8);
+    expect(definiteIntegral(Math.sin, Math.PI, 0).value).toBeCloseTo(-2, 8);
+    expect(definiteIntegral((x) => x * x, 1, 1).value).toBe(0);
+  });
+
+  it('handles infinite limits', () => {
+    expect(definiteIntegral((x) => Math.exp(-x), 0, Infinity).value).toBeCloseTo(1, 4);
+    expect(definiteIntegral((x) => 1 / (1 + x * x), -Infinity, Infinity).value).toBeCloseTo(Math.PI, 3);
+    expect(definiteIntegral((x) => Math.exp(x), -Infinity, 0).value).toBeCloseTo(1, 4);
+  });
+
+  it('says no value for an integral that diverges, and copes with one that only looks bad', () => {
+    expect(definiteIntegral((x) => 1 / x, -1, 1).value).toBeNull();
+    expect(definiteIntegral((x) => 1 / x, 0, 1).value).toBeNull();
+    expect(definiteIntegral((x) => 1 / (x * x), -1, 1).value).toBeNull();
+    expect(definiteIntegral((x) => 1 / Math.sqrt(x), 0, 1).value).toBeCloseTo(2, 3);
+  });
+});
+
+describe('reading what is typed', () => {
+  const value = (source: string, x: number) => {
+    const line = readLine(source, 'f1');
+    if (line.kind === 'error' || line.kind === 'empty') throw new Error(`${source}: ${line.kind === 'error' ? line.message : 'empty'}`);
+    return line.fn(x);
+  };
+
+  it('understands implicit multiplication, and the way students write maths', () => {
+    expect(value('2x', 3)).toBe(6);
+    expect(value('3sin(x)', 1)).toBeCloseTo(3 * Math.sin(1), 10);
+    expect(value('x sin(x)', 2)).toBeCloseTo(2 * Math.sin(2), 10);
+    expect(value('xsin(x)', 2)).toBeCloseTo(2 * Math.sin(2), 10);
+    expect(value('2xcos(x)', 2)).toBeCloseTo(4 * Math.cos(2), 10);
+    expect(value('sin x', 1)).toBeCloseTo(Math.sin(1), 10);
+    expect(value('sin 2x', 1)).toBeCloseTo(Math.sin(2), 10);
+    expect(value('sin^2(x)', 1)).toBeCloseTo(Math.sin(1) ** 2, 10);
+    expect(value('sin²(x)', 1)).toBeCloseTo(Math.sin(1) ** 2, 10);
+    expect(value('sin⁻¹(x)', 0.5)).toBeCloseTo(Math.asin(0.5), 10);
+    expect(value('x(x+1)', 2)).toBe(6);
+    expect(value('(x+1)(x-1)', 3)).toBe(8);
+    expect(value('|x|', -4)).toBe(4);
+    expect(value('|x - 1| + |x + 1|', 0)).toBe(2);
+    expect(value('√x', 9)).toBe(3);
+    expect(value('√(x+1)', 8)).toBe(3);
+    expect(value('2π', 0)).toBeCloseTo(2 * Math.PI, 10);
+    expect(value('θ^2', 3)).toBe(9);
+    expect(value('y = x + 1', 2)).toBe(3);
+    expect(value('f(x) = x + 1', 2)).toBe(3);
+    expect(value('e^x', 1)).toBeCloseTo(Math.E, 10);
+    expect(normalise('sin⁻¹(x)')).toBe('asin(x)');
+  });
+
+  const message = (source: string) => {
+    const line = readLine(source, 'f1');
+    return line.kind === 'error' ? line.message : '';
+  };
+
+  it('says what is wrong, in words', () => {
+    expect(message('sin(x')).toBe('A closing bracket ) is missing.');
+    expect(message('((x')).toBe('2 closing brackets ) are missing.');
+    expect(message('x)')).toBe('There is a ) with no ( before it.');
+    expect(message('x +')).toBe('Something is missing after the + at the end.');
+    expect(message('*x')).toBe('Something is missing before the * at the start.');
+    expect(message('x ** 2')).toContain('two operators');
+    expect(message('y + 1')).toBe('"y" has no value. Use only x here.');
+    expect(message('foo(x)')).toContain('foo');
+    expect(message('|x')).toContain('bar');
+    expect(message('∞')).toContain('limit');
+    expect(message('2 + d/dx(x)')).toContain('start of the line');
+    expect(message('∫')).toContain('after ∫');
+    expect(message('d/dx')).toContain('after d/dx');
+    expect(message('∫ from 0 of x')).toContain('Write the limits');
+  });
+
+  const kinds = (source: string) => readLine(source, 'f1').kind;
+
+  it('reads the ways of writing calculus', () => {
+    for (const source of ['d/dx(x^3 sin(x))', 'd/dx x^2', 'derivative of x^2', 'differentiate x^2']) expect(kinds(source), source).toBe('derivative');
+    for (const source of ['∫ from 0 to π of sin(x)', '∫ from 0 to π of sin(x) dx', 'integral from 0 to 1 of x', '∫[0, pi] sin(x) dx', 'integrate from 0 to 1 of x', '∫ from 0 to ∞ of exp(-x)']) expect(kinds(source), source).toBe('definite');
+    for (const source of ['∫ x^2', '∫ x^2 dx', 'integral of x^2', 'integrate x', '∫(x^2)']) expect(kinds(source), source).toBe('indefinite');
+  });
+
+  const expectValue = (line: GraphLine, want: number) => {
+    expect(line.kind === 'definite' && line.result.value).toBeCloseTo(want, 4);
+  };
+
+  it('works out a definite integral as it reads it', () => {
+    expectValue(readLine('∫ from 0 to π of sin(x)', 'f1'), 2);
+    expectValue(readLine('∫ from 0 to π/2 of sin x', 'f1'), 1);
+    expect(message('∫ from a to 1 of x')).toContain('lower limit');
+    expect(message('∫ from 0 to x of x')).toContain('upper limit');
+  });
+
+  it('lets a line use the lines above it', () => {
+    const [f1, f2, f3, f4] = readLines(['x^2', 'derivative of f1', "f1'", 'f1 + f2']);
+    expect(f1.kind).toBe('plain');
+    expect(f2.kind === 'derivative' && f2.fn(3)).toBe(6);
+    expect(f3.kind === 'derivative' && f3.fn(3)).toBe(6);
+    expect(f4.kind === 'plain' && f4.fn(3)).toBe(15);
+    const [later] = readLines(['f2', 'x']);
+    expect(later.kind === 'error' && later.message).toContain('above');
+    const [self] = readLines(['f1 + 1']);
+    expect(self.kind === 'error' && self.message).toContain('itself');
+  });
+
+  it('prints the preview as LaTeX, in θ where θ was typed', () => {
+    const line = readLine('∫ from 0 to π of sin(θ)', 'f1');
+    expect(line.kind === 'definite' && line.tex).toContain('\\theta');
+    expect(line.kind === 'definite' && line.tex).toContain('\\int_{0}^{\\pi}');
+    const d = readLine('d/dx(x^3)', 'f1');
+    expect(d.kind === 'derivative' && d.tex).toContain('3\\,x^{2}');
+    const i = readLine('∫ x^2', 'f1');
+    expect(i.kind === 'indefinite' && i.tex).toContain('+C');
+    const sum = readLine('∫ x + 1', 'f1');
+    expect(sum.kind === 'indefinite' && sum.tex).toContain('\\left(x+1\\right)\\,dx');
   });
 });

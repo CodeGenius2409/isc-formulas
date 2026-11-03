@@ -6,6 +6,8 @@ Newest work last. Each task gets two lines: what was decided, and why.
   Labels never overlap each other or a dot, and avoid curves where they can. When a view is too crowded, a label is left out rather than overlapped, and the graph says "zoom in"; every point is still in the readouts.
 - **Task 3, reading the graph.** The guide, markers and readout live on their own canvas and in their own component, so following the pointer never redraws the curves, and updates are held to one a frame. Named points snap within 14 px, or 24 on touch, and are worked out only when first needed.
   One finger now reads the graph on touch, as you asked, so moving it takes two fingers. Arrow keys used to pan; they now read, with up and down jumping between named points, and Shift with an arrow pans.
+- **Task 4, plotter calculus.** Derivatives and antiderivatives come from a small module on the solver's own expression trees (`src/sims/lib/symbolic.ts`), not from mathjs `derivative` or Algebrite. Those would add a great deal to a page that needs a table of rules; the tests compare my derivatives with real mathjs, and every antiderivative is checked numerically before it is shown, so a wrong rule falls back to a numeric curve.
+  Definite integrals use adaptive Simpson, split at roots so the areas above and below the axis are separate, map infinite limits to a finite range, and report "does not converge" rather than a wrong number. Below-axis shading is hatched as well as lighter, so the sign isn't colour alone. `log` stays the natural log, as it already was in this app, and the help text says so.
 
 ---
 
