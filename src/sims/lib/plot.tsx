@@ -39,6 +39,8 @@ interface CanvasProps {
   onPointerMove?: (e: ReactPointerEvent<HTMLCanvasElement>) => void;
   onPointerUp?: (e: ReactPointerEvent<HTMLCanvasElement>) => void;
   onPointerCancel?: (e: ReactPointerEvent<HTMLCanvasElement>) => void;
+  onPointerLeave?: (e: ReactPointerEvent<HTMLCanvasElement>) => void;
+  onBlur?: () => void;
   onWheel?: (e: WheelEvent) => void;
   onKeyDown?: (e: React.KeyboardEvent<HTMLDivElement>) => void;
   /** Interactive plots take focus and capture drags. Others let the page scroll. */
@@ -47,7 +49,7 @@ interface CanvasProps {
 }
 
 /** A canvas that redraws on resize and theme change, sharp on high-density screens. */
-export function Canvas({ draw, height = 280, label, className = '', style, interactive, onWheel, onKeyDown, children, ...pointer }: CanvasProps) {
+export function Canvas({ draw, height = 280, label, className = '', style, interactive, onWheel, onKeyDown, onBlur, children, ...pointer }: CanvasProps) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const drawRef = useRef(draw);
@@ -93,7 +95,7 @@ export function Canvas({ draw, height = 280, label, className = '', style, inter
   }, [onWheel]);
 
   return (
-    <div ref={wrapRef} className={`plot ${interactive ? '' : 'scrollable'} ${className}`} style={{ height, ...style }} tabIndex={interactive ? 0 : undefined} onKeyDown={onKeyDown}>
+    <div ref={wrapRef} className={`plot ${interactive ? '' : 'scrollable'} ${className}`} style={{ height, ...style }} tabIndex={interactive ? 0 : undefined} onKeyDown={onKeyDown} onBlur={onBlur}>
       <canvas ref={canvasRef} role="img" aria-label={label} {...pointer} />
       {children}
     </div>

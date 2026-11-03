@@ -211,3 +211,74 @@ export function placeLabels(requests: LabelRequest[], bounds: Box, hitsCurve: (b
   });
   return placed;
 }
+
+export interface CurveValue {
+  name: string;
+  color: string;
+  /** Null where the curve is undefined: outside its domain, or at an asymptote. */
+  y: number | null;
+}
+
+export function readCurves(curves: Curve[], x: number): CurveValue[] {
+  return curves.map((c) => {
+    const y = c.fn(x);
+    return { name: c.name, color: c.color, y: isDefined(y) ? y : null };
+  });
+}
+
+/** Says what a point is, in words. */
+export function describePoint(point: GraphPoint): string {
+  const [a, b] = point.curves;
+  if (point.kind === 'intersection') return `Intersection of ${a} and ${b}`;
+  if (point.kind === 'root') return `Root of ${a}`;
+  return `${point.kind === 'maximum' ? 'Maximum' : 'Minimum'} of ${a}`;
+}
+
+const SNAP_ORDER: Record<PointKind, number> = { intersection: 0, maximum: 1, minimum: 1, root: 2 };
+
+/** The named point within reach of the pointer, closest first, and the rarer kind if two are level. */
+export function nearestPoint(points: GraphPoint[], toPx: Fn, toPy: Fn, px: number, py: number, radius: number): GraphPoint | null {
+  let best: GraphPoint | null = null;
+  let bestScore = Infinity;
+  for (const point of points) {
+    const distance = Math.hypot(toPx(point.x) - px, toPy(point.y) - py);
+    if (distance > radius) continue;
+    const score = distance + SNAP_ORDER[point.kind] * 0.5;
+    if (score < bestScore) {
+      bestScore = score;
+      best = point;
+    }
+  }
+  return best;
+}
+
+export interface ReadoutRequest {
+  /** The guide line. */
+  px: number;
+  /** Where the markers are on it. */
+  ys: number[];
+  w: number;
+  h: number;
+  left: number;
+  right: number;
+  top: number;
+  bottom: number;
+}
+
+/**
+ * Where the readout goes: beside the guide line, flipping sides near the edges. Beside the line it can't
+ * cover a marker. On a narrow plot where it fits neither side, it goes above or below the markers.
+ */
+export function placeReadout({ px, ys, w, h, left, right, top, bottom }: ReadoutRequest): { x: number; y: number } {
+  const gap = 12;
+  const inset = 4;
+  if (px + gap + w <= right - inset) return { x: px + gap, y: top + inset };
+  if (px - gap - w >= left + inset) return { x: px - gap - w, y: top + inset };
+  const x = Math.max(left + inset, Math.min(px - w / 2, right - inset - w));
+  // The tallest gap between markers that the box fits in, trying the top first.
+  const edges = [top + inset - 7, ...ys.filter((y) => y > top && y < bottom).sort((a, b) => a - b), bottom - inset + 7];
+  for (let i = 0; i < edges.length - 1; i++) {
+    if (edges[i + 1] - edges[i] >= h + 14) return { x, y: edges[i] + 7 };
+  }
+  return { x, y: top + inset };
+}

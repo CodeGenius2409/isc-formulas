@@ -1,6 +1,6 @@
 // The graph plotter's maths and placement, away from the screen.
 import { describe, expect, it } from 'vitest';
-import { crossings, formatCoord, formatPoint, intersectionPoints, placeLabels, rootPoints, turningPoints } from '../../src/sims/lib/graph-analysis';
+import { crossings, describePoint, formatCoord, formatPoint, intersectionPoints, nearestPoint, placeLabels, placeReadout, readCurves, rootPoints, turningPoints } from '../../src/sims/lib/graph-analysis';
 
 const rounded = (list: number[]) => list.map((v) => Number(v.toFixed(6)));
 
@@ -117,5 +117,50 @@ describe('label placement', () => {
     for (let i = 0; i < placed.length; i++) {
       for (let j = i + 1; j < placed.length; j++) expect(clash(placed[i].box, placed[j].box)).toBe(false);
     }
+  });
+});
+
+describe('reading the graph', () => {
+  it('says undefined outside a domain and at an asymptote', () => {
+    const curves = [
+      { name: 'f1', color: 'a', fn: (x: number) => Math.sqrt(x) },
+      { name: 'f2', color: 'a', fn: (x: number) => 1 / x },
+      { name: 'f3', color: 'a', fn: Math.tan },
+    ];
+    expect(readCurves(curves, -1).map((v) => v.y)).toEqual([null, -1, Math.tan(-1)]);
+    expect(readCurves(curves, 0)[1].y).toBeNull();
+    expect(readCurves(curves, Math.PI / 2)[2].y).toBeNull();
+  });
+
+  it('snaps within reach, and prefers the closer point', () => {
+    const point = (x: number, kind: 'root' | 'maximum') => ({ x, y: 0, kind, curves: ['f1'] });
+    const list = [point(10, 'root'), point(20, 'maximum')];
+    const id = (v: number) => v;
+    expect(nearestPoint(list, id, id, 12, 0, 14)?.x).toBe(10);
+    expect(nearestPoint(list, id, id, 18, 0, 14)?.x).toBe(20);
+    expect(nearestPoint(list, id, id, 50, 0, 14)).toBeNull();
+  });
+
+  it('names points', () => {
+    expect(describePoint({ x: 0, y: 0, kind: 'intersection', curves: ['f1', 'f2'] })).toBe('Intersection of f1 and f2');
+    expect(describePoint({ x: 0, y: 0, kind: 'root', curves: ['f1'] })).toBe('Root of f1');
+    expect(describePoint({ x: 0, y: 0, kind: 'maximum', curves: ['f2'] })).toBe('Maximum of f2');
+  });
+
+  const frame = { w: 120, h: 40, left: 50, right: 400, top: 10, bottom: 300 };
+
+  it('flips sides near the edges, and stays clear of the guide line', () => {
+    expect(placeReadout({ ...frame, px: 100, ys: [] }).x).toBe(112);
+    const near = placeReadout({ ...frame, px: 380, ys: [] });
+    expect(near.x + frame.w).toBeLessThan(380);
+  });
+
+  it('on a narrow plot, sits above or below every marker it would otherwise cover', () => {
+    const narrow = { ...frame, right: 200, left: 50 };
+    const ys = [30, 150, 290];
+    const spot = placeReadout({ ...narrow, px: 125, ys });
+    for (const y of ys) expect(y < spot.y - 5 || y > spot.y + frame.h + 5).toBe(true);
+    expect(spot.x).toBeGreaterThanOrEqual(50);
+    expect(spot.x + frame.w).toBeLessThanOrEqual(200);
   });
 });

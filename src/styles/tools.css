@@ -141,6 +141,33 @@ input[type='range'] {
   height: 100%;
 }
 
+/* The guide line and markers sit on their own layer, so reading the graph never redraws the curves. */
+.plot canvas.plot-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.plot-readout {
+  position: absolute;
+  max-width: calc(100% - 4.5rem);
+  padding: 0.25rem 0.5rem;
+  background: var(--paper);
+  border: 1px solid var(--rule-2);
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.4;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.plot-readout-head {
+  font-family: var(--font-body, inherit);
+  font-weight: 600;
+  color: var(--ink);
+}
+
 .plot:focus-visible {
   outline-offset: 2px;
 }

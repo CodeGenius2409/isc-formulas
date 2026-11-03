@@ -4,6 +4,8 @@ Newest work last. Each task gets two lines: what was decided, and why.
 
 - **Task 2, intersections.** A toggle button marks every crossing on the graph with its coordinates, remembered in `sessionStorage`. Crossings come from sampling f − g, bisecting each sign change, and checking the two curves really agree at the result, which rejects tan x and 1/x; a separate search finds curves that touch without crossing.
   Labels never overlap each other or a dot, and avoid curves where they can. When a view is too crowded, a label is left out rather than overlapped, and the graph says "zoom in"; every point is still in the readouts.
+- **Task 3, reading the graph.** The guide, markers and readout live on their own canvas and in their own component, so following the pointer never redraws the curves, and updates are held to one a frame. Named points snap within 14 px, or 24 on touch, and are worked out only when first needed.
+  One finger now reads the graph on touch, as you asked, so moving it takes two fingers. Arrow keys used to pan; they now read, with up and down jumping between named points, and Shift with an arrow pans.
 
 ---
 

@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent } from 'react';
 import { Maximize, Minus, Plus, Trash2 } from 'lucide-react';
 import { evaluate, ExprError, parseExpr, symbolsIn } from '../solver/expr';
+import { GraphCursor, type GraphCursorHandle } from './GraphCursor';
 import { derivative, integrate, roots } from './lib/calculus';
 import { formatPoint, intersectionPoints, placeLabels, type Curve, type GraphPoint } from './lib/graph-analysis';
 import { Canvas, drawPlot, makeViewport, token, type Marker, type PlotModel, type Series, type Viewport } from './lib/plot';
@@ -126,7 +127,8 @@ export function Plotter() {
   const size = useRef({ w: 800, h: 400 });
   const drag = useRef<{ pointer: number; x: number; y: number; view: typeof view } | null>(null);
   const pointers = useRef(new Map<number, { x: number; y: number }>());
-  const pinch = useRef<{ dist: number; view: typeof view } | null>(null);
+  const pinch = useRef<{ dist: number; centre: { x: number; y: number }; view: typeof view } | null>(null);
+  const cursor = useRef<GraphCursorHandle>(null);
 
   const compiled = useMemo(() => rows.map((row, i) => compile(row, COLOURS[i % COLOURS.length])), [rows]);
   const active = compiled.filter((c): c is Compiled & { fn: (x: number) => number } => c.fn !== null);
@@ -197,20 +199,33 @@ export function Plotter() {
     [],
   );
 
+  /** One finger reads the graph, and two move and zoom it, since a page can't tell a read from a pan. */
+  const readAtPointer = (e: PointerEvent<HTMLCanvasElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    cursor.current?.point(e.clientX - rect.left, e.clientY - rect.top, e.pointerType === 'touch' ? 24 : 14);
+  };
+
   const onPointerDown = (e: PointerEvent<HTMLCanvasElement>) => {
     e.currentTarget.setPointerCapture(e.pointerId);
     pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
     if (pointers.current.size === 2) {
       const [a, b] = [...pointers.current.values()];
-      pinch.current = { dist: Math.hypot(a.x - b.x, a.y - b.y), view };
+      pinch.current = { dist: Math.hypot(a.x - b.x, a.y - b.y), centre: { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }, view };
       drag.current = null;
+      cursor.current?.clear();
+    } else if (e.pointerType === 'touch') {
+      readAtPointer(e);
     } else {
       drag.current = { pointer: e.pointerId, x: e.clientX, y: e.clientY, view };
+      cursor.current?.clear();
     }
   };
 
   const onPointerMove = (e: PointerEvent<HTMLCanvasElement>) => {
-    if (!pointers.current.has(e.pointerId)) return;
+    if (!pointers.current.has(e.pointerId)) {
+      if (e.pointerType !== 'touch') readAtPointer(e);
+      return;
+    }
     pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
     const rect = e.currentTarget.getBoundingClientRect();
     size.current = { w: rect.width, h: rect.height };
@@ -218,9 +233,20 @@ export function Plotter() {
       const [a, b] = [...pointers.current.values()];
       const factor = pinch.current.dist / Math.max(Math.hypot(a.x - b.x, a.y - b.y), 1);
       const start = pinch.current.view;
-      const mx = (start.x[0] + start.x[1]) / 2;
-      const my = (start.y[0] + start.y[1]) / 2;
-      setView({ x: [mx + (start.x[0] - mx) * factor, mx + (start.x[1] - mx) * factor], y: [my + (start.y[0] - my) * factor, my + (start.y[1] - my) * factor] });
+      const startV = makeViewport(start, rect.width, rect.height);
+      // The two fingers' midpoint carries the graph with it, and their spread zooms about that point.
+      const mx = startV.fromPx(pinch.current.centre.x - rect.left);
+      const my = startV.fromPy(pinch.current.centre.y - rect.top);
+      const shiftX = (((a.x + b.x) / 2 - pinch.current.centre.x) / (startV.right - startV.left)) * (start.x[1] - start.x[0]) * factor;
+      const shiftY = (((a.y + b.y) / 2 - pinch.current.centre.y) / (startV.bottom - startV.top)) * (start.y[1] - start.y[0]) * factor;
+      setView({
+        x: [mx + (start.x[0] - mx) * factor - shiftX, mx + (start.x[1] - mx) * factor - shiftX],
+        y: [my + (start.y[0] - my) * factor + shiftY, my + (start.y[1] - my) * factor + shiftY],
+      });
+      return;
+    }
+    if (e.pointerType === 'touch') {
+      readAtPointer(e);
       return;
     }
     if (!drag.current || drag.current.pointer !== e.pointerId) return;
@@ -239,11 +265,21 @@ export function Plotter() {
   };
 
   const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
-    const moves: Record<string, () => void> = {
+    const panning: Record<string, () => void> = {
       ArrowLeft: () => pan(-0.1, 0),
       ArrowRight: () => pan(0.1, 0),
       ArrowUp: () => pan(0, 0.1),
       ArrowDown: () => pan(0, -0.1),
+    };
+    const reading: Record<string, () => void> = {
+      ArrowLeft: () => cursor.current?.step(-1),
+      ArrowRight: () => cursor.current?.step(1),
+      ArrowUp: () => cursor.current?.jump(1),
+      ArrowDown: () => cursor.current?.jump(-1),
+    };
+    const moves: Record<string, () => void> = {
+      ...(e.shiftKey ? panning : reading),
+      Escape: () => cursor.current?.clear(),
       '+': () => zoom(1 / 1.2),
       '=': () => zoom(1 / 1.2),
       '-': () => zoom(1.2),
@@ -351,7 +387,7 @@ export function Plotter() {
       <Canvas
         interactive
         height={420}
-        label="Graph of the functions listed. Drag to pan, scroll or pinch to zoom. With the keyboard, arrow keys pan, plus and minus zoom, and zero resets."
+        label="Graph of the functions listed. Point at it to read coordinates. Drag to pan, scroll or pinch to zoom. With the keyboard, left and right arrows move along x and read each curve, up and down jump between intersections, roots and turning points, shift and an arrow pans, plus and minus zoom, and zero resets."
         draw={(ctx, w, h) => {
           const v = drawPlot(ctx, w, h, model);
           const labels = showCrossings ? inView.map((p: GraphPoint) => ({ x: p.x, y: p.y, text: formatPoint(p.x, p.y) })) : [];
@@ -363,8 +399,14 @@ export function Plotter() {
         onPointerMove={onPointerMove}
         onPointerUp={endPointer}
         onPointerCancel={endPointer}
+        onPointerLeave={(e) => {
+          if (e.pointerType !== 'touch') cursor.current?.clear();
+        }}
+        onBlur={() => cursor.current?.clear()}
         onKeyDown={onKeyDown}
-      />
+      >
+        <GraphCursor ref={cursor} view={view} curves={curves} />
+      </Canvas>
       <div className="mt-2 flex flex-wrap items-center gap-2">
         <button type="button" className="btn btn-line" aria-label="Zoom in" onClick={() => zoom(1 / 1.3)}>
           <Plus size={16} aria-hidden />
@@ -375,7 +417,7 @@ export function Plotter() {
         <button type="button" className="btn btn-line" onClick={() => setView(DEFAULT_VIEW)}>
           <Maximize size={15} aria-hidden /> Reset view
         </button>
-        <span className="text-step--1 text-ink-2">Drag to move. Scroll or pinch to zoom.</span>
+        <span className="text-step--1 text-ink-2">Point at the graph to read it. On a touch screen, press and drag to read, and use two fingers to move or zoom. Otherwise drag to move, and scroll to zoom. With the keyboard, focus the graph and use the arrow keys.</span>
       </div>
       <Legend items={[...active.map((c) => ({ label: c.row.source, color: c.color })), ...(first && showDerivative ? [{ label: "f1'(x)", color: first.color, dash: true }] : [])]} />
       <p className="mt-2 text-step--1 text-ink-2">
