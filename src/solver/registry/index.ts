@@ -1,6 +1,8 @@
 // All registry entries, with quantities and constants resolved. Adding a formula
 // means adding a line to one of the data files. tests/unit/registry.test.ts then
 // checks that its id exists and that its dimensions balance.
+import { customEntry } from '../../custom/entry';
+import { customStore, isCustomId } from '../../custom/store';
 import type { ResolvedEntry, ResolvedVar, SolverEntry, VarOptions, VarSpec } from '../types';
 import { CHEMISTRY } from './chemistry';
 import { MATHEMATICS } from './mathematics';
@@ -58,6 +60,7 @@ const byId = new Map(RAW_ENTRIES.map((e) => [e.id, e]));
 const resolved = new Map<string, ResolvedEntry>();
 
 export function getEntry(id: string): ResolvedEntry | null {
+  if (isCustomId(id)) return customEntry(id);
   const cached = resolved.get(id);
   if (cached) return cached;
   const raw = byId.get(id);
@@ -68,5 +71,9 @@ export function getEntry(id: string): ResolvedEntry | null {
 }
 
 export function allEntries(): ResolvedEntry[] {
-  return RAW_ENTRIES.map((e) => getEntry(e.id)!);
+  const mine = customStore.get().formulas.flatMap((f) => {
+    const entry = customEntry(f.id);
+    return entry ? [entry] : [];
+  });
+  return [...RAW_ENTRIES.map((e) => getEntry(e.id)!), ...mine];
 }

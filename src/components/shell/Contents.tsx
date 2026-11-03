@@ -1,9 +1,12 @@
 import { useEffect, useRef } from 'react';
 import { Search } from 'lucide-react';
+import { additions } from '../../custom/merge';
+import { customStore } from '../../custom/store';
 import { getClass, getSubject, splitUnitName, unitTitle } from '../../data/book';
 import type { ClassLevel, SubjectId, UnitStatus } from '../../data/types';
 import { shouldAnimate } from '../../lib/motion';
 import { goAgainIfHere, href } from '../../lib/router';
+import { useStore } from '../../lib/store';
 import { openPalette } from '../../state/ui';
 
 export const STATUS_LABEL: Partial<Record<UnitStatus, string>> = {
@@ -27,6 +30,8 @@ export function Contents({ subject, level, unitIndex, subtopicIndex, onNavigate 
   const cls = getClass(subject, level);
   const toc = useRef<HTMLElement>(null);
   const placed = useRef(false);
+  const custom = useStore(customStore);
+  const added = additions(custom.formulas, subject, level);
 
   // The contents can be longer than the screen, so it keeps the reader's place in view.
   // A frame later, because a sheet isn't laid out until its own effect has opened it.
@@ -90,10 +95,10 @@ export function Contents({ subject, level, unitIndex, subtopicIndex, onNavigate 
                   {unitTitle(unit.name)}
                   {STATUS_LABEL[unit.status] && <span className="status-label block">{STATUS_LABEL[unit.status]}</span>}
                 </span>
-                <span className="toc-count num">{unit.count}</span>
+                <span className="toc-count num">{unit.count + (added.get(i)?.total ?? 0)}</span>
               </a>
               {open &&
-                unit.subtopics.map((sub, j) => (
+                [...unit.subtopics.map((sub) => ({ name: sub.name, count: sub.count + (added.get(i)?.inSection.get(sub.name) ?? 0) })), ...(added.get(i)?.extraSections ?? [])].map((sub, j) => (
                   <a
                     key={sub.name}
                     className="toc-sub"

@@ -1,6 +1,11 @@
 import { LazyLewis } from './LazyLewis';
 import { memo } from 'react';
-import { Calculator, Copy, ExternalLink, ListChecks, Star } from 'lucide-react';
+import { useState } from 'react';
+import { Calculator, Copy, ExternalLink, ListChecks, PenLine, Pencil, Star, Trash2 } from 'lucide-react';
+import { deleteCustomFormula } from '../custom/actions';
+import { customStore } from '../custom/store';
+import { canSolveCustom } from '../solver/index-lite';
+import { CustomStructure } from './custom/CustomStructure';
 import { getSubject, unitTitle } from '../data/book';
 import { copyableExpr, isBodyExpr } from '../data/expr';
 import type { Formula, Placement } from '../data/types';
@@ -25,22 +30,62 @@ interface Props {
   onToggle: (id: string) => void;
   /** Shows the place in the book, for lists that mix several units. */
   showWhere?: boolean;
+  /** Just saved or edited, so the eye can find it. */
+  flash?: boolean;
+  /** Shown in the editor: how it will look, with nothing to press. */
+  preview?: boolean;
 }
 
-export const FormulaRow = memo(function FormulaRow({ formula: f, open, onToggle, showWhere }: Props) {
+/** Edit and delete, which only your own formulas have. Deleting asks first, in the row itself. */
+export function CustomActions({ formula, onDeleted }: { formula: Formula; onDeleted?: () => void }) {
+  const [confirming, setConfirming] = useState(false);
+  if (confirming) {
+    return (
+      <span className="custom-confirm" role="group" aria-label={`Delete ${formula.name}?`}>
+        <span>Delete this?</span>
+        <button type="button" className="btn btn-line" autoFocus onClick={() => void deleteCustomFormula(formula.id).then(onDeleted)}>
+          Delete
+        </button>
+        <button type="button" className="btn btn-quiet" onClick={() => setConfirming(false)}>
+          Keep
+        </button>
+      </span>
+    );
+  }
+  return (
+    <>
+      <a className="btn btn-quiet" title="Edit" aria-label={`Edit ${formula.name}`} href={href(`mine/edit/${formula.id}`)}>
+        <Pencil size={15} aria-hidden /> <span className="act-label">Edit</span>
+      </a>
+      <button type="button" className="btn btn-quiet" title="Delete" aria-label={`Delete ${formula.name}`} onClick={() => setConfirming(true)}>
+        <Trash2 size={15} aria-hidden /> <span className="act-label">Delete</span>
+      </button>
+    </>
+  );
+}
+
+export const FormulaRow = memo(function FormulaRow({ formula: f, open, onToggle, showWhere, flash, preview }: Props) {
   const favourites = useStore(favouritesStore);
   const saved = favourites.includes(f.id);
   const elsewhere = f.shared?.placements.filter((p) => !(p.subject === f.subject && p.classLevel === f.classLevel && p.unit === f.unit)) ?? [];
-  const solvable = useSolvableIds().has(f.id);
+  const custom = useStore(customStore);
+  const printedSolvable = useSolvableIds().has(f.id);
+  const solvable = f.custom ? canSolveCustom(custom.formulas.find((c) => c.id === f.id)) : printedSolvable;
   const isCode = isBodyExpr(f.latex);
   const copyLabel = isCode ? 'Copy' : 'Copy LaTeX';
   const mathRef = useFocusableOverflow(`Formula for ${f.name}, scrolls sideways`, useKatexReady());
 
   return (
-    <article className="row" data-open={open} data-subject={f.subject}>
+    <article className="row" data-open={open} data-subject={f.subject} data-custom={f.custom || undefined} data-flash={flash || undefined} data-formula-row={f.id}>
       <div className="row-num">
-        <span className="row-num-section">{f.number.slice(0, f.number.lastIndexOf('.'))}</span>
-        {f.number.slice(f.number.lastIndexOf('.'))}
+        {f.custom ? (
+          <PenLine size={15} aria-hidden className="row-pen" />
+        ) : (
+          <>
+            <span className="row-num-section">{f.number.slice(0, f.number.lastIndexOf('.'))}</span>
+            {f.number.slice(f.number.lastIndexOf('.'))}
+          </>
+        )}
       </div>
       <div className="row-main">
         <div ref={mathRef} className="row-math math-host">
@@ -50,8 +95,9 @@ export const FormulaRow = memo(function FormulaRow({ formula: f, open, onToggle,
           <button type="button" aria-expanded={open} onClick={() => onToggle(f.id)}>
             {f.name}
           </button>
+          {f.custom && <span className="row-yours">Your formula</span>}
         </h3>
-        <button
+        {!preview && <button
           type="button"
           className="row-star"
           aria-pressed={saved}
@@ -61,7 +107,7 @@ export const FormulaRow = memo(function FormulaRow({ formula: f, open, onToggle,
           }}
         >
           <Star size={17} fill={saved ? 'currentColor' : 'none'} aria-hidden />
-        </button>
+        </button>}
         {(f.note || elsewhere.length > 0 || showWhere) && (
           <p className="row-note">
             {f.note}
@@ -83,7 +129,12 @@ export const FormulaRow = memo(function FormulaRow({ formula: f, open, onToggle,
             <LazyLewis ids={f.lewis} />
           </div>
         )}
-        <div className="row-acts">
+        {f.smiles && (
+          <div className="row-structure">
+            <CustomStructure smiles={f.smiles} />
+          </div>
+        )}
+        {!preview && <div className="row-acts">
           {solvable && (
             <button
               type="button"
@@ -116,7 +167,8 @@ export const FormulaRow = memo(function FormulaRow({ formula: f, open, onToggle,
           <a className="btn btn-quiet" title="Open" aria-label={`Open ${f.name}`} href={href(`f/${f.id}`)} onClick={() => noteRecent(f.id)}>
             <ExternalLink size={15} aria-hidden /> <span className="act-label">Open</span>
           </a>
-        </div>
+          {f.custom && <CustomActions formula={f} />}
+        </div>}
       </div>
     </article>
   );

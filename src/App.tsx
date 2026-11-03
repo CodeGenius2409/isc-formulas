@@ -1,3 +1,4 @@
+import { ensureCustomLoaded } from './custom/store';
 import { lazy, Suspense, useEffect, useLayoutEffect, useRef, type RefObject } from 'react';
 import { SUBJECT_IDS } from './data/book';
 import type { ClassLevel, SubjectId } from './data/types';
@@ -25,6 +26,8 @@ const Saved = lazy(() => import('./views/Saved'));
 const Settings = lazy(() => import('./views/Settings'));
 const ProgressView = lazy(() => import('./views/ProgressView'));
 const PaperView = lazy(() => import('./views/PaperView'));
+const MyFormulas = lazy(() => import('./views/MyFormulas'));
+const FormulaEditor = lazy(() => import('./views/FormulaEditor'));
 const ToolsView = lazy(() => import('./views/ToolsView'));
 const SearchView = lazy(() => import('./views/SearchView'));
 const FindPalette = lazy(() => import('./components/FindPalette').then((m) => ({ default: m.FindPalette })));
@@ -83,6 +86,10 @@ function View({ route, place, scrollRef }: { route: Route; place: BookPlace; scr
       return <ProgressView />;
     case 'paper':
       return <PaperView />;
+    case 'mine':
+      if (a === 'new') return <FormulaEditor key="new" editId={null} />;
+      if (a === 'edit' && route.path[2]) return <FormulaEditor key={route.path[2]} editId={route.path[2]} />;
+      return <MyFormulas scrollRef={scrollRef} />;
     case 'tools':
       return <ToolsView toolId={a ?? null} />;
     case 'find':
@@ -104,6 +111,9 @@ function NotFound() {
 }
 
 export function App() {
+  useEffect(() => {
+    void ensureCustomLoaded();
+  }, []);
   const route = useRoute();
   const last = useStore(lastReadStore);
   const contentsOpen = useStore(contentsSheetStore);

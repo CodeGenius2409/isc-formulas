@@ -21,6 +21,12 @@ export interface FormulaEntry {
   structure?: EntryStructure;
   /** Structures with lone pairs for this entry, by id in src/data/lewis/figures.ts. */
   lewis?: string[];
+  /** One of your own formulas, kept in this browser. */
+  custom?: 1;
+  /** Your own formula's symbols, which also make it findable. */
+  variables?: { symbol: string; meaning: string; unit: string }[];
+  /** A compound or reaction you typed as SMILES. */
+  smiles?: string;
 }
 
 /** One piece of a drawn reaction: a structure, words, a plus sign, or an arrow. */

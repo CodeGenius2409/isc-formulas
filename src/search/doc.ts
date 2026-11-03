@@ -16,11 +16,15 @@ export interface SearchDoc {
   /** Other subjects and classes this entry appears in, so filters still find it. */
   alsoSubjects: SubjectId[];
   alsoClasses: ClassLevel[];
+  /** Yours, not printed in the book. */
+  custom: boolean;
 }
 
 export interface SearchFilters {
   subject?: SubjectId | null;
   level?: ClassLevel | null;
+  /** Only your own formulas. */
+  custom?: boolean;
 }
 
 export interface SearchHit {
@@ -65,12 +69,13 @@ export function toSearchDoc(f: Formula): SearchDoc {
     name: f.name,
     aka: (f.aka ?? []).join(' '),
     topic: `${f.unit.replace(/^\d+\.\s*/, '')} ${f.subtopic}`,
-    symbols: body ? codeSymbols(body.text) : symbolWords(f.latex),
+    symbols: [body ? codeSymbols(body.text) : symbolWords(f.latex), ...(f.variables ?? []).map((v) => v.symbol)].join(' '),
     latexText: latexWords(body ? body.text.replace(/[`$]/g, ' ') : f.latex),
-    note: f.note ?? '',
+    note: [f.note ?? '', ...(f.variables ?? []).map((v) => v.meaning)].join(' ').trim(),
     subject: f.subject,
     classLevel: f.classLevel,
     alsoSubjects: [...new Set(placements.map((p) => p.subject))],
     alsoClasses: [...new Set(placements.map((p) => p.classLevel))],
+    custom: Boolean(f.custom),
   };
 }

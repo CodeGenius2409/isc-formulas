@@ -18,6 +18,8 @@ export interface ResolvedSubtopic {
   name: string;
   index: number;
   formulas: Formula[];
+  /** A section you made, not one in the book. */
+  custom?: 1;
 }
 
 export interface ResolvedUnit {

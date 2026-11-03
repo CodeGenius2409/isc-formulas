@@ -1,3 +1,7 @@
+import { CustomActions } from '../components/FormulaRow';
+import { navigate } from '../lib/router';
+import { CustomStructure } from '../components/custom/CustomStructure';
+import { PenLine } from 'lucide-react';
 import { LazyLewis } from '../components/LazyLewis';
 import { useEffect } from 'react';
 import { Calculator, Copy, ListChecks, Star } from 'lucide-react';
@@ -63,6 +67,30 @@ export default function FormulaView({ id }: { id: string }) {
         </div>
         {f.structure && <EntryStructures structure={f.structure} scale={1.15} />}
         {f.lewis && <LazyLewis ids={f.lewis} scale={1.1} />}
+        {f.smiles && <CustomStructure smiles={f.smiles} scale={0.8} />}
+        {f.custom && (
+          <p className="row-yours mt-2">
+            <PenLine size={14} aria-hidden /> Your formula
+          </p>
+        )}
+        {f.custom && (
+          <div className="row-acts no-print mt-1">
+            <CustomActions formula={f} onDeleted={() => navigate('mine')} />
+          </div>
+        )}
+        {f.variables && f.variables.length > 0 && (
+          <dl className="readouts mt-2">
+            {f.variables.map((v) => (
+              <div key={v.symbol} className="contents">
+                <dt className="num">{v.symbol}</dt>
+                <dd>
+                  {v.meaning}
+                  {v.unit ? ` (${v.unit})` : ''}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        )}
         {f.note && <p className="mt-3 max-w-[65ch]">{f.note}</p>}
         {f.aka && f.aka.length > 0 && <p className="mt-2 text-ink-2">Also called {f.aka.join(', ')}.</p>}
         {f.shared && f.shared.placements.length > 1 && (

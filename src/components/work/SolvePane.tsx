@@ -45,7 +45,13 @@ function NotSolvable({ id }: { id: string }) {
       )}
       <div className="notice" role="status">
         <Info size={18} aria-hidden />
-        <p>This one can't be solved numerically. It is a definition, a rule or a reaction, not a calculation with values to fill in. You can still practise it.</p>
+        {id.startsWith('u-') ? (
+          <p>
+            This one can't be solved numerically yet. <a href={`#/mine/edit/${id}`}>Give it variables and an equation</a>, and the solver can use it.
+          </p>
+        ) : (
+          <p>This one can't be solved numerically. It is a definition, a rule or a reaction, not a calculation with values to fill in. You can still practise it.</p>
+        )}
       </div>
       <div className="mt-3 flex flex-wrap gap-2">
         <button type="button" className="btn btn-solid" onClick={() => startPracticeOn(id)}>

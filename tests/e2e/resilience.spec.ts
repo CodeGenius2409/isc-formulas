@@ -2,7 +2,7 @@
 import { expect, test } from '@playwright/test';
 import { openRoute, setTheme, watchProblems } from './helpers';
 
-const ROUTES = ['', 'book/physics/XI', 'book/physics/XI/1', 'f/p-xi-2-7', 'find?q=velocity', 'saved', 'practice', 'paper', 'tools', 'tools/projectile', 'tools/circuits', 'tools/titration', 'tools/plotter', 'tools/java', 'tools/logic', 'settings', 'f/p-xi-2-7?work=solve&wf=p-xi-2-7', 'book/physics/XI/1?work=check', 'book/physics/XI/1?work=practice'];
+const ROUTES = ['', 'book/physics/XI', 'book/physics/XI/1', 'f/p-xi-2-7', 'find?q=velocity', 'saved', 'practice', 'paper', 'mine', 'mine/new', 'tools', 'tools/projectile', 'tools/circuits', 'tools/titration', 'tools/plotter', 'tools/java', 'tools/logic', 'settings', 'f/p-xi-2-7?work=solve&wf=p-xi-2-7', 'book/physics/XI/1?work=check', 'book/physics/XI/1?work=practice'];
 
 test('the app works with browser storage blocked', async ({ browser }) => {
   const context = await browser.newContext();

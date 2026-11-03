@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import { Download, Upload } from 'lucide-react';
 import { exportBackup, importBackup, parseBackup } from '../practice/progress';
 import { toast } from '../state/toast';
+import { CustomBackupControls } from './custom/CustomBackupControls';
 
 /** Saves progress to a file, and merges a file back in. */
 export function BackupControls() {
@@ -35,6 +36,7 @@ export function BackupControls() {
   };
 
   return (
+    <>
     <section className="today-section" aria-labelledby="backup-h">
       <h2 id="backup-h">Backup</h2>
       <p className="mt-2 text-ink-2">Your progress stays on this device. Save a file to keep it safe or move it to another device. Importing merges with what is here.</p>
@@ -53,5 +55,7 @@ export function BackupControls() {
         </p>
       )}
     </section>
+    <CustomBackupControls />
+    </>
   );
 }

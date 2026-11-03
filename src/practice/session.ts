@@ -5,6 +5,7 @@ import type { ClassLevel, Formula, SubjectId } from '../data/types';
 import { createStore } from '../lib/store';
 import { getEntry } from '../solver/registry';
 import { mistakesStore, srsStore, today } from './progress';
+import { customInPracticeStore } from '../custom/store';
 import { loadStructures } from '../data/structures';
 import { bankQuestion, loadBank, questionForId } from './bank';
 import { isBankId } from './bank/define';
@@ -53,7 +54,7 @@ async function poolFor(formula: Formula): Promise<Formula[]> {
     return into;
   };
   const pool: Formula[] = [];
-  add(sub.formulas, pool);
+  add(sub.formulas.filter((f) => !f.custom), pool);
   if (pool.length < 6) add(unit.subtopics.flatMap((s) => s.formulas), pool);
   if (pool.length < 6) add(units.flatMap((u) => u.subtopics.flatMap((s) => s.formulas)), pool);
   return pool;
@@ -61,6 +62,8 @@ async function poolFor(formula: Formula): Promise<Formula[]> {
 
 /** Numeric if the formula can be computed and the dice say so, otherwise conceptual. */
 export async function questionFor(formula: Formula, rng: Rng, preferNumeric = false): Promise<Question> {
+  // Generated questions need facts about a formula that yours may not have, so it comes up as a recall card.
+  if (formula.custom) return { kind: 'recall', formulaId: formula.id, name: formula.name, note: formula.note, latex: formula.latex };
   if (formula.structure && rng() < STRUCTURE_SHARE) {
     const question = structureQuestion(formula, await loadStructures(), rng);
     if (question) return question;
@@ -72,6 +75,9 @@ export async function questionFor(formula: Formula, rng: Rng, preferNumeric = fa
   }
   return conceptQuestion(formula, await poolFor(formula), rng);
 }
+
+/** Your formulas stay out of generated practice unless you've asked for them. */
+const forPractice = (list: Formula[]) => (customInPracticeStore.get() ? list : list.filter((f) => !f.custom));
 
 function shuffled<T>(list: T[], rng: Rng): T[] {
   const out = [...list];
@@ -112,7 +118,7 @@ export async function startUnit(subject: SubjectId, level: ClassLevel, unitIndex
   const units = await loadUnits(subject, level);
   const unit = units[unitIndex];
   if (!unit) return null;
-  const list = subtopicIndex != null ? (unit.subtopics[subtopicIndex]?.formulas ?? []) : unit.subtopics.flatMap((s) => s.formulas);
+  const list = forPractice(subtopicIndex != null ? (unit.subtopics[subtopicIndex]?.formulas ?? []) : unit.subtopics.flatMap((s) => s.formulas));
   const rng = freshRng();
   // A whole unit is exam-style questions first. A section has no questions of its own, so it stays with formulas.
   const exam: SessionItem[] = [];
@@ -133,6 +139,7 @@ export async function startFormula(rawId: string): Promise<Session | null> {
   if (!formula) return null;
   const rng = freshRng();
   const items: SessionItem[] = [];
+  if (formula.custom) return begin(formula.name, [{ question: await questionFor(formula, rng) }]);
   const entry = getEntry(formula.id);
   if (entry) {
     for (let i = 0; i < 3; i++) {
@@ -162,7 +169,7 @@ export function startMistakes(filter?: (id: string) => boolean): Session | null 
 export async function startNew(subject?: SubjectId): Promise<Session | null> {
   const all = await loadAllFormulas();
   const seen = srsStore.get();
-  const fresh = all.filter((f) => !seen[f.id] && (!subject || f.subject === subject));
+  const fresh = forPractice(all).filter((f) => !seen[f.id] && (!subject || f.subject === subject));
   const rng = freshRng();
   const chosen = shuffled(fresh, rng).slice(0, SESSION_SIZE);
   const items = await Promise.all(chosen.map(async (f) => ({ question: await questionFor(f, rng) })));

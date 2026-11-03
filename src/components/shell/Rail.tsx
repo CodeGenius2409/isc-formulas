@@ -1,4 +1,4 @@
-import { CalendarDays, FlaskConical, ListChecks, PencilRuler, Search, Settings2, Star } from 'lucide-react';
+import { CalendarDays, FlaskConical, ListChecks, PenLine, PencilRuler, Search, Settings2, Star } from 'lucide-react';
 import { SUBJECT_IDS, getSubject } from '../../data/book';
 import type { SubjectId } from '../../data/types';
 import { href, openWork, type Route } from '../../lib/router';
@@ -42,6 +42,9 @@ export function Rail({ route, activeSubject }: Props) {
         </button>
         <a className="rail-link" href={href('saved')} aria-current={link('saved')}>
           <Star size={20} aria-hidden /> Saved
+        </a>
+        <a className="rail-link" href={href('mine')} aria-current={link('mine')}>
+          <PenLine size={20} aria-hidden /> Yours
         </a>
         <a className="rail-link" href={href('practice')} aria-current={link('practice')}>
           <ListChecks size={20} aria-hidden /> Progress

@@ -4,7 +4,7 @@ Every ISC 2028 formula for Physics, Chemistry, Mathematics and Computer Science,
 problem solver, practice with spaced repetition, and simulators. It installs as an app
 and works with no network after the first visit.
 
-7,828 formulas mapped to the official 2028 syllabus, with Computer Science written as Java, verified bond-line structures for organic chemistry, 530 exam-style questions, timed mock papers, 448 solvable for any variable, 41 simulators including a step-through Java
+7,828 formulas mapped to the official 2028 syllabus, with Computer Science written as Java, verified bond-line structures for organic chemistry, 586 exam-style questions, your own formulas alongside the printed ones, timed mock papers, 448 solvable for any variable, 41 simulators including a step-through Java
 tracer.
 
 ## Run it
@@ -106,6 +106,8 @@ doesn't need this.
 | `src/search/` | Search, in a web worker, and quantity search |
 | `src/practice/` | Question generation, spaced repetition and the mistakes log |
 | `src/practice/bank/` | The exam-style question bank, marking and mock papers |
+| `src/custom/` | Your own formulas: IndexedDB storage, placing them in the book, backup files, and SMILES |
+| `src/data/lewis/` | Structures with lone pairs as data, and the automated check every one must pass |
 | `src/sims/` | The simulators |
 | `src/java/` | The Java lexer, parser, interpreter and samples |
 | `src/views/`, `src/components/` | Pages and shared interface |
