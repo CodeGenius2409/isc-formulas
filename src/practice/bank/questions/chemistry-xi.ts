@@ -1,7 +1,9 @@
 // Original questions in the style of ISC Chemistry Class XI. Places are [unit, topic, marks, difficulty].
 import { bank, type BankDef } from '../define';
+import { bondingQuestions, organicConceptQuestions } from '../lewis-questions';
 
-const { mcq, ar, theory, num } = bank('chemistry', 'XI');
+const chemistryXI = bank('chemistry', 'XI');
+const { mcq, ar, theory, num } = chemistryXI;
 
 const questions: BankDef[] = [
   // One mark
@@ -134,4 +136,4 @@ const questions: BankDef[] = [
   theory('reaction', [9, 'c', 5, 2], 'Write the equations for making ethene (a) from ethanol and (b) from ethyne. Then write what ethene gives with (c) bromine, (d) cold dilute alkaline KMnO₄, and (e) ozone followed by Zn and water.', ['(a) Heat with concentrated H₂SO₄ at 443 K.', '(b) Add H₂ with Lindlar’s catalyst.', '(c) 1,2-Dibromoethane.', '(d) Ethane-1,2-diol (Baeyer’s test).', '(e) Two molecules of methanal.']),
 ];
 
-export default questions;
+export default [...questions, ...bondingQuestions(chemistryXI), ...organicConceptQuestions(chemistryXI)];

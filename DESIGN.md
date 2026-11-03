@@ -64,6 +64,10 @@ Questions in practice and mock papers use the same tokens. A code block sits on
 structures. The right and wrong states of an option are `--good` and `--bad` with words, and a
 chosen option is a heavier `--ink` border. A mock paper's clock sits in a plain bar on `--paper`.
 
+A structure with lone pairs is drawn in `--ink` like the skeletal ones. A lone pair is two dots, and
+the pair a structure is about is `--accent`, the red pen, so it reads as marked up by a teacher. They
+appear only where the electrons are the point: functional groups stay plain.
+
 Blackboard is designed separately, not inverted: slate green rather than black,
 chalk white rather than grey, and subjects in coloured chalk. Don't derive one theme
 from the other.

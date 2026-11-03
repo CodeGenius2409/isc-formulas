@@ -51,6 +51,8 @@ interface Tags {
   python?: 1;
   structure?: EntryStructure;
   diagram?: DiagramSpec;
+  /** Structures with lone pairs shown once the question is marked, by id in src/data/lewis/figures.ts. */
+  answerLewis?: string[];
   /** A deliberate short recall item. The quality gate caps how many of these there are. */
   recall?: 1;
 }

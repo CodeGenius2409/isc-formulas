@@ -19,6 +19,8 @@ export interface FormulaEntry {
   tier?: FormulaTier;
   /** Bond-line structures for this entry. The drawings themselves are in structures.json. */
   structure?: EntryStructure;
+  /** Structures with lone pairs for this entry, by id in src/data/lewis/figures.ts. */
+  lewis?: string[];
 }
 
 /** One piece of a drawn reaction: a structure, words, a plus sign, or an arrow. */

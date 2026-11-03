@@ -9,6 +9,7 @@ export type Place = [unit: number, topic: string, marks: number, difficulty: Dif
 
 export interface Extras {
   structure?: EntryStructure;
+  answerLewis?: string[];
   diagram?: DiagramSpec;
   recall?: 1;
   python?: 1;
@@ -69,7 +70,7 @@ export function bank(subject: SubjectId, level: ClassLevel): Bank {
   return {
     mcq: (place, text, options, answer, why, extras) => ({
       form: 'mcq',
-      ...tags(extras?.structure ? 'structure' : 'mcq', place, text + JSON.stringify(extras?.structure ?? ''), extras),
+      ...tags(extras?.structure || extras?.answerLewis ? 'structure' : 'mcq', place, text + JSON.stringify(extras?.structure ?? ''), extras),
       text,
       options: options.map((o) => (typeof o === 'string' ? { text: o } : o)),
       answer,

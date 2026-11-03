@@ -1,3 +1,4 @@
+import { LazyLewis } from './LazyLewis';
 import { memo } from 'react';
 import { Calculator, Copy, ExternalLink, ListChecks, Star } from 'lucide-react';
 import { getSubject, unitTitle } from '../data/book';
@@ -75,6 +76,11 @@ export const FormulaRow = memo(function FormulaRow({ formula: f, open, onToggle,
         {f.structure && (
           <div className="row-structure">
             <EntryStructures structure={f.structure} />
+          </div>
+        )}
+        {f.lewis && (
+          <div className="row-structure">
+            <LazyLewis ids={f.lewis} />
           </div>
         )}
         <div className="row-acts">

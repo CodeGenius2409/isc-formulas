@@ -298,3 +298,118 @@ From the syllabus map, structures are given to the organic units: Class XI Unit 
 | Glycine | C2H5NO2 | 75.07 | `NCC(O)=O` | Glycine ([CID 750](https://pubchem.ncbi.nlm.nih.gov/compound/750)) | exact |
 | L-Alanine | C3H7NO2 | 89.09 | `C[C@H](N)C(O)=O` | L-Alanine ([CID 5950](https://pubchem.ncbi.nlm.nih.gov/compound/5950)) | exact |
 | Glycylalanine | C5H10N2O3 | 146.15 | `C[C@@H](C(=O)O)NC(=O)CN` | L-glycylalanine ([CID 1551643](https://pubchem.ncbi.nlm.nih.gov/compound/1551643)) | exact |
+
+<!-- lewis-check-start -->
+## Structures with lone pairs
+
+These are drawn from JSON descriptions in `src/data/lewis/figures.ts`, by `components/Lewis.tsx`, because skeletal renderers do not draw lone pairs well. `tests/unit/lewis.test.ts` runs `src/data/lewis/check.ts` on every one, and fails if any check fails. This table is written by that test.
+
+**92 structures in 82 figures. 0 failed.**
+
+Each is checked for: the atoms drawn against the formula; total valence electrons against the formula and overall charge; each atom's formal charge against the charge shown, and their sum against the overall charge; octets, allowing only marked exceptions (electron-deficient only for Be, B, Al and carbocation carbon, expanded only for period 3 and below, and odd-electron species); the stated shape against the count of electron domains; the hybridisation against the domains; and, where a shape lies in the page, the angles actually drawn.
+
+**What the check cannot verify.** It confirms a structure is self-consistent, not that it is the one the book would print. So these choices are mine, from standard teaching, and worth a teacher's look:
+
+- **Expanded octets for S in SO₂ and SO₄²⁻.** They are drawn with S=O double bonds, as ISC textbooks commonly do. Some books draw dative bonds instead.
+- **Complex geometry.** VSEPR does not predict the shape of a complex. The check confirms that coordination number and hybridisation agree, but that [Ni(CN)₄]²⁻ is square planar and [NiCl₄]²⁻ tetrahedral, and which complexes are low spin, come from the standard results and not from a calculation.
+- **Carbon free radicals** are drawn planar, sp², with the odd electron in a p orbital, so it is not counted as a domain there. In NO₂, the odd electron is counted as one.
+- **R groups and labelled groups** such as CH₃ count their own electrons from a table, and their insides are not drawn.
+- **Bond angles** other than linear, 120° and 90° are not measured, since shape diagrams show them in perspective.
+
+**Left out on purpose.** The syllabus map has no p-block unit, so oxoacids of phosphorus and sulphur, interhalogens as a topic, and xenon compounds are not drawn. ClF₃, BrF₅ and the iodine ions appear only as VSEPR examples of their shapes, since the book's VSEPR entries name them. XeF₂ and XeF₄ are named in those entries but are not drawn.
+
+| Id | Name | Formula | Valence electrons | Overall charge | Octets | Shape | Hybridisation | Result |
+|---|---|---|---:|---:|---|---|---|---|
+| water | Water | `H2O` | 8 | 0 | octet | bent | sp3 | Pass |
+| ammonia | Ammonia | `NH3` | 8 | 0 | octet | trigonal pyramidal | sp3 | Pass |
+| methane | Methane | `CH4` | 8 | 0 | octet | tetrahedral | sp3 | Pass |
+| hf | Hydrogen fluoride | `HF` | 8 | 0 | octet | - | - | Pass |
+| co2 | Carbon dioxide | `CO2` | 16 | 0 | octet | linear | sp | Pass |
+| hcn | Hydrogen cyanide | `HCN` | 10 | 0 | octet | linear | sp | Pass |
+| n2 | Nitrogen | `N2` | 10 | 0 | octet | - | - | Pass |
+| becl2 | Beryllium chloride | `BeCl2` | 16 | 0 | deficient | linear | sp | Pass |
+| bf3 | Boron trifluoride | `BF3` | 24 | 0 | deficient | trigonal planar | sp2 | Pass |
+| alcl3 | Aluminium chloride | `AlCl3` | 24 | 0 | deficient | trigonal planar | sp2 | Pass |
+| pcl5 | Phosphorus pentachloride | `PCl5` | 40 | 0 | expanded | trigonal bipyramidal | sp3d | Pass |
+| sf4 | Sulphur tetrafluoride | `SF4` | 34 | 0 | expanded | see-saw | sp3d | Pass |
+| clf3 | Chlorine trifluoride | `ClF3` | 28 | 0 | expanded | T-shaped | sp3d | Pass |
+| sf6 | Sulphur hexafluoride | `SF6` | 48 | 0 | expanded | octahedral | sp3d2 | Pass |
+| brf5 | Bromine pentafluoride | `BrF5` | 42 | 0 | expanded | square pyramidal | sp3d2 | Pass |
+| i3 | Triiodide ion | `I3-` | 22 | -1 | expanded | linear | sp3d | Pass |
+| icl2 | Dichloroiodate(I) ion | `ICl2-` | 22 | -1 | expanded | linear | sp3d | Pass |
+| icl4 | Tetrachloroiodate(III) ion | `ICl4-` | 36 | -1 | expanded | square planar | sp3d2 | Pass |
+| so2 | Sulphur dioxide | `SO2` | 18 | 0 | expanded | bent | sp2 | Pass |
+| sulphate | Sulphate ion | `SO42-` | 32 | -2 | expanded | tetrahedral | sp3 | Pass |
+| nitrite | Nitrite ion | `NO2-` | 18 | -1 | octet | bent | sp2 | Pass |
+| no | Nitric oxide | `NO` | 11 | 0 | odd | - | - | Pass |
+| no2 | Nitrogen dioxide | `NO2` | 17 | 0 | odd | bent | sp2 | Pass |
+| ammonium | Ammonium ion | `NH4+` | 8 | 1 | octet | tetrahedral | sp3 | Pass |
+| ammonium-dative | Ammonium ion, with its coordinate bond | `NH4+` | 8 | 1 | octet | tetrahedral | sp3 | Pass |
+| hydronium | Hydronium ion | `H3O+` | 8 | 1 | octet | trigonal pyramidal | sp3 | Pass |
+| hydroxide | Hydroxide ion | `OH-` | 8 | -1 | octet | - | - | Pass |
+| chloride | Chloride ion | `Cl-` | 8 | -1 | octet | - | - | Pass |
+| cl-radical | Chlorine atom | `Cl` | 7 | 0 | odd | - | - | Pass |
+| nh3-bf3 | Ammonia-boron trifluoride adduct | `NH3BF3` | 32 | 0 | octet | - | - | Pass |
+| ozone-dative | Ozone, with its coordinate bond | `O3` | 18 | 0 | octet | bent | sp2 | Pass |
+| hno3 | Nitric acid | `HNO3` | 24 | 0 | octet | trigonal planar | sp2 | Pass |
+| methyl-cation | Methyl carbocation | `CH3+` | 6 | 1 | deficient | trigonal planar | sp2 | Pass |
+| methyl-radical | Methyl free radical | `CH3` | 7 | 0 | odd | trigonal planar | sp2 | Pass |
+| methyl-anion | Methyl carbanion | `CH3-` | 8 | -1 | octet | trigonal pyramidal | sp3 | Pass |
+| tert-butyl-cation | tert-Butyl carbocation | `C4H9+` | 24 | 1 | deficient | trigonal planar | sp2 | Pass |
+| isopropyl-cation | Isopropyl carbocation | `C3H7+` | 18 | 1 | deficient | trigonal planar | sp2 | Pass |
+| ethyl-cation | Ethyl carbocation | `C2H5+` | 12 | 1 | deficient | trigonal planar | sp2 | Pass |
+| tert-butyl-radical | tert-Butyl free radical | `C4H9` | 25 | 0 | odd | trigonal planar | sp2 | Pass |
+| nitronium | Nitronium ion | `NO2+` | 16 | 1 | octet | linear | sp | Pass |
+| cyanide | Cyanide ion | `CN-` | 10 | -1 | octet | - | - | Pass |
+| methylamine | Methylamine | `CH5N` | 14 | 0 | octet | trigonal pyramidal | sp3 | Pass |
+| dimethylamine | Dimethylamine | `C2H7N` | 20 | 0 | octet | trigonal pyramidal | sp3 | Pass |
+| trimethylamine | Trimethylamine | `C3H9N` | 26 | 0 | octet | trigonal pyramidal | sp3 | Pass |
+| aniline-pair | Aniline | `C6H7N` | 36 | 0 | octet | trigonal pyramidal | sp3 | Pass |
+| methanol | Methanol | `CH4O` | 14 | 0 | octet | bent | sp3 | Pass |
+| ethanol | Ethanol | `C2H6O` | 20 | 0 | octet | bent | sp3 | Pass |
+| dimethyl-ether | Methoxymethane | `C2H6O` | 20 | 0 | octet | bent | sp3 | Pass |
+| fg-alcohol | Alcohol | `RHO` | 8 | 0 | octet | bent | - | Pass |
+| fg-ether | Ether | `R2O` | 8 | 0 | octet | bent | - | Pass |
+| fg-aldehyde | Aldehyde | `RCHO` | 12 | 0 | octet | trigonal planar | - | Pass |
+| fg-ketone | Ketone | `R2CO` | 12 | 0 | octet | trigonal planar | - | Pass |
+| fg-acid | Carboxylic acid | `RCOOH` | 18 | 0 | octet | trigonal planar | - | Pass |
+| fg-amine | Primary amine | `RH2N` | 8 | 0 | octet | trigonal pyramidal | - | Pass |
+| fg-nitrile | Nitrile | `RCN` | 10 | 0 | octet | linear | - | Pass |
+| fg-nitro | Nitro compound | `RNO2` | 18 | 0 | octet | trigonal planar | - | Pass |
+| ligand-ammonia | Ammonia, as a ligand | `NH3` | 8 | 0 | octet | trigonal pyramidal | - | Pass |
+| ligand-water | Water, as a ligand | `H2O` | 8 | 0 | octet | bent | - | Pass |
+| ligand-co | Carbon monoxide, as a ligand | `CO` | 10 | 0 | octet | - | - | Pass |
+| ligand-en | Ethane-1,2-diamine | `C2H8N2` | 26 | 0 | octet | - | - | Pass |
+| ligand-ox | Oxalate ion | `C2O42-` | 34 | -2 | octet | - | - | Pass |
+| ligand-scn | Thiocyanate ion | `SCN-` | 16 | -1 | octet | - | - | Pass |
+| co-ammine | Hexaamminecobalt(III) ion | `[Co(NH3)6]3+` | 54 | 3 | octet | octahedral | d2sp3 | Pass |
+| fe-cyanide | Hexacyanidoferrate(II) ion | `[Fe(CN)6]4-` | 66 | -4 | octet | octahedral | d2sp3 | Pass |
+| fe-aqua | Hexaaquairon(II) ion | `[Fe(H2O)6]2+` | 54 | 2 | octet | octahedral | sp3d2 | Pass |
+| ni-cyanide | Tetracyanidonickelate(II) ion | `[Ni(CN)4]2-` | 48 | -2 | octet | square planar | dsp2 | Pass |
+| ni-chloride | Tetrachloridonickelate(II) ion | `[NiCl4]2-` | 40 | -2 | octet | tetrahedral | sp3 | Pass |
+| cu-ammine | Tetraamminecopper(II) ion | `[Cu(NH3)4]2+` | 41 | 2 | octet | square planar | dsp2 | Pass |
+| zn-ammine | Tetraamminezinc(II) ion | `[Zn(NH3)4]2+` | 42 | 2 | octet | tetrahedral | sp3 | Pass |
+| ag-ammine | Diamminesilver(I) ion | `[Ag(NH3)2]+` | 26 | 1 | octet | linear | sp | Pass |
+| cisplatin | cis-Diamminedichloridoplatinum(II) | `[Pt(NH3)2Cl2]` | 40 | 0 | octet | square planar | dsp2 | Pass |
+| transplatin | trans-Diamminedichloridoplatinum(II) | `[Pt(NH3)2Cl2]` | 40 | 0 | octet | square planar | dsp2 | Pass |
+| hf-chain | Hydrogen bonds in hydrogen fluoride | `H3F3` | 24 | 0 | octet | - | - | Pass |
+| water-dimer | A hydrogen bond between water molecules | `H4O2` | 16 | 0 | octet | - | - | Pass |
+| ethanol-water | A hydrogen bond between ethanol and water | `C2H8O2` | 28 | 0 | octet | - | - | Pass |
+| ozone-1 | Ozone | `O3` | 18 | 0 | octet | bent | sp2 | Pass |
+| ozone-2 | Ozone | `O3` | 18 | 0 | octet | bent | sp2 | Pass |
+| carbonate-1 | Carbonate ion | `CO32-` | 24 | -2 | octet | trigonal planar | sp2 | Pass |
+| carbonate-2 | Carbonate ion | `CO32-` | 24 | -2 | octet | trigonal planar | sp2 | Pass |
+| carbonate-3 | Carbonate ion | `CO32-` | 24 | -2 | octet | trigonal planar | sp2 | Pass |
+| nitrate-1 | Nitrate ion | `NO3-` | 24 | -1 | octet | trigonal planar | sp2 | Pass |
+| nitrate-2 | Nitrate ion | `NO3-` | 24 | -1 | octet | trigonal planar | sp2 | Pass |
+| nitrate-3 | Nitrate ion | `NO3-` | 24 | -1 | octet | trigonal planar | sp2 | Pass |
+| co2-1 | Carbon dioxide | `CO2` | 16 | 0 | octet | linear | sp | Pass |
+| co2-2 | Carbon dioxide | `CO2` | 16 | 0 | octet | linear | sp | Pass |
+| co2-3 | Carbon dioxide | `CO2` | 16 | 0 | octet | linear | sp | Pass |
+| benzene-1 | Benzene | `C6H6` | 30 | 0 | octet | - | - | Pass |
+| benzene-2 | Benzene | `C6H6` | 30 | 0 | octet | - | - | Pass |
+| allyl-1 | Allyl carbocation | `C3H5+` | 16 | 1 | octet | - | - | Pass |
+| allyl-2 | Allyl carbocation | `C3H5+` | 16 | 1 | octet | - | - | Pass |
+| acetate-1 | Ethanoate ion | `C2H3O2-` | 24 | -1 | octet | trigonal planar | sp2 | Pass |
+| acetate-2 | Ethanoate ion | `C2H3O2-` | 24 | -1 | octet | trigonal planar | sp2 | Pass |
+<!-- lewis-check-end -->

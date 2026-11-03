@@ -600,6 +600,37 @@ kbd {
   height: auto;
 }
 
+.lewis {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  color: var(--ink);
+}
+
+.lewis-atom,
+.lewis-charge {
+  font-family: var(--font-body);
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+.lewis-atom {
+  font-size: 15px;
+}
+
+.lewis-charge {
+  font-size: 11px;
+}
+
+/* The lone pair a structure is about. */
+.lewis-point circle {
+  fill: var(--accent);
+}
+
+.lewis-forms {
+  align-items: center;
+}
+
 .molecule-button {
   display: block;
   max-width: 100%;

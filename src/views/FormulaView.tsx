@@ -1,3 +1,4 @@
+import { LazyLewis } from '../components/LazyLewis';
 import { useEffect } from 'react';
 import { Calculator, Copy, ListChecks, Star } from 'lucide-react';
 import { isRemovedId } from '../data/aliases';
@@ -61,6 +62,7 @@ export default function FormulaView({ id }: { id: string }) {
           <Math latex={f.latex} />
         </div>
         {f.structure && <EntryStructures structure={f.structure} scale={1.15} />}
+        {f.lewis && <LazyLewis ids={f.lewis} scale={1.1} />}
         {f.note && <p className="mt-3 max-w-[65ch]">{f.note}</p>}
         {f.aka && f.aka.length > 0 && <p className="mt-2 text-ink-2">Also called {f.aka.join(', ')}.</p>}
         {f.shared && f.shared.placements.length > 1 && (

@@ -1,7 +1,9 @@
 // Original questions in the style of ISC Chemistry Class XII. Places are [unit, topic, marks, difficulty].
 import { bank, type BankDef } from '../define';
+import { amineQuestions, complexQuestions } from '../lewis-questions';
 
-const { mcq, ar, theory, num } = bank('chemistry', 'XII');
+const chemistryXII = bank('chemistry', 'XII');
+const { mcq, ar, theory, num } = chemistryXII;
 
 const questions: BankDef[] = [
   // One mark
@@ -152,4 +154,4 @@ const questions: BankDef[] = [
   theory('reaction', [9, 'a', 5, 2], 'Write the equations for (a) reducing nitrobenzene to aniline, (b) the carbylamine reaction, (c) the Hofmann bromamide reaction of ethanamide, (d) bromination of aniline, and (e) the coupling of benzenediazonium chloride with phenol.', ['(a) C₆H₅NO₂ + 6[H] → C₆H₅NH₂ + 2H₂O, with Sn/HCl.', '(b) C₆H₅NH₂ + CHCl₃ + 3KOH → C₆H₅NC + 3KCl + 3H₂O.', '(c) CH₃CONH₂ + Br₂ + 4NaOH → CH₃NH₂ + Na₂CO₃ + 2NaBr + 2H₂O.', '(d) Aniline with bromine water gives a white precipitate of 2,4,6-tribromoaniline.', '(e) It gives the orange dye 4-hydroxyazobenzene.'], { structure: { list: ['aniline', 'tribromoaniline'] } }),
 ];
 
-export default questions;
+export default [...questions, ...complexQuestions(chemistryXII), ...amineQuestions(chemistryXII)];
