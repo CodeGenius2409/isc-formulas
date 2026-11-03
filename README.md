@@ -4,7 +4,7 @@ Every ISC 2028 formula for Physics, Chemistry, Mathematics and Computer Science,
 problem solver, practice with spaced repetition, and simulators. It installs as an app
 and works with no network after the first visit.
 
-7,828 formulas mapped to the official 2028 syllabus, with Computer Science written as Java and verified bond-line structures for organic chemistry, 448 solvable for any variable, 41 simulators including a step-through Java
+7,828 formulas mapped to the official 2028 syllabus, with Computer Science written as Java, verified bond-line structures for organic chemistry, 530 exam-style questions, timed mock papers, 448 solvable for any variable, 41 simulators including a step-through Java
 tracer.
 
 ## Run it
@@ -38,14 +38,13 @@ time you push to `master`.
 3. From this folder, replacing `USERNAME` and `REPO`:
 
        git checkout master
-       git merge rebuild
        git remote add origin https://github.com/USERNAME/REPO.git
        git push -u origin master
 
 4. Watch the Actions tab until it finishes, in a few minutes. The site is then at
    `https://USERNAME.github.io/REPO/`.
 
-To publish a change, commit it and run `git push`. People who already have the site see the
+To publish a change, merge it into `master` and run `git push`. People who already have the site see the
 "A new version of the book is ready" prompt.
 
 **Vercel.** Import the repository. Vercel detects Vite, so the defaults are right: build
@@ -65,6 +64,9 @@ by default.
     npm run e2e           # browser tests, using Microsoft Edge
     npm run lighthouse    # writes reports/lighthouse.md
     npm run sizes         # writes reports/bundle-sizes.md
+
+`npm run build` also runs `scripts/check-private.mjs`, which fails if git tracks anything in
+`papers/` or `data-private/`, or if text from the papers has reached `dist/`.
 
 Run `npm run build` before the last three. `npm run e2e` uses the Edge already on your
 computer, through `channel: 'msedge'` in `playwright.config.ts`, and takes about six
@@ -103,6 +105,7 @@ doesn't need this.
 | `src/solver/` | The registry, symbolic rearranging and the dimension checker |
 | `src/search/` | Search, in a web worker, and quantity search |
 | `src/practice/` | Question generation, spaced repetition and the mistakes log |
+| `src/practice/bank/` | The exam-style question bank, marking and mock papers |
 | `src/sims/` | The simulators |
 | `src/java/` | The Java lexer, parser, interpreter and samples |
 | `src/views/`, `src/components/` | Pages and shared interface |

@@ -59,6 +59,11 @@ Java uses only ink colours and weight: keywords `--accent` and semibold, primiti
 `--ink` and semibold, strings `--good`, numbers and literals `--warn`, comments `--ink-3`
 in italic, operators `--ink-2`. Subject colours stay out of it. The classes are `.tok-*`.
 
+Questions in practice and mock papers use the same tokens. A code block sits on
+`--paper-2`, and a generated circuit is drawn in `--ink` with `currentColor`, like the
+structures. The right and wrong states of an option are `--good` and `--bad` with words, and a
+chosen option is a heavier `--ink` border. A mock paper's clock sits in a plain bar on `--paper`.
+
 Blackboard is designed separately, not inverted: slate green rather than black,
 chalk white rather than grey, and subjects in coloured chalk. Don't derive one theme
 from the other.

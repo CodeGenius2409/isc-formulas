@@ -21,6 +21,7 @@ const ROUTES: [string, string][] = [
   ['find', 'find?q=velocity'],
   ['saved', 'saved'],
   ['progress', 'practice'],
+  ['mock-paper', 'paper'],
   ['tools', 'tools'],
   ['projectile', 'tools/projectile'],
   ['circuits', 'tools/circuits'],

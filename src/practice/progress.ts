@@ -11,6 +11,21 @@ const SRS_KEY = 'isc-srs';
 const MISTAKES_KEY = 'isc-mistakes';
 const STATS_KEY = 'isc-stats';
 const MISTAKE_LIMIT = 1500;
+const PAPERS_KEY = 'isc-paper-history';
+
+/** A saved mock paper result. The paper module owns its full shape. */
+interface PaperResultLike {
+  date: string;
+}
+
+/** The paper module loads with its view, so an import reaches it through this. */
+export const papersImported = {
+  notify(all: PaperResultLike[]): void {
+    writeJson(PAPERS_KEY, all);
+    for (const listener of papersImported.listeners) listener(all);
+  },
+  listeners: new Set<(all: PaperResultLike[]) => void>(),
+};
 
 export interface Mistake {
   id: string;
@@ -116,6 +131,8 @@ export interface Backup {
   srs: Record<string, SrsItem>;
   mistakes: Mistake[];
   stats: Stats;
+  /** Mock paper results. Backups made before mock papers don't have this. */
+  papers?: PaperResultLike[];
 }
 
 export function exportBackup(): Backup {
@@ -128,6 +145,7 @@ export function exportBackup(): Backup {
     srs: srsStore.get(),
     mistakes: mistakesStore.get(),
     stats: statsStore.get(),
+    papers: readJson<PaperResultLike[]>(PAPERS_KEY, []),
   };
 }
 
@@ -189,6 +207,12 @@ export function importBackup(backup: Backup): { items: number; mistakes: number;
       for (const [day, n] of Object.entries(current.byDay)) byDay[day] = Math.max(byDay[day] ?? 0, n);
       return { answered: Math.max(current.answered, backup.stats.answered ?? 0), correct: Math.max(current.correct, backup.stats.correct ?? 0), byDay };
     });
+  }
+
+  if (Array.isArray(backup.papers) && backup.papers.length) {
+    const mine = readJson<PaperResultLike[]>(PAPERS_KEY, []);
+    const seen = new Set(mine.map((p) => p.date));
+    papersImported.notify([...mine, ...backup.papers.filter((p) => isObject(p) && !seen.has(p.date))].sort((a, b) => b.date.localeCompare(a.date)));
   }
 
   return { items, mistakes: mistakesStore.get().length - beforeMistakes, favourites: favouritesStore.get().length - beforeFavourites };

@@ -73,15 +73,18 @@ export async function findFormula(rawId: string): Promise<Formula | null> {
   const location = sharedEntry
     ? { subject: sharedEntry.placements[0].subject, level: sharedEntry.placements[0].classLevel }
     : locateId(id);
-  if (!location) return null;
-  const units = await loadUnits(location.subject, location.level);
-  for (const unit of units) {
-    for (const sub of unit.subtopics) {
-      const hit = sub.formulas.find((f) => f.id === id);
-      if (hit) return hit;
+  if (location) {
+    const units = await loadUnits(location.subject, location.level);
+    for (const unit of units) {
+      for (const sub of unit.subtopics) {
+        const hit = sub.formulas.find((f) => f.id === id);
+        if (hit) return hit;
+      }
     }
   }
-  return null;
+  // An id says where its formula started. Mapping to the syllabus can move one to another subject.
+  if (!/^[a-z]+-xi{1,2}-/.test(id)) return null;
+  return (await loadAllFormulas()).find((f) => f.id === id) ?? null;
 }
 
 let allPromise: Promise<Formula[]> | null = null;

@@ -13,6 +13,8 @@ import type { ResolvedEntry, ResolvedVar } from '../solver/types';
 import { dimOfUnit, formatNumber, parseInput } from '../solver/units';
 import { unitTex } from '../solver/tex';
 import { unitLabel } from '../solver/unit-label';
+import { answerSummary } from './bank/mark';
+import type { BankQuestion } from './bank/types';
 
 export type Rng = () => number;
 
@@ -94,7 +96,7 @@ export interface RecallQuestion {
   latex: string;
 }
 
-export type Question = NumericQuestion | McqQuestion | RecallQuestion;
+export type Question = NumericQuestion | McqQuestion | RecallQuestion | BankQuestion;
 
 const DEG = Math.PI / 180;
 
@@ -118,7 +120,7 @@ function rawOf(v: ResolvedVar, value: number): { raw: string; unit: string } {
 
 const WRONG_UNITS = ['m', 's', 'kg', 'N', 'J', 'W', 'Pa', 'A', 'V', 'mol', 'K', 'm/s', 'm/s^2', 'Hz', 'C'];
 
-function unitChoicesFor(v: ResolvedVar, unit: string, rng: Rng): string[] {
+export function pickUnitChoices(v: ResolvedVar, unit: string, rng: Rng): string[] {
   if (!unit) return [];
   const right = new Set([unit, v.unit, ...v.alt]);
   const expected = parseDim(v.dim);
@@ -159,7 +161,7 @@ export function numericQuestion(entry: ResolvedEntry, rng: Rng, chooseUnknown = 
       givens,
       answers: valid.map((r) => r.shown),
       unit,
-      unitChoices: unitChoicesFor(unknownVar, unit, rng),
+      unitChoices: pickUnitChoices(unknownVar, unit, rng),
       tolerance: 0.02,
       steps: outcome.steps,
       answerText: valid.map((r) => `${r.text}${unit === 'deg' ? '°' : unit ? ` ${unitLabel(unit)}` : ''}`).join(' or '),
@@ -388,12 +390,14 @@ export function structureQuestion(formula: Formula, compounds: Compounds, rng: R
 export function questionSummary(question: Question): string {
   if (question.kind === 'numeric') return `Find ${question.unknownName}, given ${question.givens.map((g) => `${g.name.replace(' (take this value)', '')} = ${g.raw}${g.unit === 'deg' ? '°' : g.unit ? ` ${unitLabel(g.unit)}` : ''}`).join(', ')}`;
   if (question.kind === 'mcq') return question.prompt;
+  if (question.kind === 'bank') return question.item.text;
   return `Recall: ${question.name}`;
 }
 
 export function correctSummary(question: Question): { text?: string; latex?: string } {
   if (question.kind === 'numeric') return { text: question.answerText };
   if (question.kind === 'recall') return { latex: question.latex };
+  if (question.kind === 'bank') return { text: answerSummary(question.item) };
   const right = question.options.find((o) => o.correct)!;
   return right.latex ? { latex: right.latex } : { text: right.text };
 }

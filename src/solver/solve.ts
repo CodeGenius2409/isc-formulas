@@ -98,6 +98,8 @@ function isClose(a: number, b: number): boolean {
 export interface ChosenUnits {
   /** Show the result in this unit, instead of the default. */
   resultUnit?: string;
+  /** Show the value in full rather than to measured precision, as mathematics expects: 2048, not 2050. */
+  exact?: boolean;
 }
 
 export function solve(entry: ResolvedEntry, unknown: string, inputs: Record<string, SolveInput>, options: ChosenUnits = {}): SolveOutcome {
@@ -191,7 +193,7 @@ export function solve(entry: ResolvedEntry, unknown: string, inputs: Record<stri
     candidates.push(...numericRoots(sub(eq.lhs, eq.rhs), unknown, env, range));
   }
 
-  const roots = buildRoots(eq, target, candidates, env, sf, options.resultUnit);
+  const roots = buildRoots(eq, target, candidates, env, sf, options.resultUnit, options.exact);
   const valid = roots.filter((r) => !r.rejected);
   const displayUnit = roots[0]?.unit ?? '';
 
@@ -211,7 +213,7 @@ export function solve(entry: ResolvedEntry, unknown: string, inputs: Record<stri
     steps.push({
       label: valid.length > 1 ? 'Answers' : 'Answer',
       math: valid.map(resultLine),
-      note: `To ${sf} significant figures.`,
+      note: options.exact ? undefined : `To ${sf} significant figures.`,
     });
   }
   for (const r of roots.filter((root) => root.rejected)) {
@@ -239,7 +241,7 @@ function noSolutionMessage(entry: ResolvedEntry, env: Record<string, number>, ca
   return 'These values have no real solution, for example a square root of a negative number or a sine above 1.';
 }
 
-function buildRoots(eq: Equation, target: ResolvedVar, candidates: number[], env: Record<string, number>, sf: number, resultUnit: string | undefined): Root[] {
+function buildRoots(eq: Equation, target: ResolvedVar, candidates: number[], env: Record<string, number>, sf: number, resultUnit: string | undefined, exact = false): Root[] {
   const roots: Root[] = [];
   const residual = sub(eq.lhs, eq.rhs);
   for (const value of candidates) {
@@ -259,7 +261,8 @@ function buildRoots(eq: Equation, target: ResolvedVar, candidates: number[], env
 
     const unit = resultUnit ?? target.show ?? target.unit;
     const shown = convertResult(value, target.unit, unit);
-    const formatted = target.integer && Math.abs(value - Math.round(value)) < 1e-9 ? { text: String(Math.round(value)), tex: String(Math.round(value)) } : formatNumber(shown, sf);
+    const whole = String(Number(shown.toPrecision(6)));
+    const formatted = target.integer && Math.abs(value - Math.round(value)) < 1e-9 ? { text: String(Math.round(value)), tex: String(Math.round(value)) } : exact && Math.abs(shown) < 1e6 ? { text: whole, tex: whole } : formatNumber(shown, sf);
     const problem = checkRange(target, value);
     roots.push({ value, shown, unit, ...formatted, rejected: problem ? `${problem.charAt(0).toUpperCase()}${problem.slice(1)}.` : undefined });
   }

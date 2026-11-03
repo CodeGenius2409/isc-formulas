@@ -24,7 +24,7 @@ export function ReviewQueue() {
       {due.length > 0 ? (
         <>
           <p className="mt-2 text-step-1">
-            <span className="num font-bold">{due.length}</span> {due.length === 1 ? 'formula is' : 'formulas are'} due.
+            <span className="num font-bold">{due.length}</span> {due.length === 1 ? 'item is' : 'items are'} due.
           </p>
           {state.status === 'ready' && (
             <ul className="m-0 mt-1 list-none p-0">
@@ -45,7 +45,7 @@ export function ReviewQueue() {
       ) : (
         <>
           <p className="empty">
-            {seen ? `Nothing due today. ${seen} ${seen === 1 ? 'formula is' : 'formulas are'} scheduled for later.` : 'Nothing to review yet. Practise any formula and it joins this queue, returning just before you would forget it.'}
+            {seen ? `Nothing due today. ${seen} ${seen === 1 ? 'item is' : 'items are'} scheduled for later.` : 'Nothing to review yet. Practise anything and it joins this queue, returning just before you would forget it.'}
           </p>
           {!seen && (
             <button type="button" className="btn btn-line mt-2" onClick={() => openWork('practice')}>

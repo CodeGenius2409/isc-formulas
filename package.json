@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "vite",
     "data": "node scripts/migrate-data.mjs && node scripts/apply-syllabus.mjs && node scripts/apply-cs-code.mjs && node scripts/apply-structures.mjs",
-    "build": "tsc --noEmit && vite build",
+    "build": "tsc --noEmit && vite build && node scripts/check-private.mjs",
     "preview": "vite preview --port 4173 --strictPort",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",

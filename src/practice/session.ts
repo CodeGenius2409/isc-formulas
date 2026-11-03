@@ -5,12 +5,14 @@ import type { ClassLevel, Formula, SubjectId } from '../data/types';
 import { createStore } from '../lib/store';
 import { getEntry } from '../solver/registry';
 import { mistakesStore, srsStore, today } from './progress';
-import { conceptQuestion, numericQuestion, seededRng, type Question, type Rng, structureQuestion } from './questions';
 import { loadStructures } from '../data/structures';
+import { bankQuestion, loadBank, questionForId } from './bank';
+import { isBankId } from './bank/define';
+import { conceptQuestion, numericQuestion, seededRng, type Question, type Rng, structureQuestion } from './questions';
+import { reviewOrder } from './srs';
 
 /** How often a Chemistry entry with a structure is asked by reading the structure. */
 const STRUCTURE_SHARE = 0.6;
-import { reviewOrder } from './srs';
 
 export interface SessionItem {
   question: Question;
@@ -28,6 +30,8 @@ export interface Session {
 export const sessionStore = createStore<Session | null>(null);
 
 const SESSION_SIZE = 10;
+/** Of a unit's session, how many come from the exam-style bank when it has enough. */
+const EXAM_SHARE = 8;
 
 function freshRng(): Rng {
   return seededRng(Math.floor(Math.random() * 2 ** 31));
@@ -91,9 +95,17 @@ function begin(title: string, items: SessionItem[]): Session | null {
 export async function startReview(limit = 20): Promise<Session | null> {
   const due = reviewOrder(Object.values(srsStore.get()), today()).slice(0, limit);
   const rng = freshRng();
-  const formulas = (await Promise.all(due.map((d) => findFormula(d.id)))).filter((f): f is Formula => f !== null);
-  const items = await Promise.all(formulas.map(async (f) => ({ question: await questionFor(f, rng) })));
-  return begin("Today's review", items);
+  const asked = await Promise.all(
+    due.map(async (d) => {
+      if (isBankId(d.id)) return questionForId(d.id, rng);
+      const formula = await findFormula(d.id);
+      return formula ? questionFor(formula, rng) : null;
+    }),
+  );
+  // A question reworded or taken out of the bank has a new id, so its old schedule is finished with.
+  const gone = due.filter((d, i) => !asked[i] && isBankId(d.id)).map((d) => d.id);
+  if (gone.length) srsStore.set((all) => Object.fromEntries(Object.entries(all).filter(([id]) => !gone.includes(id))));
+  return begin("Today's review", asked.flatMap((question) => (question ? [{ question }] : [])));
 }
 
 export async function startUnit(subject: SubjectId, level: ClassLevel, unitIndex: number, subtopicIndex?: number): Promise<Session | null> {
@@ -102,9 +114,18 @@ export async function startUnit(subject: SubjectId, level: ClassLevel, unitIndex
   if (!unit) return null;
   const list = subtopicIndex != null ? (unit.subtopics[subtopicIndex]?.formulas ?? []) : unit.subtopics.flatMap((s) => s.formulas);
   const rng = freshRng();
-  const chosen = shuffled(list, rng).slice(0, SESSION_SIZE);
+  // A whole unit is exam-style questions first. A section has no questions of its own, so it stays with formulas.
+  const exam: SessionItem[] = [];
+  if (subtopicIndex == null) {
+    const bank = await loadBank(subject, level);
+    const seen = srsStore.get();
+    const here = bank.defs.filter((d) => d.unit === Number(unit.number));
+    const ordered = [...shuffled(here.filter((d) => !seen[d.id]), rng), ...shuffled(here.filter((d) => seen[d.id]), rng)];
+    exam.push(...ordered.slice(0, EXAM_SHARE).map((d) => ({ question: bankQuestion(d, bank, rng) })));
+  }
+  const chosen = shuffled(list, rng).slice(0, SESSION_SIZE - exam.length);
   const items = await Promise.all(chosen.map(async (f) => ({ question: await questionFor(f, rng) })));
-  return begin(subtopicIndex != null ? unit.subtopics[subtopicIndex].name : unit.name.replace(/^\d+\.\s*/, ''), items);
+  return begin(subtopicIndex != null ? unit.subtopics[subtopicIndex].name : unit.name.replace(/^\d+\.\s*/, ''), [...exam, ...items]);
 }
 
 export async function startFormula(rawId: string): Promise<Session | null> {

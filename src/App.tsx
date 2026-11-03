@@ -24,6 +24,7 @@ const FormulaView = lazy(() => import('./views/FormulaView'));
 const Saved = lazy(() => import('./views/Saved'));
 const Settings = lazy(() => import('./views/Settings'));
 const ProgressView = lazy(() => import('./views/ProgressView'));
+const PaperView = lazy(() => import('./views/PaperView'));
 const ToolsView = lazy(() => import('./views/ToolsView'));
 const SearchView = lazy(() => import('./views/SearchView'));
 const FindPalette = lazy(() => import('./components/FindPalette').then((m) => ({ default: m.FindPalette })));
@@ -80,6 +81,8 @@ function View({ route, place, scrollRef }: { route: Route; place: BookPlace; scr
       return <Settings />;
     case 'practice':
       return <ProgressView />;
+    case 'paper':
+      return <PaperView />;
     case 'tools':
       return <ToolsView toolId={a ?? null} />;
     case 'find':

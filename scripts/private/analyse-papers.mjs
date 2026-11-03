@@ -29,9 +29,10 @@ const out = { papers: [], subjects: {} };
 for (const subject of SUBJECTS) out.subjects[subject] = { types: {}, years: {}, commands: {}, marks: {}, papersRead: 0, marksTotals: {}, sections: {}, qPerPaper: [] };
 
 for (const paper of index) {
-  const key = String(paper.name ?? path.basename(paper.file)).replace(/\.pdf$/i, '');
-  const file = byName.get(key) ?? textFiles.find((f) => f.includes(key));
-  const text = file ? fs.readFileSync(file, 'utf8') : '';
+  const stem = path.basename(paper.target ?? '').replace(/\.txt$/, '');
+  const candidates = [paper.ocr, paper.target, ...textFiles.filter((f) => path.basename(f).includes(stem) && stem)].filter(Boolean);
+  const texts = candidates.filter((f) => typeof f === 'string' && fs.existsSync(f)).map((f) => fs.readFileSync(f, 'utf8'));
+  const text = texts.sort((a, b) => b.length - a.length)[0] ?? '';
   const lower = text.toLowerCase();
   const s = out.subjects[paper.subject];
   const readable = text.trim().length > 400;

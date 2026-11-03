@@ -1,5 +1,5 @@
 import { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState, type FormEvent } from 'react';
-import { CircleCheck, CircleX, ListChecks, Lightbulb, RotateCcw, Sparkles } from 'lucide-react';
+import { CircleCheck, CircleX, FileText, ListChecks, Lightbulb, RotateCcw, Sparkles } from 'lucide-react';
 import { findFormula, getSubject, unitTitle } from '../../data/book';
 import type { Formula } from '../../data/types';
 import { useAsync } from '../../lib/hooks';
@@ -13,6 +13,7 @@ import { QUALITY_CORRECT, QUALITY_WRONG, reviewOrder, type Quality } from '../..
 import { endSession, nextQuestion, noteResult, sessionStore, startMistakes, startNew, startReview, startUnit } from '../../practice/session';
 import { practiceBusyStore } from '../../practice/session-link';
 import { unitLabel } from '../../solver/unit-label';
+import { BankCard } from '../bank/BankCard';
 import { Math as MathTex } from '../Math';
 import { EntryStructures, Molecule } from '../Structures';
 import { useStructures } from '../../data/structures';
@@ -41,7 +42,11 @@ export default function PracticePane() {
           End session
         </button>
       </div>
-      <QuestionCard key={`${session.index}-${item.question.formulaId}`} question={item.question} mistakeId={item.mistakeId} />
+      {item.question.kind === 'bank' ? (
+        <BankCard key={`${session.index}-${item.question.formulaId}`} question={item.question} mistakeId={item.mistakeId} />
+      ) : (
+        <QuestionCard key={`${session.index}-${item.question.formulaId}`} question={item.question} mistakeId={item.mistakeId} />
+      )}
     </div>
   );
 }
@@ -67,7 +72,7 @@ function PracticeHome() {
   return (
     <div>
       <h2 className="work-title">Practice</h2>
-      <p className="work-hint">Numeric problems for formulas that can be calculated, and multiple choice and recall for the rest. Missed formulas come back sooner.</p>
+      <p className="work-hint">Questions in the style of the board papers, with fresh numbers each time and marking schemes for written answers. Whatever you miss comes back sooner.</p>
       <div className="mt-3 flex flex-col gap-2">
         <button type="button" className={due ? 'btn btn-solid' : 'btn btn-line'} disabled={!due} onClick={() => void run(() => startReview(), 'Nothing is due right now.')}>
           <ListChecks size={16} aria-hidden /> {due ? `Review ${due} due today` : 'Nothing due today'}
@@ -77,6 +82,9 @@ function PracticeHome() {
             <Sparkles size={16} aria-hidden /> Practise this unit
           </button>
         )}
+        <a className="btn btn-line" href={href('paper')}>
+          <FileText size={16} aria-hidden /> Build a mock paper
+        </a>
         <button type="button" className="btn btn-line" disabled={!open} onClick={() => void run(() => startMistakes(), 'No mistakes to retry.')}>
           <RotateCcw size={16} aria-hidden /> {open ? `Retry ${open} ${open === 1 ? 'mistake' : 'mistakes'}` : 'No mistakes to retry'}
         </button>

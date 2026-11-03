@@ -1,0 +1,112 @@
+// Original questions in the style of ISC Mathematics Class XII. Places are [unit, topic, marks, difficulty].
+// tests/unit/bank-answers.test.ts recalculates the answers that can be checked numerically.
+import { bank, type BankDef } from '../define';
+
+const { mcq, ar, theory, num } = bank('mathematics', 'XII');
+
+const questions: BankDef[] = [
+  // One mark
+  mcq([1, 'a', 1, 1], 'The function $f:\\mathbb{R}\\to\\mathbb{R}$, $f(x) = x^3$ is:', ['one-one but not onto', 'onto but not one-one', 'both one-one and onto', 'neither one-one nor onto'], 2),
+  mcq([1, 'a', 1, 2], 'The relation {(1,1), (2,2), (3,3), (1,2)} on the set {1, 2, 3} is:', ['symmetric only', 'reflexive and transitive, but not symmetric', 'an equivalence relation', 'neither reflexive nor transitive'], 1),
+  mcq([1, 'a', 1, 1], 'If $f(x) = 2x + 1$ and $g(x) = x^2$, then $(g\\circ f)(1)$ is:', ['3', '4', '5', '9'], 3),
+  mcq([1, 'b', 1, 1], 'The principal value of $\\sin^{-1}(-\\tfrac12)$ is:', ['$-\\pi/6$', '$\\pi/6$', '$5\\pi/6$', '$-\\pi/3$'], 0),
+  mcq([1, 'b', 1, 2], 'The value of $\\cos^{-1}(\\cos \\tfrac{5\\pi}{3})$ is:', ['$5\\pi/3$', '$\\pi/3$', '$2\\pi/3$', '$-\\pi/3$'], 1),
+  ar([1, 'b', 1, 2], '$\\tan^{-1}x + \\cot^{-1}x = \\pi/2$ for every real x.', 'The principal values are defined so that $\\cot^{-1}x = \\pi/2 - \\tan^{-1}x$.', 1),
+  mcq([2, 'a', 1, 1], 'For any skew-symmetric 3 × 3 matrix A, the value of |A| is:', ['0', '1', '−1', '3'], 0),
+  mcq([2, 'a', 1, 1], 'If A is of order 2 × 3 and B of order 3 × 4, the order of AB is:', ['3 × 3', '2 × 4', '4 × 2', 'not defined'], 1),
+  mcq([2, 'b', 1, 2], 'If A is a 3 × 3 matrix and |A| = 4, then |adj A| is:', ['4', '8', '16', '64'], 2, '$|\\text{adj } A| = |A|^{n-1}$.'),
+  mcq([2, 'b', 1, 2], 'If A is of order 2 and |A| = 5, then A(adj A) is:', ['5I', '25I', 'I', '0'], 0),
+  ar([2, 'b', 1, 2], 'A square matrix A has an inverse only if |A| ≠ 0.', '$A^{-1} = \\dfrac{1}{|A|}\\text{adj } A$.', 1),
+  mcq([3, 'a', 1, 1], 'The derivative of $\\sin(x^2)$ with respect to x is:', ['$\\cos(x^2)$', '$2x\\cos(x^2)$', '$2x\\sin(x^2)$', '$-2x\\cos(x^2)$'], 1),
+  mcq([3, 'a', 1, 2], 'The function $f(x) = |x|$ at $x = 0$ is:', ['differentiable and continuous', 'differentiable, but not continuous', 'continuous, but not differentiable', 'neither'], 2),
+  mcq([3, 'a', 1, 1], 'If $y = \\log(\\sec x)$, then $dy/dx$ is:', ['$\\tan x$', '$\\sec x$', '$\\sec x\\tan x$', '$\\cot x$'], 0),
+  ar([3, 'a', 1, 2], 'Every continuous function is differentiable.', 'If $f\'(a)$ exists, then f is continuous at a.', 4, 'The function $|x|$ is continuous at 0 but not differentiable there.'),
+  mcq([3, 'b', 1, 2], 'The function $f(x) = x^3 - 3x$ has a local maximum at:', ['$x = 1$', '$x = -1$', '$x = 0$', '$x = 3$'], 1),
+  mcq([3, 'b', 1, 1], 'The slope of the tangent to $y = x^2$ at the point (2, 4) is:', ['2', '4', '8', '16'], 1),
+  mcq([3, 'c', 1, 1], '$\\int \\sec^2 x\\,dx$ is:', ['$\\tan x + C$', '$\\sec x + C$', '$\\cot x + C$', '$\\sec x\\tan x + C$'], 0),
+  mcq([3, 'c', 1, 1], 'The value of $\\int_0^{\\pi/2} \\sin x\\,dx$ is:', ['0', '1', '2', '$\\pi/2$'], 1),
+  mcq([3, 'c', 1, 2], 'The value of $\\int_{-1}^{1} x^3\\,dx$ is:', ['0', '1/2', '1', '2'], 0, 'An odd function over a symmetric interval.'),
+  mcq([3, 'd', 1, 1], 'The area bounded by $y = x$, the x-axis and the line $x = 2$ is:', ['1', '2', '4', '$1/2$'], 1),
+  mcq([3, 'e', 1, 1], 'The order and degree of $\\left(\\dfrac{d^2y}{dx^2}\\right)^3 + \\dfrac{dy}{dx} = 0$ are:', ['2 and 3', '3 and 2', '2 and 1', '1 and 3'], 0),
+  mcq([3, 'e', 1, 1], 'The general solution of $dy/dx = y$ is:', ['$y = Cx$', '$y = Ce^x$', '$y = x + C$', '$y = Ce^{-x}$'], 1),
+  mcq([4, 'a', 1, 1], 'The magnitude of $\\hat i + \\hat j + \\hat k$ is:', ['1', '$\\sqrt 2$', '$\\sqrt 3$', '3'], 2),
+  mcq([4, 'a', 1, 1], 'The value of $\\hat i \\times \\hat j$ is:', ['$\\hat k$', '$-\\hat k$', '0', '1'], 0),
+  ar([4, 'a', 1, 2], 'If $\\vec a\\cdot\\vec b = 0$ for non-zero vectors, the two vectors are perpendicular.', '$|\\vec a\\times\\vec b|$ is the area of the parallelogram on the two vectors.', 2, 'Both are true, but the assertion comes from $\\vec a\\cdot\\vec b = |\\vec a||\\vec b|\\cos\\theta$.'),
+  mcq([5, 'a', 1, 1], 'The direction cosines of the z-axis are:', ['1, 0, 0', '0, 1, 0', '0, 0, 1', '1, 1, 1'], 2),
+  mcq([5, 'a', 1, 1], 'The distance of the point (1, 2, 2) from the origin is:', ['3', '5', '9', '$\\sqrt 5$'], 0),
+  mcq([6, 'a', 1, 1], 'In a linear programming problem with a bounded feasible region, the optimal value occurs:', ['only at the origin', 'at a corner point', 'at the centre of the region', 'at every point of the region'], 1),
+  mcq([7, 'a', 1, 1], 'If A and B are independent with P(A) = 1/2 and P(B) = 1/3, then P(A ∩ B) is:', ['5/6', '1/6', '2/3', '1/3'], 1),
+  mcq([7, 'a', 1, 1], 'Two fair dice are thrown. The probability of a total of 7 is:', ['1/6', '1/12', '7/36', '5/36'], 0),
+  ar([7, 'a', 1, 2], 'For events with P(B) > 0, P(A|B) can be greater than P(A).', 'Knowing that B occurred can change how likely A is.', 1),
+
+  // Two marks
+  theory('proof', [1, 'a', 2, 1], 'Show that $f:\\mathbb{R}\\to\\mathbb{R}$, $f(x) = 3x - 2$, is one-one.', ['Let $f(x_1) = f(x_2)$, so that $3x_1 - 2 = 3x_2 - 2$.', 'This gives $x_1 = x_2$, so f is one-one.']),
+  theory('short', [1, 'b', 2, 1], 'Evaluate $\\tan^{-1}(1) + \\cos^{-1}(-\\tfrac12)$.', ['$\\tan^{-1}1 = \\pi/4$, and $\\cos^{-1}(-\\tfrac12) = 2\\pi/3$.', 'The sum is $11\\pi/12$.']),
+  theory('short', [2, 'a', 2, 1], 'If $A = \\begin{bmatrix}2&3\\\\1&4\\end{bmatrix}$, find |A| and $A^{-1}$.', ['$|A| = 8 - 3 = 5$.', '$A^{-1} = \\dfrac15\\begin{bmatrix}4&-3\\\\-1&2\\end{bmatrix}$.']),
+  theory('proof', [2, 'b', 2, 2], 'Without expanding, show that $\\begin{vmatrix}1&a&b+c\\\\1&b&c+a\\\\1&c&a+b\\end{vmatrix} = 0$.', ['Apply $C_3 \\to C_3 + C_2$, so the third column has every entry equal to $a+b+c$.', 'Take out $a+b+c$. Then two columns are identical, so the determinant is 0.']),
+  theory('short', [3, 'a', 2, 1], 'Differentiate $\\tan^{-1}(\\sqrt x)$ with respect to x.', ['By the chain rule, $\\dfrac{1}{1+x}\\cdot\\dfrac{d}{dx}\\sqrt x$.', 'This is $\\dfrac{1}{2\\sqrt x(1+x)}$.']),
+  num([3, 'b', 2, 2], {
+    text: 'The radius of a circular ripple grows at {R} cm/s. How fast is its area growing at the instant the radius is {S} cm?',
+    vars: { R: [2, 8, 2], S: [5, 25, 5] },
+    parts: [{ ask: 'Rate of growth of the area, in cm²/s', use: 'm-xii-3-126', find: 'dA_dt', given: { r: 'S', dr_dt: 'R' }, marks: 2 }],
+  }),
+  theory('short', [3, 'c', 2, 1], 'Evaluate $\\int x e^x\\,dx$.', ['Integrating by parts with $u = x$, $dv = e^x dx$: $xe^x - \\int e^x dx$.', 'The result is $(x-1)e^x + C$.']),
+  theory('short', [3, 'c', 2, 2], 'Evaluate $\\int_0^{\\pi/4}\\tan^2 x\\,dx$.', ['Write $\\tan^2 x = \\sec^2 x - 1$, which integrates to $\\tan x - x$.', 'Between the limits this is $1 - \\pi/4$.']),
+  theory('short', [3, 'e', 2, 1], 'Solve the differential equation $\\dfrac{dy}{dx} = \\dfrac xy$.', ['Separating the variables: $y\\,dy = x\\,dx$.', 'Integrating gives $y^2 - x^2 = C$.']),
+  num([4, 'a', 2, 1], {
+    text: 'For $\\vec a$ = ({A}, {B}, {C}) and $\\vec b$ = ({D}, {E}, {F}), written as components, find $\\vec a\\cdot\\vec b$.',
+    vars: { A: [1, 5, 1], B: [1, 4, 1], C: [1, 3, 1], D: [2, 6, 2], E: [1, 4, 1], F: [1, 5, 2] },
+    parts: [{ ask: 'Dot product', use: 'p-xi-2-132', find: 'D_p', given: { A_x: 'A', A_y: 'B', A_z: 'C', B_x: 'D', B_y: 'E', B_z: 'F' }, marks: 2 }],
+  }),
+  theory('short', [5, 'a', 2, 1], 'Write the equation of the line through (1, 2, 3) parallel to the vector $2\\hat i + \\hat j - \\hat k$, in Cartesian form.', ['The direction ratios of the line are 2, 1, −1.', '$\\dfrac{x-1}{2} = \\dfrac{y-2}{1} = \\dfrac{z-3}{-1}$.']),
+  theory('definition', [6, 'a', 2, 1], 'In a linear programming problem, what is meant by (a) the feasible region and (b) the objective function?', ['(a) The set of all points satisfying every constraint, including the non-negativity conditions.', '(b) The linear function, $Z = ax + by$, to be maximised or minimised.']),
+  num([7, 'a', 2, 1], {
+    text: 'For two events, P(A ∩ B) = {I} and P(B) = {B}. Find P(A|B).',
+    vars: { I: [0.1, 0.3, 0.05], B: [0.4, 0.8, 0.1] },
+    parts: [{ ask: 'P(A|B)', use: 'm-xii-6-29', find: 'P_G', given: { P_I: 'I', P_B: 'B' }, marks: 2 }],
+  }),
+  theory('short', [7, 'a', 2, 2], 'A fair coin is tossed three times. Find the probability of getting exactly two heads.', ['$n = 3$, and $P(X=2) = \\binom32(\\tfrac12)^2(\\tfrac12)$.', 'This is 3/8.']),
+
+  // Three marks
+  theory('proof', [1, 'a', 3, 2], 'On the integers, a R b means a − b is divisible by 3. Prove that R is an equivalence relation.', ['Reflexive: a − a = 0, which is divisible by 3.', 'Symmetric: if 3 divides a − b, then 3 divides b − a.', 'Transitive: if 3 divides a − b and b − c, then 3 divides their sum a − c.']),
+  theory('proof', [1, 'b', 3, 3], 'Prove that $2\\tan^{-1}\\tfrac13 + \\tan^{-1}\\tfrac17 = \\tfrac{\\pi}{4}$.', ['$2\\tan^{-1}\\tfrac13 = \\tan^{-1}\\dfrac{2/3}{1 - 1/9} = \\tan^{-1}\\tfrac34$.', '$\\tan^{-1}\\tfrac34 + \\tan^{-1}\\tfrac17 = \\tan^{-1}\\dfrac{3/4 + 1/7}{1 - 3/28}$.', 'The fraction equals 1, so the value is $\\pi/4$.']),
+  theory('proof', [2, 'a', 3, 2], 'For $A = \\begin{bmatrix}1&2\\\\3&4\\end{bmatrix}$, show that $A^2 - 5A - 2I = 0$. Use this to write $A^{-1}$ in terms of A.', ['$A^2 = \\begin{bmatrix}7&10\\\\15&22\\end{bmatrix}$.', 'Then $A^2 - 5A - 2I$ is the zero matrix, on substituting.', 'Multiplying by $A^{-1}$: $A - 5I - 2A^{-1} = 0$, so $A^{-1} = \\tfrac12(A - 5I)$.']),
+  theory('short', [2, 'b', 3, 1], 'Solve by Cramer’s rule: $x + y = 3$, $2x - y = 0$.', ['$D = \\begin{vmatrix}1&1\\\\2&-1\\end{vmatrix} = -3$.', '$D_x = -3$, and $D_y = -6$.', 'So $x = 1$ and $y = 2$.']),
+  theory('short', [3, 'a', 3, 2], 'If $y = x^x$, $x > 0$, find $dy/dx$.', ['Take logarithms: $\\log y = x\\log x$.', 'Differentiating: $\\dfrac1y\\dfrac{dy}{dx} = 1 + \\log x$.', 'So $\\dfrac{dy}{dx} = x^x(1 + \\log x)$.']),
+  theory('short', [3, 'a', 3, 2], 'If $x = a\\cos^3 t$ and $y = a\\sin^3 t$, find $dy/dx$.', ['$dx/dt = -3a\\cos^2 t\\sin t$.', '$dy/dt = 3a\\sin^2 t\\cos t$.', 'So $dy/dx = -\\tan t$.']),
+  theory('short', [3, 'b', 3, 2], 'Find the intervals in which $f(x) = 2x^3 - 9x^2 + 12x + 1$ is increasing and decreasing.', ['$f\'(x) = 6(x-1)(x-2)$.', 'It is increasing on $(-\\infty, 1)$ and $(2, \\infty)$.', 'It is decreasing on $(1, 2)$.']),
+  theory('short', [3, 'b', 3, 1], 'Find the equations of the tangent and normal to $y = x^2 + 1$ at the point (1, 2).', ['The slope is $dy/dx = 2$ at $x = 1$.', 'Tangent: $y = 2x$.', 'Normal: $y - 2 = -\\tfrac12(x-1)$, or $x + 2y = 5$.']),
+  num([3, 'b', 3, 2], {
+    text: 'A spherical balloon’s radius grows at {R} cm/s. At what rate is its volume growing when the radius is {S} cm?',
+    vars: { R: [1, 4, 1], S: [5, 15, 5] },
+    parts: [{ ask: 'Rate of growth of the volume, in cm³/s', use: 'm-xii-3-127', find: 'dV_dt', given: { r: 'S', dr_dt: 'R' }, marks: 3 }],
+  }),
+  theory('short', [3, 'c', 3, 2], 'Evaluate $\\int \\dfrac{dx}{(x+1)(x+2)}$.', ['By partial fractions, $\\dfrac{1}{(x+1)(x+2)} = \\dfrac{1}{x+1} - \\dfrac{1}{x+2}$.', 'Integrating gives $\\log|x+1| - \\log|x+2| + C$.', 'That is, $\\log\\left|\\dfrac{x+1}{x+2}\\right| + C$.']),
+  theory('short', [3, 'c', 3, 2], 'Evaluate $\\int_0^{\\pi} x\\sin x\\,dx$.', ['By parts: $[-x\\cos x] + \\int\\cos x\\,dx$.', '$[-x\\cos x]_0^{\\pi} = \\pi$, and $[\\sin x]_0^{\\pi} = 0$.', 'The value is $\\pi$.']),
+  theory('short', [3, 'd', 3, 2], 'Find the area enclosed by the parabola $y^2 = 4x$ and the line $x = 1$.', ['The parabola is symmetric about the x-axis, so the area is $2\\int_0^1 2\\sqrt x\\,dx$.', '$= 4\\left[\\tfrac23 x^{3/2}\\right]_0^1$.', 'The area is 8/3 square units.']),
+  theory('short', [3, 'e', 3, 2], 'Solve the linear differential equation $\\dfrac{dy}{dx} + y = e^x$.', ['The integrating factor is $e^x$.', 'So $\\dfrac{d}{dx}(ye^x) = e^{2x}$.', 'This gives $ye^x = \\tfrac12 e^{2x} + C$.']),
+  theory('short', [4, 'a', 3, 2], 'The vectors $\\hat i + \\hat j + \\hat k$ and $\\hat i - \\hat j$ form two adjacent sides of a parallelogram. How large is its area?', ['$\\vec a\\times\\vec b = \\hat i + \\hat j - 2\\hat k$.', 'The area is $|\\vec a\\times\\vec b|$.', 'The area is $\\sqrt 6$ square units.']),
+  theory('short', [5, 'a', 3, 2], 'Find the angle between two lines whose direction ratios are 1, 2, 2 and 2, 2, 1.', ['$\\cos\\theta = \\dfrac{|a_1a_2 + b_1b_2 + c_1c_2|}{\\sqrt{a_1^2+b_1^2+c_1^2}\\sqrt{a_2^2+b_2^2+c_2^2}}$.', 'The numerator is 8, and the denominator is 9.', 'So $\\theta = \\cos^{-1}(8/9)$.']),
+  theory('short', [6, 'a', 3, 1], 'Maximise $Z = 3x + 4y$ subject to $x + y \\le 4$, $x \\ge 0$, $y \\ge 0$.', ['The corner points are (0, 0), (4, 0) and (0, 4).', 'Z takes the values 0, 12 and 16.', 'The maximum is 16, at (0, 4).']),
+  theory('short', [7, 'a', 3, 3], 'Bag A has 3 red and 2 black balls. Bag B has 1 red and 4 black balls. A bag is chosen at random, and a ball drawn is red. Find the probability that it came from A.', ['P(red|A) = 3/5 and P(red|B) = 1/5, with each bag having probability 1/2.', 'By Bayes’ theorem: $P(A|\\text{red}) = \\dfrac{\\frac12\\cdot\\frac35}{\\frac12\\cdot\\frac35 + \\frac12\\cdot\\frac15}$.', 'This is 3/4.']),
+  theory('short', [7, 'a', 3, 2], 'A random variable X takes the values 0, 1, 2 with probabilities 1/4, 1/2 and 1/4. Find its mean and variance.', ['Mean = 0(1/4) + 1(1/2) + 2(1/4) = 1.', '$E(X^2) = 0 + 1/2 + 1 = 3/2$.', 'Variance = 3/2 − 1 = 1/2.']),
+
+  // Five marks
+  theory('proof', [1, 'a', 5, 2], 'If $f(x) = \\dfrac{4x+3}{6x-4}$, $x \\ne \\tfrac23$, prove that $(f\\circ f)(x) = x$. Hence write the inverse of f.', ['$(f\\circ f)(x) = \\dfrac{4f(x)+3}{6f(x)-4}$.', 'Substituting $f(x)$ and clearing the fraction $(6x-4)$ gives $\\dfrac{4(4x+3)+3(6x-4)}{6(4x+3)-4(6x-4)}$.', 'The numerator is $34x$.', 'The denominator is $34$, so $(f\\circ f)(x) = x$.', 'Since $f\\circ f$ is the identity, $f^{-1} = f$.']),
+  theory('short', [2, 'a', 5, 3], 'Solve using matrices: $x + y + z = 6$, $x + 2y + 3z = 14$, $x + 4y + 9z = 36$.', ['Write AX = B, with $A = \\begin{bmatrix}1&1&1\\\\1&2&3\\\\1&4&9\\end{bmatrix}$. Then $|A| = 2$.', '$\\text{adj } A = \\begin{bmatrix}6&-5&1\\\\-6&8&-2\\\\2&-3&1\\end{bmatrix}$.', '$X = A^{-1}B = \\tfrac12(\\text{adj } A)B$.', 'Multiplying out, $\\tfrac12(2, 4, 6)$.', 'So $x = 1$, $y = 2$, $z = 3$.']),
+  theory('proof', [2, 'b', 5, 2], 'Prove that $\\begin{vmatrix}1&1&1\\\\a&b&c\\\\a^2&b^2&c^2\\end{vmatrix} = (a-b)(b-c)(c-a)$.', ['Apply $C_1 \\to C_1 - C_2$ and $C_2 \\to C_2 - C_3$.', 'The first row becomes (0, 0, 1), and the columns have the factors $(a-b)$ and $(b-c)$.', 'Take out the factors $(a-b)(b-c)$.', 'The determinant left is $\\begin{vmatrix}1&1\\\\a+b&b+c\\end{vmatrix} = c - a$.', 'So the result is $(a-b)(b-c)(c-a)$.']),
+  theory('proof', [3, 'a', 5, 3], 'If $y = e^{a\\sin^{-1}x}$, prove that $(1-x^2)\\dfrac{d^2y}{dx^2} - x\\dfrac{dy}{dx} - a^2y = 0$.', ['$\\dfrac{dy}{dx} = \\dfrac{ay}{\\sqrt{1-x^2}}$.', 'So $\\sqrt{1-x^2}\\,y_1 = ay$.', 'Differentiating again: $\\sqrt{1-x^2}\\,y_2 - \\dfrac{x}{\\sqrt{1-x^2}}y_1 = ay_1$.', 'Multiply by $\\sqrt{1-x^2}$: $(1-x^2)y_2 - xy_1 = a\\sqrt{1-x^2}\\,y_1$.', 'The right side is $a^2y$, so the result follows.']),
+  theory('short', [3, 'b', 5, 3], 'A square sheet of side a has equal squares cut from each corner, and is folded into an open box. Find the side of the squares cut for the volume to be greatest, and the greatest volume.', ['Let the cut have side x. Then $V = x(a-2x)^2$.', '$dV/dx = (a-2x)(a-6x)$.', 'Setting this to zero, and rejecting $x = a/2$, gives $x = a/6$.', '$d^2V/dx^2 < 0$ at $x = a/6$, so it is a maximum.', 'The greatest volume is $2a^3/27$.']),
+  theory('proof', [3, 'b', 5, 2], 'Prove that among all rectangles inscribed in a circle of radius r, the square has the greatest area.', ['Let the sides be 2x and 2y, with $x^2 + y^2 = r^2$.', 'Area $A = 4xy = 4x\\sqrt{r^2-x^2}$.', 'Setting $dA/dx = 0$ gives $x^2 = r^2/2$.', 'The second derivative is negative there, so it is a maximum.', 'Then $y^2 = r^2/2$ too, so $x = y$, and the rectangle is a square.']),
+  theory('short', [3, 'c', 5, 3], 'Evaluate $\\int_0^{\\pi/2}\\log(\\sin x)\\,dx$.', ['Let I be the integral. Using $\\int_0^a f(x)dx = \\int_0^a f(a-x)dx$, $I = \\int_0^{\\pi/2}\\log(\\cos x)\\,dx$.', 'Adding: $2I = \\int_0^{\\pi/2}\\log(\\sin x\\cos x)\\,dx = \\int_0^{\\pi/2}\\log(\\sin 2x)\\,dx - \\tfrac{\\pi}{2}\\log 2$.', 'Putting $t = 2x$: $\\int_0^{\\pi/2}\\log(\\sin 2x)\\,dx = \\tfrac12\\int_0^{\\pi}\\log(\\sin t)\\,dt$.', 'By symmetry about $\\pi/2$, this equals I.', 'So $2I = I - \\tfrac{\\pi}{2}\\log 2$, and $I = -\\tfrac{\\pi}{2}\\log 2$.']),
+  theory('short', [3, 'c', 5, 2], 'Evaluate $\\int_0^{\\pi/2}\\dfrac{\\sin x}{\\sin x + \\cos x}\\,dx$.', ['Let this be I.', 'Replacing x with $\\pi/2 - x$: $I = \\int_0^{\\pi/2}\\dfrac{\\cos x}{\\cos x + \\sin x}\\,dx$.', 'Adding the two: $2I = \\int_0^{\\pi/2} 1\\,dx$.', '$2I = \\pi/2$.', 'So $I = \\pi/4$.']),
+  theory('short', [3, 'd', 5, 2], 'Sketch the curves, and find the area enclosed between the parabola $y = x^2$ and the line $y = x$.', ['They meet where $x^2 = x$, so at $x = 0$ and $x = 1$.', 'On (0, 1), the line lies above the parabola.', 'Area $= \\int_0^1 (x - x^2)\\,dx$.', '$= [x^2/2 - x^3/3]_0^1$.', 'The area is 1/6 square units.']),
+  theory('short', [3, 'e', 5, 3], 'Solve the homogeneous differential equation $\\dfrac{dy}{dx} = \\dfrac{x^2 + y^2}{2xy}$.', ['Put $y = vx$, so that $\\dfrac{dy}{dx} = v + x\\dfrac{dv}{dx}$.', 'This gives $x\\dfrac{dv}{dx} = \\dfrac{1 - v^2}{2v}$.', 'Separating the variables: $\\dfrac{2v\\,dv}{1 - v^2} = \\dfrac{dx}{x}$.', 'Integrating: $-\\log|1 - v^2| = \\log|x| + c$.', 'Substituting back: $x^2 - y^2 = Cx$.']),
+  theory('short', [4, 'a', 5, 2], 'If $\\vec a = \\hat i + 2\\hat j + 3\\hat k$ and $\\vec b = 3\\hat i + 2\\hat j + \\hat k$, find $\\vec a\\cdot\\vec b$, $\\vec a\\times\\vec b$, the sine of the angle between them, and the unit vector perpendicular to both.', ['$\\vec a\\cdot\\vec b = 10$.', '$\\vec a\\times\\vec b = -4\\hat i + 8\\hat j - 4\\hat k$.', '$|\\vec a\\times\\vec b| = \\sqrt{96} = 4\\sqrt 6$, and $|\\vec a||\\vec b| = 14$.', 'So $\\sin\\theta = \\dfrac{4\\sqrt 6}{14} = \\dfrac{2\\sqrt 6}{7}$.', 'The unit vector is $\\pm\\dfrac{1}{\\sqrt 6}(-\\hat i + 2\\hat j - \\hat k)$.']),
+  theory('short', [5, 'a', 5, 3], 'Find the shortest distance between the lines $\\vec r = \\hat i + \\hat j + \\lambda(2\\hat i - \\hat j + \\hat k)$ and $\\vec r = 2\\hat i + \\hat j - \\hat k + \\mu(3\\hat i - 5\\hat j + 2\\hat k)$.', ['$\\vec a_2 - \\vec a_1 = \\hat i - \\hat k$.', '$\\vec b_1\\times\\vec b_2 = 3\\hat i - \\hat j - 7\\hat k$.', '$|\\vec b_1\\times\\vec b_2| = \\sqrt{59}$.', '$(\\vec a_2 - \\vec a_1)\\cdot(\\vec b_1\\times\\vec b_2) = 10$.', 'The shortest distance is $10/\\sqrt{59}$.']),
+  theory('short', [5, 'a', 5, 2], 'Find the equation of the plane through (1, 0, 0), (0, 1, 0) and (0, 0, 1). Find its distance from the origin, and the direction cosines of its normal.', ['The intercept form is $\\dfrac{x}{1} + \\dfrac{y}{1} + \\dfrac{z}{1} = 1$.', 'So the plane is $x + y + z = 1$.', 'Distance from the origin $= \\dfrac{|0+0+0-1|}{\\sqrt{1+1+1}}$.', 'This is $1/\\sqrt 3$.', 'The direction cosines are $1/\\sqrt 3$, $1/\\sqrt 3$, $1/\\sqrt 3$.']),
+  theory('short', [6, 'a', 5, 2], 'A firm makes x units of one toy and y of another, with $x + 2y \\le 8$ hours of cutting and $3x + 2y \\le 12$ hours of finishing, and earns a profit of $Z = 5x + 4y$. Find how many of each give the greatest profit.', ['The constraints also include $x \\ge 0$, $y \\ge 0$.', 'The lines $x + 2y = 8$ and $3x + 2y = 12$ meet at (2, 3).', 'The corner points are (0, 0), (4, 0), (2, 3) and (0, 4).', 'Z is 0, 20, 22 and 16 respectively.', 'The greatest profit, 22, is at $x = 2$, $y = 3$.']),
+  theory('short', [7, 'a', 5, 2], 'Two cards are drawn with replacement from a pack of 52. X is the number of aces drawn. Find the probability distribution of X, and its mean.', ['The probability of an ace in a draw is 1/13.', 'P(X = 0) = (12/13)² = 144/169.', 'P(X = 1) = 2(1/13)(12/13) = 24/169.', 'P(X = 2) = 1/169.', 'The mean is 26/169 = 2/13.']),
+];
+
+export default questions;
