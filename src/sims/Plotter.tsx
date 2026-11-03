@@ -1,8 +1,9 @@
 import { useCallback, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent } from 'react';
 import { Maximize, Minus, Plus, Trash2 } from 'lucide-react';
 import { evaluate, ExprError, parseExpr, symbolsIn } from '../solver/expr';
-import { derivative, integrate, intersections, roots } from './lib/calculus';
-import { Canvas, drawPlot, makeViewport, type Marker, type PlotModel, type Series } from './lib/plot';
+import { derivative, integrate, roots } from './lib/calculus';
+import { formatPoint, intersectionPoints, placeLabels, type Curve, type GraphPoint } from './lib/graph-analysis';
+import { Canvas, drawPlot, makeViewport, token, type Marker, type PlotModel, type Series, type Viewport } from './lib/plot';
 import { fmt, Legend, Slider, Toggle, ToolLayout } from './lib/ui';
 
 const COLOURS = ['physics', 'accent', 'chemistry', 'mathematics', 'computerscience'];
@@ -43,6 +44,71 @@ function compile(row: FnRow, color: string): Compiled {
 
 const DEFAULT_VIEW = { x: [-10, 10] as [number, number], y: [-6, 6] as [number, number] };
 
+const CROSSINGS_KEY = 'isc-plot-intersections';
+
+/** Remembered for the session. Storage can be blocked, and then it just starts on. */
+function readCrossings(): boolean {
+  try {
+    return sessionStorage.getItem(CROSSINGS_KEY) !== 'off';
+  } catch {
+    return true;
+  }
+}
+
+function saveCrossings(on: boolean): void {
+  try {
+    sessionStorage.setItem(CROSSINGS_KEY, on ? 'on' : 'off');
+  } catch {
+    // The choice just won't outlast this page.
+  }
+}
+
+/**
+ * Labels points on the graph, clear of other labels, dots and curves. The first ones placed get the best
+ * spots, so the tangent's slope goes before the intersections. Labels with no room are left out, and the
+ * graph says so: every point is still in the readouts, and pointing at it reads it.
+ */
+function drawPointLabels(ctx: CanvasRenderingContext2D, v: Viewport, points: { x: number; y: number; text: string }[], curves: Curve[]): void {
+  ctx.save();
+  ctx.font = "12px 'Atkinson Hyperlegible Mono Variable', ui-monospace, monospace";
+  const shown = points.filter((p) => v.toPx(p.x) >= v.left && v.toPx(p.x) <= v.right && v.toPy(p.y) >= v.top && v.toPy(p.y) <= v.bottom);
+  const texts = shown.map((p) => p.text);
+  const requests = shown.map((p, i) => ({ px: v.toPx(p.x), py: v.toPy(p.y), width: ctx.measureText(texts[i]).width + 4, height: 16 }));
+  const bounds = { x: v.left + 2, y: v.top + 2, w: v.right - v.left - 4, h: v.bottom - v.top - 4 };
+  const hitsCurve = (box: { x: number; y: number; w: number; h: number }) => {
+    let hits = 0;
+    for (const curve of curves) {
+      for (let px = box.x; px <= box.x + box.w; px += 4) {
+        const py = v.toPy(curve.fn(v.fromPx(px)));
+        if (py >= box.y && py <= box.y + box.h) hits++;
+      }
+    }
+    return hits;
+  };
+  const placed = placeLabels(requests, bounds, hitsCurve);
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'middle';
+  ctx.lineJoin = 'round';
+  for (const { box, index } of placed) {
+    // A halo keeps a label readable if a curve has to run behind it.
+    ctx.strokeStyle = token('paper');
+    ctx.lineWidth = 3;
+    ctx.strokeText(texts[index], box.x + 2, box.y + box.h / 2);
+    ctx.fillStyle = token('ink');
+    ctx.fillText(texts[index], box.x + 2, box.y + box.h / 2);
+  }
+  const hidden = shown.length - placed.length;
+  if (hidden > 0) {
+    const note = `${hidden} ${hidden === 1 ? 'label' : 'labels'} hidden: zoom in`;
+    const width = ctx.measureText(note).width;
+    ctx.fillStyle = token('paper');
+    ctx.fillRect(v.right - width - 8, v.top + 2, width + 6, 16);
+    ctx.fillStyle = token('ink-2');
+    ctx.fillText(note, v.right - width - 5, v.top + 10);
+  }
+  ctx.restore();
+}
+
 export function Plotter() {
   const [rows, setRows] = useState<FnRow[]>([
     { id: 1, source: 'sin(x)' },
@@ -56,7 +122,7 @@ export function Plotter() {
   const [showArea, setShowArea] = useState(false);
   const [areaA, setAreaA] = useState(0);
   const [areaB, setAreaB] = useState(3);
-  const [showCrossings, setShowCrossings] = useState(true);
+  const [showCrossings, setShowCrossings] = useState(readCrossings);
   const size = useRef({ w: 800, h: 400 });
   const drag = useRef<{ pointer: number; x: number; y: number; view: typeof view } | null>(null);
   const pointers = useRef(new Map<number, { x: number; y: number }>());
@@ -66,15 +132,9 @@ export function Plotter() {
   const active = compiled.filter((c): c is Compiled & { fn: (x: number) => number } => c.fn !== null);
   const first = active[0];
 
-  const crossings = useMemo(() => {
-    const out: { x: number; y: number; label: string }[] = [];
-    for (let i = 0; i < active.length; i++) {
-      for (let j = i + 1; j < active.length; j++) {
-        for (const x of intersections(active[i].fn, active[j].fn, view.x[0], view.x[1])) out.push({ x, y: active[i].fn(x), label: `f${i + 1} = f${j + 1}` });
-      }
-    }
-    return out;
-  }, [active, view.x]);
+  const curves: Curve[] = useMemo(() => compiled.flatMap((c, i) => (c.fn ? [{ name: `f${i + 1}`, fn: c.fn, color: c.color }] : [])), [compiled]);
+  const crossings = useMemo(() => intersectionPoints(curves, view.x[0], view.x[1]), [curves, view.x]);
+  const inView = crossings.filter((p) => p.y >= view.y[0] && p.y <= view.y[1]);
 
   const zeros = useMemo(() => (first ? roots(first.fn, view.x[0], view.x[1]) : []), [first, view.x]);
 
@@ -87,8 +147,8 @@ export function Plotter() {
   if (first && showTangent && Number.isFinite(slope)) series.push({ fn: (x) => y0 + slope * (x - x0), color: 'ink-2', width: 1 });
 
   const markers: Marker[] = [];
-  if (first && showTangent && Number.isFinite(y0)) markers.push({ x: x0, y: y0, color: 'ink', label: `slope ${fmt(slope, 3)}` });
-  if (showCrossings) crossings.forEach((c) => markers.push({ x: c.x, y: c.y, color: 'accent' }));
+  if (first && showTangent && Number.isFinite(y0)) markers.push({ x: x0, y: y0, color: 'ink' });
+  if (showCrossings) inView.forEach((c) => markers.push({ x: c.x, y: c.y, color: 'accent' }));
 
   const model: PlotModel = {
     x: view.x,
@@ -245,7 +305,17 @@ export function Plotter() {
               <Slider label="To b" value={areaB} min={view.x[0]} max={view.x[1]} step={spanX / 400} format={(v) => v.toFixed(2)} onChange={setAreaB} />
             </>
           )}
-          <Toggle label="Mark intersections" checked={showCrossings} onChange={setShowCrossings} />
+          <button
+            type="button"
+            className="btn btn-line w-full"
+            aria-pressed={showCrossings}
+            onClick={() => {
+              saveCrossings(!showCrossings);
+              setShowCrossings(!showCrossings);
+            }}
+          >
+            {showCrossings ? 'Hide intersections' : 'Show intersections'}
+          </button>
 
           <dl className="readouts" aria-live="polite">
             {first && showTangent && (
@@ -271,7 +341,7 @@ export function Plotter() {
             {showCrossings && active.length > 1 && (
               <>
                 <dt>Intersections</dt>
-                <dd>{crossings.length ? crossings.slice(0, 5).map((c) => `(${fmt(c.x, 3)}, ${fmt(c.y, 3)})`).join(' ') : 'none in view'}</dd>
+                <dd data-testid="crossings">{inView.length ? inView.slice(0, 6).map((c) => formatPoint(c.x, c.y)).join(' ') + (inView.length > 6 ? ` and ${inView.length - 6} more` : '') : 'none in view'}</dd>
               </>
             )}
           </dl>
@@ -282,7 +352,12 @@ export function Plotter() {
         interactive
         height={420}
         label="Graph of the functions listed. Drag to pan, scroll or pinch to zoom. With the keyboard, arrow keys pan, plus and minus zoom, and zero resets."
-        draw={(ctx, w, h) => drawPlot(ctx, w, h, model)}
+        draw={(ctx, w, h) => {
+          const v = drawPlot(ctx, w, h, model);
+          const labels = showCrossings ? inView.map((p: GraphPoint) => ({ x: p.x, y: p.y, text: formatPoint(p.x, p.y) })) : [];
+          if (first && showTangent && Number.isFinite(y0)) labels.unshift({ x: x0, y: y0, text: `slope ${fmt(slope, 3)}` });
+          drawPointLabels(ctx, v, labels, curves);
+        }}
         onWheel={onWheel}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
