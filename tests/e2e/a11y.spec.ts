@@ -3,7 +3,7 @@ import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 import { openRoute, setTheme } from './helpers';
 
-const ROUTES = ['', 'book/physics/XI', 'book/physics/XI/1', 'book/chemistry/XII/0', 'f/p-xi-2-7', 'find?q=velocity', 'saved', 'practice', 'paper', 'tools', 'tools/projectile', 'tools/circuits', 'tools/titration', 'tools/plotter', 'tools/java', 'tools/lcr', 'tools/logic', 'settings', 'f/p-xi-2-7?work=solve&wf=p-xi-2-7', 'book/physics/XI/1?work=check', 'book/physics/XI/1?work=practice'];
+const ROUTES = ['', 'book/physics/XI', 'book/physics/XI/1', 'book/chemistry/XII/0', 'f/p-xi-2-7', 'find?q=velocity', 'saved', 'practice', 'paper', 'mine', 'mine/new', 'tools', 'tools/projectile', 'tools/circuits', 'tools/titration', 'tools/plotter', 'tools/java', 'tools/lcr', 'tools/logic', 'settings', 'f/p-xi-2-7?work=solve&wf=p-xi-2-7', 'book/physics/XI/1?work=check', 'book/physics/XI/1?work=practice'];
 
 const TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'];
 

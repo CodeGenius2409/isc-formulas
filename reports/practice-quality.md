@@ -17,6 +17,8 @@
 
 Every paper can be drawn from its own class's questions with none repeated, and a test builds each paper 20 times to check that.
 
+**Added in v3:** 56 more Chemistry questions generated from the checked structures in `src/data/lewis/`: predict the shape, count the lone pairs, give the hybridisation, draw the structure. Their answers come from the same data the checker verified, so they weren't part of the hand-written spot-check below. That brings the bank to 586.
+
 ## The quality gate
 
 These are enforced by `tests/unit/bank.test.ts` and fail the build's test run.

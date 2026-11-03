@@ -45,6 +45,7 @@ export function FindPalette() {
   const baseId = useId();
   const [query, setQuery] = useState('');
   const [subject, setSubject] = useState<SubjectId | null>(null);
+  const [onlyMine, setOnlyMine] = useState(false);
   const [level, setLevel] = useState<ClassLevel | null>(null);
   const [options, setOptions] = useState<Option[]>([]);
   const [total, setTotal] = useState(0);
@@ -86,7 +87,7 @@ export function FindPalette() {
         await prepareSearch();
         quantityOptions = matches.slice(0, 12).map((match) => ({ kind: 'quantity', key: `q-${match.entry.id}`, match, formula: getFormula(match.entry.id) }));
       }
-      const results = await search(q, { subject, level }, 30);
+      const results = await search(q, { subject, level, custom: onlyMine }, 30);
       if (cancelled || request !== requestRef.current) return;
       const seen = new Set(quantityOptions.map((o) => (o.kind === 'quantity' ? o.match.entry.id : '')));
       const formulaOptions: Option[] = quantity ? [] : results.hits.filter((h) => !seen.has(h.formula.id)).map((h) => ({ kind: 'formula', key: h.formula.id, formula: h.formula, terms: h.terms }));
@@ -97,7 +98,7 @@ export function FindPalette() {
     return () => {
       cancelled = true;
     };
-  }, [query, subject, level, open]);
+  }, [query, subject, level, open, onlyMine]);
 
   const choose = useCallback((option: Option | undefined) => {
     if (!option) return;
@@ -169,6 +170,9 @@ export function FindPalette() {
       </div>
 
       <div className="palette-filters">
+        <button type="button" className="palette-mine" aria-pressed={onlyMine} onClick={() => setOnlyMine(!onlyMine)}>
+          Your formulas
+        </button>
         <div className="seg" role="group" aria-label="Filter by subject">
           <button type="button" aria-pressed={subject === null} onClick={() => setSubject(null)}>
             All

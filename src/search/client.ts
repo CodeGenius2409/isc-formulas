@@ -1,6 +1,7 @@
 // Talks to the search worker. The index builds lazily, the first time find opens. If
 // workers are unavailable, the same engine runs on the main thread.
 import type MiniSearch from 'minisearch';
+import { customStore } from '../custom/store';
 import { loadAllFormulas } from '../data/book';
 import type { Formula } from '../data/types';
 import { toSearchDoc, type SearchDoc, type SearchFilters, type SearchHit } from './doc';
@@ -23,6 +24,17 @@ async function useMainThread(docs: SearchDoc[]): Promise<void> {
   const index: MiniSearch<SearchDoc> = buildIndex(docs);
   fallback = (query, filters, limit) => runSearch(index, query, filters, limit);
 }
+
+// Your formulas changing means a new index, built the next time someone searches.
+let indexed = customStore.get().formulas;
+customStore.subscribe(() => {
+  if (customStore.get().formulas === indexed) return;
+  indexed = customStore.get().formulas;
+  worker?.terminate();
+  worker = null;
+  fallback = null;
+  ready = null;
+});
 
 /** Starts indexing. Safe to call repeatedly. */
 export function prepareSearch(): Promise<void> {

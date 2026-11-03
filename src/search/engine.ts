@@ -17,7 +17,7 @@ function normaliseTerm(term: string): string {
 const OPTIONS: Options<SearchDoc> = {
   idField: 'id',
   fields: ['name', 'aka', 'topic', 'symbols', 'latexText', 'note'],
-  storeFields: ['name', 'subject', 'classLevel', 'alsoSubjects', 'alsoClasses'],
+  storeFields: ['name', 'subject', 'classLevel', 'alsoSubjects', 'alsoClasses', 'custom'],
   processTerm: (term) => normaliseTerm(term) || null,
   searchOptions: {
     boost: { name: 5, aka: 4, symbols: 1.5, topic: 1.5, latexText: 1, note: 1 },
@@ -33,6 +33,7 @@ export function buildIndex(docs: SearchDoc[]): MiniSearch<SearchDoc> {
 }
 
 function matchesFilters(hit: MiniResult, filters: SearchFilters): boolean {
+  if (filters.custom && !hit.custom) return false;
   if (filters.subject && hit.subject !== filters.subject && !(hit.alsoSubjects as SubjectId[]).includes(filters.subject)) return false;
   if (filters.level && hit.classLevel !== filters.level && !(hit.alsoClasses as ClassLevel[]).includes(filters.level)) return false;
   return true;

@@ -39,6 +39,8 @@ interface CanvasProps {
   onPointerMove?: (e: ReactPointerEvent<HTMLCanvasElement>) => void;
   onPointerUp?: (e: ReactPointerEvent<HTMLCanvasElement>) => void;
   onPointerCancel?: (e: ReactPointerEvent<HTMLCanvasElement>) => void;
+  onPointerLeave?: (e: ReactPointerEvent<HTMLCanvasElement>) => void;
+  onBlur?: () => void;
   onWheel?: (e: WheelEvent) => void;
   onKeyDown?: (e: React.KeyboardEvent<HTMLDivElement>) => void;
   /** Interactive plots take focus and capture drags. Others let the page scroll. */
@@ -47,7 +49,7 @@ interface CanvasProps {
 }
 
 /** A canvas that redraws on resize and theme change, sharp on high-density screens. */
-export function Canvas({ draw, height = 280, label, className = '', style, interactive, onWheel, onKeyDown, children, ...pointer }: CanvasProps) {
+export function Canvas({ draw, height = 280, label, className = '', style, interactive, onWheel, onKeyDown, onBlur, children, ...pointer }: CanvasProps) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const drawRef = useRef(draw);
@@ -93,7 +95,7 @@ export function Canvas({ draw, height = 280, label, className = '', style, inter
   }, [onWheel]);
 
   return (
-    <div ref={wrapRef} className={`plot ${interactive ? '' : 'scrollable'} ${className}`} style={{ height, ...style }} tabIndex={interactive ? 0 : undefined} onKeyDown={onKeyDown}>
+    <div ref={wrapRef} className={`plot ${interactive ? '' : 'scrollable'} ${className}`} style={{ height, ...style }} tabIndex={interactive ? 0 : undefined} onKeyDown={onKeyDown} onBlur={onBlur}>
       <canvas ref={canvasRef} role="img" aria-label={label} {...pointer} />
       {children}
     </div>
@@ -127,6 +129,8 @@ export interface PlotModel {
   vlines?: { x: number; label?: string; color?: string }[];
   /** Shades between a curve and the axis, from a to b. */
   area?: { fn: (x: number) => number; a: number; b: number; color: string };
+  /** Shades a definite integral: solid above the axis, and hatched below, so the sign isn't colour alone. */
+  signedAreas?: { fn: (x: number) => number; a: number; b: number; color: string }[];
   xLabel?: string;
   yLabel?: string;
 }
@@ -180,6 +184,48 @@ export function makeViewport(model: Pick<PlotModel, 'x' | 'y'>, width: number, h
 
 const MONO = "12px 'Atkinson Hyperlegible Mono Variable', ui-monospace, monospace";
 const BODY = "13px 'Atkinson Hyperlegible Next Variable', system-ui, sans-serif";
+
+function drawSignedArea(ctx: CanvasRenderingContext2D, v: Viewport, shade: { fn: (x: number) => number; a: number; b: number; color: string }): void {
+  const a = Math.max(shade.a, v.fromPx(v.left));
+  const b = Math.min(shade.b, v.fromPx(v.right));
+  if (b <= a) return;
+  const zero = v.toPy(0);
+  const steps = Math.max(2, Math.ceil(v.toPx(b) - v.toPx(a)));
+  const region = (keep: (y: number) => number) => {
+    ctx.beginPath();
+    ctx.moveTo(v.toPx(a), zero);
+    for (let i = 0; i <= steps; i++) {
+      const x = a + ((b - a) * i) / steps;
+      const y = shade.fn(x);
+      ctx.lineTo(v.toPx(x), Number.isFinite(y) ? Math.max(-1e5, Math.min(1e5, v.toPy(keep(y)))) : zero);
+    }
+    ctx.lineTo(v.toPx(b), zero);
+    ctx.closePath();
+  };
+  const colour = token(shade.color);
+  ctx.save();
+  ctx.fillStyle = colour;
+  ctx.globalAlpha = 0.25;
+  region((y) => Math.max(y, 0));
+  ctx.fill();
+  ctx.globalAlpha = 0.14;
+  region((y) => Math.min(y, 0));
+  ctx.fill();
+  // Hatching over the part below the axis.
+  region((y) => Math.min(y, 0));
+  ctx.clip();
+  ctx.globalAlpha = 0.6;
+  ctx.strokeStyle = colour;
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  const height = v.bottom - v.top;
+  for (let px = v.left - height; px < v.right; px += 7) {
+    ctx.moveTo(px, v.bottom);
+    ctx.lineTo(px + height, v.top);
+  }
+  ctx.stroke();
+  ctx.restore();
+}
 
 /** Draws axes, grid and everything in the model. */
 export function drawPlot(ctx: CanvasRenderingContext2D, width: number, height: number, model: PlotModel): Viewport {
@@ -265,6 +311,8 @@ export function drawPlot(ctx: CanvasRenderingContext2D, width: number, height: n
     ctx.fill();
     ctx.globalAlpha = 1;
   }
+
+  for (const shade of model.signedAreas ?? []) drawSignedArea(ctx, v, shade);
 
   for (const line of model.vlines ?? []) {
     ctx.strokeStyle = token(line.color ?? 'ink-3');

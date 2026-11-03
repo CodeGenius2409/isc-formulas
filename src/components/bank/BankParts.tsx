@@ -5,6 +5,7 @@ import { markPart, normaliseOutput } from '../../practice/bank/mark';
 import { unitLabel } from '../../solver/unit-label';
 import { useStructures } from '../../data/structures';
 import { EntryStructures, Molecule } from '../Structures';
+import { LazyLewis } from '../LazyLewis';
 import { StepsList } from '../work/StepsList';
 import { BankDiagram } from './BankDiagram';
 import { CodeBlock, RichText } from './RichText';
@@ -157,7 +158,14 @@ function TheoryReview({ item, answer, onChange }: { item: TheoryItem; answer: Ba
 /** After answering: what was right, with the working or the marking scheme. */
 export function BankReview({ item, answer, onChange }: { item: BankItem; answer: BankAnswer; onChange: (change: Partial<BankAnswer>) => void }) {
   if (item.form === 'numeric') return <NumericReview item={item} answer={answer} />;
-  if (item.form === 'theory') return <TheoryReview item={item} answer={answer} onChange={onChange} />;
+  if (item.form === 'theory') {
+    return (
+      <>
+        <TheoryReview item={item} answer={answer} onChange={onChange} />
+        {item.answerLewis && <LazyLewis ids={item.answerLewis} />}
+      </>
+    );
+  }
   const right = item.form === 'mcq' ? answer.choice === item.answer : normaliseOutput(answer.text ?? '') === normaliseOutput(item.expected);
   return (
     <>
@@ -167,6 +175,7 @@ export function BankReview({ item, answer, onChange }: { item: BankItem; answer:
       </div>
       {item.form === 'output' && !right && <CodeBlock code={item.expected} python />}
       {item.why && <RichText text={item.why} python={Boolean(item.python)} className="mt-2 text-ink-2" />}
+      {item.answerLewis && <LazyLewis ids={item.answerLewis} />}
     </>
   );
 }

@@ -1,9 +1,12 @@
 import { useCallback, useEffect, useMemo, useState, type RefObject } from 'react';
 import { ChevronLeft, ChevronRight, Printer } from 'lucide-react';
-import { getClass, getSubject, loadUnits, unitTitle, splitUnitName } from '../data/book';
+import { additions, mergeCustom } from '../custom/merge';
+import { customStore, ensureCustomLoaded } from '../custom/store';
+import { getClass, getSubject, loadPrintedUnits, unitTitle, splitUnitName } from '../data/book';
 import type { ClassLevel, SubjectId } from '../data/types';
 import { useAsync } from '../lib/hooks';
-import { href, trackSection } from '../lib/router';
+import { dropQuery, href, trackSection, useRoute } from '../lib/router';
+import { useStore } from '../lib/store';
 import { lastReadStore, rememberClass } from '../state/library';
 import { FormulaList, type ListItem } from '../components/FormulaList';
 import { STATUS_LABEL } from '../components/shell/Contents';
@@ -20,11 +23,25 @@ interface Props {
 }
 
 export default function UnitView({ subject, level, unitIndex, subtopicIndex, navigation, scrollRef }: Props) {
-  const state = useAsync(() => loadUnits(subject, level), `${subject}-${level}`);
+  const state = useAsync(() => loadPrintedUnits(subject, level), `${subject}-${level}`);
+  const custom = useStore(customStore);
+  useEffect(() => {
+    void ensureCustomLoaded();
+  }, []);
+  const merged = useMemo(() => (state.status === 'ready' ? mergeCustom(state.value, custom.formulas, subject, level) : null), [state, custom.formulas, subject, level]);
+  const added = useMemo(() => additions(custom.formulas, subject, level).get(unitIndex), [custom.formulas, subject, level, unitIndex]);
+  // A formula just saved: scroll to it and pick it out, once.
+  const route = useRoute();
+  const [highlightId] = useState(() => route.query.get('hl'));
+  useEffect(() => {
+    if (!highlightId) return undefined;
+    const timer = window.setTimeout(() => dropQuery('hl'), 2600);
+    return () => window.clearTimeout(timer);
+  }, [highlightId]);
   const info = getSubject(subject);
   const cls = getClass(subject, level);
   const meta = cls?.units[unitIndex];
-  const unit = state.status === 'ready' ? state.value[unitIndex] : undefined;
+  const unit = merged?.[unitIndex];
   // Undefined until the list has reported, so a section in the URL isn't wiped while it restores.
   const [topIndex, setTopIndex] = useState<number | null | undefined>(undefined);
 
@@ -32,11 +49,11 @@ export default function UnitView({ subject, level, unitIndex, subtopicIndex, nav
     if (!unit) return [];
     const out: ListItem[] = [];
     for (const sub of unit.subtopics) {
-      out.push({ kind: 'section', key: `s${sub.index}`, number: `${unit.number}.${sub.index + 1}`, name: sub.name, count: sub.formulas.length, subtopicIndex: sub.index });
+      out.push({ kind: 'section', key: `s${sub.index}`, number: `${unit.number}.${sub.index + 1}`, name: sub.name, count: sub.formulas.length, subtopicIndex: sub.index, custom: sub.custom, addHref: href('mine/new', { subject, level, unit: unit.number, sub: sub.name }) });
       for (const formula of sub.formulas) out.push({ kind: 'formula', key: formula.id, formula });
     }
     return out;
-  }, [unit]);
+  }, [unit, subject, level]);
 
   const sectionPositions = useMemo(() => {
     const map = new Map<number, number>();
@@ -97,7 +114,7 @@ export default function UnitView({ subject, level, unitIndex, subtopicIndex, nav
       <header className="unit-title">
         <h1>{unitTitle(meta.name)}</h1>
         <p>
-          {meta.count} formulas in {meta.subtopics.length} sections
+          {meta.count + (added?.total ?? 0)} formulas in {meta.subtopics.length + (added?.extraSections.length ?? 0)} sections{added?.total ? `, ${added.total} of them yours` : ''}
         </p>
         {STATUS_LABEL[meta.status] && <p className="status-label">{STATUS_LABEL[meta.status]}</p>}
         <SyllabusNote subject={subject} level={level} number={Number(splitUnitName(meta.name).number)} />
@@ -106,7 +123,7 @@ export default function UnitView({ subject, level, unitIndex, subtopicIndex, nav
       {state.status === 'loading' && <p className="spinner-line">Opening {unitTitle(meta.name)}</p>}
       {state.status === 'error' && <p className="spinner-line">This unit could not load. Reload the page to try again.</p>}
       {unit && (
-        <FormulaList items={items} scrollRef={scrollRef} scrollKey={navigation} scrollToIndex={subtopicIndex != null ? (sectionPositions.get(subtopicIndex) ?? null) : null} onTopItemChange={onTopItemChange} />
+        <FormulaList items={items} scrollRef={scrollRef} scrollKey={navigation} highlightId={highlightId} scrollToIndex={highlightId && items.some((i) => i.key === highlightId) ? items.findIndex((i) => i.key === highlightId) : subtopicIndex != null ? (sectionPositions.get(subtopicIndex) ?? null) : null} onTopItemChange={onTopItemChange} />
       )}
 
       {unit && (

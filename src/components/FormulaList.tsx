@@ -4,9 +4,10 @@ import { useVirtualizer } from '@tanstack/react-virtual';
 import type { Formula } from '../data/types';
 import { listReveal } from '../lib/motion';
 import { FormulaRow } from './FormulaRow';
+import { PenLine } from 'lucide-react';
 
 export type ListItem =
-  | { kind: 'section'; key: string; number: string; name: string; count: number; subtopicIndex: number }
+  | { kind: 'section'; key: string; number: string; name: string; count: number; subtopicIndex: number; addHref?: string; custom?: 1 }
   | { kind: 'formula'; key: string; formula: Formula };
 
 interface Props {
@@ -18,13 +19,15 @@ interface Props {
   scrollKey?: number;
   /** Reports the item at the reading line, or null while the list is still below it. */
   onTopItemChange?: (index: number | null) => void;
+  /** A formula to pick out for a moment, having just been saved. */
+  highlightId?: string | null;
 }
 
 /** How long after the last scroll event a jump counts as finished. */
 const JUMP_SETTLE_MS = 120;
 
 /** Tall lists stay fast because only the rows near the screen exist. */
-export function FormulaList({ items, scrollRef, showWhere, scrollToIndex, scrollKey, onTopItemChange }: Props) {
+export function FormulaList({ items, scrollRef, showWhere, scrollToIndex, scrollKey, onTopItemChange, highlightId }: Props) {
   const [openId, setOpenId] = useState<string | null>(null);
   const [printing, setPrinting] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
@@ -171,14 +174,19 @@ export function FormulaList({ items, scrollRef, showWhere, scrollToIndex, scroll
   const renderItem = (item: ListItem) =>
     item.kind === 'section' ? (
       <div className="section-head" data-subtopic={item.subtopicIndex}>
-        <div className="row-num">{item.number}</div>
+        <div className="row-num">{item.custom ? <PenLine size={15} aria-hidden className="row-pen" /> : item.number}</div>
         <h2>
           {item.name}
           <small>{item.count}</small>
         </h2>
+        {item.addHref && (
+          <a className="btn btn-quiet section-add no-print" href={item.addHref} aria-label={`Add a formula to ${item.name}`} title="Add a formula">
+            <PenLine size={15} aria-hidden /> <span className="act-label">Add a formula</span>
+          </a>
+        )}
       </div>
     ) : (
-      <FormulaRow formula={item.formula} open={openId === item.formula.id} onToggle={onToggle} showWhere={showWhere} />
+      <FormulaRow formula={item.formula} open={openId === item.formula.id} onToggle={onToggle} showWhere={showWhere} flash={highlightId === item.formula.id} />
     );
 
   if (printing) {

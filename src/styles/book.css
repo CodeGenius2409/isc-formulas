@@ -600,6 +600,37 @@ kbd {
   height: auto;
 }
 
+.lewis {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  color: var(--ink);
+}
+
+.lewis-atom,
+.lewis-charge {
+  font-family: var(--font-body);
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+.lewis-atom {
+  font-size: 15px;
+}
+
+.lewis-charge {
+  font-size: 11px;
+}
+
+/* The lone pair a structure is about. */
+.lewis-point circle {
+  fill: var(--accent);
+}
+
+.lewis-forms {
+  align-items: center;
+}
+
 .molecule-button {
   display: block;
   max-width: 100%;
@@ -662,5 +693,187 @@ kbd {
 @media print {
   .molecule-button {
     cursor: auto;
+  }
+}
+
+/* Your own formulas: a note handwritten into a printed book. A pen mark takes the place of the number,
+   and the margin rule breaks into a dashed stretch beside the row. */
+.row[data-custom] {
+  position: relative;
+}
+
+.row[data-custom]::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--margin-col);
+  width: 2px;
+  margin-left: -1px;
+  background: repeating-linear-gradient(to bottom, var(--margin) 0 6px, var(--paper) 6px 11px);
+}
+
+.row-pen {
+  display: inline-block;
+  color: var(--accent);
+}
+
+.row-yours {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-left: 0.5rem;
+  font-family: var(--font-body);
+  font-size: var(--step--1);
+  font-weight: 400;
+  font-style: italic;
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+
+.row[data-flash] {
+  animation: row-flash 2.4s ease-out;
+}
+
+@keyframes row-flash {
+  from,
+  40% {
+    background: var(--paper-3);
+  }
+  to {
+    background: transparent;
+  }
+}
+
+/* The same mark, held still and then gone, with nothing moving. */
+@media (prefers-reduced-motion: reduce) {
+  .row[data-flash] {
+    animation: none;
+    background: var(--paper-3);
+  }
+}
+
+.section-head:has(.section-add) {
+  position: relative;
+}
+
+.section-head:has(.section-add) h2 {
+  padding-right: 3rem;
+}
+
+.section-add {
+  position: absolute;
+  right: 0.25rem;
+  bottom: 0.25rem;
+}
+
+.custom-confirm {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: var(--step--1);
+}
+
+.custom-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+@media (pointer: coarse) {
+  .custom-option {
+    min-height: 2.75rem;
+  }
+}
+
+.custom-preview {
+  border-top: 1px solid var(--rule);
+}
+
+.custom-variable {
+  display: grid;
+  grid-template-columns: 4.5rem minmax(0, 1fr) 5rem auto;
+  gap: 0.375rem;
+  margin-top: 0.5rem;
+}
+
+.custom-molecule {
+  display: inline-block;
+  color: var(--ink);
+}
+
+.custom-molecule svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+math-field.math-editor {
+  display: block;
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--rule-2);
+  border-radius: 3px;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: var(--step-1);
+  --caret-color: var(--accent);
+  --selection-background-color: var(--paper-3);
+  --selection-color: var(--ink);
+  --contains-highlight-background-color: var(--paper-3);
+  --placeholder-color: var(--ink-3);
+  --primary: var(--accent);
+  --primary-color: var(--accent);
+  --_primary: var(--ink-2);
+}
+
+/* MathLive's on-screen keyboard sits at the end of the page, so it takes the theme's tokens here. */
+body {
+  --keyboard-zindex: 60;
+  --keyboard-background: var(--paper-2);
+  --keyboard-border: var(--rule-2);
+  --keyboard-toolbar-background: var(--paper-2);
+  --keyboard-toolbar-text: var(--ink-2);
+  --keyboard-toolbar-text-active: var(--accent);
+  --keyboard-toolbar-background-hover: var(--paper-3);
+  --keyboard-toolbar-background-selected: var(--paper);
+  --keyboard-accent-color: var(--accent);
+  --keycap-background: var(--paper);
+  --keycap-background-hover: var(--paper-3);
+  --keycap-background-active: var(--paper-3);
+  --keycap-background-pressed: var(--paper-3);
+  --keycap-border: var(--rule-2);
+  --keycap-border-bottom: var(--rule-2);
+  --keycap-text: var(--ink);
+  --keycap-text-active: var(--ink);
+  --keycap-text-hover: var(--ink);
+  --keycap-text-pressed: var(--ink);
+  --keycap-shift-text: var(--accent);
+  --keycap-primary-background: var(--ink);
+  --keycap-primary-text: var(--paper);
+  --keycap-primary-background-hover: var(--ink-2);
+  --keycap-secondary-background: var(--paper-3);
+  --keycap-secondary-background-hover: var(--paper-2);
+  --keycap-secondary-text: var(--ink);
+  --keycap-secondary-border: var(--rule-2);
+  --keycap-secondary-border-bottom: var(--rule-2);
+  --variant-panel-background: var(--paper-2);
+  --variant-keycap-text: var(--ink);
+  --variant-keycap-text-active: var(--paper);
+  --variant-keycap-background-active: var(--ink);
+  --box-placeholder-color: var(--accent);
+}
+
+math-field.math-editor:focus-within {
+  outline: 2px solid var(--focus);
+  outline-offset: 1px;
+}
+
+@media (pointer: coarse) {
+  .row-yours {
+    display: block;
+    margin-left: 0;
   }
 }

@@ -30,6 +30,17 @@ export function useKatexReady(): boolean {
   );
 }
 
+/** What is wrong with some LaTeX, in KaTeX's words, or null if it renders. */
+export function latexProblem(latex: string): string | null {
+  if (!katex) return null;
+  try {
+    katex.renderToString(latex, { throwOnError: true, strict: 'ignore' });
+    return null;
+  } catch (err) {
+    return (err as Error).message.replace(/^KaTeX parse error: /, '').replace(/ at position \d+:.*$/s, '').trim();
+  }
+}
+
 /** `\displaystyle` in inline mode gives full-size maths that can still wrap. */
 export function renderLatex(latex: string): string {
   if (!katex) return '';

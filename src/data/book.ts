@@ -2,6 +2,8 @@
 // chunk, so opening Physics XI never pays for Mathematics XII.
 import manifestJson from './generated/manifest.json';
 import { canonicalId } from './aliases';
+import { mergeCustom, resolveCustom } from '../custom/merge';
+import { customStore, ensureCustomLoaded, findCustom, isCustomId } from '../custom/store';
 import { resolveChunk, splitUnitName, type ResolvedUnit } from './resolve';
 import type { Chunk, ClassLevel, Formula, Manifest, ManifestClass, ManifestSubject, SharedEntry, SubjectId } from './types';
 
@@ -47,7 +49,8 @@ export function loadChunk(subject: SubjectId, level: ClassLevel): Promise<Chunk>
 
 const resolvedCache = new Map<string, Promise<ResolvedUnit[]>>();
 
-export function loadUnits(subject: SubjectId, level: ClassLevel): Promise<ResolvedUnit[]> {
+/** The printed book, without your formulas. A page showing a live list adds them itself with mergeCustom. */
+export function loadPrintedUnits(subject: SubjectId, level: ClassLevel): Promise<ResolvedUnit[]> {
   const key = `${subject}-${level}`;
   const cached = resolvedCache.get(key);
   if (cached) return cached;
@@ -66,7 +69,18 @@ export function locateId(id: string): { subject: SubjectId; level: ClassLevel } 
   return { subject: PREFIX[match[1]], level: match[2] === 'xi' ? 'XI' : 'XII' };
 }
 
+/** The units of a class, with your formulas in their places. */
+export async function loadUnits(subject: SubjectId, level: ClassLevel): Promise<ResolvedUnit[]> {
+  const [units] = await Promise.all([loadPrintedUnits(subject, level), ensureCustomLoaded()]);
+  return mergeCustom(units, customStore.get().formulas, subject, level);
+}
+
 export async function findFormula(rawId: string): Promise<Formula | null> {
+  if (isCustomId(rawId)) {
+    await ensureCustomLoaded();
+    const mine = findCustom(rawId);
+    return mine ? (resolveCustom(customStore.get().formulas).find((f) => f.id === rawId) ?? null) : null;
+  }
   const id = canonicalId(rawId);
   const shared = await loadShared();
   const sharedEntry = shared[id];
@@ -89,10 +103,15 @@ export async function findFormula(rawId: string): Promise<Formula | null> {
 
 let allPromise: Promise<Formula[]> | null = null;
 
-/** Every formula in the book, once each. Used by search and practice. */
-export function loadAllFormulas(): Promise<Formula[]> {
+/** Every formula in the book, once each, and then yours. Used by search and practice. */
+export async function loadAllFormulas(): Promise<Formula[]> {
+  const [printed] = await Promise.all([loadPrintedFormulas(), ensureCustomLoaded()]);
+  return [...printed, ...resolveCustom(customStore.get().formulas)];
+}
+
+function loadPrintedFormulas(): Promise<Formula[]> {
   allPromise ??= (async () => {
-    const lists = await Promise.all(manifest.subjects.flatMap((subject) => subject.classes.map((cls) => loadUnits(subject.id, cls.level))));
+    const lists = await Promise.all(manifest.subjects.flatMap((subject) => subject.classes.map((cls) => loadPrintedUnits(subject.id, cls.level))));
     const seen = new Set<string>();
     const out: Formula[] = [];
     for (const units of lists) {

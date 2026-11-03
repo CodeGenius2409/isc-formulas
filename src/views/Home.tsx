@@ -22,6 +22,12 @@ export default function Home() {
 
           <ReviewQueue />
 
+          <p className="mt-3">
+            <a className="text-action" href={href('mine')}>
+              Your formulas
+            </a>
+          </p>
+
           {last && (
             <section className="today-section" aria-labelledby="continue-h">
               <h2 id="continue-h">Continue reading</h2>

@@ -22,6 +22,8 @@ const ROUTES: [string, string][] = [
   ['saved', 'saved'],
   ['progress', 'practice'],
   ['mock-paper', 'paper'],
+  ['your-formulas', 'mine'],
+  ['add-formula', 'mine/new'],
   ['tools', 'tools'],
   ['projectile', 'tools/projectile'],
   ['circuits', 'tools/circuits'],

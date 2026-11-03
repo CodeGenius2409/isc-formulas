@@ -1,3 +1,20 @@
+# Decisions, v3
+
+Newest work last. Each task gets two lines: what was decided, and why.
+
+- **Task 2, intersections.** A toggle button marks every crossing on the graph with its coordinates, remembered in `sessionStorage`. Crossings come from sampling f − g, bisecting each sign change, and checking the two curves really agree at the result, which rejects tan x and 1/x; a separate search finds curves that touch without crossing.
+  Labels never overlap each other or a dot, and avoid curves where they can. When a view is too crowded, a label is left out rather than overlapped, and the graph says "zoom in"; every point is still in the readouts.
+- **Task 3, reading the graph.** The guide, markers and readout live on their own canvas and in their own component, so following the pointer never redraws the curves, and updates are held to one a frame. Named points snap within 14 px, or 24 on touch, and are worked out only when first needed.
+  One finger now reads the graph on touch, as you asked, so moving it takes two fingers. Arrow keys used to pan; they now read, with up and down jumping between named points, and Shift with an arrow pans.
+- **Task 4, plotter calculus.** Derivatives and antiderivatives come from a small module on the solver's own expression trees (`src/sims/lib/symbolic.ts`), not from mathjs `derivative` or Algebrite. Those would add a great deal to a page that needs a table of rules; the tests compare my derivatives with real mathjs, and every antiderivative is checked numerically before it is shown, so a wrong rule falls back to a numeric curve.
+  Definite integrals use adaptive Simpson, split at roots so the areas above and below the axis are separate, map infinite limits to a finite range, and report "does not converge" rather than a wrong number. Below-axis shading is hatched as well as lighter, so the sign isn't colour alone. `log` stays the natural log, as it already was in this app, and the help text says so.
+- **Task 5, structures with lone pairs.** 90-odd structures are JSON in `src/data/lewis/figures.ts`, mostly built from VSEPR templates, and drawn as SVG by `components/Lewis.tsx`, since SMILES renderers don't draw lone pairs well. Every one passes `src/data/lewis/check.ts`: electrons, formal charges, octets, shape against domains, and drawn angles, and a test confirms the checker fails on broken structures. They load lazily, and the practice questions take their answers from the same checked data.
+  The syllabus map has no p-block unit, so oxoacids, xenon compounds and interhalogens as a topic are left out, as you asked. ClF₃, BrF₅ and iodine ions appear only as VSEPR examples. Lone pairs are hidden on functional groups, and the pair that matters is in `--accent`.
+- **Task 1, your own formulas.** They live in IndexedDB through `idb`, with `u-` and a UUID as ids, and are merged into the book as it renders, so favourites, search, print and the lists needed almost no new paths. MathLive is lazy, about 812 KB raw, and reuses the book's KaTeX fonts rather than bringing its own. SMILES uses SmilesDrawer on the phone, about 197 KB raw and lazy, since RDKit is 7 MB; a test checks its molecular formula against what RDKit verified for every non-salt compound in the book.
+  **No sketcher.** The usable ones, such as Ketcher, run to megabytes and bring their own interface, which is too much for a phone and this design. Typed SMILES with a live drawing and a computed formula does the job, and structures with lone pairs are chosen from the checked set, since a hand-described one couldn't be checked. Sections you add aren't stored apart: a section is just a name your formulas share, so an empty one can't linger. Your formulas are recall cards in practice, and only if you turn that on.
+
+---
+
 # Decisions, v2
 
 Newest work last. Each task gets two lines: what was decided, and why.

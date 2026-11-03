@@ -68,6 +68,18 @@ export function trackSection(section: number | null): void {
   listeners.forEach((l) => l());
 }
 
+/** Takes a parameter out of the URL without it counting as a move. */
+export function dropQuery(name: string): void {
+  const params = new URLSearchParams(current.query);
+  if (!params.has(name)) return;
+  params.delete(name);
+  const q = params.toString();
+  const next = `#/${current.path.map(encodeURIComponent).join('/')}${q ? `?${q}` : ''}`;
+  window.history.replaceState(window.history.state, '', next);
+  current = { ...parseHash(next), navigation: current.navigation };
+  listeners.forEach((l) => l());
+}
+
 /** A link to where the URL already points fires no hashchange, but the reader still wants to go there. */
 export function goAgainIfHere(target: string): void {
   if (window.location.hash !== target) return;
