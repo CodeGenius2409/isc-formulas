@@ -41,6 +41,8 @@ function describe(spec: DiagramSpec): string {
       return `Capacitors of ${spec.c1} and ${spec.c2} in series across a supply of ${spec.v}.`;
     case 'wheatstone':
       return `A Wheatstone bridge with a galvanometer between the two middle points. The top arms are P = ${spec.p} and Q = ${spec.q}. The bottom arms are R = ${spec.r} and S = ${spec.s}.`;
+    default:
+      return 'A figure for this question.';
   }
 }
 

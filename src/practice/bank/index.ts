@@ -81,7 +81,7 @@ function fillDeep<T>(spec: T, values: Record<string, number>): T {
 }
 
 /** One go at building the parts. Null when these values don't give a sensible answer. */
-function buildParts(def: NumericDef, values: Record<string, number>, rng: Rng): NumericPart[] | null {
+export function buildParts(def: Pick<NumericDef, 'id' | 'subject' | 'parts'>, values: Record<string, number>, rng: Rng): NumericPart[] | null {
   const saved: Record<string, { raw: string; unit: string }> = {};
   const parts: NumericPart[] = [];
   for (const part of def.parts) {
