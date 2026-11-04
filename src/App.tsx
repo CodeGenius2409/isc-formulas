@@ -1,12 +1,13 @@
 import { ensureCustomLoaded } from './custom/store';
-import { lazy, Suspense, useEffect, useLayoutEffect, useRef, type RefObject } from 'react';
+import { Suspense, useEffect, useLayoutEffect, useRef, type RefObject } from 'react';
+import { lazyRetry } from './lib/retry-import';
 import { SUBJECT_IDS } from './data/book';
 import type { ClassLevel, SubjectId } from './data/types';
 import { useMediaQuery } from './lib/hooks';
 import { viewEnter } from './lib/motion';
 import { closeWork, useRoute, workState, type Route } from './lib/router';
 import { useStore } from './lib/store';
-import { lastReadStore } from './state/library';
+import { lastReadStore, rememberPlace } from './state/library';
 import { contentsSheetStore, closeContentsSheet, openPalette, paletteStore } from './state/ui';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { Sheet } from './components/Sheet';
@@ -19,18 +20,18 @@ import { WorkArea } from './components/work/WorkArea';
 import { UpdatePrompt } from './components/UpdatePrompt';
 import Home from './views/Home';
 
-const BookContents = lazy(() => import('./views/BookContents'));
-const UnitView = lazy(() => import('./views/UnitView'));
-const FormulaView = lazy(() => import('./views/FormulaView'));
-const Saved = lazy(() => import('./views/Saved'));
-const Settings = lazy(() => import('./views/Settings'));
-const ProgressView = lazy(() => import('./views/ProgressView'));
-const PaperView = lazy(() => import('./views/PaperView'));
-const MyFormulas = lazy(() => import('./views/MyFormulas'));
-const FormulaEditor = lazy(() => import('./views/FormulaEditor'));
-const ToolsView = lazy(() => import('./views/ToolsView'));
-const SearchView = lazy(() => import('./views/SearchView'));
-const FindPalette = lazy(() => import('./components/FindPalette').then((m) => ({ default: m.FindPalette })));
+const BookContents = lazyRetry(() => import('./views/BookContents'));
+const UnitView = lazyRetry(() => import('./views/UnitView'));
+const FormulaView = lazyRetry(() => import('./views/FormulaView'));
+const Saved = lazyRetry(() => import('./views/Saved'));
+const Settings = lazyRetry(() => import('./views/Settings'));
+const ProgressView = lazyRetry(() => import('./views/ProgressView'));
+const PaperView = lazyRetry(() => import('./views/PaperView'));
+const MyFormulas = lazyRetry(() => import('./views/MyFormulas'));
+const FormulaEditor = lazyRetry(() => import('./views/FormulaEditor'));
+const ToolsView = lazyRetry(() => import('./views/ToolsView'));
+const SearchView = lazyRetry(() => import('./views/SearchView'));
+const FindPalette = lazyRetry<object>(() => import('./components/FindPalette').then((m) => ({ default: m.FindPalette })));
 
 interface BookPlace {
   subject: SubjectId;
@@ -125,6 +126,11 @@ export function App() {
   const mainRef = useRef<HTMLElement>(null);
   const viewRef = useRef<HTMLDivElement>(null);
   const pathKey = route.path.join('/');
+
+  // Where you are in the book, so that adding a formula starts there, even from a page outside it.
+  useEffect(() => {
+    if (place.inBook) rememberPlace(place.subject, place.level);
+  }, [place.inBook, place.subject, place.level]);
 
   // A simulator needs the room more than it needs the book beside it.
   const wideTool = route.path[0] === 'tools' && route.path[1] !== undefined;

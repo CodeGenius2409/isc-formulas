@@ -1,4 +1,5 @@
 import { lazy, Suspense, useEffect, useMemo } from 'react';
+import { retryImport } from '../lib/retry-import';
 import { ArrowLeft } from 'lucide-react';
 import { manifest } from '../data/book';
 import { href } from '../lib/router';
@@ -51,7 +52,7 @@ export default function ToolsView({ toolId }: { toolId: string | null }) {
 
 function ToolPage({ simId }: { simId: string }) {
   const sim = SIMS.find((s) => s.id === simId)!;
-  const Component = useMemo(() => lazy(() => sim.load().then((c) => ({ default: c }))), [sim]);
+  const Component = useMemo(() => lazy(() => retryImport(() => sim.load()).then((c) => ({ default: c }))), [sim]);
   return (
     <div className="page" data-subject={sim.subject}>
       <div className="page-pad">

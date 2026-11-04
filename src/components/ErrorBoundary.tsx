@@ -1,5 +1,6 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 import { RotateCw } from 'lucide-react';
+import { forgetFailedImports } from '../lib/retry-import';
 
 interface Props {
   children: ReactNode;
@@ -25,7 +26,10 @@ export class ErrorBoundary extends Component<Props, { failed: boolean }> {
   }
 
   componentDidUpdate(previous: Props) {
-    if (this.state.failed && previous.resetKey !== this.props.resetKey) this.setState({ failed: false });
+    if (this.state.failed && previous.resetKey !== this.props.resetKey) {
+      forgetFailedImports();
+      this.setState({ failed: false });
+    }
   }
 
   render() {

@@ -1,6 +1,7 @@
 // Loads a class's questions on first need, and turns a definition into one attempt at it. Numerical
 // answers always come from the solver registry, so they can't drift from what the solver says.
 import { loadSyllabus } from '../../data/syllabus';
+import { retryImport } from '../../lib/retry-import';
 import type { ClassLevel, SubjectId } from '../../data/types';
 import { getEntry } from '../../solver/registry';
 import { solve, varTex, type SolveInput, type Step } from '../../solver/solve';
@@ -34,7 +35,7 @@ export function loadBank(subject: SubjectId, level: ClassLevel): Promise<LoadedB
   if (!loading) {
     const loader = loaders[key];
     if (!loader) return Promise.resolve({ defs: [], names: new Map() });
-    loading = Promise.all([loader(), loadSyllabus(subject)]).then(([module, syllabus]) => {
+    loading = Promise.all([retryImport(loader), loadSyllabus(subject)]).then(([module, syllabus]) => {
       const names = new Map<string, string>();
       for (const unit of syllabus.classes.find((c) => c.level === level)?.units ?? []) {
         names.set(String(unit.number), unit.name);
@@ -43,6 +44,8 @@ export function loadBank(subject: SubjectId, level: ClassLevel): Promise<LoadedB
       return { defs: module.default, names };
     });
     cache.set(key, loading);
+    // A failed load isn't kept, so the next try starts again.
+    loading.catch(() => cache.delete(key));
   }
   return loading;
 }

@@ -60,6 +60,29 @@ function loadLastRead(): LastRead | null {
 
 export const lastReadStore = createStore<LastRead | null>(loadLastRead(), (value) => writeJson(LAST_KEY, value));
 
+/**
+ * The subject and class last open anywhere in the book, even without reading a unit. It sets where a new
+ * formula starts when nothing else says so.
+ */
+const PLACE_KEY = 'isc-place';
+export interface Place {
+  subject: SubjectId;
+  level: ClassLevel;
+}
+export const lastPlaceStore = createStore<Place | null>(readJson<Place | null>(PLACE_KEY, null), (value) => writeJson(PLACE_KEY, value));
+
+export function rememberPlace(subject: SubjectId, level: ClassLevel): void {
+  lastPlaceStore.set((place) => (place?.subject === subject && place.level === level ? place : { subject, level }));
+}
+
+// Another tab moving through the book counts too. Without this, only a reload would notice.
+if (typeof window !== 'undefined') {
+  window.addEventListener('storage', (e) => {
+    if (e.key === PLACE_KEY) lastPlaceStore.set(readJson<Place | null>(PLACE_KEY, null));
+    if (e.key === LAST_KEY) lastReadStore.set(loadLastRead());
+  });
+}
+
 /** The class last opened for each subject, so a thumb tab returns you there. */
 const CLASS_KEY = 'isc-class';
 export const classMemoryStore = createStore<Partial<Record<SubjectId, ClassLevel>>>(readJson(CLASS_KEY, {}), (value) => writeJson(CLASS_KEY, value));

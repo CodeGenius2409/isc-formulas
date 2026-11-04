@@ -74,6 +74,8 @@ stretch beside the row, alternating `--margin` and `--paper`. A small italic "Yo
 name in `--ink-2`. A formula just saved holds on `--paper-3` and fades. With reduced motion it holds
 without fading. Edit and Delete appear on these rows and on no others.
 
+In the SMILES box, the atom being talked about is marked in `--accent` in both the text and the drawing, with a dot-free ring on the drawing and a solid underline in the text. A mistake is marked in `--bad` with a dotted underline, always with words beside it.
+
 Blackboard is designed separately, not inverted: slate green rather than black,
 chalk white rather than grey, and subjects in coloured chalk. Don't derive one theme
 from the other.

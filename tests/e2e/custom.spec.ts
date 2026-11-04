@@ -236,7 +236,7 @@ test('Chemistry: SMILES draws live, gives its formula, and refuses nonsense', as
   await expect(page.getByTestId('smiles-formula')).toHaveText('C2H6O');
   await expect(page.getByTestId('smiles-preview').locator('svg').first()).toBeVisible();
   await input.fill('C(C');
-  await expect(page.getByRole('alert').filter({ hasText: "can't be read" })).toBeVisible();
+  await expect(page.getByRole('alert').filter({ hasText: 'The bracket at position 2 is never closed.' })).toBeVisible();
   await input.fill('CCO');
   await expect(page.getByTestId('smiles-formula')).toHaveText('C2H6O');
   await page.getByRole('button', { name: 'Next: where it goes' }).click();

@@ -213,6 +213,21 @@ Work is on a `rebuild` branch. `master` still holds your original files.
 - **Your own program is kept.** Typing into a sample turns it into "My program", which
   is saved in this browser. Picking a sample never overwrites it.
 
+## The structure section going missing (v4, Task 0)
+
+- **The cause.** `tests/e2e/editor-structure.spec.ts` reproduced it on the old build. The section was shown only when `subject === 'chemistry'`, and `subject` was read once, when the editor opened, from the address or from the last unit read. The choice of subject itself is on the second step. So the section vanished, with no way back on that screen, in three cases that a reload cures: another tab had moved to Chemistry (this tab's memory of the last subject was stale), the address changed while the editor was open (the same `key` meant no fresh start), and any arrival from outside a unit, such as the Chemistry contents page, where nothing recorded the subject at all. That last case isn't cured by a reload, which is why it looked intermittent.
+- **A second, separate cause of "a reload fixes it".** `React.lazy` and a remembered promise both keep a failed import for good. One dropped request for the drawing engine meant every later SMILES said it couldn't be read, until a reload, and a failed lone-pair chunk took the whole editor down with it. The likely suspect, a stale service worker, was tested and is not what removed the section: its only effect is this failed import.
+- **The fix.** Chemistry always shows the section. Every other subject has an "Add a structure" button, and a structure can now be saved on any subject. The subject follows the address and the book, across tabs. Loads go through `src/lib/retry-import.tsx`, which retries, forgets failures, and looks for an update when a file has gone. `RetryBoundary` keeps a failure inside the section, with a Retry that needs no reload.
+- **A half-written formula now survives a reload** in `sessionStorage`, including one that installs an update. Cancel throws it away, and moving elsewhere in the app leaves it behind.
+- **Old and new code can't mix.** File names carry hashes, so old code can only ask for old files. After another tab presses Update now, a tab that has noticed the waiting version reloads onto the new one, which comes from the PWA library and is why a draft has to survive it. A tab that hadn't noticed is told in words. **This can still end an unsaved practice session in a second tab,** because that is in-memory state. Mock papers and drafts are stored, so they survive. `tests/e2e/update-flow.spec.ts` publishes a real renamed build to check both paths.
+
+## SMILES help in the editor (v4, Task 3)
+
+- **A small SMILES reader of our own, `src/custom/smiles-read.ts`,** rather than the drawing library's parser. That library can't report which character is which atom, and its errors are parser jargon. A test holds the reader to RDKit's formula for every compound in the book. It is deliberately stricter than the library, and refuses a neutral nitrogen with four bonds.
+- **"Same compound" compares atoms, charges, hydrogen counts and connections, ignoring bond orders.** So every Kekulé form of benzene matches, and `N(=O)=O` matches `[N+](=O)[O-]`. **Stereochemistry is ignored,** so cis and trans count as the same answer. None of the guide's exercises depend on it.
+- **"Pick by name" offers all 254 compounds that passed the PubChem and RDKit check,** used in the book or not, which fits the 200 to 300 asked for. No new compounds were added, so no new names needed checking.
+- **The builder overwrites the box each time.** It keeps its own description rather than trying to edit whatever was typed, which is what keeps its output correct.
+
 ## PWA and performance
 
 - **The service worker precaches everything,** including every data chunk, simulator

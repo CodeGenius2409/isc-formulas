@@ -1,10 +1,11 @@
-import { lazy, Suspense, useRef, type KeyboardEvent } from 'react';
+import { Suspense, useRef, type KeyboardEvent } from 'react';
+import { lazyRetry } from '../../lib/retry-import';
 import { X } from 'lucide-react';
 import { closeWork, openWork, workState, type Route, type WorkTab } from '../../lib/router';
 
-const SolvePane = lazy(() => import('./SolvePane'));
-const CheckPane = lazy(() => import('./CheckPane'));
-const PracticePane = lazy(() => import('./PracticePane'));
+const SolvePane = lazyRetry(() => import('./SolvePane'));
+const CheckPane = lazyRetry(() => import('./CheckPane'));
+const PracticePane = lazyRetry(() => import('./PracticePane'));
 
 const TABS: { id: WorkTab; label: string }[] = [
   { id: 'solve', label: 'Solve' },

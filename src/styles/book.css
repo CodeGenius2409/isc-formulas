@@ -809,6 +809,138 @@ kbd {
   height: 100%;
 }
 
+.custom-molecule {
+  position: relative;
+}
+
+.custom-molecule-art {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Over the drawing: invisible until an atom is the one being talked about. */
+.custom-molecule .atom-map {
+  position: absolute;
+  inset: 0;
+}
+
+.atom-map circle {
+  fill: var(--accent);
+  fill-opacity: 0;
+  stroke: var(--accent);
+  stroke-opacity: 0;
+  stroke-width: 2;
+  pointer-events: all;
+  transition: fill-opacity 160ms ease, stroke-opacity 160ms ease;
+}
+
+.atom-map circle[data-active] {
+  fill-opacity: 0.2;
+  stroke-opacity: 1;
+}
+
+.smiles-echo {
+  margin-top: 0.25rem;
+  min-height: 1.5em;
+  overflow-wrap: anywhere;
+  font-size: var(--step--1);
+  color: var(--ink-2);
+  letter-spacing: 0.02em;
+}
+
+.smiles-echo span {
+  padding-bottom: 1px;
+}
+
+.smiles-echo [data-active] {
+  color: var(--accent);
+  font-weight: 700;
+  border-bottom: 2px solid var(--accent);
+}
+
+.smiles-echo [data-bad] {
+  color: var(--bad);
+  font-weight: 700;
+  border-bottom: 2px dotted var(--bad);
+}
+
+.custom-panel {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--rule);
+}
+
+.guide-try {
+  margin-top: 0.75rem;
+}
+
+.guide-input {
+  flex: 1 1 12rem;
+  min-width: 0;
+  width: auto;
+}
+
+.guide-steps {
+  flex: 1 1 12rem;
+  min-width: 0;
+  width: auto;
+}
+
+.guide-chip {
+  font-size: var(--step--1);
+}
+
+.cheat {
+  margin-top: 0.25rem;
+}
+
+.cheat > div {
+  display: grid;
+  grid-template-columns: minmax(6rem, 11rem) minmax(0, 1fr);
+  gap: 0.75rem;
+  padding: 0.25rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.cheat dd {
+  color: var(--ink-2);
+}
+
+.builder-count {
+  width: 4.5rem;
+}
+
+.builder-unit {
+  font-size: var(--step--1);
+  color: var(--ink-2);
+  align-self: center;
+}
+
+.builder-list {
+  margin-top: 0.5rem;
+  list-style: none;
+  padding: 0;
+}
+
+.builder-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pick-list {
+  margin-top: 0.25rem;
+  list-style: none;
+  padding: 0;
+}
+
+.pick-row {
+  width: 100%;
+  justify-content: space-between;
+  text-align: left;
+}
+
 math-field.math-editor {
   display: block;
   width: 100%;
