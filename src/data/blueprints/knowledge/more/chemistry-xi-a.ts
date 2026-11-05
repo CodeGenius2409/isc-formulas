@@ -55,6 +55,12 @@ const knowledge: Record<string, Facts> = {
     ],
   },
 
+  '2a': {
+    recall: [
+      ['The charge on a neutron is:', 'zero', '+1', '−1', '+2'],
+    ],
+  },
+
   '5b': {
     truths: [
       ['The entropy of the universe rises in a spontaneous process.', 'The entropy of the universe falls in a spontaneous process.'],
@@ -211,6 +217,8 @@ const knowledge: Record<string, Facts> = {
     ],
     truths: [
       ['Group reagents are used in a fixed order of groups.', 'Group reagents can be used in any order at all.'],
+      ['Dilute acid is added to the original solution in small amounts, to look for a gas.', 'A large amount of concentrated acid is always poured in first.'],
+      ['A flame test uses a clean platinum or nichrome wire.', 'A flame test uses a dirty iron wire.'],
     ],
     explain: [
       ['How is a salt’s acid radical usually tried first?', 'Add dilute HCl or H₂SO₄ and look for a gas.'],
