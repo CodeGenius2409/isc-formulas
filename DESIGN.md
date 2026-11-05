@@ -80,6 +80,20 @@ Blackboard is designed separately, not inverted: slate green rather than black,
 chalk white rather than grey, and subjects in coloured chalk. Don't derive one theme
 from the other.
 
+### Generated questions
+
+A generated question reads as a note of caution, using nothing new. These are the rules, and they're in `src/components/bank/GeneratedMark.tsx`:
+
+- A small **Generated** label with the `Dices` icon, beside the question number, in `--ink-2`. No colour of its own, so it survives black-and-white printing.
+- The margin beside the question becomes a **dotted** rule in `--ink-2`. That's what tells it apart from your own formulas, whose margin is **dashed** and marked with a pen. Bank questions have no mark at all.
+- Under the label, the notice "Generated practice question. This is not an official ISC question and may contain mistakes." sits in an expandable note, so it's one tap away and doesn't crowd the question.
+- A mock paper shows a small **legend** once, at the top of the first page, with the label and what it means, and the notice beside it.
+- In print, the label and the dotted margin remain. A printed paper has a small footer saying it contains generated questions.
+
+### Figures
+
+Physics figures are line drawings from `src/components/bank/BankDiagram.tsx`, in `currentColor` so they follow both themes, with `--paper` to mask lines behind labels and `--paper-3` for water and glass. No other fill. Each has a text description as its accessible name. On screen, it opens larger when tapped, and it scales to the page's width up to 20rem. In a Word file, it's a black PNG on white.
+
 ## Type
 
 Chosen with the `ui-ux-pro-max` data. Its "Academic" pairing proposed Atkinson
@@ -154,6 +168,10 @@ Rules:
 
 `print.css` removes all chrome and prints the whole unit as a clean sheet. The
 virtual list renders every row on `beforeprint`.
+
+The teacher's paper prints from its own sheet, `PrintSheet`, with the header it was given,
+at the chosen font size, with lines for answers if wanted. Simulators never print: the
+figure of the same set-up does.
 
 ## When adding something
 

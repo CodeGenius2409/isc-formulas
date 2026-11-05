@@ -228,6 +228,29 @@ Work is on a `rebuild` branch. `master` still holds your original files.
 - **"Pick by name" offers all 254 compounds that passed the PubChem and RDKit check,** used in the book or not, which fits the 200 to 300 asked for. No new compounds were added, so no new names needed checking.
 - **The builder overwrites the box each time.** It keeps its own description rather than trying to edit whatever was typed, which is what keeps its output correct.
 
+## The question generator (v4, Task 1)
+
+- **Step A, the analysis:** `scripts/private/question-analysis.mjs` splits and classifies each paper by rules, not by reading all 4,699 parts by hand. Rules were checked against 12 page images and samples, and that found real bugs: a tag match sent every "Application of Derivatives" question to Integrals, and assertion options were counted as questions.
+- **Step B, what "covered" means:** the same subject, class and topic, and the same kind of question. That's strict, as a question with no matching topic can't count. 88.2% of all parts are covered, and 97.1% of those with a topic.
+- **Blueprints carry no paper text.** They're typed code in `src/data/blueprints/`, one file per subject and class, loaded when needed. The novelty check and `check-private` both enforce this, and each caught real phrases along the way.
+- **A numerical is solved by the same registry as the solver,** so dimensions and steps come free, and a wrong formula would break both places. Where no entry applies, as in Maths, the question is built backwards from a clean answer, in exact fractions.
+- **A distractor must name its mistake.** `mcqNumber` takes `[slip, value]` pairs and prints the slip in the working, so an arbitrary number has nowhere to hide. Reading the output caught several that were arbitrary all the same.
+- **Generated ids hold their own recipe:** `g-<blueprint>-<seed>`. The mistakes log and review queue need no copy of the question, and a link can reopen one exactly. Only the id is stored, so a fixed blueprint fixes its past questions, and a removed blueprint drops out of review quietly.
+- **Default mix:** about a third generated in unit practice, half on the teacher's screen and in mock papers when switched on, and 30% of a mock paper's generated questions are CBQ-style, from the share in recent papers. Each side remembers its own slider.
+- **When the bank runs short, the share goes up and says so,** instead of quietly giving fewer questions. That's `planShare`, and a test holds it to within one question of what the slider says.
+- **The teacher's paper is kept whole in the saved file,** not rebuilt from the seed, so editing the wording of a question or reordering it survives. The seed is for regenerating, and for linking a student's mock paper.
+- **Word comes from `docx`, as a lazy chunk,** with figures as PNGs. Maths becomes readable text rather than Word equations: it survives editing and doesn't need Word's equation editor, though it's plainer than the screen.
+- **Stacks and queues are left out,** though papers up to 2025 have them. The 2028 syllabus doesn't. The first version of the blueprints had them, and reading against the syllabus removed them.
+
+## Physics figures and simulators (v4, Task 2)
+
+- **A figure first, a simulator second.** A figure is light, prints, and suits a mock paper. A simulator is closed by default even where it's safe, under "Try this set-up in the simulator", because it's a second thing to load and to read while answering.
+- **Only some simulators can open before answering.** Projectile, Atwood, inclined plane and spring don't show the answer once their readouts are hidden. A lens simulator draws the image, and the double slit draws the fringes to scale, so they wait. `reports/physics-visuals.md` has the reason for each.
+- **Question mode is a context, not a prop.** `SimQuestionContext` holds a question's values, and `Readouts` goes quiet by itself. A simulator only swaps `useState` for `usePreset`. It also means a link can open a simulator at those values.
+- **One drawing file, `BankDiagram.tsx`, draws from a typed spec,** and a question's spec is built from its own values. A test reads each number off the figure and insists it's in the question's words, which is the point of one source of truth. It found that level energies were adding information, so they came off.
+- **A fixed figure is the same code with letters for values.** A derivation's figure is a spec with `d` and `D` rather than numbers. So there's no second set of drawings.
+- **A figure is its own lazy chunk,** so a question with none costs nothing.
+
 ## PWA and performance
 
 - **The service worker precaches everything,** including every data chunk, simulator
@@ -276,6 +299,8 @@ Work is on a `rebuild` branch. `master` still holds your original files.
   share that screen. I kept the room for the formulas, since they are the content.
 
 ## What could not be tested
+
+- **Word files in Word itself.** Tests open the .docx as a zip and read its XML. Whether Word lays it out well hasn't been seen.
 
 - **Real phones.** Android and iPhone behaviour was checked by emulating touch and
   screen size in Edge, plus the install signals and iOS tags. Nobody has actually

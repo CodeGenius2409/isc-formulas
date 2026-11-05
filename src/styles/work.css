@@ -635,8 +635,7 @@ mark {
   .practice-settings summary,
   .gen-note summary {
     min-height: 2.75rem;
-    display: flex;
-    align-items: center;
+    padding-block: 0.625rem;
   }
 }
 
