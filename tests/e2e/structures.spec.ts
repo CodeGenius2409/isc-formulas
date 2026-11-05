@@ -39,17 +39,21 @@ for (const theme of ['paper', 'board'] as const) {
     await page.goto('/#/book/chemistry/XII/7?s=4');
     const molecule = page.locator('.structures .molecule').first();
     await expect(molecule).toBeVisible();
-    const colours = await molecule.evaluate((svg) => {
-      const stroke = getComputedStyle(svg.querySelector('path')!).stroke;
-      const ink = getComputedStyle(document.documentElement).getPropertyValue('--ink').trim();
-      const probe = document.createElement('i');
-      probe.style.color = ink;
-      document.body.append(probe);
-      const inkRgb = getComputedStyle(probe).color;
-      probe.remove();
-      return { stroke, inkRgb };
-    });
-    expect(colours.stroke).toBe(colours.inkRgb);
+    // The list can replace a row as it settles, and a row that has left the page has no computed style. So this asks again.
+    await expect
+      .poll(() =>
+        molecule.evaluate((svg) => {
+          const stroke = getComputedStyle(svg.querySelector('path')!).stroke;
+          const ink = getComputedStyle(document.documentElement).getPropertyValue('--ink').trim();
+          const probe = document.createElement('i');
+          probe.style.color = ink;
+          document.body.append(probe);
+          const inkRgb = getComputedStyle(probe).color;
+          probe.remove();
+          return stroke === inkRgb;
+        }),
+      )
+      .toBe(true);
     const { violations } = await new AxeBuilder({ page }).include('main').withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).exclude('.toast').analyze();
     expect(violations.map((v) => `${v.id}: ${v.nodes[0].target.join(' ')}`)).toEqual([]);
     await context.close();

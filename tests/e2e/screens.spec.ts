@@ -56,7 +56,7 @@ for (const { width, height, touch } of WIDTHS) {
       await openRoute(page, 'book/physics/XI/1');
       await page.keyboard.press('Control+k');
       await page.getByRole('combobox', { name: 'Find a formula' }).fill('energy');
-      await expect(page.getByRole('option').first()).toBeVisible();
+      await expect(page.getByRole('listbox', { name: 'Results' }).getByRole('option').first()).toBeVisible();
       await page.screenshot({ path: `test-screens/palette-${width}-${theme}.png` });
 
       expect(problems).toEqual([]);

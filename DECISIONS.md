@@ -253,6 +253,8 @@ Work is on a `rebuild` branch. `master` still holds your original files.
 
 ## PWA and performance
 
+- **What v4 cost:** first load went from 119 KB to 121 KB gzipped, and everything saved for offline from 1,854 KB to 2,198 KB. Blueprints, figures, the teacher's screen and Word export are each their own chunks, so the first screen pays almost nothing for them.
+
 - **The service worker precaches everything,** including every data chunk, simulator
   and font: about 3.3 MB, or 1.2 MB compressed. After one visit the whole app works
   offline, which the offline test checks by opening every formula with the network off.
