@@ -179,6 +179,8 @@ export function blueprintsFor(subject: SubjectId, level: ClassLevel, knowledge: 
     const out: Blueprint[] = [];
     const at = (marks: number, difficulty: Difficulty): Place => [unit, topic, marks, difficulty];
     const add = (key: string, marks: number, difficulty: Difficulty, type: BankType, format: Format, style: Style, make: (g: Gen) => Body) => out.push({ ...base(key, at(marks, difficulty), type, format, style), make });
+    /** A fact's name, the same in every format that asks it. */
+    const fact = (text: string) => `${prefix}-${unit}${topic}:${text.slice(0, 80)}`;
 
     if (f.define && f.define.length >= 3 && (subject === 'chemistry' || subject === 'physics')) {
       const list = f.define;
@@ -190,20 +192,20 @@ export function blueprintsFor(subject: SubjectId, level: ClassLevel, knowledge: 
         const letters = 'abcd';
         const columnA = pairs.map(([term], i) => `(${i + 1}) ${term}`).join('\n');
         const columnB = order.map((j, i) => `(${letters[i]}) ${pairs[j][1]}`).join('\n');
-        return g.theory(`Match each item in Column A with its description in Column B.\nColumn A\n${columnA}\nColumn B\n${columnB}`, pairs.map(([term], i): [string, number] => [`(${i + 1}) ${term} goes with (${letters[order.indexOf(i)]}).`, 1]));
+        return g.theory(`Match each item in Column A with its description in Column B.\nColumn A\n${columnA}\nColumn B\n${columnB}`, pairs.map(([term], i): [string, number] => [`(${i + 1}) ${term} goes with (${letters[order.indexOf(i)]}).`, 1]), { facts: pairs.map(([term]) => fact(term)) });
       });
     }
     if (f.define?.length) {
       const list = f.define;
       add('define', 1, 1, 'definition', 'very-short', 'paper-style', (g) => {
         const [term, meaning] = g.pick(list);
-        return g.theory(fillIn(g.pick(ASK_DEFINE), { x: term }), [meaning]);
+        return g.theory(fillIn(g.pick(ASK_DEFINE), { x: term }), [meaning], { facts: [fact(term)] });
       });
       const longer = list.filter((d) => d.length >= 3);
       if (longer.length) {
         add('define2', 2, 1, 'definition', 'short', 'paper-style', (g) => {
           const [term, a, b] = g.pick(longer);
-          return g.theory(fillIn(g.pick(ASK_DEFINE), { x: term }), [a, b]);
+          return g.theory(fillIn(g.pick(ASK_DEFINE), { x: term }), [a, b], { facts: [fact(term)] });
         });
       }
     }
@@ -211,7 +213,7 @@ export function blueprintsFor(subject: SubjectId, level: ClassLevel, knowledge: 
       const list = f.recall;
       add('recall', 1, 1, 'mcq', 'mcq', 'paper-style', (g) => {
         const [q, right, a, b, c] = g.pick(list);
-        return g.mcq(q, right, [a, b, c]);
+        return { ...g.mcq(q, right, [a, b, c]), facts: [fact(q)] };
       });
     }
     if (f.reason?.length) {
@@ -220,7 +222,7 @@ export function blueprintsFor(subject: SubjectId, level: ClassLevel, knowledge: 
         if (!list.length) continue;
         add(`reason${marks}`, marks, marks > 1 ? 2 : 1, 'reason', 'reason', 'paper-style', (g) => {
           const [claim, ...because] = g.pick(list);
-          return g.theory(fillIn(g.pick(ASK_REASON), { x: claim }), because);
+          return g.theory(fillIn(g.pick(ASK_REASON), { x: claim }), because, { facts: [fact(claim)] });
         });
       }
     }
@@ -231,7 +233,7 @@ export function blueprintsFor(subject: SubjectId, level: ClassLevel, knowledge: 
         add(`compare${marks}`, marks, 2, 'distinguish', 'distinguish', 'paper-style', (g) => {
           const [a, b, ...rows] = g.pick(list);
           const chosen = g.sample(rows as [string, string][], marks);
-          return g.theory(fillIn(g.pick(ASK_COMPARE), { a, b }), chosen.map(([x, y]) => `${capital(a)}: ${x} ${capital(b)}: ${y}`));
+          return g.theory(fillIn(g.pick(ASK_COMPARE), { a, b }), chosen.map(([x, y]) => `${capital(a)}: ${x} ${capital(b)}: ${y}`), { facts: [fact(`${a} | ${b}`)] });
         });
       }
     }
@@ -239,7 +241,7 @@ export function blueprintsFor(subject: SubjectId, level: ClassLevel, knowledge: 
       const list = f.truths!;
       add('truth', 1, 2, 'mcq', 'mcq', 'paper-style', (g) => {
         const [picked, ...rest] = g.shuffle(list);
-        return g.mcq('Which of these statements is correct?', picked[0], g.sample(rest, 3 > rest.length ? rest.length : 3).map((t) => t[1]));
+        return { ...g.mcq('Which of these statements is correct?', picked[0], g.sample(rest, 3 > rest.length ? rest.length : 3).map((t) => t[1])), facts: [fact(picked[0])] };
       });
     }
     if (f.ar?.length) {
@@ -250,7 +252,7 @@ export function blueprintsFor(subject: SubjectId, level: ClassLevel, knowledge: 
         const assertion = kind === 4 ? falseStatement : statement;
         const reason = kind === 1 ? because : kind === 2 ? alsoTrue : kind === 3 ? falseBecause : g.pick([because, alsoTrue]);
         const why = [`Both are true, and the reason explains the assertion.`, `Both are true, but what explains the assertion is this: ${because}`, `The reason is false. In fact: ${because}`, `The assertion is false. In fact: ${statement}`][kind - 1];
-        return { form: 'mcq', text: `Assertion: ${assertion}\nReason: ${reason}`, options: ASSERTION_OPTIONS.map((text) => ({ text })), answer: kind - 1, why, concept };
+        return { form: 'mcq', text: `Assertion: ${assertion}\nReason: ${reason}`, options: ASSERTION_OPTIONS.map((text) => ({ text })), answer: kind - 1, why, concept, facts: [fact(concept)] };
       });
     }
     if (f.explain?.length) {
@@ -259,7 +261,7 @@ export function blueprintsFor(subject: SubjectId, level: ClassLevel, knowledge: 
         if (!list.length) continue;
         add(`explain${marks}`, marks, marks > 2 ? 2 : 1, 'short', marks === 1 ? 'very-short' : 'short', 'paper-style', (g) => {
           const [q, ...points] = g.pick(list);
-          return g.theory(q, points);
+          return g.theory(q, points, { facts: [fact(q)] });
         });
       }
     }
@@ -273,7 +275,7 @@ export function blueprintsFor(subject: SubjectId, level: ClassLevel, knowledge: 
         add(`long${marks}`, marks, marks >= 5 ? 3 : 2, 'derivation', marks >= 5 ? 'long' : 'derivation', 'paper-style', (g) => {
           const [q, ...points] = g.pick(list);
           const diagram = f.figures?.[q];
-          return g.theory(q, points as (string | [string, number])[], diagram ? { diagram } : undefined);
+          return g.theory(q, points as (string | [string, number])[], { facts: [fact(q)], ...(diagram ? { diagram } : {}) });
         });
       }
     }
@@ -284,7 +286,7 @@ export function blueprintsFor(subject: SubjectId, level: ClassLevel, knowledge: 
         add(`draw${marks}`, marks, 2, 'short', 'diagram', 'paper-style', (g) => {
           const [q, ...points] = g.pick(list);
           const key = Object.keys(f.answerFigures ?? {}).find((start) => q.startsWith(start));
-          return g.theory(q, points, key ? { answerDiagram: f.answerFigures![key] } : undefined);
+          return g.theory(q, points, { facts: [fact(q)], ...(key ? { answerDiagram: f.answerFigures![key] } : {}) });
         });
       }
     }
@@ -298,7 +300,7 @@ export function blueprintsFor(subject: SubjectId, level: ClassLevel, knowledge: 
         add(`case${marks}`, marks, 2, 'short', 'cbq', 'cbq-style', (g) => {
           const c = g.pick(list);
           const asks = c.parts.map((p, i) => `(${['i', 'ii', 'iii', 'iv', 'v'][i]}) ${p[0]} [${p[2]}]`).join('\n');
-          return g.theory(`${c.scene}\n${asks}`, c.parts.map((p, i) => [`(${['i', 'ii', 'iii', 'iv', 'v'][i]}) ${p[1]}`, p[2]]));
+          return g.theory(`${c.scene}\n${asks}`, c.parts.map((p, i) => [`(${['i', 'ii', 'iii', 'iv', 'v'][i]}) ${p[1]}`, p[2]]), { facts: [fact(c.scene)] });
         });
       }
     }

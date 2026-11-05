@@ -10,7 +10,7 @@ import { loadStructures } from '../data/structures';
 import { generatedQuestionForId, loadBlueprints } from '../data/blueprints';
 import { bankQuestion, loadBank, questionForId } from './bank';
 import { isBankId } from './bank/define';
-import { generatedCount, pickGenerated, practiceShareStore } from './gen/mix';
+import { generatedCount, pickGenerated, questionKey, practiceShareStore } from './gen/mix';
 import { isGeneratedId } from './gen/engine';
 import { conceptQuestion, numericQuestion, seededRng, type Question, type Rng, structureQuestion } from './questions';
 import { reviewOrder } from './srs';
@@ -148,9 +148,17 @@ export async function startUnit(subject: SubjectId, level: ClassLevel, unitIndex
     const made = pickGenerated(set, pool, { count: Math.min(EXAM_SHARE, wanted), rng });
     const ordered = [...unseen, ...shuffled(here.filter((d) => seen[d.id]), rng)];
     const fromBank = ordered.slice(0, EXAM_SHARE - made.length).map((d) => ({ question: bankQuestion(d, bank, rng) }));
-    exam.push(...shuffled([...fromBank, ...made.map((question) => ({ question }))], rng));
+    // A narrow choice may not have enough, so the rest come from the same unit, generated if the slider allows, and then from the bank.
+    const short = EXAM_SHARE - made.length - fromBank.length;
+    const seenKeys = new Set(made.map(questionKey));
+    const wider = short > 0 && share > 0 ? pickGenerated(set, set.blueprints.filter((b) => b.unit === number), { count: short, rng, seenText: seenKeys }) : [];
+    const widerBank = shuffled(bank.defs.filter((d) => d.unit === number && !fits(d)), rng).slice(0, short - wider.length).map((d) => ({ question: bankQuestion(d, bank, rng) }));
+    exam.push(...shuffled([...fromBank, ...widerBank, ...[...made, ...wider].map((question) => ({ question }))], rng));
   }
-  const chosen = shuffled(list, rng).slice(0, SESSION_SIZE - exam.length);
+  // A section with few formulas borrows from the rest of its unit, so a session is always full.
+  const wanted = SESSION_SIZE - exam.length;
+  const others = forPractice(unit.subtopics.flatMap((s) => s.formulas)).filter((f) => !list.includes(f));
+  const chosen = [...shuffled(list, rng), ...shuffled(others, rng)].slice(0, wanted);
   const items = await Promise.all(chosen.map(async (f) => ({ question: await questionFor(f, rng) })));
   return begin(subtopicIndex != null ? unit.subtopics[subtopicIndex].name : unit.name.replace(/^\d+\.\s*/, ''), [...exam, ...items]);
 }

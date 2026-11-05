@@ -14,7 +14,7 @@ import { useStore } from '../lib/store';
 import type { BankItem, Difficulty } from '../practice/bank/types';
 import { answerLines, saveBlob, STUDENT_FOOTER } from '../practice/gen/docx';
 import { describePlan, generatedCount, planShare, teacherShareStore } from '../practice/gen/mix';
-import { allItems, arranged, bankForSections, buildFullPaper, buildQuestionSet, countAvailable, deleteItem, deletePaper, emptyFilters, FORMATS, makeSets, moveItem, moveItemTo, officialStructure, paperFromFile, paperToFile, presetsStore, regenerateItem, regenerateUnlocked, savePaper, savePreset, teacherHistoryStore, totalMarks, updateItem, usedInHistory, type CustomSection, type Filters, type FormatChoice, type PaperItem, type TeacherPaper } from '../practice/gen/teacher';
+import { allItems, arranged, bankForSections, buildFullPaper, capacityOf, buildQuestionSet, countAvailable, deleteItem, deletePaper, emptyFilters, FORMATS, makeSets, moveItem, moveItemTo, officialStructure, paperFromFile, paperToFile, presetsStore, regenerateItem, regenerateUnlocked, savePaper, savePreset, teacherHistoryStore, totalMarks, updateItem, usedInHistory, type CustomSection, type Filters, type FormatChoice, type PaperItem, type TeacherPaper } from '../practice/gen/teacher';
 
 const freshSeed = () => Math.floor(Math.random() * 2 ** 31);
 
@@ -22,12 +22,17 @@ function toggle<T>(list: T[], value: T): T[] {
   return list.includes(value) ? list.filter((v) => v !== value) : [...list, value];
 }
 
+const EMPTY_SET = new Set<string>();
+
 const BankDiagram = lazyRetry(() => import('../components/bank/BankDiagram'));
 
-function Check({ label, checked, onChange, testId }: { label: string; checked: boolean; onChange: () => void; testId?: string }) {
+/** A choice that can't give any questions is greyed out, with the reason, rather than failing after generating. */
+function Check({ label, checked, onChange, testId, none }: { label: string; checked: boolean; onChange: () => void; testId?: string; none?: boolean }) {
+  const off = Boolean(none) && !checked;
   return (
-    <label className="gen-check" data-testid={testId}>
-      <input type="checkbox" checked={checked} onChange={onChange} /> {label}
+    <label className="gen-check" data-testid={testId} data-none={off || undefined}>
+      <input type="checkbox" checked={checked} disabled={off} onChange={onChange} /> {label}
+      {off && <span className="gen-none">none for these choices</span>}
     </label>
   );
 }
@@ -127,6 +132,7 @@ function ReviewItem({ entry, number, figure, canMove, onChange, onMove, onDrop, 
       data-locked={entry.locked || undefined}
       data-over={over || undefined}
       data-testid="review-item"
+      data-key={entry.key}
       onDragOver={(e: DragEvent) => {
         e.preventDefault();
         setOver(true);
@@ -153,6 +159,7 @@ function ReviewItem({ entry, number, figure, canMove, onChange, onMove, onDrop, 
         </span>
         <span className="font-semibold">Question {number}</span>
         <GeneratedMark item={item} />
+        {entry.related && <span className="gen-related" data-testid="related-mark">Related subtopic: {item.topicName}</span>}
         <span className="bank-marks">[{item.marks}]</span>
       </div>
       {editing ? (
@@ -271,6 +278,7 @@ function PrintSheet({ paper, kind }: { paper: TeacherPaper; kind: 'paper' | 'key
               <div key={entry.key} className="gen-print-q" data-generated={item.generated ? true : undefined} data-testid="print-question">
                 <p className="gen-print-num">
                   <span className="font-semibold">{number}.</span> <GeneratedMark item={item} />
+                  {entry.related && <span className="gen-related">Related subtopic</span>}
                   {options.showMarks && <span className="bank-marks">[{item.marks}]</span>}
                 </p>
                 <BankPrompt item={item} figure={figures.get(item.id) ?? 'none'} />
@@ -348,6 +356,11 @@ function Review({ paper, onChange, onClose, sets, onSets }: { paper: TeacherPape
         <p className="mt-1 text-ink-2" data-testid="review-summary">
           {allItems(paper).length} questions, {totalMarks(paper)} marks. Seed {paper.seed}.
         </p>
+        {paper.relatedNote && (
+          <p className="notice" role="status" data-testid="related-note">
+            {paper.relatedNote}
+          </p>
+        )}
         {paper.shortfall && (
           <p className="notice" data-tone="bad" role="alert" data-testid="shortfall">
             {paper.shortfall}
@@ -550,6 +563,38 @@ export default function GeneratorView() {
     return planShare([{ marks: 2, count, bankHas: available.value.bank }], share);
   }, [available, sectionBank, mode, structure, share, amount, countMode]);
 
+  // What each option could give with the other choices as they are, and what the whole choice can give.
+  const wantedCount = mode === 'set' && countMode === 'count' ? Math.max(1, Number(amount) || 1) : mode === 'set' ? 1 : 0;
+  const skipSeen = avoid ? usedInHistory() : EMPTY_SET;
+  const fitKey = JSON.stringify([effective, avoid, wantedCount, mode]);
+  const capacity = useAsync(async () => {
+    const base = effective;
+    const test = async (f: Filters) => (await capacityOf(f, skipSeen, 1)).withRelated === 0;
+    const [formats, styles, difficulties, marks] = await Promise.all([
+      Promise.all(FORMATS.map((f) => test({ ...base, formats: [f.key] }))),
+      Promise.all((['paper-style', 'cbq-style'] as const).map((s) => test({ ...base, styles: [s] }))),
+      Promise.all(([1, 2, 3] as Difficulty[]).map((d) => test({ ...base, difficulties: [d] }))),
+      Promise.all([1, 2, 3, 5, 10].map((m) => test({ ...base, marks: [m] }))),
+    ]);
+    return {
+      none: { formats: new Set(FORMATS.filter((_, i) => formats[i]).map((f) => f.key)), styles: new Set((['paper-style', 'cbq-style'] as const).filter((_, i) => styles[i])), difficulties: new Set(([1, 2, 3] as Difficulty[]).filter((_, i) => difficulties[i])), marks: new Set([1, 2, 3, 5, 10].filter((_, i) => marks[i])) },
+      total: wantedCount ? await capacityOf(base, skipSeen, Math.max(wantedCount, 60)) : null,
+    };
+  }, fitKey);
+  const none = capacity.status === 'ready' ? capacity.value.none : null;
+  const total = capacity.status === 'ready' ? capacity.value.total : null;
+  // Said before generating, never after.
+  const cantFill = mode === 'set' && countMode === 'count' && total && total.withRelated < wantedCount;
+  const cantFillMessage = !cantFill
+    ? ''
+    : share === 0
+      ? total!.withRelated === 0
+        ? 'The bank has no questions for these choices. Raise the generated-share slider, or choose differently.'
+        : `The bank has only ${total!.withRelated} ${total!.withRelated === 1 ? 'question' : 'questions'} for these choices. Raise the generated-share slider, or ask for ${total!.withRelated} or fewer.`
+      : total!.withRelated === 0
+        ? 'Nothing can be made for these choices. Try fewer filters.'
+        : `These choices can make ${total!.withRelated} different ${total!.withRelated === 1 ? 'question' : 'questions'} at most, with no fact asked twice. Ask for ${total!.withRelated} or fewer, or choose more chapters or formats.`;
+
   const generate = async () => {
     setBusy(true);
     setProblem('');
@@ -642,27 +687,27 @@ export default function GeneratorView() {
             <legend className="lbl">Format</legend>
             <div className="gen-checks">
               {FORMATS.filter((f) => !f.cs || isCs).map((f) => (
-                <Check key={f.key} label={f.label} checked={filters.formats.includes(f.key)} onChange={() => setFilters({ ...filters, formats: toggle(filters.formats, f.key) })} />
+                <Check key={f.key} label={f.label} none={none?.formats.has(f.key)} checked={filters.formats.includes(f.key)} onChange={() => setFilters({ ...filters, formats: toggle(filters.formats, f.key) })} />
               ))}
             </div>
           </fieldset>
           <div className="mt-2 grid gap-2 sm:grid-cols-3">
             <fieldset className="gen-group">
               <legend className="lbl">Style</legend>
-              <Check label="Paper-style" checked={filters.styles.includes('paper-style')} onChange={() => setFilters({ ...filters, styles: toggle(filters.styles, 'paper-style') })} />
-              <Check label="CBQ-style" checked={filters.styles.includes('cbq-style')} onChange={() => setFilters({ ...filters, styles: toggle(filters.styles, 'cbq-style') })} />
+              <Check label="Paper-style" none={none?.styles.has('paper-style')} checked={filters.styles.includes('paper-style')} onChange={() => setFilters({ ...filters, styles: toggle(filters.styles, 'paper-style') })} />
+              <Check label="CBQ-style" none={none?.styles.has('cbq-style')} checked={filters.styles.includes('cbq-style')} onChange={() => setFilters({ ...filters, styles: toggle(filters.styles, 'cbq-style') })} />
             </fieldset>
             <fieldset className="gen-group">
               <legend className="lbl">Difficulty</legend>
               {([[1, 'Easy'], [2, 'Medium'], [3, 'Hard']] as [Difficulty, string][]).map(([d, name]) => (
-                <Check key={d} label={name} checked={filters.difficulties.includes(d)} onChange={() => setFilters({ ...filters, difficulties: toggle(filters.difficulties, d) })} />
+                <Check key={d} label={name} none={none?.difficulties.has(d)} checked={filters.difficulties.includes(d)} onChange={() => setFilters({ ...filters, difficulties: toggle(filters.difficulties, d) })} />
               ))}
             </fieldset>
             <fieldset className="gen-group">
               <legend className="lbl">Marks per question</legend>
               <div className="gen-checks">
                 {[1, 2, 3, 5, 10].map((m) => (
-                  <Check key={m} label={String(m)} checked={filters.marks.includes(m)} onChange={() => setFilters({ ...filters, marks: toggle(filters.marks, m) })} />
+                  <Check key={m} label={String(m)} none={none?.marks.has(m)} checked={filters.marks.includes(m)} onChange={() => setFilters({ ...filters, marks: toggle(filters.marks, m) })} />
                 ))}
               </div>
             </fieldset>
@@ -727,7 +772,7 @@ export default function GeneratorView() {
         </section>
 
         <div className="mt-4 flex flex-wrap gap-2">
-          <button type="button" className="btn btn-solid" disabled={busy} onClick={() => void generate()}>
+          <button type="button" className="btn btn-solid" disabled={busy || Boolean(cantFill)} onClick={() => void generate()}>
             <Wand2 size={15} aria-hidden /> {busy ? 'Generating' : mode === 'set' ? 'Generate the questions' : 'Generate the paper'}
           </button>
           <button type="button" className="btn btn-line" onClick={() => fileRef.current?.click()}>
@@ -739,6 +784,11 @@ export default function GeneratorView() {
             e.target.value = '';
           }} />
         </div>
+        {cantFill && (
+          <p className="notice" data-tone="bad" role="status" data-testid="cant-fill">
+            {cantFillMessage}
+          </p>
+        )}
         {problem && (
           <p className="notice" data-tone="bad" role="alert">
             {problem}

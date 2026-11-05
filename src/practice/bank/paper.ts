@@ -168,6 +168,10 @@ function draw(pool: BankDef[], count: number, weights: Map<number, number>, used
   return out;
 }
 
+export async function unitWeightsForTest(subject: SubjectId, level: ClassLevel): Promise<Map<number, number>> {
+  return unitWeights(subject, level);
+}
+
 async function unitWeights(subject: SubjectId, level: ClassLevel): Promise<Map<number, number>> {
   const syllabus = await loadSyllabus(subject);
   const groups = syllabus.classes.find((c) => c.level === level)?.markGroups ?? [];
@@ -202,15 +206,21 @@ export function assemblePaper(subject: SubjectId, level: ClassLevel, bank: Loade
   const used = new Set<string>();
   const usedBlueprints = new Set<string>();
   const seenText = new Set<string>();
+  const seenFacts = new Set<string>();
   const share = generated ? planShare(paperSlots(subject, level, bank), generated.share).share : 0;
   const sections = spec.sections.map((section) => {
     const questions = section.slots.flatMap((slot) => {
       const inSection = (unit: number) => !section.units || section.units.includes(unit);
       const pool = bank.defs.filter((d) => d.marks === slot.marks && inSection(d.unit) && !used.has(d.id));
-      const made = generated ? pickGenerated(generated.set, generated.set.blueprints.filter((b) => b.marks === slot.marks && inSection(b.unit)), { count: Math.max(generatedCount(slot.count, share), slot.count - pool.length), weights, rng, used: usedBlueprints, seenText, cbqShare: CBQ_SHARE }) : [];
-      const fromBank = slot.count - made.length;
-      const defs = fromBank > 0 ? draw(bank.defs.filter((d) => d.marks === slot.marks && inSection(d.unit)), fromBank, weights, used, rng) : [];
-      return shuffled([...defs.map((d) => bankQuestion(d, bank, rng)), ...made], rng);
+      const made = generated ? pickGenerated(generated.set, generated.set.blueprints.filter((b) => b.marks === slot.marks && inSection(b.unit)), { count: Math.max(generatedCount(slot.count, share), slot.count - pool.length), weights, rng, used: usedBlueprints, seenText, seenFacts, cbqShare: CBQ_SHARE }) : [];
+      const inBank = bank.defs.filter((d) => d.marks === slot.marks && inSection(d.unit));
+      const unusedBank = inBank.filter((d) => !used.has(d.id)).length;
+      const fromBank = Math.min(slot.count - made.length, unusedBank);
+      const defs = fromBank > 0 ? draw(inBank, fromBank, weights, used, rng) : [];
+      // A paper is never handed out short: if the bank runs out, generated questions fill the rest, whatever the slider says.
+      const fill = made.length + defs.length < slot.count && generated ? pickGenerated(generated.set, generated.set.blueprints.filter((b) => b.marks === slot.marks && inSection(b.unit)), { count: slot.count - made.length - defs.length, weights, rng, used: usedBlueprints, seenText, seenFacts }) : [];
+      if (made.length + defs.length + fill.length < slot.count) throw new Error(`There are too few ${slot.marks}-mark questions for this paper.`);
+      return shuffled([...defs.map((d) => bankQuestion(d, bank, rng)), ...made, ...fill], rng);
     });
     return { name: section.name, note: section.note, choose: section.choose, questions };
   });
@@ -219,9 +229,9 @@ export function assemblePaper(subject: SubjectId, level: ClassLevel, bank: Loade
 
 export async function startPaper(subject: SubjectId, level: ClassLevel, options: { share?: number; seed?: number; diagrams?: boolean } = {}): Promise<Paper> {
   const share = options.share ?? 0;
-  const [bank, weights, set] = await Promise.all([loadBank(subject, level), unitWeights(subject, level), share > 0 ? loadBlueprints(subject, level) : null]);
+  const [bank, weights, set] = await Promise.all([loadBank(subject, level), unitWeights(subject, level), loadBlueprints(subject, level)]);
   const seed = options.seed ?? Math.floor(Math.random() * 2 ** 31);
-  const paper = { ...assemblePaper(subject, level, bank, weights, seededRng(seed), Date.now(), set ? { set, share } : undefined), seed, diagrams: options.diagrams ?? true };
+  const paper = { ...assemblePaper(subject, level, bank, weights, seededRng(seed), Date.now(), { set, share }), seed, diagrams: options.diagrams ?? true };
   paperStore.set(paper);
   return paper;
 }

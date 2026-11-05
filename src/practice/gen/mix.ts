@@ -79,6 +79,9 @@ export function describePlan(plan: SharePlan): string {
   return `About ${plan.generated} of ${plan.questions} questions (${plan.generatedMarks} of ${plan.marks} marks) will be generated.`;
 }
 
+/** Seeds tried for each blueprint when looking for every question it can give. */
+export const PROBE_SEEDS = 150;
+
 export interface PickOptions {
   count: number;
   /** Relative marks for each unit. Units not listed count as one. */
@@ -88,6 +91,8 @@ export interface PickOptions {
   used?: Set<string>;
   /** Questions already taken, so none appears twice. */
   seenText?: Set<string>;
+  /** Facts already asked, so none is asked twice, even in another format. */
+  seenFacts?: Set<string>;
   /** Roughly this share should be CBQ-style, where some are on offer. */
   cbqShare?: number;
 }
@@ -101,18 +106,27 @@ function shuffled<T>(list: readonly T[], rng: Rng): T[] {
   return out;
 }
 
-const textOf = (q: BankQuestion) => q.item.text + (q.item.form === 'output' ? q.item.code : '');
+/** What makes two questions the same: not just the words, as "Which of these is correct?" has many different questions. */
+export function questionKey(q: BankQuestion): string {
+  const { item } = q;
+  if (item.form === 'output') return item.text + item.code;
+  if (item.form === 'mcq') return `${item.text}|${item.options.map((o) => o.text).sort().join('|')}`;
+  if (item.form === 'numeric') return `${item.text}|${item.parts.map((p) => p.ask).join('|')}`;
+  return item.text;
+}
+
+export const factsOf = (q: BankQuestion): string[] => q.item.facts ?? [];
 
 /** Draws questions from a pool of blueprints, spreading them across units by weight. Fewer come back if the pool is empty. */
 export function pickGenerated(set: LoadedBlueprints, pool: Blueprint[], options: PickOptions): BankQuestion[] {
-  const { count, weights, rng, used = new Set<string>(), seenText = new Set<string>(), cbqShare = 0 } = options;
+  const { count, weights, rng, used = new Set<string>(), seenText = new Set<string>(), seenFacts = new Set<string>(), cbqShare = 0 } = options;
   const out: BankQuestion[] = [];
   if (!pool.length) return out;
   const given = new Map<number, number>();
   const wantCbq = Math.round(count * cbqShare);
   let cbqTaken = 0;
   let tries = 0;
-  while (out.length < count && tries < count * 40) {
+  while (out.length < count && tries < count * 40 + pool.length * 6 + 100) {
     tries++;
     // A CBQ-style one first while the share isn't met, if any are here.
     const wantStyle = cbqTaken < wantCbq && pool.some((b) => b.style === 'cbq-style');
@@ -131,13 +145,29 @@ export function pickGenerated(set: LoadedBlueprints, pool: Blueprint[], options:
     const bp = inUnit.find((b) => !used.has(b.id)) ?? inUnit[0];
     const seed = Math.floor(rng() * 2 ** 31);
     const question = generatedQuestion(bp, seed, set.names(bp));
-    const text = textOf(question);
-    if (seenText.has(text)) continue;
+    const text = questionKey(question);
+    if (seenText.has(text) || factsOf(question).some((f) => seenFacts.has(f))) continue;
     seenText.add(text);
+    for (const f of factsOf(question)) seenFacts.add(f);
     used.add(bp.id);
     given.set(unit, (given.get(unit) ?? 0) + 1);
     if (bp.style === 'cbq-style') cbqTaken++;
     out.push(question);
+  }
+  // Chance alone rarely finds the last few, so this goes through every blueprint in turn, with the seeds that capacity counts.
+  if (out.length < count) {
+    for (const bp of shuffled(pool, rng)) {
+      for (let k = 1; k <= PROBE_SEEDS && out.length < count; k++) {
+        const question = generatedQuestion(bp, k * 7919, set.names(bp));
+        const text = questionKey(question);
+        if (seenText.has(text) || factsOf(question).some((f) => seenFacts.has(f))) continue;
+        seenText.add(text);
+        for (const f of factsOf(question)) seenFacts.add(f);
+        used.add(bp.id);
+        out.push(question);
+      }
+      if (out.length >= count) break;
+    }
   }
   return out;
 }

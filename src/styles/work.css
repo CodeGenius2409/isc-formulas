@@ -532,6 +532,22 @@ mark {
 }
 
 /* The teacher's generator. */
+.gen-check[data-none] {
+  color: var(--ink-3);
+}
+
+.gen-none {
+  display: block;
+  color: var(--ink-3);
+  font-size: var(--step--1);
+}
+
+.gen-related {
+  color: var(--ink-2);
+  font-size: var(--step--1);
+  font-style: italic;
+}
+
 .gen-check {
   display: flex;
   align-items: center;

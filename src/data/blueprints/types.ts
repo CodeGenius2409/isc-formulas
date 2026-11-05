@@ -15,6 +15,8 @@ interface Attachments {
   answerDiagram?: DiagramSpec;
   answerLewis?: string[];
   python?: 1;
+  /** The facts a question tests, so that a paper never asks one twice, even in another format. */
+  facts?: string[];
   simulator?: SimulatorRef;
 }
 
