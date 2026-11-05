@@ -2,10 +2,11 @@
 // structures in src/data/lewis.
 import { LEWIS } from '../lewis/figures';
 import { formulaText } from '../lewis/check';
+import KNOWLEDGE from './knowledge/chemistry-xi';
 import { blueprintsFor } from './dsl';
 import type { Blueprint } from './types';
 
-const { num, mcqNum, facts, custom } = blueprintsFor('chemistry', 'XI');
+const { num, mcqNum, facts, custom, rest } = blueprintsFor('chemistry', 'XI', KNOWLEDGE);
 
 const SHAPE_IDS = ['water', 'ammonia', 'methane', 'co2', 'becl2', 'bf3', 'pcl5', 'sf4', 'clf3', 'sf6', 'brf5', 'so2'];
 const SHAPES = ['linear', 'trigonal planar', 'bent', 'tetrahedral', 'trigonal pyramidal', 'trigonal bipyramidal', 'see-saw', 'T-shaped', 'octahedral', 'square pyramidal'];
@@ -772,6 +773,7 @@ const blueprints: Blueprint[] = [
       ['A burette is rinsed with the solution it will hold.', 'Any water left inside would dilute that solution.'],
     ],
   }),
+  ...rest(),
 ];
 
 export default blueprints;

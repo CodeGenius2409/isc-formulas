@@ -132,6 +132,8 @@ interface InstanceTags extends Omit<Tags, 'structure' | 'diagram'> {
 }
 
 export interface McqItem extends InstanceTags {
+  /** For an assertion and reason question: the one concept both statements are about. */
+  concept?: string;
   form: 'mcq';
   text: string;
   options: BankOption[];

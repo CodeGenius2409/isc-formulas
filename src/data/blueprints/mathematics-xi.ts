@@ -1,10 +1,11 @@
 // Mathematics, Class XI. Built backwards from clean answers, in exact arithmetic where it can be.
 import { evalPoly, factorial, frac, nCr, polyTex, signed } from '../../practice/gen/exact';
 import type { Step } from '../../solver/solve';
+import KNOWLEDGE from './knowledge/mathematics-xi';
 import { blueprintsFor } from './dsl';
 import type { Blueprint } from './types';
 
-const { custom, facts } = blueprintsFor('mathematics', 'XI');
+const { custom, facts, rest } = blueprintsFor('mathematics', 'XI', KNOWLEDGE);
 
 const step = (label: string, ...math: string[]): Step => ({ label, math });
 const $ = (tex: string) => `$${tex}$`;
@@ -804,6 +805,7 @@ const blueprints: Blueprint[] = [
       parts: [g.answerPart(`Its speed at t = ${t} s, in m/s, found by differentiating`, v, 2, [step('Differentiate', `\\dfrac{ds}{dt} = ${2 * a}t + ${b}`, `= ${v}`)])],
     };
   }),
+  ...rest(),
 ];
 
 export default blueprints;

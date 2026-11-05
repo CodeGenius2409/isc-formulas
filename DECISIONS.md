@@ -322,3 +322,6 @@ Work is on a `rebuild` branch. `master` still holds your original files.
 
 - **Task 4, the tracer now does inheritance and interfaces:** `extends`, `super`, `this(...)`, overriding, abstract classes, `interface`, `instanceof` and class casts. `src/java/classes.ts` holds the class relations, and the checks javac makes.
   It follows Java on the subtle points: overloads and fields go by the type as written, overrides by the runtime class, field initializers run after `super()`. The test programs give identical output on a real JDK, and 27 of the 29 refused programs are refused by javac too: one is a run-time ClassCastException, and javac 26 has relaxed the rule on code before `super()`, which the tracer keeps, as ISC teaches it.
+
+- **Task 3, assertion and reason:** a pair is now built from one concept node: a statement and its false version, why it's true and a false explanation, and something else true of it that doesn't explain it. So all four outcomes stay correct, and a true reason that doesn't explain is still about the same thing.
+  452 nodes were written fresh, replacing random pairs of facts. The old way could pair a statement about double bonds with one about water's dipole. A test generates 1,000 per blueprint.

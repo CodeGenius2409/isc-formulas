@@ -2,10 +2,11 @@
 import { det2, det3, evalPoly, frac, Frac, matrixTex, nCr, polyTex, signed, vecTex } from '../../practice/gen/exact';
 import type { Gen } from '../../practice/gen/gen';
 import type { Step } from '../../solver/solve';
+import KNOWLEDGE from './knowledge/mathematics-xii';
 import { blueprintsFor } from './dsl';
 import type { Blueprint, Body } from './types';
 
-const { custom, facts } = blueprintsFor('mathematics', 'XII');
+const { custom, facts, rest } = blueprintsFor('mathematics', 'XII', KNOWLEDGE);
 
 const step = (label: string, ...math: string[]): Step => ({ label, math });
 
@@ -1255,6 +1256,7 @@ const blueprints: Blueprint[] = [
       [`(ii) Yes, as every seat can have someone in it.`, 1],
     ]);
   }),
+  ...rest(),
 ];
 
 export default blueprints;

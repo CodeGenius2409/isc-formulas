@@ -56,8 +56,17 @@ export interface McqNumSpec {
   digits?: number;
 }
 
+/**
+ * One concept, set out so that all four assertion and reason outcomes are correct, and always about the same thing.
+ * The statement and its false version, why it's true and a false explanation, and something else true of the same
+ * concept that doesn't explain the statement.
+ */
+export type ArNode = [concept: string, statement: string, falseStatement: string, because: string, falseBecause: string, alsoTrue: string];
+
 /** A topic's knowledge, written in the app's own words. */
 export interface Facts {
+  /** Assertion and reason questions. A pair is only ever made from one concept. */
+  ar?: ArNode[];
   /** Term, then what it means. Extra sentences make it worth two marks. */
   define?: [term: string, ...meaning: string[]][];
   /** A one-mark concept question: question, right answer, then three wrong ones. */
@@ -97,8 +106,22 @@ const ASK_COMPARE = ['Distinguish between {a} and {b}.', 'State the differences 
 
 const capital = (text: string) => text.charAt(0).toUpperCase() + text.slice(1);
 
-export function blueprintsFor(subject: SubjectId, level: ClassLevel) {
+/** Adds a topic's extra knowledge to what its file already says. */
+function mergeFacts(a: Facts, b: Facts | undefined): Facts {
+  if (!b) return a;
+  const out: Record<string, unknown> = { ...a };
+  for (const [key, value] of Object.entries(b)) {
+    const had = out[key];
+    if (Array.isArray(had) && Array.isArray(value)) out[key] = [...had, ...value];
+    else if (had && value && typeof had === 'object' && typeof value === 'object') out[key] = { ...had, ...value };
+    else out[key] = value;
+  }
+  return out as Facts;
+}
+
+export function blueprintsFor(subject: SubjectId, level: ClassLevel, knowledge: Record<string, Facts> = {}) {
   const prefix = `${CODE[subject]}${level === 'XII' ? '12' : '11'}`;
+  const used = new Set<string>();
   const base = (key: string, [unit, topic, marks, difficulty]: Place, type: BankType, format: Format, style: Style) => ({
     id: `${prefix}-${unit}${topic}-${key}`,
     subject,
@@ -147,7 +170,9 @@ export function blueprintsFor(subject: SubjectId, level: ClassLevel) {
   });
 
   /** Everything a topic's facts can make. */
-  const facts = (unit: number, topic: string, f: Facts): Blueprint[] => {
+  const facts = (unit: number, topic: string, own: Facts): Blueprint[] => {
+    used.add(`${unit}${topic}`);
+    const f = mergeFacts(own, knowledge[`${unit}${topic}`]);
     const out: Blueprint[] = [];
     const at = (marks: number, difficulty: Difficulty): Place => [unit, topic, marks, difficulty];
     const add = (key: string, marks: number, difficulty: Difficulty, type: BankType, format: Format, style: Style, make: (g: Gen) => Body) => out.push({ ...base(key, at(marks, difficulty), type, format, style), make });
@@ -214,29 +239,15 @@ export function blueprintsFor(subject: SubjectId, level: ClassLevel) {
         return g.mcq('Which of these statements is correct?', picked[0], g.sample(rest, 3 > rest.length ? rest.length : 3).map((t) => t[1]));
       });
     }
-    const reasons = (f.reason ?? []).filter((r) => r.length >= 2);
-    const truths = f.truths ?? [];
-    if (reasons.length && truths.length >= 2) {
+    if (f.ar?.length) {
+      const nodes = f.ar;
       add('assertion', 1, 2, 'assertion', 'assertion', 'cbq-style', (g) => {
+        const [concept, statement, falseStatement, because, falseBecause, alsoTrue] = g.pick(nodes);
         const kind = g.int(1, 4);
-        let assertion: string;
-        let reason: string;
-        const fact = g.pick(reasons);
-        const [t1, t2] = g.sample(truths, 2);
-        if (kind === 1) {
-          assertion = fact[0];
-          reason = fact[1] as string;
-        } else if (kind === 2) {
-          assertion = t1[0];
-          reason = t2[0];
-        } else if (kind === 3) {
-          assertion = t1[0];
-          reason = t2[1];
-        } else {
-          assertion = t1[1];
-          reason = t2[0];
-        }
-        return { form: 'mcq', text: `Assertion: ${assertion}\nReason: ${reason}`, options: ASSERTION_OPTIONS.map((text) => ({ text })), answer: kind - 1 };
+        const assertion = kind === 4 ? falseStatement : statement;
+        const reason = kind === 1 ? because : kind === 2 ? alsoTrue : kind === 3 ? falseBecause : g.pick([because, alsoTrue]);
+        const why = [`Both are true, and the reason explains the assertion.`, `Both are true, but what explains the assertion is this: ${because}`, `The reason is false. In fact: ${because}`, `The assertion is false. In fact: ${statement}`][kind - 1];
+        return { form: 'mcq', text: `Assertion: ${assertion}\nReason: ${reason}`, options: ASSERTION_OPTIONS.map((text) => ({ text })), answer: kind - 1, why, concept };
       });
     }
     if (f.explain?.length) {
@@ -290,7 +301,13 @@ export function blueprintsFor(subject: SubjectId, level: ClassLevel) {
     return out;
   };
 
-  return { custom, num, mcqNum, facts, base };
+  /** Topics whose knowledge has no block in the class's own file. Put last, so that it knows which ones were used. */
+  const rest = (): Blueprint[] =>
+    Object.keys(knowledge)
+      .filter((key) => !used.has(key))
+      .flatMap((key) => facts(Number(key.slice(0, -1)), key.slice(-1), {}));
+
+  return { custom, num, mcqNum, facts, base, rest };
 }
 
 /** A number for question text, in words a student would read. */

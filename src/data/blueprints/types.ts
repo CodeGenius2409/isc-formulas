@@ -22,6 +22,8 @@ export interface McqBody extends Attachments {
   options: BankOption[];
   answer: number;
   why?: string;
+  /** For an assertion and reason question: the one concept both statements are about. */
+  concept?: string;
 }
 
 export interface TheoryBody extends Attachments {

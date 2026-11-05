@@ -1,9 +1,10 @@
 // Physics, Class XII. Numericals are answered by the solver registry. The facts are written for this app.
+import KNOWLEDGE from './knowledge/physics-xii';
 import { blueprintsFor, type Values } from './dsl';
 import type { DiagramSpec } from '../../practice/bank/diagram';
 import type { Blueprint } from './types';
 
-const { num, mcqNum, facts, custom } = blueprintsFor('physics', 'XII');
+const { num, mcqNum, facts, custom, rest } = blueprintsFor('physics', 'XII', KNOWLEDGE);
 
 const ohms = (x: number) => `${x} Ω`;
 
@@ -1470,6 +1471,7 @@ const blueprints: Blueprint[] = [
       },
     ],
   }),
+  ...rest(),
 ];
 
 export default blueprints;

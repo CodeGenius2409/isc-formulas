@@ -2,10 +2,11 @@
 import { classify, truthColumn } from '../../practice/gen/boolean';
 import type { Gen } from '../../practice/gen/gen';
 import { complete, designClass, findError, inMain, outputOf, pyList, pySlice, SHORT_WORDS, withMethods } from './cs-common';
+import KNOWLEDGE from './knowledge/computerscience-xi';
 import { blueprintsFor } from './dsl';
 import type { Blueprint, Body, OutputBody } from './types';
 
-const { custom, facts } = blueprintsFor('computerscience', 'XI');
+const { custom, facts, rest } = blueprintsFor('computerscience', 'XI', KNOWLEDGE);
 
 const fence = (code: string) => `\`\`\`\n${code}\n\`\`\``;
 
@@ -734,6 +735,7 @@ const blueprints: Blueprint[] = [
     const code = inMain(`int mark = ${mark};\nchar grade;\nif (mark >= 80) grade = 'A';\nelse if (mark >= 60) grade = 'B';\nelse if (mark >= 40) grade = 'C';\nelse grade = 'D';\nSystem.out.println(grade);`);
     return outputOf(g, code, undefined, 'A report card program gives a grade from a mark. Write what it prints.');
   }),
+  ...rest(),
 ];
 
 export default blueprints;

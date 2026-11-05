@@ -1,10 +1,11 @@
 // Chemistry, Class XII. Numericals come from the solver registry. Named compounds and their drawings come from the
 // structures checked against PubChem and RDKit, and reactions only join compounds from that same list.
+import KNOWLEDGE from './knowledge/chemistry-xii';
 import { blueprintsFor, n } from './dsl';
 import type { Blueprint } from './types';
 import type { Gen } from '../../practice/gen/gen';
 
-const { num, mcqNum, facts, custom } = blueprintsFor('chemistry', 'XII');
+const { num, mcqNum, facts, custom, rest } = blueprintsFor('chemistry', 'XII', KNOWLEDGE);
 
 /** Compound key and name, by family. Keys match src/data/generated/structures.json, which a test confirms. */
 const FAMILIES: Record<string, [string, string][]> = {
@@ -1290,6 +1291,7 @@ const blueprints: Blueprint[] = [
       [level === 'primary' ? 'Denaturation leaves it unchanged, as peptide bonds aren’t broken.' : 'Denaturation destroys it, as these weaker forces are disrupted.', 1],
     ]);
   }),
+  ...rest(),
 ];
 
 export default blueprints;

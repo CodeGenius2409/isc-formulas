@@ -3,10 +3,11 @@
 import { classify, coverIsRight, groupNames, minimalCover, primeImplicants, sopText, termText, truthColumn, VARS } from '../../practice/gen/boolean';
 import type { Gen } from '../../practice/gen/gen';
 import { complete, designChecked, designClass, findError, inMain, outputOf, pyList, pySlice, SHORT_WORDS, withMethods } from './cs-common';
+import KNOWLEDGE from './knowledge/computerscience-xii';
 import { blueprintsFor } from './dsl';
 import type { Blueprint, Body, OutputBody, TheoryBody } from './types';
 
-const { custom, facts } = blueprintsFor('computerscience', 'XII');
+const { custom, facts, rest } = blueprintsFor('computerscience', 'XII', KNOWLEDGE);
 
 const fence = (code: string) => `\`\`\`\n${code}\n\`\`\``;
 
@@ -1176,6 +1177,7 @@ const blueprints: Blueprint[] = [
       [`Defines ${method}() as public in ${c2}.`, 1],
     ]);
   }),
+  ...rest(),
 ];
 
 export default blueprints;
