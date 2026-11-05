@@ -3,6 +3,7 @@ import { mergeKnowledge, type Facts } from '../dsl';
 import MORE_A from './more/physics-xii-a';
 import MORE_B from './more/physics-xii-b';
 import MORE_C from './more/physics-xii-c';
+import MORE_D from './more/physics-xii-d';
 
 /** Points along a curve, for a sketch in an answer. These carry no values from any question. */
 const curve = (f: (x: number) => number, from: number, to: number, steps = 24): [number, number][] => Array.from({ length: steps + 1 }, (_, i) => {
@@ -179,4 +180,4 @@ const knowledge: Record<string, Facts> = {
   },
 };
 
-export default mergeKnowledge(knowledge, MORE_A, MORE_B, MORE_C);
+export default mergeKnowledge(knowledge, MORE_A, MORE_B, MORE_C, MORE_D);
