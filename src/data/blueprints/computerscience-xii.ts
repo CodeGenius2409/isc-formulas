@@ -899,12 +899,12 @@ const blueprints: Blueprint[] = [
     return g.mcq(`In the binary tree shown, with the root at level 0, what is the level of node ${label}?`, String(level), [0, 1, 2, 3, 4].filter((v) => v !== level).slice(0, 3).map(String), { diagram: { kind: 'tree', nodes: treeNodes(root) } });
   }),
   custom('tree-max-nodes', [8, 'a', 1, 2], { type: 'mcq', format: 'mcq' }, (g) => {
-    const h = g.int(2, 6);
+    const h = g.int(3, 6);
     return g.mcqNumber(`The largest number of nodes in a binary tree with ${h} levels is:`, 2 ** h - 1, '', [
       { slip: 'used 2ⁿ', value: 2 ** h },
       { slip: 'used 2ⁿ⁻¹, which is just the last level', value: 2 ** (h - 1) },
-      { slip: 'used n²', value: h * h === 2 ** h - 1 ? h * h + 1 : h * h },
-      { slip: 'used 2n', value: 2 * h === 2 ** h - 1 ? 2 * h + 1 : 2 * h },
+      { slip: 'used n²', value: h * h },
+      { slip: 'used 2n', value: 2 * h },
     ], { digits: 5 });
   }),
   ...facts(8, 'a', {

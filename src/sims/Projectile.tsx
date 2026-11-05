@@ -1,3 +1,4 @@
+import { usePreset } from './lib/question-mode';
 import { useMemo, useRef, useState } from 'react';
 import { Pin, RotateCcw, X } from 'lucide-react';
 import { prefersReducedMotion } from '../lib/motion';
@@ -14,9 +15,9 @@ interface Saved {
 }
 
 export function Projectile() {
-  const [speed, setSpeed] = useState(20);
-  const [angle, setAngle] = useState(45);
-  const [height, setHeight] = useState(0);
+  const [speed, setSpeed] = usePreset('speed', 20);
+  const [angle, setAngle] = usePreset('angle', 45);
+  const [height, setHeight] = usePreset('height', 0);
   const [g, setG] = useState(9.8);
   const [dragOn, setDragOn] = useState(false);
   const [drag, setDrag] = useState(0.1);

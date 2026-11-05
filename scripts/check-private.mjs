@@ -70,8 +70,8 @@ if (!paperFiles.length) {
     const list = words(text);
     for (let i = 0; i + RUN <= list.length; i++) {
       const run = list.slice(i, i + RUN).join(' ');
-      // A run of bare numbers is a table or a list of codes, and says nothing about where text came from.
-      if (runs.has(run) && !BOILERPLATE.test(run) && !/^[\d ]+$/.test(run)) found.set(run, file);
+      // A run of bare numbers or single letters is a table or a truth table's variables, and says nothing about where text came from.
+      if (runs.has(run) && !BOILERPLATE.test(run) && !/^(?:(?:\d+|[a-z]) ?)+$/.test(run)) found.set(run, file);
     }
   }
   if (found.size) {

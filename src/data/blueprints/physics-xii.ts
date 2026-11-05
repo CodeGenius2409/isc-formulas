@@ -14,6 +14,7 @@ const blueprints: Blueprint[] = [
     use: 'p-xii-1-1',
     find: 'F',
     given: { q_1: 'Q1 uC', q_2: 'Q2 uC', r: 'D cm' },
+    diagram: (v) => ({ kind: 'charges', items: [{ q: `${v.Q1} µC`, sign: '+' }, { q: `${v.Q2} µC`, sign: '+' }], gaps: [`${v.D} cm`] }),
     mistakes: (v, a) => [
       ['forgot to square the distance', (a * (v.D / 100) ** 2) / (v.D / 100)],
       ['left the distance in cm', a / 1e4],
@@ -27,6 +28,7 @@ const blueprints: Blueprint[] = [
     scenes: ['A small charged sphere', 'A dust particle on a printer drum', 'A charged bead on a thread'],
     vars: { Q: [2, 40, 2], D: [5, 40, 5] },
     parts: [{ ask: 'Electric field at the point', use: 'p-xii-1-2', find: 'E', given: { q: 'Q nC', r: 'D cm' }, marks: 2 }],
+    diagram: (v) => ({ kind: 'charges', items: [{ q: `${v.Q} nC`, sign: '+' }], gaps: [], point: { after: 0, label: 'P', gap: `${v.D} cm` } }),
   }),
   num('coulomb-unknown', [1, 'a', 2, 2], {
     variants: [
@@ -61,6 +63,7 @@ const blueprints: Blueprint[] = [
     find: 'C',
     given: { A: 'A cm^2', d: 'D mm' },
     unit: 'pF',
+    diagram: (v) => ({ kind: 'capacitor', A: `${v.A} cm²`, d: `${v.D} mm` }),
     mistakes: (v, a) => [
       ['left the area in cm²', a * 1e4],
       ['left the separation in mm', a / 1e3],
@@ -452,6 +455,7 @@ const blueprints: Blueprint[] = [
     parts: [
       { ask: 'Value of the shunt needed', use: 'p-xii-3-62', find: 'S', given: { I_g: 'I mA', G_c: 'G ohm', I: 'A A' }, unit: 'ohm', marks: 3 },
     ],
+    diagram: (v) => ({ kind: 'circuit', source: { type: 'cell', label: `up to ${v.A} A in the circuit` }, loop: [{ type: 'parallel', branches: [[{ type: 'meter', meter: 'G', label: `${v.G} Ω` }], [{ type: 'R', label: 'S = ?' }]] }] }),
   }),
   num('coil-torque', [3, 'a', 3, 2], {
     text: 'A rectangular coil of {N} turns and area {A} cm² carries {I} A in a {B} T field, with its plane parallel to the field.',
@@ -590,7 +594,7 @@ const blueprints: Blueprint[] = [
       ['multiplied by √2 instead of dividing', v.V * Math.SQRT2],
       ['divided by 2', v.V / 2],
       ['took the average of a half cycle', (2 * v.V) / Math.PI],
-      ['took it to equal the peak', v.V * 1.0001 * 1.5],
+      ['took it to equal the peak', v.V],
     ],
   }),
   num('lcr', [4, 'b', 5, 3], {
@@ -613,6 +617,7 @@ const blueprints: Blueprint[] = [
       { ask: 'Quality factor', use: 'p-xii-4-10', find: 'Q_f', given: { omega_0: 'w', L: 'L mH', R: 'R ohm' }, marks: 1 },
     ],
     diagram: (v) => ({ kind: 'circuit', source: { type: 'ac', label: 'variable f' }, loop: [{ type: 'R', label: ohms(v.R) }, { type: 'L', label: `${v.L} mH` }, { type: 'C', label: `${v.C} µF` }] }),
+    sim: (v) => ({ id: 'lcr', preset: { R: v.R, Lm: v.L, Cu: v.C } }),
   }),
   num('transformer', [4, 'b', 2, 1], {
     style: 'cbq-style',
@@ -794,6 +799,7 @@ const blueprints: Blueprint[] = [
       ['added the distances', v.U + v.F],
     ],
     diagram: (v) => ({ kind: 'lens', lens: 'convex', f: v.F, u: v.U, fLabel: `f = ${v.F} cm`, uLabel: `${v.U} cm` }),
+    sim: (v) => ({ id: 'lens', preset: { f: v.F, u: -v.U } }),
   }),
   num('lens-image', [6, 'a', 3, 2], {
     variants: [
@@ -803,6 +809,7 @@ const blueprints: Blueprint[] = [
     vars: { U: [20, 90, 10], F: [10, 15, 5], V: [20, 60, 10] },
     when: (v) => v.U > v.F * 1.2,
     diagram: (v) => ({ kind: 'lens', lens: 'convex', f: v.F, u: v.U, fLabel: 'f', uLabel: `${v.U} cm` }),
+    sim: (v) => ({ id: 'lens', preset: { f: v.F, u: -v.U } }),
   }),
   num('mirror', [6, 'a', 3, 2], {
     text: 'An object is {U} cm in front of a concave mirror of focal length {F} cm.',
@@ -870,6 +877,7 @@ const blueprints: Blueprint[] = [
     vars: { S: [0.2, 1, 0.1], D: [1, 2.5, 0.5], L: [400, 700, 50] },
     parts: [{ ask: 'Fringe width', use: 'p-xii-6-9', find: 'beta', given: { lambda: 'L nm', D: 'D m', d: 'S mm' }, unit: 'mm', marks: 2 }],
     diagram: (v) => ({ kind: 'ydse', d: `${v.S} mm`, D: `${v.D} m`, lambda: `${v.L} nm` }),
+    sim: (v) => ({ id: 'ydse', preset: { nm: v.L, dmm: v.S, L: v.D } }),
   }),
   mcqNum('fringe-mcq', [6, 'c', 1, 1], {
     text: 'A double slit {S} mm apart is {D} m from a screen, and uses light of {L} nm. The fringe width is:',
@@ -878,6 +886,8 @@ const blueprints: Blueprint[] = [
     find: 'beta',
     given: { lambda: 'L nm', D: 'D m', d: 'S mm' },
     unit: 'mm',
+    diagram: (v) => ({ kind: 'ydse', d: `${v.S} mm`, D: `${v.D} m`, lambda: `${v.L} nm` }),
+    sim: (v) => ({ id: 'ydse', preset: { nm: v.L, dmm: v.S, L: v.D } }),
     mistakes: (_v, a) => [
       ['forgot to convert nm to m', a * 1e9],
       ['left the slit gap in mm', a / 1000],
@@ -1168,6 +1178,7 @@ const blueprints: Blueprint[] = [
       { ask: 'Decay constant', use: 'p-xii-8-5', find: 'lambda', given: { T_half: 'T day' }, unit: 's^-1', marks: 1 },
       { ask: 'Mass left after {E} days', use: 'p-xii-8-112', find: 'm', given: { m_0: 'M g', t: 'E day', T_half: 'T day' }, unit: 'g', marks: 2 },
     ],
+    sim: (v) => ({ id: 'radioactive', preset: { N0: v.M, half: v.T, t: v.E } }),
   }),
   mcqNum('half-life-mcq', [8, 'b', 1, 1], {
     text: 'A nuclide has a half-life of {T} years. Of {M} g, the mass left after {E} years is:',
@@ -1177,6 +1188,7 @@ const blueprints: Blueprint[] = [
     find: 'm',
     given: { m_0: 'M g', t: 'E year', T_half: 'T year' },
     unit: 'g',
+    sim: (v) => ({ id: 'radioactive', preset: { N0: v.M, half: v.T, t: v.E } }),
     mistakes: (v, a) => [
       ['counted one half-life too few', a * 2],
       ['counted one half-life too many', a / 2],
@@ -1199,7 +1211,8 @@ const blueprints: Blueprint[] = [
     return {
       form: 'numeric',
       text: `In a hydrogen atom, an electron falls from the n = ${high} level to the n = ${low} level.`,
-      diagram: { kind: 'levels', levels: [{ n: `n = ${low}`, E: `${(eLow).toFixed(2)} eV`, at: eLow }, { n: `n = ${high}`, E: `${eHigh.toFixed(2)} eV`, at: eHigh }], from: 1, to: 0 },
+      diagram: { kind: 'levels', levels: [{ n: `n = ${low}`, E: `${eLow.toFixed(2)} eV`, at: eLow }, { n: `n = ${high}`, E: `${eHigh.toFixed(2)} eV`, at: eHigh }], from: 1, to: 0 },
+      simulator: { id: 'bohr', preset: { n: high } },
       parts: [
         g.answerPart('Energy of the photon emitted', de, 2, [{ label: 'Use the energy of each level', math: [`E_n = -\\dfrac{13.6}{n^2}\\text{ eV}`, `\\Delta E = ${eHigh.toFixed(3)} - (${eLow.toFixed(3)}) = ${de.toFixed(3)}\\text{ eV}`] }], 'eV'),
         g.answerPart('Wavelength of the light', lambda, 1, [{ label: 'Use the photon energy', math: [`\\lambda = \\dfrac{hc}{\\Delta E} = \\dfrac{1242}{${de.toFixed(3)}}\\text{ nm} = ${lambda.toFixed(1)}\\text{ nm}`] }], 'nm'),

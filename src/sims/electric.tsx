@@ -1,11 +1,12 @@
+import { usePreset } from './lib/question-mode';
 import { useState } from 'react';
 import { Canvas, Plot, token } from './lib/plot';
 import { Equation, fmt, Legend, Readouts, Slider, ToolLayout } from './lib/ui';
 
 export function Lcr() {
-  const [R, setR] = useState(50);
-  const [Lm, setLm] = useState(100);
-  const [Cu, setCu] = useState(10);
+  const [R, setR] = usePreset('R', 50);
+  const [Lm, setLm] = usePreset('Lm', 100);
+  const [Cu, setCu] = usePreset('Cu', 10);
   const [V, setV] = useState(10);
   const L = Lm * 1e-3;
   const C = Cu * 1e-6;

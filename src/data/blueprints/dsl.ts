@@ -3,7 +3,7 @@
 // and case studies, all written fresh from the syllabus.
 import type { DiagramSpec } from '../../practice/bank/diagram';
 import { ASSERTION_OPTIONS } from '../../practice/bank/define';
-import type { BankType, Difficulty, NumericPartDef } from '../../practice/bank/types';
+import type { BankType, Difficulty, NumericPartDef, SimulatorRef } from '../../practice/bank/types';
 import { unitLabel } from '../../solver/unit-label';
 import { fillIn, tidy, type Gen, type Mistake } from '../../practice/gen/gen';
 import type { ClassLevel, SubjectId } from '../types';
@@ -33,6 +33,7 @@ export interface NumSpec {
   style?: Style;
   format?: Format;
   diagram?: (v: Values) => DiagramSpec;
+  sim?: (v: Values) => SimulatorRef;
 }
 
 export interface McqNumSpec {
@@ -49,6 +50,7 @@ export interface McqNumSpec {
   mistakes: (v: Values, answer: number) => [slip: string, value: number][];
   style?: Style;
   diagram?: (v: Values) => DiagramSpec;
+  sim?: (v: Values) => SimulatorRef;
   digits?: number;
 }
 
@@ -119,7 +121,7 @@ export function blueprintsFor(subject: SubjectId, level: ClassLevel) {
       const variant: NumVariant = spec.variants ? g.pick(spec.variants) : { text: spec.text!, parts: spec.parts! };
       const scene = spec.scenes ? g.pick(spec.scenes) : '';
       const text = fillIn(fillIn(variant.text, { scene }), values);
-      return { ...g.numeric(text, variant.parts, values), diagram: spec.diagram?.(values) };
+      return { ...g.numeric(text, variant.parts, values), diagram: spec.diagram?.(values), simulator: spec.sim?.(values) };
     },
   });
 
@@ -134,7 +136,7 @@ export function blueprintsFor(subject: SubjectId, level: ClassLevel) {
       const scene = spec.scenes ? g.pick(spec.scenes) : '';
       const text = fillIn(fillIn(spec.text, { scene }), values);
       const mistakes: Mistake[] = spec.mistakes(values, answer).map(([slip, value]) => ({ slip, value }));
-      return { ...g.mcqNumber(text, answer, unitLabel(part.question.unit), mistakes, { digits: spec.digits ?? 3 }), diagram: spec.diagram?.(values) };
+      return { ...g.mcqNumber(text, answer, unitLabel(part.question.unit), mistakes, { digits: spec.digits ?? 3 }), diagram: spec.diagram?.(values), simulator: spec.sim?.(values) };
     },
   });
 

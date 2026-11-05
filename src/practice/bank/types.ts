@@ -116,9 +116,16 @@ export interface NumericDef extends Tags {
 
 export type BankDef = McqDef | TheoryDef | OutputDef | NumericDef;
 
+/** A simulator that shows this question's set-up, with the values to start it from. */
+export interface SimulatorRef {
+  id: string;
+  preset: Record<string, number>;
+}
+
 interface InstanceTags extends Omit<Tags, 'structure' | 'diagram'> {
   structure?: EntryStructure;
   diagram?: DiagramSpec;
+  simulator?: SimulatorRef;
   unitName: string;
   topicName: string;
   generated?: GeneratedTag;

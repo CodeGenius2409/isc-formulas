@@ -215,13 +215,13 @@ const blueprints: Blueprint[] = [
     const right = form === 'scale' ? k ** n * d : d ** (n - 1);
     return g.mcqNumber(form === 'scale' ? `If A is a square matrix of order ${n} and ${$(`|A| = ${d}`)}, then ${$(`|${k}A|`)} is:` : `If A is a square matrix of order ${n} and ${$(`|A| = ${d}`)}, then ${$('|\\text{adj } A|')} is:`, right, '', form === 'scale' ? [
       { slip: 'multiplied by k only once', value: k * d },
-      { slip: 'used k² whatever the order', value: k * k * d + (n === 2 ? 1 : 0) },
+      { slip: 'used k² whatever the order', value: k * k * d },
       { slip: 'added k', value: k + d },
       { slip: 'raised d to the power', value: k * d ** n },
     ] : [
       { slip: 'used |A|ⁿ', value: d ** n },
-      { slip: 'took it to equal |A|', value: n === 2 ? d + 1 : d },
-      { slip: 'used n|A|', value: n * d + 1 },
+      { slip: 'took it to equal |A|', value: d },
+      { slip: 'used n|A|', value: n * d },
       { slip: 'used 1/|A|', value: 1 / d },
     ], { digits: 4 });
   }),
@@ -675,7 +675,7 @@ const blueprints: Blueprint[] = [
     return g.mcqNumber(`If ${$(`\\vec a = ${vecTex(a)}`)} and ${$(`\\vec b = ${vecTex(b)}`)}, then ${$('\\vec a\\cdot\\vec b')} is:`, d === 0 ? g.retry() : d, '', [
       { slip: 'added instead of multiplying', value: a[0] + b[0] + a[1] + b[1] + a[2] + b[2] },
       { slip: 'forgot a term', value: a[0] * b[0] + a[1] * b[1] },
-      { slip: 'ignored a sign', value: Math.abs(a[0] * b[0]) + Math.abs(a[1] * b[1]) + Math.abs(a[2] * b[2]) + 1 },
+      { slip: 'ignored a sign', value: Math.abs(a[0] * b[0]) + Math.abs(a[1] * b[1]) + Math.abs(a[2] * b[2]) },
       { slip: 'found the first two products only', value: a[1] * b[1] + a[2] * b[2] },
     ], { digits: 4 });
   }),

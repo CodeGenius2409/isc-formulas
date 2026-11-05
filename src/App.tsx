@@ -30,6 +30,7 @@ const PaperView = lazyRetry(() => import('./views/PaperView'));
 const MyFormulas = lazyRetry(() => import('./views/MyFormulas'));
 const FormulaEditor = lazyRetry(() => import('./views/FormulaEditor'));
 const ToolsView = lazyRetry(() => import('./views/ToolsView'));
+const GeneratorView = lazyRetry(() => import('./views/GeneratorView'));
 const SearchView = lazyRetry(() => import('./views/SearchView'));
 const FindPalette = lazyRetry<object>(() => import('./components/FindPalette').then((m) => ({ default: m.FindPalette })));
 
@@ -87,6 +88,8 @@ function View({ route, place, scrollRef }: { route: Route; place: BookPlace; scr
       return <ProgressView />;
     case 'paper':
       return <PaperView />;
+    case 'generate':
+      return <GeneratorView />;
     case 'mine':
       if (a === 'new') return <FormulaEditor key="new" editId={null} />;
       if (a === 'edit' && route.path[2]) return <FormulaEditor key={route.path[2]} editId={route.path[2]} />;
