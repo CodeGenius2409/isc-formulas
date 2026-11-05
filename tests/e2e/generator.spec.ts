@@ -8,6 +8,21 @@ import { setTheme, waitForServiceWorker, watchProblems } from './helpers';
 /** A question's own words, with its marks and buttons left out. */
 const promptOf = async (item: Locator): Promise<string> => (await item.locator('.bank-prompt').first().innerText()).replace(/\s+/g, ' ').trim();
 
+/** The names of the files in a .docx, which is a zip. */
+function zipNames(buffer: Buffer): string[] {
+  const names: string[] = [];
+  let end = buffer.length - 22;
+  while (end >= 0 && buffer.readUInt32LE(end) !== 0x06054b50) end--;
+  let at = buffer.readUInt32LE(end + 16);
+  const total = buffer.readUInt16LE(end + 10);
+  for (let i = 0; i < total; i++) {
+    const nameLength = buffer.readUInt16LE(at + 28);
+    names.push(buffer.toString('utf8', at + 46, at + 46 + nameLength));
+    at += 46 + nameLength + buffer.readUInt16LE(at + 30) + buffer.readUInt16LE(at + 32);
+  }
+  return names;
+}
+
 /** Reads one file out of a .docx, which is a zip. */
 function readZipEntry(buffer: Buffer, name: string): string {
   let end = buffer.length - 22;
@@ -284,6 +299,25 @@ test('a paper saves, reopens, exports and imports', async ({ page }, info) => {
   await page.getByRole('button', { name: '← Change the choices' }).click();
   await page.getByTestId('paper-file').setInputFiles(path);
   await expect.poll(() => promptOf(page.getByTestId('review-item').first())).toBe(text);
+});
+
+test('a Word file draws a compound that a question asks about', async ({ page }, info) => {
+  await openGenerator(page, 'chemistry');
+  await page.locator('#gen-amount').fill('30');
+  await page.getByLabel('Multiple choice', { exact: true }).check();
+  await setShare(page, 100);
+  await page.getByRole('button', { name: 'Generate the questions' }).click();
+  await expect(page.getByTestId('review-item').first()).toBeVisible();
+  const drawn = page.getByTestId('review-item').filter({ has: page.locator('svg.molecule') });
+  const count = await drawn.count();
+  const waiting = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Word: the paper' }).click();
+  const path = info.outputPath('with-compounds.docx');
+  await (await waiting).saveAs(path);
+  const images = zipNames(readFileSync(path)).filter((n) => n.startsWith('word/media/'));
+  // Other questions may have figures too, so the file holds at least one picture for each compound on the screen.
+  expect(images.length).toBeGreaterThanOrEqual(count);
+  expect(count).toBeGreaterThan(0);
 });
 
 test('presets remember the choices, and "don’t reuse" keeps out saved questions', async ({ page }) => {

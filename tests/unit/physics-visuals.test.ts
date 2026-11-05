@@ -67,6 +67,15 @@ for (const level of ['XI', 'XII'] as ClassLevel[]) {
       expect(withFigure).toBeGreaterThan(1000);
     });
 
+    it('every simulator has a static figure of the same set-up, for print and mock papers', () => {
+      for (const bp of set.blueprints) {
+        for (let seed = 0; seed < 20; seed++) {
+          const item = generateItem(bp, seed, set.names(bp));
+          if (item.simulator) expect(item.diagram, `${bp.id} opens a simulator, and has nothing to print`).toBeDefined();
+        }
+      }
+    });
+
     it('every simulator named exists, and is given values', () => {
       for (const bp of set.blueprints) {
         for (let seed = 0; seed < 20; seed++) {

@@ -1,5 +1,5 @@
 // Computer Science, Class XII. Answers are computed: Java runs in the tracer, Boolean functions go through
-// Quine–McCluskey, and trees and stacks are worked out by code.
+// Quine–McCluskey, and trees are worked out by code.
 import { classify, coverIsRight, groupNames, minimalCover, primeImplicants, sopText, termText, truthColumn, VARS } from '../../practice/gen/boolean';
 import type { Gen } from '../../practice/gen/gen';
 import { complete, designClass, findError, inMain, outputOf, pyList, pySlice, SHORT_WORDS, withMethods } from './cs-common';
@@ -36,12 +36,12 @@ function kmapQuestion(g: Gen, size: 3 | 4, marksMap: number, marksTerm: number):
       }
       return `(${term})`;
     }).join('');
-    return g.theory(`Reduce the Boolean function F(${names}) = π(${zeros.join(', ')}) using a Karnaugh map, and show the groups you use.`, [
+    return g.theory(`Use a Karnaugh map to minimise F(${names}) = π(${zeros.join(', ')}), and show the groups you use.`, [
       [`A correct map with the zeros marked, and groups: ${groupNames(posCover)}.`, marksMap],
       [`F = ${pos}.`, marksTerm],
     ]);
   }
-  return g.theory(`Reduce the Boolean function F(${names}) = Σ(${minterms.join(', ')}) using a Karnaugh map, and show the groups you use.`, [
+  return g.theory(`Use a Karnaugh map to minimise F(${names}) = Σ(${minterms.join(', ')}), and show the groups you use.`, [
     [`A correct map with the ones marked, and groups: ${groupNames(cover)}.`, marksMap],
     [`F = ${sopText(cover, size)}.`, marksTerm],
   ]);
@@ -349,13 +349,13 @@ const blueprints: Blueprint[] = [
     return g.theory(`Draw a truth table to verify whether ${q.text} is a tautology, a contradiction or a contingency.`, [[`A truth table with the correct columns. ${q.answer}`, 1], [`It is a ${q.kind}.`, 1]]);
   }),
   custom('contrapositive', [1, 'a', 2, 1], { type: 'short', format: 'short' }, (g) => {
-    const [p, q] = g.pick([
-      ['it rains', 'the match is cancelled'],
-      ['a number is even', 'it is divisible by 2'],
-      ['the power fails', 'the alarm rings'],
-      ['you pass the test', 'you get a certificate'],
+    const [p, q, notP, notQ] = g.pick([
+      ['it rains', 'the match is cancelled', 'it doesn’t rain', 'the match isn’t cancelled'],
+      ['a number is even', 'it is divisible by 2', 'a number isn’t even', 'it isn’t divisible by 2'],
+      ['the power fails', 'the alarm rings', 'the power doesn’t fail', 'the alarm doesn’t ring'],
+      ['you pass the test', 'you get a certificate', 'you don’t pass the test', 'you don’t get a certificate'],
     ] as const);
-    return g.theory(`Write the converse and the contrapositive of: "If ${p}, then ${q}."`, [`Converse: if ${q}, then ${p}.`, `Contrapositive: if it isn’t so that ${q}, then it isn’t so that ${p}.`]);
+    return g.theory(`Write the converse and the contrapositive of: "If ${p}, then ${q}."`, [`Converse: if ${q}, then ${p}.`, `Contrapositive: if ${notQ}, then ${notP}.`]);
   }),
   custom('kmap4', [1, 'b', 5, 3], { type: 'short', format: 'long' }, (g) => kmapQuestion(g, 4, 4, 1)),
   custom('kmap3', [1, 'b', 3, 2], { type: 'short', format: 'short' }, (g) => kmapQuestion(g, 3, 2, 1)),
@@ -365,7 +365,7 @@ const blueprints: Blueprint[] = [
     const value = parseInt(bits.join(''), 2);
     const right = termText({ value, mask: 0, covers: [] }, 4);
     const flips = [1, 2, 4, 8].map((b) => termText({ value: value ^ b, mask: 0, covers: [] }, 4));
-    return g.mcq(`If A = ${bits[0]}, B = ${bits[1]}, C = ${bits[2]} and D = ${bits[3]}, the minterm is:`, right, g.sample(flips, 3));
+    return g.mcq(`Which minterm has the value 1 for the input A = ${bits[0]}, B = ${bits[1]}, C = ${bits[2]}, D = ${bits[3]}?`, right, g.sample(flips, 3));
   }),
   custom('simplify', [1, 'b', 2, 1], { type: 'short', format: 'short' }, (g) => {
     const [expr, steps, answer] = g.pick([
@@ -508,7 +508,7 @@ const blueprints: Blueprint[] = [
       ['Draw a full adder using two half adders.', 'The first half adder on A and B, whose sum goes to the second with Cin.', 'An OR gate joining the two carries, to give Cout.'],
     ],
     explain: [
-      ['Write the expressions for the sum and carry of a full adder.', 'Sum = A ⊕ B ⊕ C.', 'Carry = AB + BC + CA.'],
+      ['Give the Boolean expressions for the two outputs of a full adder.', 'Sum = A ⊕ B ⊕ C.', 'Carry = AB + BC + CA.'],
     ],
   }),
 
@@ -692,40 +692,6 @@ const blueprints: Blueprint[] = [
   }),
 
   // ---- Unit 6: Inheritance
-  custom('stack-ops', [6, 'b', 2, 1], { type: 'short', format: 'short' }, (g) => {
-    const ops: string[] = [];
-    const stack: number[] = [];
-    const count = g.int(5, 8);
-    for (let i = 0; i < count; i++) {
-      if (stack.length && g.chance(0.35)) {
-        stack.pop();
-        ops.push('pop()');
-      } else {
-        const v = g.int(1, 9);
-        stack.push(v);
-        ops.push(`push(${v})`);
-      }
-    }
-    if (!stack.length) g.retry();
-    return g.theory(`A stack starts empty, and these are done in order: ${ops.join(', ')}. Write the contents of the stack, from bottom to top, and the element at the top.`, [`From bottom to top, it holds ${stack.join(', ')}.`, `The top element is ${stack[stack.length - 1]}.`]);
-  }),
-  custom('queue-ops', [6, 'b', 2, 1], { type: 'short', format: 'short' }, (g) => {
-    const ops: string[] = [];
-    const queue: number[] = [];
-    const count = g.int(5, 8);
-    for (let i = 0; i < count; i++) {
-      if (queue.length && g.chance(0.35)) {
-        queue.shift();
-        ops.push('dequeue()');
-      } else {
-        const v = g.int(1, 9);
-        queue.push(v);
-        ops.push(`enqueue(${v})`);
-      }
-    }
-    if (!queue.length) g.retry();
-    return g.theory(`A queue starts empty, and these are done in order: ${ops.join(', ')}. Write the contents of the queue, from front to rear, and the element at the front.`, [`From front to rear, it holds ${queue.join(', ')}.`, `The front element is ${queue[0]}.`]);
-  }),
   custom('inherit-design', [6, 'a', 5, 3], { type: 'program', format: 'program' }, (g) => {
     const [base, derived, baseField, extra, formula] = g.pick([
       ['Employee', 'Manager', 'salary', 'bonus', 'salary + bonus'],
@@ -779,28 +745,26 @@ const blueprints: Blueprint[] = [
   ...facts(6, 'b', {
     define: [
       ['an interface', 'A set of method signatures that a class promises to provide, using implements.'],
-      ['a stack', 'A list in which items are added and removed at one end, last in, first out.'],
-      ['a queue', 'A list in which items are added at the rear and removed from the front, first in, first out.'],
+      ['a method prototype', 'A method’s heading alone: its return type, name and parameter types, with no body.'],
     ],
     recall: [
       ['Which keyword does a class use for an interface?', 'implements', 'extends', 'interface', 'super'],
-      ['A stack works on the principle of:', 'last in, first out', 'first in, first out', 'random access', 'sorted access'],
-      ['A queue works on the principle of:', 'first in, first out', 'last in, first out', 'random access', 'sorted access'],
-      ['Popping from an empty stack is called:', 'underflow', 'overflow', 'recursion', 'wraparound'],
+      ['The methods declared in an interface are, by default:', 'public and abstract', 'private and static', 'protected and final', 'private and abstract'],
+      ['The fields of an interface are, by default:', 'public, static and final', 'private', 'protected and abstract', 'local to each method'],
       ['Which can a class do with interfaces?', 'Implement more than one', 'Implement just one', 'Extend none', 'Instantiate them directly'],
     ],
     reason: [
-      ['Stacks are used for method calls.', 'The most recent call has to finish first.', 'That is last in, first out.'],
-      ['A circular queue is often preferred to a simple array queue.', 'A simple queue wastes space at the front as items leave.', 'A circular queue reuses that space.'],
+      ['A class can implement many interfaces, though it can extend only one class.', 'An interface brings no method bodies to inherit.', 'So two parents can’t clash over which body to use.'],
+      ['An interface can’t be created with new.', 'Its methods have no bodies.', 'So an object of it would have nothing to run.'],
     ],
     compare: [
-      ['a stack', 'a queue', ['Last in, first out.', 'First in, first out.'], ['One end for both operations.', 'Different ends for the two operations.']],
+      ['the Java construct interface', 'the interface of a class', ['Declared with the keyword interface.', 'Not a keyword: the set of method prototypes a class offers.'], ['A class must use implements to take it on.', 'Every class has one, without any keyword.']],
       ['an interface', 'an abstract class', ['Has no constructors.', 'Can have constructors.'], ['A class can implement many.', 'A class can extend only one.']],
     ],
     truths: [
       ['An interface can’t be instantiated.', 'An interface can be instantiated with new.'],
       ['An abstract method has no body.', 'An abstract method must have a body.'],
-      ['A dequeue allows insertion and deletion at both ends.', 'A dequeue allows insertion and deletion at one end only.'],
+      ['A class implementing an interface must define its methods, or be declared abstract.', 'A class implementing an interface can leave its methods without bodies and still be created with new.'],
     ],
   }),
 
@@ -1068,26 +1032,20 @@ const blueprints: Blueprint[] = [
     ], { model: fence(model) });
   }),
   // ---- Real-life questions. Their answers are worked out by code here, or by the same algorithms as the rest.
-  custom('cbq-undo-stack', [8, 'a', 3, 2], { type: 'short', format: 'cbq', style: 'cbq-style' }, (g) => {
-    const actions = g.sample(['type', 'bold', 'paste', 'delete', 'underline', 'cut', 'italic'], 4);
-    const undo = g.int(1, 2);
-    const stack = [...actions];
-    const removed: string[] = [];
-    for (let i = 0; i < undo; i++) removed.push(stack.pop()!);
-    return g.theory(`An editor keeps your actions on a stack, to undo them. You do these in order: ${actions.join(', ')}. You then press undo ${undo === 1 ? 'once' : 'twice'}.\n(i) Which ${undo === 1 ? 'action is' : 'actions are'} undone? (ii) What is on top of the stack now? (iii) Why does a stack suit this job?`, [
-      [`(i) ${removed.join(', then ')}.`, 1],
-      [`(ii) ${stack[stack.length - 1]}.`, 1],
-      ['(iii) A stack is last in, first out, so the most recent action is undone first.', 1],
+  custom('cbq-knockout-tree', [8, 'a', 3, 2], { type: 'short', format: 'cbq', style: 'cbq-style' }, (g) => {
+    const rounds = g.int(2, 5);
+    const players = 2 ** rounds;
+    return g.theory(`A knockout chess event for ${players} players is drawn as a binary tree. Each player is a leaf, and each match is an internal node, with the final at the root.\n(i) How many internal nodes does the tree have? (ii) What is its height, counting the number of levels? (iii) What does the path from a leaf to the root stand for?`, [
+      [`(i) ${players - 1}, as each match knocks out one player.`, 1],
+      [`(ii) ${rounds + 1}, as there are ${rounds} rounds above the level of the players.`, 1],
+      ['(iii) That player’s matches, if they win every one up to the final.', 1],
     ]);
   }),
-  custom('cbq-print-queue', [8, 'a', 3, 2], { type: 'short', format: 'cbq', style: 'cbq-style' }, (g) => {
-    const jobs = g.sample(['report', 'photo', 'letter', 'invoice', 'ticket', 'poster'], 4);
-    const served = g.int(1, 2);
-    const left = jobs.slice(served);
-    return g.theory(`A printer takes jobs from a queue. The jobs arrive in this order: ${jobs.join(', ')}. It finishes ${served === 1 ? 'one job' : 'two jobs'}.\n(i) Which ${served === 1 ? 'job has' : 'jobs have'} been printed? (ii) Which job is at the front now? (iii) Why does a queue suit this job?`, [
-      [`(i) ${jobs.slice(0, served).join(' and ')}.`, 1],
-      [`(ii) ${left[0]}.`, 1],
-      ['(iii) A queue is first in, first out, so jobs are printed in the order they arrived.', 1],
+  custom('cbq-folder-tree', [8, 'a', 2, 2], { type: 'short', format: 'cbq', style: 'cbq-style' }, (g) => {
+    const [root, left, right] = g.sample(['Music', 'Photos', 'School', 'Games', 'Notes', 'Trips'], 3);
+    return g.theory(`A folder ${root} is stored as the root of a binary tree, with ${left} as its left child and ${right} as its right child. Neither child has children of its own.\n(i) Name the leaf nodes. (ii) Write the in-order traversal.`, [
+      [`(i) ${left} and ${right}.`, 1],
+      [`(ii) ${left}, ${root}, ${right}.`, 1],
     ]);
   }),
   custom('cbq-alarm-boolean', [1, 'b', 3, 2], { type: 'short', format: 'cbq', style: 'cbq-style' }, (g) => {

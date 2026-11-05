@@ -58,8 +58,9 @@ const blueprints: Blueprint[] = [
       ['glucose', 40, 6.7, 53.3, 'CH₂O'],
       ['ethanoic acid', 40, 6.7, 53.3, 'CH₂O'],
       ['ethanol', 52.2, 13, 34.8, 'C₂H₆O'],
-      ['an alkane', 83.7, 16.3, 0, 'C₃H₇'],
-      ['urea-free methane', 75, 25, 0, 'CH₄'],
+      ['propanone', 62.1, 10.3, 27.6, 'C₃H₆O'],
+      ['butane', 82.8, 17.2, 0, 'C₂H₅'],
+      ['methane', 75, 25, 0, 'CH₄'],
     ] as const);
     const mc = c / 12;
     const mh = h;
@@ -68,7 +69,7 @@ const blueprints: Blueprint[] = [
     return g.theory(`A compound contains ${c}% carbon, ${h}% hydrogen${o ? ` and ${o}% oxygen` : ''} by mass. Find its empirical formula.`, [
       [`Divide by atomic mass: C ${mc.toFixed(2)}, H ${mh.toFixed(2)}${o ? `, O ${mo.toFixed(2)}` : ''}.`, 1],
       [`Divide by the smallest, ${smallest.toFixed(2)}, and round to simple whole numbers.`, 1],
-      [`The empirical formula is ${formula}${name.includes('urea') ? '' : `, as in ${name}`}.`, 1],
+      [`The empirical formula is ${formula}, as in ${name}.`, 1],
     ]);
   }),
   ...facts(1, 'a', {
@@ -360,7 +361,7 @@ const blueprints: Blueprint[] = [
   num('expansion-work', [5, 'a', 2, 2], {
     text: 'A gas expands by {V} L against a constant pressure of {P} atm. Find the work done on the gas.',
     vars: { V: [1, 10, 1], P: [1, 5, 1] },
-    parts: [{ ask: 'Work, as a magnitude', use: 'c-xi-6-28', find: 'w', given: { P: 'P atm', DeltaV: 'V L' }, marks: 2 }],
+    parts: [{ ask: 'Work done on the gas', use: 'c-xi-6-28', find: 'w', given: { P: 'P atm', DeltaV: 'V L' }, marks: 2 }],
   }),
   num('heat-capacity', [5, 'a', 3, 2], {
     text: '{M} g of water is heated from {A} °C to {B} °C. Water has a specific heat capacity of 4.18 J/(g K).',
@@ -438,13 +439,13 @@ const blueprints: Blueprint[] = [
   // ---- Unit 6: Equilibrium
   num('ph', [6, 'b', 2, 1], {
     variants: [
-      { text: 'A solution has [H⁺] = {C} × 10⁻{P} mol/L. Find its pH.', parts: [{ ask: 'pH', use: 'c-xi-7-3', find: 'pH', given: { H: 'H0' }, marks: 2 }] },
+      { text: 'A solution has [H⁺] = {C} × $10^{-{P}}$ mol/L. Find its pH.', parts: [{ ask: 'pH', use: 'c-xi-7-3', find: 'pH', given: { H: 'H0' }, marks: 2 }] },
     ],
     vars: { C: [1, 9, 1], P: [2, 3, 4, 5, 6] },
     derive: (v) => ({ H0: v.C * 10 ** -v.P }),
   }),
   mcqNum('ph-mcq', [6, 'b', 1, 1], {
-    text: 'A strong acid has a hydrogen ion concentration of 10⁻{P} mol/L. Its pH is:',
+    text: 'A strong acid has a hydrogen ion concentration of $10^{-{P}}$ mol/L. Its pH is:',
     vars: { P: [1, 2, 3, 4, 5, 6] },
     derive: (v) => ({ H: 10 ** -v.P }),
     use: 'c-xi-7-3',

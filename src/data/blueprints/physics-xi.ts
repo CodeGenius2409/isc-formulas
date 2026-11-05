@@ -212,7 +212,7 @@ const blueprints: Blueprint[] = [
   // ---- Unit 3: Laws of motion
   mcqNum('f-ma', [3, 'a', 1, 1], {
     text: 'A force of {F} N acts on a {M} kg trolley on a smooth track. Its acceleration is:',
-    vars: { F: [10, 90, 10], M: [2, 10, 2] },
+    vars: { F: [4, 24, 2], M: [2, 8, 1] },
     use: 'p-xi-3-24',
     find: 'a',
     given: { F_net: 'F N', m: 'M kg' },
@@ -236,7 +236,7 @@ const blueprints: Blueprint[] = [
   }),
   num('friction-block', [3, 'b', 3, 2], {
     text: 'A {M} kg box is pushed with a force of {F} N across a floor, with a coefficient of kinetic friction of {U}.',
-    vars: { M: [2, 10, 2], F: [30, 90, 10], U: [0.1, 0.4, 0.1] },
+    vars: { M: [5, 30, 5], F: [40, 150, 10], U: [0.1, 0.4, 0.1] },
     when: (v) => v.F > v.U * v.M * 9.8 * 1.1,
     parts: [
       { ask: 'Friction force', use: 'p-xi-3-4', find: 'f_k', given: { mu_k: 'U', N: 'M*9.8 N' }, marks: 1 },

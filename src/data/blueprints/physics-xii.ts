@@ -1,10 +1,14 @@
 // Physics, Class XII. Numericals are answered by the solver registry. The facts are written for this app.
 import { blueprintsFor, type Values } from './dsl';
+import type { DiagramSpec } from '../../practice/bank/diagram';
 import type { Blueprint } from './types';
 
 const { num, mcqNum, facts, custom } = blueprintsFor('physics', 'XII');
 
 const ohms = (x: number) => `${x} Ω`;
+
+/** A decay curve with no scale. It has the shape of the law, and none of this question's numbers. */
+const DECAY_CURVE = { kind: 'graph', x: 'Time', y: 'Amount left', lines: [{ points: Array.from({ length: 21 }, (_, i): [number, number] => [i / 2, 2 ** (-i / 4)]) }], ticksY: [[1, 'At the start']] } as const satisfies DiagramSpec;
 
 const blueprints: Blueprint[] = [
   // ---- Unit 1: Electrostatics
@@ -302,9 +306,9 @@ const blueprints: Blueprint[] = [
   }),
   num('energy-bill', [2, 'a', 3, 2], {
     style: 'cbq-style',
-    text: 'A household {scene} of {P} W runs for {H} hours a day from a {V} V supply. Each unit (kWh) costs ₹{C}.',
+    text: 'A household {scene} of {P} W runs for {H} hours a day from a {V} V supply.',
     scenes: ['geyser', 'room heater', 'iron'],
-    vars: { P: [500, 2000, 100], H: [1, 4, 1], V: [220, 240, 20], C: [5, 9, 1] },
+    vars: { P: [500, 2000, 100], H: [1, 4, 1], V: [220, 240, 20] },
     derive: (v) => ({ J: v.P * v.H * 3600, I2: v.P / v.V }),
     parts: [
       { ask: 'Current drawn', use: 'p-xii-2-4', find: 'I', given: { P: 'P W', V: 'V V' }, marks: 1 },
@@ -915,10 +919,9 @@ const blueprints: Blueprint[] = [
   num('fringe-water', [6, 'c', 3, 2], {
     text: 'A double slit set-up has a fringe width of {B} mm in air, with light of wavelength {L} nm. The whole set-up is then immersed in water of refractive index {N}.',
     vars: { B: [0.4, 2, 0.2], L: [450, 650, 50], N: [1.33] },
-    derive: (v) => ({ NB: v.B / v.N }),
     parts: [
       { ask: 'Wavelength of the light in water', use: 'p-xii-6-34', find: 'lambda_m', given: { lambda_0: 'L nm', n: 'N' }, unit: 'nm', marks: 2 },
-      { ask: 'New fringe width, which falls in the same ratio', use: 'p-xii-6-34', find: 'lambda_m', given: { lambda_0: 'B mm', n: 'N' }, unit: 'mm', marks: 1 },
+      { ask: 'New fringe width', use: 'p-xii-6-34', find: 'lambda_m', given: { lambda_0: 'B mm', n: 'N' }, unit: 'mm', marks: 1 },
     ],
   }),
   num('malus', [6, 'c', 2, 1], {
@@ -1008,7 +1011,7 @@ const blueprints: Blueprint[] = [
       ['Reflecting telescopes are preferred for very large instruments.', 'A mirror has no chromatic aberration.', 'A large mirror is lighter and easier to support than a large lens.'],
     ],
     compare: [
-      ['a compound microscope', 'an astronomical telescope', ['The objective has a short focal length.', 'The objective has a long focal length.'], ['Used for small nearby objects.', 'Used for distant objects.']],
+      ['a compound microscope', 'a refracting telescope', ['The objective has a short focal length.', 'The objective has a long focal length.'], ['Used for small nearby objects.', 'Used for distant objects.']],
       ['a refracting telescope', 'a reflecting telescope', ['Uses a lens as the objective.', 'Uses a concave mirror as the objective.'], ['Suffers from chromatic aberration.', 'Is free of chromatic aberration.']],
     ],
     truths: [
@@ -1122,7 +1125,7 @@ const blueprints: Blueprint[] = [
     vars: { P: [1, 5, 1], F: [4, 7, 1] },
     parts: [
       { ask: 'Energy of each photon', use: 'p-xii-7-4', find: 'E', given: { nu: 'F*1e14 Hz' }, marks: 1 },
-      { ask: 'Photons emitted per second', use: 'p-xii-7-9', find: 'N', given: { P: 'P mW', nu: 'F*1e14 Hz' }, marks: 2 },
+      { ask: 'Photons emitted per second', use: 'p-xii-7-9', find: 'N', given: { P: 'P mW', nu: 'F*1e14 Hz' }, unit: 's^-1', marks: 2 },
     ],
   }),
   custom('stopping-graph', [7, 'a', 3, 3], { type: 'short', format: 'diagram', style: 'cbq-style' }, (g) => {
@@ -1193,6 +1196,7 @@ const blueprints: Blueprint[] = [
 
   // ---- Unit 8: Atoms and nuclei
   num('half-life', [8, 'b', 3, 2], {
+    diagram: () => DECAY_CURVE,
     text: 'A radioactive sample has a half-life of {T} days, and starts with {M} g of the substance.',
     vars: { T: [2, 20, 2], M: [16, 128, 16], D: [1, 4, 1] },
     derive: (v) => ({ E: v.T * v.D }),
@@ -1203,6 +1207,7 @@ const blueprints: Blueprint[] = [
     sim: (v) => ({ id: 'radioactive', preset: { N0: v.M, half: v.T, t: v.E } }),
   }),
   mcqNum('half-life-mcq', [8, 'b', 1, 1], {
+    diagram: () => DECAY_CURVE,
     text: 'A nuclide has a half-life of {T} years. Of {M} g, the mass left after {E} years is:',
     vars: { T: [5, 30, 5], M: [16, 80, 16], K: [2, 4, 1] },
     derive: (v) => ({ E: v.T * v.K }),

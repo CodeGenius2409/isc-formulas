@@ -166,7 +166,7 @@ export class Gen {
    */
   mcqNumber(text: string, value: number, unit: string, mistakes: Mistake[], extras: Partial<McqBody> & { digits?: number; working?: string } = {}): McqBody {
     const { digits = 3, working, ...rest } = extras;
-    const show = (v: number) => `${tidy(v, digits)}${unit ? ` ${unit}` : ''}`;
+    const show = (v: number) => `${tidy(v, digits)}${unit ? `${unit === '°' ? '' : ' '}${unit}` : ''}`;
     const right = show(value);
     const seen = new Set([right]);
     const usable: Mistake[] = [];

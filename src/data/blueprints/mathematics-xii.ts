@@ -8,6 +8,15 @@ import type { Blueprint, Body } from './types';
 const { custom, facts } = blueprintsFor('mathematics', 'XII');
 
 const step = (label: string, ...math: string[]): Step => ({ label, math });
+
+const gcd = (a: number, b: number): number => (b ? gcd(b, a % b) : Math.abs(a));
+
+/** A plane's equation with its coefficients in lowest terms. */
+function planeTex(a: number, b: number, c: number, d: number): string {
+  const h = [a, b, c, d].reduce(gcd, 0) || 1;
+  const term = (k: number, v: string) => `${k === 1 ? '' : k}${v}`;
+  return `${term(a / h, 'x')} + ${term(b / h, 'y')} + ${term(c / h, 'z')} = ${d / h}`;
+}
 const $ = (tex: string) => `$${tex}$`;
 
 /** A one-mark question on an exact value. The wrong options are realistic slips, kept distinct. */
@@ -64,7 +73,7 @@ const blueprints: Blueprint[] = [
     return { form: 'numeric', text: `The function ${$(`f(x) = ${polyTex([[a, 1], [b, 0]])}`)} is invertible on the real numbers. Find ${$(`f^{-1}(${y})`)}.`, parts: [g.answerPart('Value of the inverse', (y - b) / a, 2, [step('Solve y = f(x) for x', `x = \\dfrac{y ${signed(-b)}}{${a}}`), step('Put in the value', `f^{-1}(${y}) = \\dfrac{${y} ${signed(-b)}}{${a}} = ${(y - b) / a}`)])] };
   }),
   custom('count-relations', [1, 'a', 1, 2], { type: 'mcq', format: 'mcq' }, (g) => {
-    const n = g.int(2, 4);
+    const n = g.int(3, 4);
     const total = 2 ** (n * n);
     const reflexive = 2 ** (n * n - n);
     const ask = g.pick(['all', 'reflexive'] as const);
@@ -72,8 +81,7 @@ const blueprints: Blueprint[] = [
       { slip: 'used 2ⁿ rather than 2 to the power n²', value: 2 ** n },
       { slip: 'used n² on its own', value: n * n },
       { slip: 'left out the diagonal pairs', value: ask === 'all' ? reflexive : total },
-      { slip: 'doubled it', value: (ask === 'all' ? total : reflexive) * 2 },
-      { slip: 'halved it', value: (ask === 'all' ? total : reflexive) / 2 },
+      { slip: 'used 2 to the power 2n', value: 2 ** (2 * n) },
     ], { digits: 6 });
   }),
   custom('bijection-proof', [1, 'a', 3, 2], { type: 'proof', format: 'long' }, (g) => {
@@ -213,7 +221,7 @@ const blueprints: Blueprint[] = [
     const d = g.int(2, 6);
     const form = g.pick(['scale', 'adj'] as const);
     const right = form === 'scale' ? k ** n * d : d ** (n - 1);
-    return g.mcqNumber(form === 'scale' ? `If A is a square matrix of order ${n} and ${$(`|A| = ${d}`)}, then ${$(`|${k}A|`)} is:` : `If A is a square matrix of order ${n} and ${$(`|A| = ${d}`)}, then ${$('|\\text{adj } A|')} is:`, right, '', form === 'scale' ? [
+    return g.mcqNumber(form === 'scale' ? `A square matrix A of order ${n} has ${$(`|A| = ${d}`)}. Then ${$(`|${k}A|`)} is:` : `A square matrix A of order ${n} has ${$(`|A| = ${d}`)}. Then ${$('|\\text{adj } A|')} is:`, right, '', form === 'scale' ? [
       { slip: 'multiplied by k only once', value: k * d },
       { slip: 'used k² whatever the order', value: k * k * d },
       { slip: 'added k', value: k + d },
@@ -531,10 +539,11 @@ const blueprints: Blueprint[] = [
     const a = g.int(1, 3);
     const b = a + g.int(1, 4);
     const diff = b - a;
+    const factor = diff === 1 ? '' : `\\dfrac{1}{${diff}}`;
     return g.theory(`Evaluate ${$(`\\int \\dfrac{dx}{(x + ${a})(x + ${b})}`)}.`, [
-      [`Write ${$(`\\dfrac{1}{(x+${a})(x+${b})} = \\dfrac{1}{${diff}}\\left(\\dfrac{1}{x+${a}} - \\dfrac{1}{x+${b}}\\right)`)}.`, 1],
+      [`Write ${$(`\\dfrac{1}{(x+${a})(x+${b})} = ${factor}\\left(\\dfrac{1}{x+${a}} - \\dfrac{1}{x+${b}}\\right)`)}.`, 1],
       ['Integrate each term to give a logarithm.', 1],
-      [`So the integral is ${$(`\\dfrac{1}{${diff}}\\log\\left|\\dfrac{x+${a}}{x+${b}}\\right| + C`)}.`, 1],
+      [`So the integral is ${$(`${factor}\\log\\left|\\dfrac{x+${a}}{x+${b}}\\right| + C`)}.`, 1],
     ]);
   }),
   custom('by-parts', [3, 'c', 3, 2], { type: 'short', format: 'short' }, (g) => {
@@ -747,7 +756,7 @@ const blueprints: Blueprint[] = [
     const top = Math.abs(a * p[0] + b * p[1] + c * p[2] - d);
     const ans = frac(top, r);
     if (!top) g.retry();
-    return { form: 'numeric', text: `Find the distance of the point (${p}) from the plane ${$(`${a}x + ${b}y + ${c}z = ${d}`)}.`, parts: [g.answerPart('The distance', ans.value, 2, [step('Use the distance formula', `\\dfrac{|${a}(${p[0]}) + ${b}(${p[1]}) + ${c}(${p[2]}) - ${d}|}{\\sqrt{${a}^2 + ${b}^2 + ${c}^2}} = ${ans.tex()}`)], 'units', ans.text())] };
+    return { form: 'numeric', text: `How far is the point (${p}) from the plane ${$(`${a}x + ${b}y + ${c}z = ${d}`)}?`, parts: [g.answerPart('The distance', ans.value, 2, [step('Use the distance formula', `\\dfrac{|${a}(${p[0]}) + ${b}(${p[1]}) + ${c}(${p[2]}) - ${d}|}{\\sqrt{${a}^2 + ${b}^2 + ${c}^2}} = ${ans.tex()}`)], 'units', ans.text())] };
   }),
   custom('dir-cosines', [5, 'a', 1, 1], { type: 'mcq', format: 'mcq' }, (g) => {
     const [a, b, c, r] = g.pick([[1, 2, 2, 3], [2, 3, 6, 7], [2, 1, 2, 3], [4, 4, 7, 9]]);
@@ -787,7 +796,7 @@ const blueprints: Blueprint[] = [
     return g.theory(`Find the equation of the plane through (${pts[0]}), (${pts[1]}) and (${pts[2]}).`, [
       [`Two vectors in the plane are ${$(vecTex(u))} and ${$(vecTex(v))}.`, 1],
       [`Their cross product gives the normal: ${$(vecTex(cross))}.`, 2],
-      [`The plane is proportional to ${$(`${a}x + ${b}y + ${c}z = ${d}`)}, using the first point.`, 2],
+      [`Dividing out the common factor and using the first point, the plane is ${$(`${planeTex(a, b, c, d)}`)}.`, 2],
     ]);
   }),
   ...facts(5, 'a', {
@@ -937,7 +946,7 @@ const blueprints: Blueprint[] = [
     const rain = today * rr + (1 - today) * dr;
     return {
       form: 'numeric',
-      text: `${who} wants to ${plan} tomorrow, but only if it’s dry. The forecast says the chance of rain today is ${today}. If it rains today, the chance of rain tomorrow is ${rr}. If it’s dry today, the chance of rain tomorrow is ${dr}.`,
+      text: `${who} wants to ${plan} tomorrow, but only if it’s dry. Today’s forecast gives rain a probability of ${today}. After a wet day, rain the next day has a probability of ${rr}. After a dry day, rain the next day has a probability of ${dr}.`,
       parts: [
         g.answerPart('Probability of rain tomorrow', rain, 2, [step('Use the theorem of total probability', `P = ${today}\\cdot${rr} + ${(1 - today).toFixed(1)}\\cdot${dr} = ${rain.toFixed(2)}`)]),
         g.answerPart('Probability that tomorrow is dry', 1 - rain, 1, [step('Take the complement', `1 - ${rain.toFixed(2)} = ${(1 - rain).toFixed(2)}`)]),
@@ -1155,15 +1164,13 @@ const blueprints: Blueprint[] = [
   }),
   custom('cbq-garden-area', [3, 'd', 3, 2], { type: 'numerical', format: 'cbq', style: 'cbq-style' }, (g) => {
     const k = g.int(1, 6);
-    const area = (4 * k ** 3) / 3 * 3 / 3;
     const whole = frac(4 * k ** 3, 3);
-    if (Math.abs(whole.value - area) > 1e-9) g.retry('the two forms must agree');
     return {
       form: 'numeric',
       text: `The edge of a flower bed follows the curve ${$(`y = ${2 * k}x - x^2`)}, in metres, and its other edge is the x-axis.`,
       parts: [
         g.answerPart('The width of the bed along the x-axis, in metres', 2 * k, 1, [step('Find where the curve meets the axis', `x(${2 * k} - x) = 0`)]),
-        g.answerPart('Its area, in square metres', whole.value, 2, [step('Integrate between the two roots', `\\int_0^{${2 * k}} (${2 * k}x - x^2)\\,dx = ${whole.tex()}`)]),
+        g.answerPart('Its area, in square metres', whole.value, 2, [step('Integrate between the two roots', `\\int_0^{${2 * k}} (${2 * k}x - x^2)\\,dx = ${whole.tex()}`)], '', whole.text()),
       ],
     };
   }),
@@ -1200,18 +1207,22 @@ const blueprints: Blueprint[] = [
     };
   }),
   custom('cbq-diet-lp', [6, 'a', 4, 2], { type: 'numerical', format: 'cbq', style: 'cbq-style' }, (g) => {
-    const x = g.int(2, 6);
-    const y = g.int(2, 6);
+    // Built from the corner where the two limits cross, so every corner has whole numbers.
+    const x0 = g.int(2, 6);
+    const y0 = 2 * g.int(1, 4);
+    const trays = x0 + y0;
+    const hours = 2 * x0 + y0;
     const [p, q] = [g.int(2, 9), g.int(2, 9)];
-    const total = x + y;
-    const cornerA = p * total;
-    const cornerB = q * total;
-    const corners: [string, number][] = [[`(${total}, 0)`, cornerA], [`(0, ${total})`, cornerB], ['(0, 0)', 0]];
-    const best = Math.max(cornerA, cornerB);
+    const corners: [number, number][] = [[0, 0], [hours / 2, 0], [x0, y0], [0, trays]];
+    const values = corners.map(([x, y]) => p * x + q * y);
+    const best = Math.max(...values);
     return {
       form: 'numeric',
-      text: `A stall can make at most ${total} trays a day of two snacks, A and B. A tray of A earns ₹${p} and a tray of B earns ₹${q}. Taking x and y as the trays of each, maximise ${$(`Z = ${p}x + ${q}y`)} subject to ${$(`x + y \\le ${total}`)}, ${$('x \\ge 0')}, ${$('y \\ge 0')}.`,
-      parts: [g.answerPart('The largest daily earning, in rupees', best, 4, [step('Test the corners of the region', ...corners.map(([point, value]) => `\\text{At } ${point}: Z = ${value}`))])],
+      text: `A stall makes two snacks, A and B. It can make at most ${trays} trays a day, and has ${hours} hours of oven time. A tray of A takes 2 hours and earns ₹${p}. A tray of B takes 1 hour and earns ₹${q}. With x and y trays, maximise ${$(`Z = ${p}x + ${q}y`)} subject to ${$(`x + y \\le ${trays}`)}, ${$(`2x + y \\le ${hours}`)}, ${$('x \\ge 0')} and ${$('y \\ge 0')}.`,
+      parts: [
+        g.answerPart('The value of x at the corner where the two limits meet', x0, 2, [step('Subtract one limit from the other', `(2x + y) - (x + y) = ${hours} - ${trays}`, `x = ${x0}`)]),
+        g.answerPart('The largest daily earning, in rupees', best, 2, [step('Test each corner of the region', ...corners.map(([x, y], i) => `\\text{At } (${x}, ${y}): Z = ${values[i]}`))]),
+      ],
     };
   }),
   custom('cbq-factory-bayes', [7, 'a', 4, 3], { type: 'numerical', format: 'cbq', style: 'cbq-style' }, (g) => {

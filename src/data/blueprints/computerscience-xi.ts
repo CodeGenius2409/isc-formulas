@@ -18,8 +18,23 @@ function convertQuestion(g: Gen, marks: 1 | 2): Body {
   const direction = g.chance(0.5);
   if (marks === 1) {
     const [question, right] = direction ? [`The decimal number ${value} in ${name} is:`, shown] : [`The ${name} number ${shown} in decimal is:`, String(value)];
-    const wrong = direction ? [(value + 1).toString(base).toUpperCase(), (value - 1).toString(base).toUpperCase(), (value + base).toString(base).toUpperCase()] : [String(value + 1), String(value - 1), String(parseInt(shown, 16) === value ? value + base : parseInt(shown, 16))];
-    return g.mcq(question, right, wrong);
+    const reversed = [...shown].reverse().join('');
+    const slips: [string, string][] = direction
+      ? [
+          [reversed, 'read the remainders from the top down'],
+          [Math.floor(value / base).toString(base).toUpperCase(), 'left out the last remainder'],
+          [(value % base ** (shown.length - 1)).toString(base).toUpperCase(), 'left out the final quotient'],
+          [(value + base).toString(base).toUpperCase(), 'carried one too many'],
+        ]
+      : [
+          [String([...shown].reduce((sum, d) => sum + parseInt(d, 16), 0)), 'added the digits, ignoring their place values'],
+          [String(parseInt(reversed, base)), 'read the digits from the wrong end'],
+          [String(value * base), 'counted one place too many'],
+          [String(Math.floor(value / base)), 'counted one place too few'],
+        ];
+    const usable = slips.filter(([text], i) => text !== right && slips.findIndex(([other]) => other === text) === i).slice(0, 3);
+    if (usable.length < 3) g.retry('too few distinct slips');
+    return g.mcq(question, right, usable.map(([text]) => text), { why: `The other options come from common slips: ${usable.map(([text, slip]) => `${text} if you ${slip}`).join('; ')}.` });
   }
   return direction ? g.theory(`Convert the decimal number ${value} to ${name}, showing your working.`, [`Divide repeatedly by ${base}, and note the remainders.`, `Reading them from last to first gives ${shown}.`]) : g.theory(`Convert the ${name} number ${shown} to decimal, showing your working.`, [`Multiply each digit by its power of ${base}.`, `The sum is ${value}.`]);
 }

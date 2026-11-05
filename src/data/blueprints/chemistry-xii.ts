@@ -851,7 +851,7 @@ const blueprints: Blueprint[] = [
       ['Give a chemical test to distinguish propan-1-ol from propan-2-ol.', 'Warm each with iodine and sodium hydroxide.', 'Propan-2-ol gives a yellow precipitate of iodoform, and propan-1-ol doesn’t.'],
     ],
     long: [
-      ['Explain the mechanism of acid-catalysed dehydration of ethanol to ethene.', 'The alcohol’s oxygen is protonated by the acid.', 'Water leaves, forming a carbocation.', 'A proton is lost from the next carbon, forming the double bond.'],
+      ['Give the steps by which ethanol loses water in hot concentrated acid to form ethene.', 'The alcohol’s oxygen is protonated by the acid.', 'Water leaves, forming a carbocation.', 'A proton is lost from the next carbon, forming the double bond.'],
     ],
     cases: [
       {
@@ -1232,16 +1232,16 @@ const blueprints: Blueprint[] = [
   }),
   custom('oxidant-equations', [4, 'b', 2, 2], { type: 'reaction', format: 'short' }, (g) => {
     const [ask, products, why] = g.pick([
-      ['Acidified potassium dichromate with iron(II) ions', 'Cr₂O₇²⁻ + 14H⁺ + 6Fe²⁺ → 2Cr³⁺ + 6Fe³⁺ + 7H₂O', 'Orange dichromate turns green as Cr³⁺ forms.'],
-      ['Acidified potassium dichromate with iodide ions', 'Cr₂O₇²⁻ + 14H⁺ + 6I⁻ → 2Cr³⁺ + 3I₂ + 7H₂O', 'Iodide is oxidised to iodine.'],
-      ['Acidified potassium dichromate with hydrogen sulphide', 'Cr₂O₇²⁻ + 8H⁺ + 3H₂S → 2Cr³⁺ + 3S + 7H₂O', 'Sulphur separates out.'],
-      ['Acidified potassium permanganate with iron(II) ions', 'MnO₄⁻ + 8H⁺ + 5Fe²⁺ → Mn²⁺ + 5Fe³⁺ + 4H₂O', 'Purple permanganate is decolourised.'],
-      ['Acidified potassium permanganate with iodide ions', '2MnO₄⁻ + 16H⁺ + 10I⁻ → 2Mn²⁺ + 5I₂ + 8H₂O', 'Iodide is oxidised to iodine.'],
-      ['Acidified potassium permanganate with oxalate ions', '2MnO₄⁻ + 16H⁺ + 5C₂O₄²⁻ → 2Mn²⁺ + 10CO₂ + 8H₂O', 'Oxalate is oxidised to carbon dioxide.'],
-      ['Potassium permanganate with sulphur dioxide', '2MnO₄⁻ + 5SO₂ + 2H₂O → 2Mn²⁺ + 5SO₄²⁻ + 4H⁺', 'Sulphur dioxide is oxidised to sulphate.'],
-      ['Potassium permanganate with iodide in alkaline solution', '2MnO₄⁻ + H₂O + I⁻ → 2MnO₂ + 2OH⁻ + IO₃⁻', 'In alkali, MnO₂ forms rather than Mn²⁺.'],
+      ['acidified potassium dichromate with iron(II) ions', 'Cr₂O₇²⁻ + 14H⁺ + 6Fe²⁺ → 2Cr³⁺ + 6Fe³⁺ + 7H₂O', 'Orange dichromate turns green as Cr³⁺ forms.'],
+      ['acidified potassium dichromate with iodide ions', 'Cr₂O₇²⁻ + 14H⁺ + 6I⁻ → 2Cr³⁺ + 3I₂ + 7H₂O', 'Iodide is oxidised to iodine.'],
+      ['acidified potassium dichromate with hydrogen sulphide', 'Cr₂O₇²⁻ + 8H⁺ + 3H₂S → 2Cr³⁺ + 3S + 7H₂O', 'Sulphur separates out.'],
+      ['acidified potassium permanganate with iron(II) ions', 'MnO₄⁻ + 8H⁺ + 5Fe²⁺ → Mn²⁺ + 5Fe³⁺ + 4H₂O', 'Purple permanganate is decolourised.'],
+      ['acidified potassium permanganate with iodide ions', '2MnO₄⁻ + 16H⁺ + 10I⁻ → 2Mn²⁺ + 5I₂ + 8H₂O', 'Iodide is oxidised to iodine.'],
+      ['acidified potassium permanganate with oxalate ions', '2MnO₄⁻ + 16H⁺ + 5C₂O₄²⁻ → 2Mn²⁺ + 10CO₂ + 8H₂O', 'Oxalate is oxidised to carbon dioxide.'],
+      ['potassium permanganate with sulphur dioxide', '2MnO₄⁻ + 5SO₂ + 2H₂O → 2Mn²⁺ + 5SO₄²⁻ + 4H⁺', 'Sulphur dioxide is oxidised to sulphate.'],
+      ['potassium permanganate with iodide in alkaline solution', '2MnO₄⁻ + H₂O + I⁻ → 2MnO₂ + 2OH⁻ + IO₃⁻', 'In alkali, MnO₂ forms rather than Mn²⁺.'],
     ]);
-    return g.theory(`Write the balanced ionic equation for the reaction of: ${ask.toLowerCase()}.`, [[`${products}`, 1], [why, 1]]);
+    return g.theory(`Write the balanced ionic equation for the reaction of ${ask}.`, [[`${products}`, 1], [why, 1]]);
   }),
   custom('oxidant-preparation', [4, 'b', 3, 2], { type: 'reaction', format: 'short' }, (g) => {
     const dichromate = g.chance(0.5);
@@ -1259,12 +1259,12 @@ const blueprints: Blueprint[] = [
   }),
   custom('transition-equations', [4, 'a', 2, 2], { type: 'reaction', format: 'short' }, (g) => {
     const [ask, equation, why] = g.pick([
-      ['Copper(I) ions disproportionate in water', '2Cu⁺ → Cu²⁺ + Cu', 'Cu²⁺ is more stable in water, owing to its large hydration enthalpy.'],
-      ['Manganese(III) ions disproportionate in water', '2Mn³⁺ + 2H₂O → Mn²⁺ + MnO₂ + 4H⁺', 'Mn²⁺, with a half-filled d subshell, is especially stable.'],
-      ['Copper(II) ions oxidise iodide ions', '2Cu²⁺ + 4I⁻ → 2CuI + I₂', 'Copper(II) iodide isn’t stable, so it gives copper(I) iodide and iodine.'],
-      ['Iron(III) ions oxidise iodide ions', '2Fe³⁺ + 2I⁻ → 2Fe²⁺ + I₂', 'Iron(III) is a strong enough oxidant to free iodine.'],
+      ['copper(I) ions disproportionate in water', '2Cu⁺ → Cu²⁺ + Cu', 'Cu²⁺ is more stable in water, owing to its large hydration enthalpy.'],
+      ['manganese(III) ions disproportionate in water', '2Mn³⁺ + 2H₂O → Mn²⁺ + MnO₂ + 4H⁺', 'Mn²⁺, with a half-filled d subshell, is especially stable.'],
+      ['copper(II) ions oxidise iodide ions', '2Cu²⁺ + 4I⁻ → 2CuI + I₂', 'Copper(II) iodide isn’t stable, so it gives copper(I) iodide and iodine.'],
+      ['iron(III) ions oxidise iodide ions', '2Fe³⁺ + 2I⁻ → 2Fe²⁺ + I₂', 'Iron(III) is a strong enough oxidant to free iodine.'],
     ]);
-    return g.theory(`Write the balanced equation for this change, and give a reason for it: ${ask.toLowerCase()}.`, [[equation, 1], [why, 1]]);
+    return g.theory(`Write the balanced equation for this change, and give a reason for it: ${ask}.`, [[equation, 1], [why, 1]]);
   }),
   custom('transition-moment', [4, 'a', 3, 2], { type: 'structure', format: 'short' }, (g) => {
     const [ion, config, unpaired] = g.pick<[string, string, number]>([

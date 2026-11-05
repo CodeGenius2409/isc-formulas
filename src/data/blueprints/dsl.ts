@@ -95,6 +95,8 @@ const ASK_REASON = ['Give a reason: {x}', 'Explain why: {x}', 'Account for the f
 const ASK_DEFINE = ['Define {x}.', 'What is meant by {x}?', 'State what is meant by {x}.'];
 const ASK_COMPARE = ['Distinguish between {a} and {b}.', 'State the differences between {a} and {b}.', 'Give the difference between {a} and {b}.'];
 
+const capital = (text: string) => text.charAt(0).toUpperCase() + text.slice(1);
+
 export function blueprintsFor(subject: SubjectId, level: ClassLevel) {
   const prefix = `${CODE[subject]}${level === 'XII' ? '12' : '11'}`;
   const base = (key: string, [unit, topic, marks, difficulty]: Place, type: BankType, format: Format, style: Style) => ({
@@ -201,7 +203,7 @@ export function blueprintsFor(subject: SubjectId, level: ClassLevel) {
         add(`compare${marks}`, marks, 2, 'distinguish', 'distinguish', 'paper-style', (g) => {
           const [a, b, ...rows] = g.pick(list);
           const chosen = g.sample(rows as [string, string][], marks);
-          return g.theory(fillIn(g.pick(ASK_COMPARE), { a, b }), chosen.map(([x, y]) => `${a}: ${x} ${b}: ${y}`));
+          return g.theory(fillIn(g.pick(ASK_COMPARE), { a, b }), chosen.map(([x, y]) => `${capital(a)}: ${x} ${capital(b)}: ${y}`));
         });
       }
     }

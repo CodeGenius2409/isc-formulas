@@ -718,8 +718,8 @@ const blueprints: Blueprint[] = [
       form: 'numeric',
       text: `A locker code has ${letters} capital letters followed by ${digits} digits.`,
       parts: [
-        g.answerPart('Number of codes if letters and digits may repeat', repeat, 1, [step('Multiply the choices', `26^{${letters}} \\times 10^{${digits}} = ${repeat}`)]),
-        g.answerPart('Number of codes if nothing may repeat', noRepeat, 2, [step('Each choice removes one', `= ${noRepeat}`)]),
+        g.answerPart('Number of codes if letters and digits may repeat', repeat, 1, [step('Multiply the choices', `26^{${letters}} \\times 10^{${digits}} = ${repeat}`)], '', String(repeat)),
+        g.answerPart('Number of codes if nothing may repeat', noRepeat, 2, [step('Each choice removes one', `= ${noRepeat}`)], '', String(noRepeat)),
       ],
     };
   }),
@@ -764,14 +764,13 @@ const blueprints: Blueprint[] = [
   }),
   custom('cbq-ball-height', [2, 'b', 3, 2], { type: 'numerical', format: 'cbq', style: 'cbq-style' }, (g) => {
     const t = g.int(2, 6);
-    const start = g.pick([0]);
     const u = 5 * t;
     const peak = (u * u) / 20;
     return {
       form: 'numeric',
       text: `A ball is thrown up, and its height in metres after t seconds is ${$(`h = ${u}t - 5t^2`)}.`,
       parts: [
-        g.answerPart('Time for which it is in the air, in seconds', t + start, 1, [step('Solve $h = 0$', `5t(${t} - t) = 0`)]),
+        g.answerPart('Time for which it is in the air, in seconds', t, 1, [step('Solve $h = 0$', `5t(${t} - t) = 0`)]),
         g.answerPart('Greatest height, in metres', peak, 2, [step('The vertex is half-way through the flight', `t = ${t / 2}`, `h = ${u} \\times ${t / 2} - 5 \\times ${t / 2}^2 = ${peak}`)]),
       ],
     };

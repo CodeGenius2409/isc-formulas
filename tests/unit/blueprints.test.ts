@@ -2,7 +2,7 @@
 // no repeats, the marks adding up, and the same seed giving the same question.
 import { describe, expect, it } from 'vitest';
 import { loadBlueprints } from '../../src/data/blueprints';
-import { dimOfUnit, formatNumber } from '../../src/solver/units';
+import { dimOfUnit } from '../../src/solver/units';
 import { sameDim, parseDim } from '../../src/solver/dims';
 import { getEntry } from '../../src/solver/registry';
 import type { ClassLevel, SubjectId } from '../../src/data/types';
@@ -105,7 +105,3 @@ for (const [subject, level] of CLASSES) {
     }
   });
 }
-
-it('formats the numbers it needs', () => {
-  expect(formatNumber).toBeTypeOf('function');
-});
