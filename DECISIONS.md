@@ -319,3 +319,6 @@ Work is on a `rebuild` branch. `master` still holds your original files.
 
 - **Task 1, stacks and queues:** confirmed not in the 2028 syllabus. The 6 formulas left in the book moved to `archive/removed-formulas.json`, with the reason. Papers' questions on them now count as out of syllabus, not as uncovered.
   A test scans the formula book, bank, blueprints, samples and syllabus map for them. A call stack is fine, as that's how a program runs.
+
+- **Task 4, the tracer now does inheritance and interfaces:** `extends`, `super`, `this(...)`, overriding, abstract classes, `interface`, `instanceof` and class casts. `src/java/classes.ts` holds the class relations, and the checks javac makes.
+  It follows Java on the subtle points: overloads and fields go by the type as written, overrides by the runtime class, field initializers run after `super()`. The test programs give identical output on a real JDK, and 27 of the 29 refused programs are refused by javac too: one is a run-time ClassCastException, and javac 26 has relaxed the rule on code before `super()`, which the tracer keeps, as ISC teaches it.

@@ -2,13 +2,14 @@
 // output. The other Java tests have hand-worked answers, which could share a mistaken
 // reading of the language. This one can't. It skips itself where no JDK is installed.
 import { spawnSync } from 'node:child_process';
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { parseJava } from '../../src/java/parser';
 import { SAMPLES } from '../../src/java/samples';
 import { runProgram } from '../../src/java/trace';
+import { OOP_PROGRAMS } from './java-oop-programs';
 import { PROGRAMS, type JdkProgram } from './java-programs';
 
 /** Java 19 changed how doubles print, and the app follows the newer rule. */
@@ -40,6 +41,17 @@ describe.skipIf(javaVersion() < MIN_JAVA)('against a real JDK', () => {
     });
     const compile = spawnSync('javac', ['-nowarn', '-encoding', 'UTF-8', '-d', join(dir, 'out'), ...files], { encoding: 'utf8' });
     if (compile.status !== 0) throw new Error(`javac rejected a test program:\n${compile.stderr}`);
+    // These reuse class names like A and Main, so each is compiled apart.
+    OOP_PROGRAMS.forEach((program, i) => {
+      const own = join(dir, `oop${i}`);
+      mkdirSync(own);
+      const file = join(own, 'Program.java');
+      writeFileSync(file, program.code);
+      const built = spawnSync('javac', ['-nowarn', '-encoding', 'UTF-8', '-d', own, file], { encoding: 'utf8' });
+      if (built.status !== 0) throw new Error(`javac rejected "${program.name}":\n${built.stderr}`);
+      const run = spawnSync('java', ['-XX:TieredStopAtLevel=1', '-Xshare:auto', '-cp', own, mainClass(program.code)], { encoding: 'utf8' });
+      results.set(program.name, { stdout: (run.stdout ?? '').replace(/\r\n/g, '\n'), stderr: run.stderr ?? '' });
+    });
     for (const program of ALL) {
       const run = spawnSync('java', ['-XX:TieredStopAtLevel=1', '-Xshare:auto', '-cp', join(dir, 'out'), mainClass(program.code)], { input: program.input ?? '', encoding: 'utf8' });
       results.set(program.name, { stdout: (run.stdout ?? '').replace(/\r\n/g, '\n'), stderr: run.stderr ?? '' });
@@ -48,7 +60,7 @@ describe.skipIf(javaVersion() < MIN_JAVA)('against a real JDK', () => {
 
   afterAll(() => rmSync(dir, { recursive: true, force: true }));
 
-  it.each(ALL.map((p) => [p.name, p] as const))('%s', (_name, program) => {
+  it.each([...ALL, ...OOP_PROGRAMS].map((p) => [p.name, p as JdkProgram] as const))('%s', (_name, program) => {
     const real = results.get(program.name)!;
     const ours = runProgram(program.code, program.input ?? '');
     expect(ours.output).toBe(real.stdout);

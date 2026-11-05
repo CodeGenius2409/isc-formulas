@@ -1,7 +1,7 @@
 // A step-through interpreter. Execution is written with generators so that it can
 // pause before every statement, recording exactly what a dry run would show. This file
 // handles statements and the run as a whole. evaluator.ts handles expressions.
-import type { Expr, MethodDecl, Program, Stmt } from './ast';
+import type { ClassDecl, Expr, MethodDecl, Program, Stmt } from './ast';
 import { Evaluator } from './evaluator';
 import { JavaError } from './lexer';
 import { MAX_DEPTH, UNSET, type Frame, type Gen, type Signal } from './runtime';
@@ -12,6 +12,7 @@ export class Interpreter extends Evaluator {
   constructor(program: Program, input: string) {
     super(program, input);
     this.checkDuplicates();
+    this.table.check(program.classes);
   }
 
   protected checkDuplicates(): void {
@@ -67,7 +68,7 @@ export class Interpreter extends Evaluator {
     const cls = this.classes.get(method.className)!;
     const frame: Frame = {
       method,
-      name: `${method.name === '<init>' ? `new ${cls.name}` : method.name}(${args.map((a) => displayValue(a, 2)).join(', ')})`.slice(0, 80),
+      name: this.frameName(method, cls, args, self),
       cls,
       self,
       scopes: [{ vars: new Map() }],
@@ -76,13 +77,48 @@ export class Interpreter extends Evaluator {
     };
     method.params.forEach((p, i) => frame.scopes[0].vars.set(p.name, { type: p.type, value: assignConvert(args[i], p.type, line) }));
     this.frames.push(frame);
-    const signal = yield* this.execBlock(method.body, frame, false);
+    const skip = method.name === '<init>' ? yield* this.constructorStart(method, cls, frame, line) : 0;
+    const signal = yield* this.execBlock(skip ? method.body.slice(skip) : method.body, frame, false);
     this.frames.pop();
     if (signal?.type === 'return') return signal.value;
     if (method.name !== '<init>' && method.ret.name !== 'void') {
       throw new JavaError(`Method ${method.name} must return a ${typeName(method.ret)}, but reached its end without one.`, method.line);
     }
     return VOID;
+  }
+
+  /** Which class's code is running, and on what. With one class in the program, the name alone says it. */
+  protected frameName(method: MethodDecl, cls: ClassDecl, args: JValue[], self: Frame['self']): string {
+    const list = args.map((a) => displayValue(a, 2)).join(', ');
+    if (method.name === '<init>') return (self && self.cls !== cls.name ? `${cls.name}(${list}), making a ${self.cls}` : `new ${cls.name}(${list})`).slice(0, 80);
+    if (this.program.classes.length < 2) return `${method.name}(${list})`.slice(0, 80);
+    return `${cls.name}.${method.name}(${list})${self && self.cls !== cls.name ? ` on a ${self.cls}` : ''}`.slice(0, 80);
+  }
+
+  /**
+   * What a constructor does before its own body, in Java's order: this(...), or else super(...) followed by
+   * this class's field initializers. Returns how many statements of the body that used up.
+   */
+  protected *constructorStart(method: MethodDecl, cls: ClassDecl, frame: Frame, line: number): Gen<number> {
+    const self = frame.self!;
+    const first = method.body[0];
+    const call = first?.k === 'expr' && first.expr.k === 'ctorcall' ? first.expr : null;
+    if (call) yield* this.pause(first.line, frame);
+    const args = call ? yield* this.evalArgs(call.args, frame) : [];
+    if (call?.kind === 'this') {
+      const other = this.constructorFor(cls, args, call.args, frame, call.line);
+      if (other === method) throw new JavaError(`This constructor of ${cls.name} calls itself.`, call.line);
+      yield* this.invoke(other, args, self, call.line);
+      return 1;
+    }
+    const parent = this.table.superOf(cls);
+    if (parent) yield* this.invoke(this.constructorFor(parent, args, call?.args ?? [], frame, call?.line ?? line), args, self, call?.line ?? line);
+    else if (args.length) throw runtimeError(`${cls.name} extends nothing, and Object's constructor takes no arguments.`, call!.line);
+    const init: Frame = { method: null, name: frame.name, cls, self, scopes: [{ vars: new Map() }], line: frame.line, loops: 0 };
+    for (const f of cls.fields) {
+      if (!f.isStatic && f.init) this.instanceSlot(self, cls, f.name)!.value = yield* this.evalInit(f.init, f.type, init);
+    }
+    return call ? 1 : 0;
   }
 
   protected *execBlock(body: Stmt[], frame: Frame, newScope = true): Gen<Signal> {
@@ -223,8 +259,9 @@ export class Interpreter extends Evaluator {
       case 'return': {
         yield* this.pause(s.line, frame);
         if (!s.value) return { type: 'return', value: VOID };
-        const value = yield* this.eval(s.value, frame);
         const ret = frame.method?.ret;
+        if (ret) this.checkAssignable(s.value, ret, frame);
+        const value = yield* this.eval(s.value, frame);
         if (ret?.name === 'void') throw runtimeError('A void method cannot return a value.', s.line);
         return { type: 'return', value: ret ? assignConvert(value, ret, s.line) : value };
       }

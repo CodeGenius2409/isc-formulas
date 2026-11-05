@@ -4,9 +4,10 @@ import type { ClassDecl, Expr, MethodDecl, Program, TypeRef } from './ast';
 import { callBuiltin, systemOut } from './builtins';
 import { ProgramInput } from './input';
 import { JavaError } from './lexer';
-import { bestOverload } from './overloads';
+import { ClassTable, OBJECT_METHODS } from './classes';
+import { bestOverload, type OverloadContext } from './overloads';
 import { MAX_ARRAY, MAX_OUTPUT, UNSET, type Frame, type Gen } from './runtime';
-import { conditionalType, isConstant, type TypeScope } from './static-types';
+import { conditionalType, isConstant, staticType, type TypeScope } from './static-types';
 import { callBuffer, callString, callTokenizer, nextId, staticField, tokenize } from './stdlib';
 import { arithmetic, assignConvert, bitwise, bool, castTo, compare, dbl, defaultValue, describeType, int, isNumeric, isPrimitiveName, javaEquals, NULL, runtimeError, str, toJavaString, typeName, VOID, type JValue, type Slot } from './values';
 
@@ -17,6 +18,7 @@ export abstract class Evaluator {
   protected classes = new Map<string, ClassDecl>();
   protected statics = new Map<string, Map<string, Slot>>();
   protected frames: Frame[] = [];
+  protected table = new ClassTable(this.classes);
   protected input: ProgramInput;
   /** String literals with the same text are one object, so "a" == "a" is true. */
   private internedStrings = new Map<string, JValue>();
@@ -49,9 +51,9 @@ export abstract class Evaluator {
     return value;
   }
 
-  /** Java calls an object's toString wherever it needs text. */
+  /** Java calls an object's toString wherever it needs text, and the object's own class decides which one. */
   protected *textOf(v: JValue, line: number): Gen<string> {
-    const method = v.t === 'object' ? this.classes.get(v.cls)?.methods.find((m) => m.name === 'toString' && !m.params.length) : undefined;
+    const method = v.t === 'object' ? this.table.concrete(v.cls, 'toString') : undefined;
     return toJavaString(method ? yield* this.invoke(method, [], v as Extract<JValue, { t: 'object' }>, line) : v);
   }
 
@@ -82,6 +84,7 @@ export abstract class Evaluator {
       if (type.dims === 0) throw runtimeError(`A { } list can only initialize an array, but this is a ${typeName(type)}.`, e.line);
       return yield* this.arrayFromList(e, { name: type.name, dims: type.dims - 1 }, frame);
     }
+    this.checkAssignable(e, type, frame);
     return assignConvert(yield* this.eval(e, frame), type, e.line);
   }
 
@@ -96,10 +99,115 @@ export abstract class Evaluator {
       const slot = frame.scopes[i].vars.get(name);
       if (slot) return slot;
     }
-    const field = frame.self?.fields.get(name);
-    if (field) return field;
-    if (frame.cls) return this.statics.get(frame.cls.name)?.get(name) ?? null;
-    return null;
+    if (!frame.cls) return null;
+    // A field is found from the class whose code is running, not the object's own class.
+    const found = this.table.field(frame.cls, name);
+    if (!found) return null;
+    if (found.field.access === 'private' && found.owner !== frame.cls) throw runtimeError(`${name} has private access in ${found.owner.name}.`, frame.line);
+    if (found.field.isStatic) return this.statics.get(found.owner.name)?.get(name) ?? null;
+    return frame.self ? this.instanceSlot(frame.self, found.owner, name) : null;
+  }
+
+  /** A field of an object, as declared by one class. A subclass's field of the same name is a separate variable. */
+  protected instanceSlot(obj: Extract<JValue, { t: 'object' }>, owner: ClassDecl, name: string): Slot | null {
+    const slot = obj.fields.get(name);
+    if (slot?.owner === owner.name) return slot;
+    return obj.fields.get(`${owner.name}.${name}`) ?? slot ?? null;
+  }
+
+  protected typeScope(frame: Frame): TypeScope {
+    return { lookup: (name) => this.lookup(name, frame), cls: frame.cls, classes: this.classes };
+  }
+
+  /** The class whose members an expression can reach: its type as written, as Java checks, or else its runtime class. */
+  protected reachableFrom(target: Expr, obj: Extract<JValue, { t: 'object' }>, frame: Frame): { start: ClassDecl; declared: string | null } {
+    if (target.k === 'super') {
+      const parent = frame.cls ? this.table.superOf(frame.cls) : null;
+      return { start: parent ?? this.classes.get(obj.cls)!, declared: parent?.name ?? 'Object' };
+    }
+    const declared = staticType(target, this.typeScope(frame));
+    const cls = declared ? this.classes.get(declared) : undefined;
+    return { start: cls && obj.types.has(cls.name) ? cls : this.classes.get(obj.cls)!, declared };
+  }
+
+  /** A field reached through an object, with the checks javac makes. */
+  protected fieldThrough(target: Expr, obj: Extract<JValue, { t: 'object' }>, name: string, line: number, frame: Frame): Slot {
+    const { start, declared } = this.reachableFrom(target, obj, frame);
+    if (declared === 'Object') throw runtimeError(`The class Object has no variable "${name}".${this.table.field(this.classes.get(obj.cls)!, name) ? ` This object is really a ${obj.cls}, so cast it first.` : ''}`, line);
+    const found = this.table.field(start, name);
+    if (!found) {
+      const hint = start.name !== obj.cls && this.table.field(this.classes.get(obj.cls)!, name) ? ` This object is really a ${obj.cls}, so cast it first: ((${obj.cls}) x).${name}.` : '';
+      throw runtimeError(`Class ${start.name} has no variable "${name}".${hint}`, line);
+    }
+    if (found.field.access === 'private' && found.owner !== frame.cls) throw runtimeError(`${name} has private access in ${found.owner.name}.`, line);
+    const slot = found.field.isStatic ? this.statics.get(found.owner.name)?.get(name) : this.instanceSlot(obj, found.owner, name);
+    if (!slot) throw runtimeError(`Class ${start.name} has no variable "${name}".`, line);
+    return slot;
+  }
+
+  /** A static field, which a subclass or an implementing class inherits. */
+  protected staticThrough(clsName: string, name: string, line: number, frame: Frame): Slot {
+    const cls = this.classes.get(clsName)!;
+    const found = this.table.field(cls, name);
+    const slot = found?.field.isStatic ? this.statics.get(found.owner.name)?.get(name) : undefined;
+    if (!found || !slot) throw runtimeError(`Class ${clsName} has no static variable "${name}".`, line);
+    if (found.field.access === 'private' && found.owner !== frame.cls) throw runtimeError(`${name} has private access in ${found.owner.name}.`, line);
+    return slot;
+  }
+
+  /** Javac rejects assigning a general type to a specific one without a cast, even when the object would fit. */
+  protected checkAssignable(e: Expr, type: TypeRef, frame: Frame): void {
+    if (type.dims || !this.classes.has(type.name)) return;
+    const from = staticType(e, this.typeScope(frame));
+    if (from && from !== 'Object' && !this.classes.has(from)) return;
+    if (from && !this.table.isSubtype(from, type.name)) {
+      throw runtimeError(`Incompatible types: ${from} cannot be converted to ${type.name}. A variable's declared type decides this, so a cast is needed: (${type.name}).`, e.line);
+    }
+  }
+
+  /** Javac rejects a cast or instanceof between two classes that can never be the same object. */
+  protected checkRelated(e: Expr, type: TypeRef, frame: Frame, what: string): void {
+    if (type.dims) return;
+    const from = staticType(e, this.typeScope(frame));
+    const a = from ? this.classes.get(from) : undefined;
+    const b = this.classes.get(type.name);
+    if (!a || !b || a.isInterface || b.isInterface) return;
+    if (!this.table.isSubtype(a.name, b.name) && !this.table.isSubtype(b.name, a.name)) {
+      throw runtimeError(`${a.name} and ${b.name} are unrelated classes, so ${what} is not allowed.`, e.line);
+    }
+  }
+
+  protected overloadContext(argTypes?: (string | null)[]): OverloadContext {
+    return { distance: (sub, sup) => this.table.distance(sub, sup), isClass: (name) => this.classes.has(name), argTypes };
+  }
+
+  /** Chooses an overload from what the type as written offers. A private method only counts inside its own class. */
+  protected pick(start: ClassDecl, name: string, args: JValue[], argExprs: Expr[], frame: Frame, line: number, runtime?: string): MethodDecl {
+    const visible = this.table.visible(start, name);
+    const usable = visible.filter((m) => m.access !== 'private' || m.className === frame.cls?.name);
+    if (!usable.length) {
+      if (visible.length) throw runtimeError(`${name}() has private access in ${visible[0].className}.`, line);
+      const hint = runtime && runtime !== start.name && this.table.visible(this.classes.get(runtime)!, name).length ? ` This object is really a ${runtime}, so cast it first: ((${runtime}) x).${name}(...).` : '';
+      throw runtimeError(`Class ${start.name} has no method called ${name}.${hint}`, line);
+    }
+    const scope = this.typeScope(frame);
+    return bestOverload(usable, args, name, line, this.overloadContext(argExprs.map((a) => staticType(a, scope))));
+  }
+
+  /** What every class gets from Object, when it hasn't written its own. */
+  protected objectMethod(target: Extract<JValue, { t: 'object' }>, name: string, args: JValue[], line: number): JValue {
+    switch (name) {
+      case 'toString':
+        return str(toJavaString(target));
+      case 'equals':
+        return bool(target === args[0]);
+      case 'hashCode':
+        return int(target.id);
+      case 'getClass':
+        return { t: 'native', kind: 'Class', id: nextId(), state: { text: target.cls } };
+      default:
+        throw runtimeError(`Class ${target.cls} has no method called ${name}.`, line);
+    }
   }
 
   protected *lvalue(target: Expr, frame: Frame): Gen<{ get: () => JValue; set: (v: JValue) => void; type: TypeRef }> {
@@ -113,15 +221,13 @@ export abstract class Evaluator {
     }
     if (target.k === 'field') {
       if (target.target.k === 'name' && !this.lookup(target.target.name, frame) && this.statics.has(target.target.name)) {
-        const slot = this.statics.get(target.target.name)!.get(target.name);
-        if (!slot) throw runtimeError(`Class ${target.target.name} has no static variable "${target.name}".`, target.line);
+        const slot = this.staticThrough(target.target.name, target.name, target.line, frame);
         return { get: () => slot.value, set: (v) => (slot.value = v), type: slot.type };
       }
       const obj = yield* this.eval(target.target, frame);
       if (obj.t === 'null') throw runtimeError(`java.lang.NullPointerException: cannot set "${target.name}" on null.`, target.line);
       if (obj.t === 'object') {
-        const slot = obj.fields.get(target.name) ?? this.statics.get(obj.cls)?.get(target.name);
-        if (!slot) throw runtimeError(`Class ${obj.cls} has no variable "${target.name}".`, target.line);
+        const slot = this.fieldThrough(target.target, obj, target.name, target.line, frame);
         return { get: () => slot.value, set: (v) => (slot.value = v), type: slot.type };
       }
       if (obj.t === 'array' && target.name === 'length') throw runtimeError('An array\'s length cannot be changed.', target.line);
@@ -138,7 +244,8 @@ export abstract class Evaluator {
   }
 
   protected isInstanceField(name: string, frame: Frame): boolean {
-    return Boolean(frame.cls?.fields.some((f) => f.name === name && !f.isStatic));
+    const found = frame.cls ? this.table.field(frame.cls, name) : null;
+    return Boolean(found && !found.field.isStatic);
   }
 
   protected checkIndex(arr: JValue, iv: JValue, line: number): number {
@@ -172,6 +279,23 @@ export abstract class Evaluator {
       case 'this':
         if (!frame.self) throw runtimeError('"this" cannot be used in a static method.', e.line);
         return frame.self;
+      case 'super':
+        if (!frame.self) throw runtimeError('"super" cannot be used in a static method.', e.line);
+        return frame.self;
+      case 'ctorcall':
+        throw runtimeError(`${e.kind}(...) must be the first statement of a constructor.`, e.line);
+      case 'instanceof': {
+        const v = yield* this.eval(e.expr, frame);
+        if (isNumeric(v) || v.t === 'boolean') throw runtimeError(`instanceof needs an object, but this is a ${describeType(v)}.`, e.line);
+        this.checkRelated(e.expr, e.type, frame, 'this instanceof test');
+        if (v.t === 'null') return bool(false);
+        if (e.type.dims > 0) return bool(v.t === 'array' && typeName(v.elem) === typeName({ name: e.type.name, dims: e.type.dims - 1 }));
+        if (e.type.name === 'Object') return bool(true);
+        if (v.t === 'object') return bool(v.types.has(e.type.name));
+        if (v.t === 'String') return bool(e.type.name === 'String');
+        if (v.t === 'native') return bool(v.kind === e.type.name);
+        return bool(false);
+      }
       case 'field':
         return yield* this.evalField(e, frame);
       case 'index': {
@@ -221,11 +345,11 @@ export abstract class Evaluator {
         const taken = c ? e.a : e.b;
         const value = yield* this.eval(taken, frame);
         if (!isNumeric(value)) return value;
-        const scope: TypeScope = { lookup: (name) => this.lookup(name, frame), cls: frame.cls, classes: this.classes };
-        const type = conditionalType(value.t, taken, c ? e.b : e.a, scope);
+        const type = conditionalType(value.t, taken, c ? e.b : e.a, this.typeScope(frame));
         return type && type !== value.t ? castTo(value, { name: type, dims: 0 }, e.line) : value;
       }
       case 'cast':
+        this.checkRelated(e.expr, e.type, frame, 'this cast');
         return castTo(yield* this.eval(e.expr, frame), e.type, e.line);
     }
   }
@@ -275,6 +399,7 @@ export abstract class Evaluator {
   protected *evalAssign(e: Extract<Expr, { k: 'assign' }>, frame: Frame): Gen<JValue> {
     const lv = yield* this.lvalue(e.target, frame);
     if (e.op === '=') {
+      if (e.value.k !== 'arraylit') this.checkAssignable(e.value, lv.type, frame);
       const value = e.value.k === 'arraylit' ? yield* this.evalInit(e.value, lv.type, frame) : assignConvert(yield* this.eval(e.value, frame), lv.type, e.line);
       lv.set(value);
       return value;
@@ -293,11 +418,7 @@ export abstract class Evaluator {
   protected *evalField(e: Extract<Expr, { k: 'field' }>, frame: Frame): Gen<JValue> {
     if (e.target.k === 'name' && !this.lookup(e.target.name, frame)) {
       const clsName = e.target.name;
-      if (this.statics.has(clsName)) {
-        const slot = this.statics.get(clsName)!.get(e.name);
-        if (!slot) throw runtimeError(`Class ${clsName} has no static variable "${e.name}".`, e.line);
-        return slot.value;
-      }
+      if (this.statics.has(clsName)) return this.staticThrough(clsName, e.name, e.line, frame).value;
       const builtin = staticField(clsName, e.name);
       if (builtin) return builtin;
       if (clsName === 'System' && (e.name === 'in' || e.name === 'out' || e.name === 'err')) {
@@ -312,11 +433,7 @@ export abstract class Evaluator {
       if (e.name === 'length') return int(obj.items.length);
       throw runtimeError(`Arrays have no variable "${e.name}". Did you mean length?`, e.line);
     }
-    if (obj.t === 'object') {
-      const slot = obj.fields.get(e.name) ?? this.statics.get(obj.cls)?.get(e.name);
-      if (!slot) throw runtimeError(`Class ${obj.cls} has no variable "${e.name}".`, e.line);
-      return slot.value;
-    }
+    if (obj.t === 'object') return this.fieldThrough(e.target, obj, e.name, e.line, frame).value;
     if (obj.t === 'String' && e.name === 'length') throw runtimeError('For a String, length is a method: use length().', e.line);
     throw runtimeError(`A ${describeType(obj)} has no variable "${e.name}".`, e.line);
   }
@@ -336,8 +453,21 @@ export abstract class Evaluator {
     if (e.target === null) {
       const args = yield* this.evalArgs(e.args, frame);
       if (!frame.cls) throw runtimeError(`Cannot find the method ${e.name}.`, e.line);
-      const method = this.resolve(frame.cls, e.name, args, e.line);
+      if (OBJECT_METHODS.has(e.name) && frame.self && !this.table.visible(frame.cls, e.name).length) return yield* this.callOn(frame.self, e.name, args, e.args, e.line, frame, null);
+      const method = this.pick(frame.cls, e.name, args, e.args, frame, e.line);
       if (!method.isStatic && !frame.self) throw runtimeError(`The instance method ${e.name} cannot be called from a static method. Create an object first.`, e.line);
+      const actual = frame.self ? this.table.dispatch(method, frame.self.cls) : method;
+      return yield* this.invoke(actual, args, actual.isStatic ? null : frame.self, e.line);
+    }
+    // super.method(...) starts from the parent, and never dispatches back down.
+    if (e.target.k === 'super') {
+      const args = yield* this.evalArgs(e.args, frame);
+      if (!frame.self || !frame.cls) throw runtimeError('"super" cannot be used in a static method.', e.line);
+      const parent = this.table.superOf(frame.cls);
+      if (OBJECT_METHODS.has(e.name) && (!parent || !this.table.visible(parent, e.name).length)) return this.objectMethod(frame.self, e.name, args, e.line);
+      if (!parent) throw runtimeError(`${frame.cls.name} has no superclass with a method called ${e.name}.`, e.line);
+      const method = this.pick(parent, e.name, args, e.args, frame, e.line);
+      if (method.isAbstract) throw runtimeError(`${e.name}() is abstract in ${method.className}, so super cannot call it.`, e.line);
       return yield* this.invoke(method, args, method.isStatic ? null : frame.self, e.line);
     }
     // Class.method(...): a name that is not a variable.
@@ -346,7 +476,7 @@ export abstract class Evaluator {
       const args = yield* this.evalArgs(e.args, frame);
       const user = this.classes.get(clsName);
       if (user) {
-        const method = this.resolve(user, e.name, args, e.line);
+        const method = this.pick(user, e.name, args, e.args, frame, e.line);
         if (!method.isStatic) throw runtimeError(`${e.name} is not static, so it must be called on an object of ${clsName}.`, e.line);
         return yield* this.invoke(method, args, null, e.line);
       }
@@ -357,10 +487,10 @@ export abstract class Evaluator {
     }
     const target = yield* this.eval(e.target, frame);
     const args = yield* this.evalArgs(e.args, frame);
-    return yield* this.callOn(target, e.name, args, e.line);
+    return yield* this.callOn(target, e.name, args, e.args, e.line, frame, e.target);
   }
 
-  protected *callOn(target: JValue, name: string, args: JValue[], line: number): Gen<JValue> {
+  protected *callOn(target: JValue, name: string, args: JValue[], argExprs: Expr[], line: number, frame: Frame, targetExpr: Expr | null): Gen<JValue> {
     switch (target.t) {
       case 'null':
         throw runtimeError(`java.lang.NullPointerException: cannot call ${name}() on null.`, line);
@@ -370,11 +500,21 @@ export abstract class Evaluator {
         return result.t === 'String' && result.v === target.v && SAME_WHEN_UNCHANGED.has(name) ? target : result;
       }
       case 'object': {
-        const cls = this.classes.get(target.cls)!;
-        if (name === 'toString' && !cls.methods.some((m) => m.name === 'toString')) return str(toJavaString(target));
-        if (name === 'equals' && !cls.methods.some((m) => m.name === 'equals')) return bool(target === args[0]);
-        const method = this.resolve(cls, name, args, line);
-        return yield* this.invoke(method, args, method.isStatic ? null : target, line);
+        const runtime = this.classes.get(target.cls)!;
+        const { start, declared } = targetExpr ? this.reachableFrom(targetExpr, target, frame) : { start: runtime, declared: null };
+        if (OBJECT_METHODS.has(name) && (declared === 'Object' || !this.table.visible(start, name).length)) {
+          // Reached through a type that doesn't declare it, so Object's version is what's called, and it may be overridden.
+          const own = this.table.visible(runtime, name).filter((m) => m.params.length === args.length);
+          if (own.length) {
+            const method = bestOverload(own, args, name, line, this.overloadContext());
+            return yield* this.invoke(method, args, target, line);
+          }
+          return this.objectMethod(target, name, args, line);
+        }
+        if (declared === 'Object') throw runtimeError(`The class Object has no method called ${name}. This object is really a ${target.cls}, so cast it first: ((${target.cls}) x).${name}(...).`, line);
+        const method = this.pick(start, name, args, argExprs, frame, line, target.cls);
+        const actual = this.table.dispatch(method, target.cls);
+        return yield* this.invoke(actual, args, actual.isStatic ? null : target, line);
       }
       case 'array':
         if (name === 'clone') return { ...target, items: [...target.items], id: nextId() };
@@ -392,6 +532,9 @@ export abstract class Evaluator {
       case 'StringBuffer':
       case 'StringBuilder':
         return callBuffer(target, name, args, line);
+      case 'Class':
+        if (name === 'getName' || name === 'getSimpleName' || name === 'toString') return str(`${name === 'toString' ? 'class ' : ''}${target.state.text}`);
+        throw runtimeError(`Class.${name} is not supported in this tracer. getName and getSimpleName are.`, line);
       case 'Scanner':
         return this.input.scanner(name, line);
       case 'StringTokenizer':
@@ -406,15 +549,11 @@ export abstract class Evaluator {
     }
   }
 
-  protected resolve(cls: ClassDecl, name: string, args: JValue[], line: number): MethodDecl {
-    const named = cls.methods.filter((m) => m.name === name);
-    if (!named.length) throw runtimeError(`Class ${cls.name} has no method called ${name}.`, line);
-    return bestOverload(named, args, `${name}`, line);
-  }
-
   protected *evalNew(e: Extract<Expr, { k: 'new' }>, frame: Frame): Gen<JValue> {
     const args = yield* this.evalArgs(e.args, frame);
     const cls = this.classes.get(e.cls);
+    if (cls?.isInterface) throw runtimeError(`${cls.name} is an interface, so it cannot be created with new. Create an object of a class that implements it.`, e.line);
+    if (cls?.isAbstract) throw runtimeError(`${cls.name} is abstract, so it cannot be created with new. Create an object of a subclass.`, e.line);
     if (!cls) {
       switch (e.cls) {
         case 'Scanner':
@@ -441,20 +580,35 @@ export abstract class Evaluator {
           throw runtimeError(`The class ${e.cls} is not supported in this tracer. ArrayList and other collections are outside the ISC subset here.`, e.line);
       }
     }
-    const obj: Extract<JValue, { t: 'object' }> = { t: 'object', cls: cls.name, fields: new Map(), id: nextId() };
-    for (const f of cls.fields) if (!f.isStatic) obj.fields.set(f.name, { type: f.type, value: defaultValue(f.type) });
-    // Field initializers run first, then the constructor.
-    const initFrame: Frame = { method: null, name: `new ${cls.name}`, cls, self: obj, scopes: [{ vars: new Map() }], line: e.line, loops: 0 };
-    for (const f of cls.fields) {
-      if (!f.isStatic && f.init) obj.fields.get(f.name)!.value = yield* this.evalInit(f.init, f.type, initFrame);
+    const obj: Extract<JValue, { t: 'object' }> = { t: 'object', cls: cls.name, types: this.table.supertypes(cls.name), fields: new Map(), id: nextId() };
+    // Every field up the hierarchy, parents first. A hidden field stays, under its class's name.
+    const lineage: ClassDecl[] = [];
+    for (let c: ClassDecl | null = cls; c; c = this.table.superOf(c)) lineage.unshift(c);
+    for (const c of lineage) {
+      for (const f of c.fields) {
+        if (f.isStatic) continue;
+        const hidden = obj.fields.get(f.name);
+        if (hidden) {
+          obj.fields.delete(f.name);
+          obj.fields.set(`${hidden.owner}.${f.name}`, hidden);
+        }
+        obj.fields.set(f.name, { type: f.type, value: defaultValue(f.type), owner: c.name });
+      }
     }
-    if (!cls.ctors.length) {
-      if (args.length) throw runtimeError(`Class ${cls.name} has no constructor taking ${args.length} argument${args.length === 1 ? '' : 's'}.`, e.line);
-      return obj;
-    }
-    const ctor = bestOverload(cls.ctors, args, `The constructor ${cls.name}`, e.line);
+    const ctor = this.constructorFor(cls, args, e.args, frame, e.line);
+    if (ctor.access === 'private' && frame.cls !== cls) throw runtimeError(`The constructor of ${cls.name} is private.`, e.line);
     yield* this.invoke(ctor, args, obj, e.line);
     return obj;
+  }
+
+  /** The constructor a list of arguments means, or the one javac would supply. */
+  protected constructorFor(cls: ClassDecl, args: JValue[], argExprs: Expr[], frame: Frame, line: number): MethodDecl {
+    if (!cls.ctors.length) {
+      if (args.length) throw runtimeError(`Class ${cls.name} has no constructor taking ${args.length} argument${args.length === 1 ? '' : 's'}.`, line);
+      return this.table.defaultConstructor(cls);
+    }
+    const scope = this.typeScope(frame);
+    return bestOverload(cls.ctors, args, `The constructor ${cls.name}`, line, this.overloadContext(argExprs.map((a) => staticType(a, scope))));
   }
 
   protected *evalNewArray(e: Extract<Expr, { k: 'newarray' }>, frame: Frame): Gen<JValue> {

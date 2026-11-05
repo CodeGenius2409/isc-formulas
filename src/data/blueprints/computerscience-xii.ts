@@ -2,7 +2,7 @@
 // Quine–McCluskey, and trees are worked out by code.
 import { classify, coverIsRight, groupNames, minimalCover, primeImplicants, sopText, termText, truthColumn, VARS } from '../../practice/gen/boolean';
 import type { Gen } from '../../practice/gen/gen';
-import { complete, designClass, findError, inMain, outputOf, pyList, pySlice, SHORT_WORDS, withMethods } from './cs-common';
+import { complete, designChecked, designClass, findError, inMain, outputOf, pyList, pySlice, SHORT_WORDS, withMethods } from './cs-common';
 import { blueprintsFor } from './dsl';
 import type { Blueprint, Body, OutputBody, TheoryBody } from './types';
 
@@ -699,13 +699,13 @@ const blueprints: Blueprint[] = [
       ['Account', 'Savings', 'balance', 'interest', 'balance + interest'],
     ] as const);
     const model = `class ${base} {\n  double ${baseField};\n  ${base}(double v) {\n    ${baseField} = v;\n  }\n  void show() {\n    System.out.println(${baseField});\n  }\n}\nclass ${derived} extends ${base} {\n  double ${extra};\n  ${derived}(double v, double e) {\n    super(v);\n    ${extra} = e;\n  }\n  double total() {\n    return ${formula};\n  }\n  void show() {\n    super.show();\n    System.out.println(total());\n  }\n}`;
-    return g.theory(`A class ${base} has a data member ${baseField}, a parameterised constructor and a method show() that prints it. Using inheritance, specify a class ${derived} with a data member ${extra}, a parameterised constructor, a method total() that returns ${formula}, and a method show() that overrides the one in ${base}, also printing the total. Don’t write main().`, [
+    return designChecked(g, `A class ${base} has a data member ${baseField}, a parameterised constructor and a method show() that prints it. Using inheritance, specify a class ${derived} with a data member ${extra}, a parameterised constructor, a method total() that returns ${formula}, and a method show() that overrides the one in ${base}, also printing the total. Don’t write main().`, model, `class Test {\n  public static void main(String[] args) {\n    ${base} b = new ${derived}(${g.int(100, 900)}, ${g.int(10, 90)});\n    b.show();\n  }\n}`, [
       [`Uses extends ${base}, and declares ${extra}.`, 1],
       ['The constructor calls super(v) as its first statement.', 1],
       ['Initialises its own data member.', 1],
       [`total() returns ${formula}.`, 1],
       ['show() overrides the base method, calling super.show().', 1],
-    ], { model: fence(model) });
+    ]);
   }),
   ...facts(6, 'a', {
     define: [
@@ -1024,12 +1024,12 @@ const blueprints: Blueprint[] = [
   custom('interface-write', [6, 'b', 4, 2], { type: 'program', format: 'program' }, (g) => {
     const [shape, field, area] = g.pick([['Square', 'side', 'side * side'], ['Circle', 'radius', '3.14 * radius * radius']]);
     const model = `interface Shape {\n  double area();\n}\nclass ${shape} implements Shape {\n  double ${field};\n  ${shape}(double v) {\n    ${field} = v;\n  }\n  public double area() {\n    return ${area};\n  }\n}`;
-    return g.theory(`Write an interface Shape with a method area() that returns a double. Then write a class ${shape}, with a data member ${field} and a constructor, that implements it.`, [
+    return designChecked(g, `Write an interface Shape with a method area() that returns a double. Then write a class ${shape}, with a data member ${field} and a constructor, that implements it.`, model, `class Test {\n  public static void main(String[] args) {\n    Shape s = new ${shape}(${g.int(2, 9)});\n    System.out.println(s.area());\n  }\n}`, [
       ['Declares the interface with the method’s heading only.', 1],
       ['Uses the keyword implements in the class heading.', 1],
       ['Writes the data member and the constructor.', 1],
       ['Defines area() as public, with the right formula.', 1],
-    ], { model: fence(model) });
+    ]);
   }),
   // ---- Real-life questions. Their answers are worked out by code here, or by the same algorithms as the rest.
   custom('cbq-knockout-tree', [8, 'a', 3, 2], { type: 'short', format: 'cbq', style: 'cbq-style' }, (g) => {
@@ -1069,6 +1069,112 @@ const blueprints: Blueprint[] = [
     const n = g.int(3, 6);
     const code = withMethods('static int stairs(int n) {\n  if (n <= 2) return n;\n  return stairs(n - 1) + stairs(n - 2);\n}', `System.out.println(stairs(${n}));`);
     return outputOf(g, code, undefined, `A person climbs stairs one or two steps at a time. This program counts the ways to climb ${n} steps. Write what it prints.`);
+  }),
+  // ---- Inheritance and interfaces. Every answer here comes from running the program in the tracer.
+  custom('output-override', [6, 'a', 3, 2], { type: 'output', format: 'output' }, (g) => {
+    const [base, kid, baseWord, kidWord] = g.pick([['Vehicle', 'Bus', 'moves', 'carries people'], ['Bird', 'Parrot', 'flies', 'talks'], ['Staff', 'Teacher', 'works', 'teaches'], ['Device', 'Phone', 'starts', 'rings']]);
+    const code = `class ${base} {\n  String action() {\n    return "${baseWord}";\n  }\n  void show() {\n    System.out.println("It " + action());\n  }\n}\nclass ${kid} extends ${base} {\n  String action() {\n    return "${kidWord}";\n  }\n}\nclass Test {\n  public static void main(String[] args) {\n    ${base} a = new ${base}();\n    ${base} b = new ${kid}();\n    a.show();\n    b.show();\n  }\n}`;
+    return outputOf(g, code, `b is declared as ${base}, but the object is a ${kid}. The runtime class decides which action() runs, even when it's called from inside ${base}.`);
+  }),
+  custom('output-ctor-chain', [6, 'a', 3, 2], { type: 'output', format: 'output' }, (g) => {
+    const [a, b, c] = g.pick([['Grand', 'Parent', 'Child'], ['Base', 'Middle', 'Top'], ['Being', 'Animal', 'Dog']]);
+    const n = g.int(2, 9);
+    const code = `class ${a} {\n  ${a}() {\n    System.out.println("${a}");\n  }\n}\nclass ${b} extends ${a} {\n  ${b}(int x) {\n    System.out.println("${b} " + x);\n  }\n}\nclass ${c} extends ${b} {\n  ${c}() {\n    super(${n});\n    System.out.println("${c}");\n  }\n}\nclass Test {\n  public static void main(String[] args) {\n    new ${c}();\n  }\n}`;
+    return outputOf(g, code, 'A constructor runs its parent\'s constructor first, so the topmost class prints first.');
+  }),
+  custom('output-super-method', [6, 'a', 2, 2], { type: 'output', format: 'output' }, (g) => {
+    const [x, y] = [g.int(2, 9), g.int(2, 9)];
+    const code = `class A {\n  int value() {\n    return ${x};\n  }\n}\nclass B extends A {\n  int value() {\n    return super.value() + ${y};\n  }\n}\nclass Test {\n  public static void main(String[] args) {\n    A obj = new B();\n    System.out.println(obj.value());\n  }\n}`;
+    return outputOf(g, code, 'B\'s value() runs, and super.value() reaches the one in A.');
+  }),
+  custom('output-hidden-field', [6, 'a', 2, 3], { type: 'output', format: 'output' }, (g) => {
+    const [x, y] = g.sample([1, 2, 3, 4, 5, 6, 7, 8, 9], 2);
+    const code = `class P {\n  int v = ${x};\n  int get() {\n    return v;\n  }\n}\nclass Q extends P {\n  int v = ${y};\n  int get() {\n    return v;\n  }\n}\nclass Test {\n  public static void main(String[] args) {\n    P obj = new Q();\n    System.out.println(obj.v);\n    System.out.println(obj.get());\n  }\n}`;
+    return outputOf(g, code, 'A field is chosen by the type as written, so obj.v is the one in P. A method is chosen by the runtime class, so get() is the one in Q.');
+  }),
+  custom('output-instanceof', [6, 'a', 3, 2], { type: 'output', format: 'output' }, (g) => {
+    const [base, kid, other] = g.pick([['Shape', 'Circle', 'Square'], ['Fruit', 'Apple', 'Mango'], ['Pet', 'Cat', 'Fish']]);
+    const code = `class ${base} {\n}\nclass ${kid} extends ${base} {\n}\nclass ${other} extends ${base} {\n}\nclass Test {\n  public static void main(String[] args) {\n    ${base} x = new ${kid}();\n    System.out.println(x instanceof ${base});\n    System.out.println(x instanceof ${kid});\n    System.out.println(x instanceof ${other});\n  }\n}`;
+    return outputOf(g, code, `The object is a ${kid}, which is also a ${base}, and isn't a ${other}.`);
+  }),
+  custom('output-abstract', [6, 'a', 3, 2], { type: 'output', format: 'output' }, (g) => {
+    const side = g.int(2, 9);
+    const wide = g.int(2, 9);
+    const code = `abstract class Shape {\n  abstract int area();\n  void print() {\n    System.out.println("Area = " + area());\n  }\n}\nclass Square extends Shape {\n  int s = ${side};\n  int area() {\n    return s * s;\n  }\n}\nclass Rect extends Shape {\n  int w = ${wide};\n  int area() {\n    return w * ${side};\n  }\n}\nclass Test {\n  public static void main(String[] args) {\n    Shape[] all = { new Square(), new Rect() };\n    for (int i = 0; i < all.length; i++) {\n      all[i].print();\n    }\n  }\n}`;
+    return outputOf(g, code, 'An abstract method is called through the parent type, and each object runs its own version.');
+  }),
+  custom('output-tostring', [6, 'a', 2, 2], { type: 'output', format: 'output' }, (g) => {
+    const [base, kid, field] = g.pick([['Book', 'Novel', 'title'], ['Player', 'Captain', 'name'], ['City', 'Capital', 'name']]);
+    const word = g.pick(['Alpha', 'Delta', 'Omega', 'Sigma']);
+    const code = `class ${base} {\n  protected String ${field} = "${word}";\n  public String toString() {\n    return ${field};\n  }\n}\nclass ${kid} extends ${base} {\n  public String toString() {\n    return "${kid}: " + super.toString();\n  }\n}\nclass Test {\n  public static void main(String[] args) {\n    ${base} a = new ${base}();\n    ${base} b = new ${kid}();\n    System.out.println(a);\n    System.out.println(b);\n  }\n}`;
+    return outputOf(g, code, 'println calls the object\'s own toString().');
+  }),
+  custom('find-error-abstract-new', [6, 'a', 2, 2], { type: 'error', format: 'error' }, (g) => {
+    const n = g.int(2, 9);
+    const broken = `abstract class Shape {\n  abstract int sides();\n}\nclass Triangle extends Shape {\n  int sides() {\n    return 3;\n  }\n}\nclass Test {\n  public static void main(String[] args) {\n    Shape s = new Shape();\n    System.out.println(s.sides() + ${n});\n  }\n}`;
+    return findError(g, broken, broken.replace('new Shape()', 'new Triangle()'), ['Shape is abstract, so it can\'t be created with new.', 'Correct it by creating a subclass object: Shape s = new Triangle();']);
+  }),
+  custom('find-error-private-parent', [6, 'a', 2, 2], { type: 'error', format: 'error' }, (g) => {
+    const n = g.int(2, 9);
+    const broken = `class Account {\n  private int balance = ${n};\n}\nclass Savings extends Account {\n  void show() {\n    System.out.println(balance);\n  }\n}\nclass Test {\n  public static void main(String[] args) {\n    new Savings().show();\n  }\n}`;
+    return findError(g, broken, broken.replace('private int', 'protected int'), ['balance is private in Account, so Savings can\'t use it directly.', 'Correct it by declaring balance protected, or adding a public method in Account that returns it.']);
+  }),
+  custom('find-error-no-super', [6, 'a', 2, 3], { type: 'error', format: 'error' }, (g) => {
+    const n = g.int(2, 9);
+    const broken = `class Base {\n  int x;\n  Base(int v) {\n    x = v;\n  }\n}\nclass Derived extends Base {\n  Derived() {\n    System.out.println("made");\n  }\n}\nclass Test {\n  public static void main(String[] args) {\n    new Derived();\n  }\n}`;
+    return findError(g, broken, broken.replace('Derived() {\n    System', `Derived() {\n    super(${n});\n    System`), ['Base has no constructor without arguments, so the implicit super() in Derived fails.', `Correct it by calling super with a value as the constructor's first statement, such as super(${n});`]);
+  }),
+  custom('find-error-cast-needed', [6, 'a', 2, 2], { type: 'error', format: 'error' }, (g) => {
+    const n = g.int(2, 9);
+    const broken = `class Base {\n}\nclass Derived extends Base {\n  int twice() {\n    return ${n} * 2;\n  }\n}\nclass Test {\n  public static void main(String[] args) {\n    Base b = new Derived();\n    System.out.println(b.twice());\n  }\n}`;
+    return findError(g, broken, broken.replace('b.twice()', '((Derived) b).twice()'), ['b is declared as Base, which has no method twice().', 'Correct it with a cast: ((Derived) b).twice().']);
+  }),
+  custom('complete-inherit', [6, 'a', 3, 2], { type: 'complete', format: 'short' }, (g) => {
+    const n = g.int(2, 9);
+    const code = (one: string, two: string, three: string) => `class Base {\n  int x;\n  Base(int v) {\n    x = v;\n  }\n  int get() {\n    return x;\n  }\n}\nclass Twice ${one} Base {\n  Twice(int v) {\n    ${two}(v);\n  }\n  int get() {\n    return ${three}.get() * 2;\n  }\n}\nclass Test {\n  public static void main(String[] args) {\n    Base b = new Twice(${n});\n    System.out.println(b.get());\n  }\n}`;
+    return complete(g, code('?1?', '?2?', '?3?'), code('extends', 'super', 'super'), [['?1? is extends, as Twice inherits from Base.', 1], ['?2? is super, calling the parent\'s constructor.', 1], ['?3? is super, reaching the parent\'s version of get().', 1]], 'Twice inherits from Base, and doubles what its parent\'s get() returns.');
+  }),
+  custom('design-abstract', [6, 'a', 5, 3], { type: 'program', format: 'program' }, (g) => {
+    const [parent, child, extra] = g.pick([['Worker', 'Salaried', 'monthly'], ['Ticket', 'Student', 'fare'], ['Plan', 'Monthly', 'rate']]);
+    const model = `abstract class ${parent} {\n  protected String name;\n  ${parent}(String n) {\n    name = n;\n  }\n  abstract double amount();\n  void show() {\n    System.out.println(name + " " + amount());\n  }\n}\nclass ${child} extends ${parent} {\n  private double ${extra};\n  ${child}(String n, double v) {\n    super(n);\n    ${extra} = v;\n  }\n  double amount() {\n    return ${extra} * 2;\n  }\n}`;
+    return designChecked(g, `An abstract class ${parent} has a protected data member name, a constructor, an abstract method double amount(), and a method show() that prints the name and the amount. Using inheritance, specify a class ${child} with a private data member ${extra} and a constructor, in which amount() returns twice ${extra}. Don't write main().`, model, `class Test {\n  public static void main(String[] args) {\n    ${parent} p = new ${child}("Asha", ${g.int(10, 90)});\n    p.show();\n  }\n}`, [
+      [`Declares ${parent} abstract, with the abstract method and no body.`, 1],
+      ['Writes its constructor and show(), which calls amount().', 1],
+      [`Uses extends ${parent}, and declares ${extra}.`, 1],
+      ['The constructor calls super(n) as its first statement.', 1],
+      ['Defines amount().', 1],
+    ]);
+  }),
+  custom('output-interface', [6, 'b', 3, 2], { type: 'output', format: 'output' }, (g) => {
+    const [iface, a, b, wa, wb] = g.pick([['Speaker', 'Dog', 'Cat', 'Woof', 'Meow'], ['Payable', 'Cash', 'Card', 'paid in cash', 'paid by card'], ['Mover', 'Car', 'Boat', 'drives', 'sails']]);
+    const code = `interface ${iface} {\n  String act();\n}\nclass ${a} implements ${iface} {\n  public String act() {\n    return "${wa}";\n  }\n}\nclass ${b} implements ${iface} {\n  public String act() {\n    return "${wb}";\n  }\n}\nclass Test {\n  public static void main(String[] args) {\n    ${iface}[] all = { new ${b}(), new ${a}() };\n    for (int i = 0; i < all.length; i++) {\n      System.out.println(all[i].act());\n    }\n  }\n}`;
+    return outputOf(g, code, 'The interface type can hold any class that implements it, and each object runs its own method.');
+  }),
+  custom('output-two-interfaces', [6, 'b', 3, 3], { type: 'output', format: 'output' }, (g) => {
+    const [x, y] = [g.int(2, 9), g.int(2, 9)];
+    const code = `interface Readable {\n  int LIMIT = ${x * 10};\n  int read();\n}\ninterface Writable {\n  void write(int v);\n}\nclass Store implements Readable, Writable {\n  private int data = ${x};\n  public int read() {\n    return data;\n  }\n  public void write(int v) {\n    data = data + v;\n  }\n}\nclass Test {\n  public static void main(String[] args) {\n    Store s = new Store();\n    Writable w = s;\n    w.write(${y});\n    Readable r = s;\n    System.out.println(r.read());\n    System.out.println(Readable.LIMIT);\n  }\n}`;
+    return outputOf(g, code, 'One object is held through two interface types. A field in an interface is a constant.');
+  }),
+  custom('find-error-interface-public', [6, 'b', 2, 2], { type: 'error', format: 'error' }, (g) => {
+    const n = g.int(2, 9);
+    const broken = `interface Counter {\n  int count();\n}\nclass Fixed implements Counter {\n  int count() {\n    return ${n};\n  }\n}\nclass Test {\n  public static void main(String[] args) {\n    Counter c = new Fixed();\n    System.out.println(c.count());\n  }\n}`;
+    return findError(g, broken, broken.replace('  int count() {', '  public int count() {'), ['A method in an interface is public, so an implementation can\'t be less visible.', 'Correct it by declaring count() public in Fixed.']);
+  }),
+  custom('find-error-interface-missing', [6, 'b', 2, 2], { type: 'error', format: 'error' }, (g) => {
+    const n = g.int(2, 9);
+    const broken = `interface Pair {\n  int first();\n  int second();\n}\nclass Both implements Pair {\n  public int first() {\n    return ${n};\n  }\n}\nclass Test {\n  public static void main(String[] args) {\n    Pair p = new Both();\n    System.out.println(p.first());\n  }\n}`;
+    return findError(g, broken, broken.replace(`return ${n};\n  }\n}`, `return ${n};\n  }\n  public int second() {\n    return 0;\n  }\n}`), ['Both doesn\'t define second(), so it isn\'t a complete implementation of Pair.', 'Correct it by defining public int second(), or by declaring Both abstract.']);
+  }),
+  custom('design-interface', [6, 'b', 5, 3], { type: 'program', format: 'program' }, (g) => {
+    const [iface, method, c1, c2, f1, f2] = g.pick([['Taxable', 'tax', 'Book', 'Phone', 'price * 0.05', 'price * 0.18'], ['Rated', 'score', 'Exam', 'Quiz', 'price * 2', 'price * 3'], ['Billable', 'charge', 'Call', 'Text', 'price * 2', 'price + 1']]);
+    const model = `interface ${iface} {\n  double ${method}();\n}\nclass ${c1} implements ${iface} {\n  double price;\n  ${c1}(double p) {\n    price = p;\n  }\n  public double ${method}() {\n    return ${f1};\n  }\n}\nclass ${c2} implements ${iface} {\n  double price;\n  ${c2}(double p) {\n    price = p;\n  }\n  public double ${method}() {\n    return ${f2};\n  }\n}`;
+    return designChecked(g, `Write an interface ${iface} with a method double ${method}(). Then write classes ${c1} and ${c2}, each with a data member price and a constructor, that implement it. In ${c1}, ${method}() returns ${f1}, and in ${c2}, it returns ${f2}. Don't write main().`, model, `class Test {\n  public static void main(String[] args) {\n    ${iface}[] all = { new ${c1}(100), new ${c2}(100) };\n    System.out.println(all[0].${method}() + all[1].${method}());\n  }\n}`, [
+      ['Declares the interface, with the method\'s heading only.', 1],
+      [`Uses implements ${iface} in both classes.`, 1],
+      ['Writes the data member and constructor in both.', 1],
+      [`Defines ${method}() as public in ${c1}.`, 1],
+      [`Defines ${method}() as public in ${c2}.`, 1],
+    ]);
   }),
 ];
 

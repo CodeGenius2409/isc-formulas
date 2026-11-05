@@ -10,13 +10,7 @@ const UNSUPPORTED_KEYWORDS: Record<string, string> = {
   catch: 'try/catch',
   finally: 'try/finally',
   throw: 'throw',
-  interface: 'Interfaces',
   enum: 'Enums',
-  abstract: 'Abstract classes',
-  extends: 'Inheritance (extends)',
-  implements: 'Implementing an interface',
-  super: 'super',
-  instanceof: 'instanceof',
   synchronized: 'synchronized',
   assert: 'assert',
   native: 'Native methods',
@@ -168,13 +162,20 @@ export abstract class ExpressionParser {
   protected parseBinary(level: number): Expr {
     if (level >= ExpressionParser.LEVELS.length) return this.parseUnary();
     let left = this.parseBinary(level + 1);
-    while (this.tok.type === 'op' && ExpressionParser.LEVELS[level].includes(this.tok.text)) {
-      const op = this.next();
-      const right = this.parseBinary(level + 1);
-      left = { k: 'binary', line: op.line, op: op.text, a: left, b: right };
+    // instanceof sits level with the comparisons.
+    const relational = ExpressionParser.LEVELS[level].includes('<');
+    for (;;) {
+      if (this.tok.type === 'op' && ExpressionParser.LEVELS[level].includes(this.tok.text)) {
+        const op = this.next();
+        const right = this.parseBinary(level + 1);
+        left = { k: 'binary', line: op.line, op: op.text, a: left, b: right };
+      } else if (relational && this.isKw('instanceof')) {
+        const line = this.next().line;
+        left = { k: 'instanceof', line, expr: left, type: this.parseType(false) };
+      } else {
+        return left;
+      }
     }
-    if (this.isKw('instanceof')) throw unsupported('instanceof', this.tok.line);
-    return left;
   }
 
   /** "(int) x" is a cast, while "(x) + 1" is not. Only a type followed by ) is one. */
@@ -223,10 +224,7 @@ export abstract class ExpressionParser {
     let e = this.parsePrimary();
     for (;;) {
       const t = this.tok;
-      if (t.type !== 'op') {
-        if (t.type === 'keyword' && t.text === 'instanceof') throw unsupported('instanceof', t.line);
-        return e;
-      }
+      if (t.type !== 'op') return e;
       if (t.text === '.') {
         this.next();
         if (this.isKw('new')) throw unsupported('Inner class creation', this.tok.line);
@@ -310,8 +308,14 @@ export abstract class ExpressionParser {
         }
         if (t.text === 'this') {
           this.next();
-          if (this.isOp('(')) throw unsupported('Constructor chaining with this(...)', line);
+          if (this.isOp('(')) return { k: 'ctorcall', line, kind: 'this', args: this.parseArgs() };
           return { k: 'this', line };
+        }
+        if (t.text === 'super') {
+          this.next();
+          if (this.isOp('(')) return { k: 'ctorcall', line, kind: 'super', args: this.parseArgs() };
+          if (!this.isOp('.')) throw new JavaError('super must be followed by (...) or by a dot and a member.', line);
+          return { k: 'super', line };
         }
         if (t.text === 'new') return this.parseNew();
         this.checkUnsupported();

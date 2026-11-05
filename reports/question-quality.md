@@ -109,7 +109,6 @@ A spread of the numericals in the samples was also worked by hand, and those all
 - **The analysis is automatic.** Types and topics come from rules, checked by sampling. See `reports/question-analysis.md` for its limits.
 - **The facts are written by me, not checked against a textbook line by line.** The spot check read about 320 of the 1,484 blueprints. Definitions and reasons outside that sample were written from the syllabus and haven't been read a second time. Chemistry reactions and compounds come from verified data where the drawings are involved, but statements of fact are not machine-checkable. This is the main reason for the notice on every generated question.
 - **A few MCQs have fewer than four options,** where only two or three make sense (a gate's output is 0 or 1).
-- **The Java tracer doesn't run inheritance or interfaces.** Those model answers are the only Java in the generator that hasn't been run: `k12-6a-inherit-design` and `k12-6b-interface-write`. They were checked by reading.
 - **Some content in the registry is beyond the usual ISC level.** For example, reduced mass appears in `p11-4b-collision`, because it's in the formula book.
 - **No questions on the practical papers.** Those 11 files are set as experiments or programming tasks, and were recorded but not turned into blueprints.
 

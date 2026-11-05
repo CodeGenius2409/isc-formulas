@@ -497,4 +497,183 @@ class School {
 }`,
     expected: '15 10 2\n',
   },
+  {
+    id: 'inherit-employee',
+    title: 'Inheritance: employee and manager',
+    topic: 'Inheritance and interfaces',
+    code: `class Employee {
+    protected String name;
+    protected double salary;
+
+    Employee(String n, double s) {
+        name = n;
+        salary = s;
+    }
+
+    double pay() {
+        return salary;
+    }
+
+    void display() {
+        System.out.println(name + " earns " + pay());
+    }
+}
+
+class Manager extends Employee {
+    private double bonus;
+
+    Manager(String n, double s, double b) {
+        super(n, s);
+        bonus = b;
+    }
+
+    double pay() {
+        return super.pay() + bonus;
+    }
+}
+
+class Office {
+    public static void main(String[] args) {
+        Employee e = new Employee("Asha", 500);
+        Employee m = new Manager("Ravi", 700, 150);
+        e.display();
+        m.display();
+    }
+}`,
+    expected: 'Asha earns 500.0\nRavi earns 850.0\n',
+  },
+  {
+    id: 'abstract-shapes',
+    title: 'Abstract class: shapes',
+    topic: 'Inheritance and interfaces',
+    code: `abstract class Shape {
+    abstract double area();
+
+    public String toString() {
+        return getClass().getName() + " of area " + area();
+    }
+}
+
+class Circle extends Shape {
+    double r;
+
+    Circle(double r) {
+        this.r = r;
+    }
+
+    double area() {
+        return 3.14 * r * r;
+    }
+}
+
+class Rectangle extends Shape {
+    double l, b;
+
+    Rectangle(double l, double b) {
+        this.l = l;
+        this.b = b;
+    }
+
+    double area() {
+        return l * b;
+    }
+}
+
+class Shapes {
+    public static void main(String[] args) {
+        Shape[] all = { new Circle(2), new Rectangle(3, 4) };
+        for (int i = 0; i < all.length; i++) {
+            System.out.println(all[i]);
+            if (all[i] instanceof Rectangle) {
+                Rectangle r = (Rectangle) all[i];
+                System.out.println("Length " + r.l);
+            }
+        }
+    }
+}`,
+    expected: 'Circle of area 12.56\nRectangle of area 12.0\nLength 3.0\n',
+  },
+  {
+    id: 'interface-payment',
+    title: 'Interfaces: a class implementing two',
+    topic: 'Inheritance and interfaces',
+    code: `interface Payable {
+    double DISCOUNT = 0.5;
+
+    double amount();
+}
+
+interface Printable {
+    void print();
+}
+
+class Bill implements Payable, Printable {
+    private double total;
+
+    Bill(double t) {
+        total = t;
+    }
+
+    public double amount() {
+        return total * DISCOUNT;
+    }
+
+    public void print() {
+        System.out.println("To pay: " + amount());
+    }
+}
+
+class Shop {
+    public static void main(String[] args) {
+        Bill b = new Bill(90);
+        Payable p = b;
+        Printable q = b;
+        q.print();
+        System.out.println(p.amount() + 1);
+    }
+}`,
+    expected: 'To pay: 45.0\n46.0\n',
+  },
+  {
+    id: 'multilevel-super',
+    title: 'Multilevel inheritance and super',
+    topic: 'Inheritance and interfaces',
+    code: `class Grandparent {
+    Grandparent() {
+        System.out.println("Grandparent's constructor");
+    }
+
+    String family() {
+        return "Mehta";
+    }
+}
+
+class Parent extends Grandparent {
+    Parent() {
+        System.out.println("Parent's constructor");
+    }
+
+    String family() {
+        return super.family() + " family";
+    }
+}
+
+class Child extends Parent {
+    Child() {
+        System.out.println("Child's constructor");
+    }
+
+    String family() {
+        return "The " + super.family();
+    }
+}
+
+class Tree {
+    public static void main(String[] args) {
+        Grandparent g = new Child();
+        System.out.println(g.family());
+    }
+}`,
+    expected: "Grandparent's constructor\nParent's constructor\nChild's constructor\nThe Mehta family\n",
+  },
 ];

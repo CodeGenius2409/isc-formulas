@@ -9,9 +9,17 @@ export interface Program {
   classes: ClassDecl[];
 }
 
+export type Access = 'public' | 'protected' | 'package' | 'private';
+
 export interface ClassDecl {
   name: string;
   line: number;
+  /** The class it extends. An interface has none, and lists what it extends in `interfaces`. */
+  superName?: string;
+  interfaces: string[];
+  isInterface?: boolean;
+  isAbstract?: boolean;
+  isFinal?: boolean;
   fields: FieldDecl[];
   methods: MethodDecl[];
   ctors: MethodDecl[];
@@ -21,6 +29,7 @@ export interface FieldDecl {
   name: string;
   type: TypeRef;
   isStatic: boolean;
+  access: Access;
   init: Expr | null;
   line: number;
 }
@@ -36,6 +45,9 @@ export interface MethodDecl {
   ret: TypeRef;
   params: Param[];
   isStatic: boolean;
+  access: Access;
+  isAbstract?: boolean;
+  isFinal?: boolean;
   body: Stmt[];
   line: number;
 }
@@ -70,4 +82,8 @@ export type Expr =
   | { k: 'assign'; line: number; op: string; target: Expr; value: Expr }
   | { k: 'ternary'; line: number; cond: Expr; a: Expr; b: Expr }
   | { k: 'cast'; line: number; type: TypeRef; expr: Expr }
-  | { k: 'this'; line: number };
+  | { k: 'this'; line: number }
+  | { k: 'super'; line: number }
+  /** super(...) or this(...), which only a constructor's first statement may be. */
+  | { k: 'ctorcall'; line: number; kind: 'super' | 'this'; args: Expr[] }
+  | { k: 'instanceof'; line: number; expr: Expr; type: TypeRef };
