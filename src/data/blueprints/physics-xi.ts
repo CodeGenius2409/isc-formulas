@@ -76,6 +76,7 @@ const blueprints: Blueprint[] = [
     vars: { A: [1, 4, 1], T: [2, 10, 2], U: [2, 12, 2], S: [10, 60, 10] },
   }),
   num('free-fall', [2, 'a', 3, 2], {
+    diagram: (v) => ({ kind: 'drop', h: `${v.H} m` }),
     text: 'A {scene} is dropped from a height of {H} m. Take g = 9.8 m/s².',
     scenes: ['stone', 'coin', 'small ball'],
     vars: { H: [5, 80, 5] },
@@ -130,7 +131,8 @@ const blueprints: Blueprint[] = [
     sim: (v) => ({ id: 'projectile', preset: { speed: v.U, angle: 0, height: v.H } }),
   }),
   num('vectors-resultant', [2, 'b', 2, 2], {
-    text: 'Two forces of {A} N and {B} N act on a point, at {T}° to each other. Find the size of their resultant.',
+    diagram: (v) => ({ kind: 'vectors', a: `${v.A} m/s`, b: `${v.B} m/s`, angle: `${v.T}°`, deg: v.T }),
+    text: 'A body has two velocities of {A} m/s and {B} m/s at the same time, at {T}° to each other. Find the size of the resultant velocity.',
     vars: { A: [3, 12, 1], B: [4, 12, 1], T: [60, 90, 120] },
     parts: [{ ask: 'Size of the resultant', use: 'p-xi-2-113', find: 'R_v', given: { A: 'A m/s', B: 'B m/s', theta: 'T deg' }, unit: 'm/s', marks: 2 }],
   }),
@@ -159,6 +161,7 @@ const blueprints: Blueprint[] = [
       ['Average speed over a trip is at least the size of the average velocity.', 'Average speed over a trip is always less than the size of the average velocity.'],
       ['A straight, sloping x–t graph means constant velocity.', 'A straight, sloping x–t graph means constant acceleration.'],
     ],
+    figures: { 'Using a velocity–time graph, derive s = ut + ½at².': { kind: 'graph', x: 'Time', y: 'Velocity', lines: [{ points: [[0, 1], [3, 3]] }], ticksX: [[3, 't']], ticksY: [[1, 'u'], [3, 'v']] } },
     long: [
       ['Using a velocity–time graph, derive s = ut + ½at².', 'Draw a straight v–t line rising from u to v in time t.', 'The area under it is a rectangle ut, plus a triangle ½(v − u)t.', 'Since v − u = at, the triangle is ½at².', 'So s = ut + ½at².'],
     ],
@@ -190,6 +193,7 @@ const blueprints: Blueprint[] = [
       ['The time of flight doubles if the launch speed doubles at the same angle.', 'The time of flight is four times as long if the launch speed doubles at the same angle.'],
       ['The range is proportional to the square of the launch speed.', 'The range is proportional to the launch speed.'],
     ],
+    figures: { 'Show that the path of a projectile is a parabola.': { kind: 'projectile', v: 'u', angle: 'θ' } },
     long: [
       ['Show that the path of a projectile is a parabola.', 'Horizontally, x = (u cos θ)t, so t = x/(u cos θ).', 'Vertically, y = (u sin θ)t − ½gt².', 'Substituting t gives y = x tan θ − gx²/(2u²cos²θ).', 'This has the form y = ax − bx², which is a parabola.'],
     ],
@@ -274,6 +278,7 @@ const blueprints: Blueprint[] = [
     ],
   }),
   num('centripetal', [3, 'c', 2, 1], {
+    diagram: (v) => ({ kind: 'circle', r: `${v.R} m`, v: `${v.V} m/s`, m: `${v.M} kg` }),
     text: 'A {M} kg stone on a string moves in a horizontal circle of radius {R} m at {V} m/s. Find the tension, ignoring gravity.',
     vars: { M: [0.2, 1, 0.2], R: [0.5, 2, 0.5], V: [2, 8, 1] },
     parts: [{ ask: 'Tension', use: 'p-xi-3-5', find: 'F_c', given: { m: 'M kg', v: 'V m/s', r: 'R m' }, marks: 2 }],
@@ -410,6 +415,7 @@ const blueprints: Blueprint[] = [
     sim: (v) => ({ id: 'spring', preset: { k: v.K, x: v.X / 100 } }),
   }),
   num('roller', [4, 'a', 3, 2], {
+    diagram: (v) => ({ kind: 'hill', H: `${v.H} m`, m: `${v.M} kg`, point: { label: `${v.P} m`, fraction: v.P / v.H } }),
     style: 'cbq-style',
     text: 'A roller coaster car of mass {M} kg starts from rest at the top of a {H} m hill. Ignore friction.',
     vars: { M: [200, 800, 200], H: [10, 40, 5], P: [2, 8, 2] },
@@ -420,6 +426,7 @@ const blueprints: Blueprint[] = [
     ],
   }),
   num('collision', [4, 'b', 3, 2], {
+    diagram: (v) => ({ kind: 'trolleys', a: `${v.A} kg`, b: `${v.B} kg`, v: `${v.U} m/s` }),
     text: 'A {A} kg trolley moving at {U} m/s hits a {B} kg trolley at rest. They stick together.',
     vars: { A: [1, 6, 1], U: [2, 10, 2], B: [1, 6, 1] },
     parts: [
@@ -428,6 +435,7 @@ const blueprints: Blueprint[] = [
     ],
   }),
   num('restitution', [4, 'b', 2, 2], {
+    diagram: (v) => ({ kind: 'drop', h: `${v.H} m`, rebound: { label: `${v.R} m`, fraction: v.R / v.H } }),
     text: 'A ball dropped from {H} m rebounds to {R} m. Find the coefficient of restitution.',
     vars: { H: [1, 5, 1], R: [0.2, 0.8, 0.2] },
     parts: [{ ask: 'Coefficient of restitution', use: 'p-xi-4-106', find: 'e_r', given: { h_2: 'R m', h_1: 'H m' }, marks: 2 }],
@@ -487,6 +495,7 @@ const blueprints: Blueprint[] = [
 
   // ---- Unit 5: Rotation
   num('torque', [5, 'b', 2, 1], {
+    diagram: (v) => ({ kind: 'lever', r: `${v.R} cm`, F: `${v.F} N`, angle: `${v.T}°`, deg: v.T }),
     text: 'A force of {F} N is applied at {R} cm from a hinge, at {T}° to the door. Find the torque.',
     vars: { F: [10, 50, 10], R: [30, 90, 10], T: [30, 90, 30] },
     parts: [{ ask: 'Torque', use: 'p-xi-5-43', find: 'tau', given: { r: 'R cm', F: 'F N', theta: 'T deg' }, marks: 2 }],
@@ -508,6 +517,7 @@ const blueprints: Blueprint[] = [
     ],
   }),
   num('com', [5, 'a', 2, 1], {
+    diagram: (v) => ({ kind: 'axis-masses', items: [{ m: `${v.A} kg`, x: 'x = 0' }, { m: `${v.B} kg`, x: `x = ${v.D} m` }] }),
     text: 'Masses of {A} kg and {B} kg are at x = 0 and x = {D} m. Find the position of their centre of mass.',
     vars: { A: [1, 8, 1], B: [1, 8, 1], D: [1, 6, 1] },
     parts: [{ ask: 'x-coordinate of the centre of mass', use: 'p-xi-5-7', find: 'x_cm', given: { m_1: 'A kg', x_1: '0 m', m_2: 'B kg', x_2: 'D m' }, marks: 2 }],
@@ -593,7 +603,7 @@ const blueprints: Blueprint[] = [
   }),
   num('g-height', [6, 'a', 2, 2], {
     variants: [
-      { text: 'Find g at a height of {H} km above the Earth’s surface. Take the Earth’s radius to be 6400 km.', parts: [{ ask: 'g at that height', use: 'p-xi-6-7', find: 'g_h', given: { h: 'H km', R: '6400 km' }, marks: 2 }] },
+      { diagram: (v) => ({ kind: 'orbit', height: `${v.H} km`, mass: 'Earth' }), text: 'Find g at a height of {H} km above the Earth’s surface. Take the Earth’s radius to be 6400 km.', parts: [{ ask: 'g at that height', use: 'p-xi-6-7', find: 'g_h', given: { h: 'H km', R: '6400 km' }, marks: 2 }] },
       { text: 'Find g at a depth of {D} km below the Earth’s surface. Take the Earth’s radius to be 6400 km.', parts: [{ ask: 'g at that depth', use: 'p-xi-6-32', find: 'g_d', given: { d: 'D km', R: '6400 km' }, marks: 2 }] },
     ],
     vars: { H: [100, 900, 100], D: [100, 3000, 100] },
@@ -637,6 +647,7 @@ const blueprints: Blueprint[] = [
       ['A planet moves fastest when closest to the Sun.', 'A planet moves slowest when closest to the Sun.'],
       ['Gravity is always attractive.', 'Gravity can be attractive or repulsive.'],
     ],
+    figures: { 'Derive an expression for g at a height h above the Earth’s surface, and approximate it for small h.': { kind: 'orbit', height: 'h', mass: 'M' } },
     long: [
       ['Derive an expression for g at a height h above the Earth’s surface, and approximate it for small h.', 'At the surface, g = GM/R².', 'At height h, g_h = GM/(R + h)².', 'So g_h = g(R/(R + h))² = g(1 + h/R)⁻².', 'For small h, g_h ≈ g(1 − 2h/R).'],
     ],
@@ -682,6 +693,7 @@ const blueprints: Blueprint[] = [
 
   // ---- Unit 7: Bulk matter
   num('stretch', [7, 'a', 3, 2], {
+    diagram: (v) => ({ kind: 'hanging', L: `${v.L} m`, A: `${v.A} mm²`, F: `${v.F} N`, e: `${v.E} mm` }),
     text: 'A wire {L} m long with a cross-section of {A} mm² stretches by {E} mm under a load of {F} N.',
     vars: { L: [1, 4, 1], A: [1, 4, 1], E: [0.5, 2, 0.5], F: [50, 200, 50] },
     parts: [
@@ -703,12 +715,14 @@ const blueprints: Blueprint[] = [
     ],
   }),
   num('continuity', [7, 'b', 2, 1], {
+    diagram: (v) => ({ kind: 'pipe', a1: `${v.A} cm²`, v1: `${v.V} m/s`, a2: `${v.B} cm²` }),
     style: 'cbq-style',
     text: 'Water flows at {V} m/s through a hose of cross-section {A} cm². A nozzle narrows it to {B} cm². Find the speed of the water leaving the nozzle.',
     vars: { V: [1, 5, 1], A: [4, 12, 2], B: [1, 3, 1] },
     parts: [{ ask: 'Speed at the nozzle', use: 'p-xi-7-8', find: 'v_2', given: { A_1: 'A cm^2', v_1: 'V m/s', A_2: 'B cm^2' }, marks: 2 }],
   }),
   num('torricelli', [7, 'b', 2, 2], {
+    diagram: (v) => ({ kind: 'tank', h: `${v.H} m` }),
     text: 'A water tank has a small hole {H} m below the water surface. Find the speed of the water leaving the hole.',
     vars: { H: [1, 10, 1] },
     parts: [{ ask: 'Speed', use: 'p-xi-7-10', find: 'v', given: { h: 'H m' }, marks: 2 }],
@@ -719,6 +733,7 @@ const blueprints: Blueprint[] = [
     parts: [{ ask: 'Terminal velocity', use: 'p-xi-7-15', find: 'v_t', given: { r: 'R mm', rho: '7800 kg/m^3', sigma: '900 kg/m^3', eta: 'E Pa*s' }, marks: 3 }],
   }),
   num('capillary', [7, 'c', 2, 2], {
+    diagram: (v) => ({ kind: 'capillary', r: `${v.R} mm` }),
     text: 'A clean glass tube of radius {R} mm stands in water, with surface tension 0.072 N/m and an angle of contact of 0°. Find how high the water rises.',
     vars: { R: [0.2, 1, 0.2] },
     parts: [{ ask: 'Height of rise', use: 'p-xi-7-13', find: 'h', given: { S: '0.072 N/m', theta: '0 deg', r: 'R mm', rho: '1000 kg/m^3' }, unit: 'cm', marks: 2 }],
@@ -834,6 +849,7 @@ const blueprints: Blueprint[] = [
     parts: [{ ask: 'Rate of heat loss through the window', use: 'p-xi-8-62', find: 'H_c', given: { K_t: '0.8 W/(m*K)', A: 'A m^2', T_1: 'IK K', T_2: 'OK K', L: 'D cm' }, marks: 3 }],
   }),
   num('carnot', [8, 'b', 2, 1], {
+    diagram: (v) => ({ kind: 'engine', hot: `${v.H} K`, cold: `${v.C} K` }),
     text: 'A heat engine takes heat in at {H} K, and rejects it at {C} K. Find its largest possible efficiency.',
     vars: { H: [400, 800, 50], C: [280, 350, 10] },
     parts: [{ ask: 'Largest efficiency', use: 'p-xi-8-5', find: 'eta', given: { T_2: 'C K', T_1: 'H K' }, marks: 2 }],
@@ -983,6 +999,7 @@ const blueprints: Blueprint[] = [
     ],
   }),
   num('spring-mass', [10, 'a', 3, 2], {
+    sim: (v) => ({ id: 'spring', preset: { k: v.K, x: v.A / 100 } }),
     text: 'A {M} kg mass on a spring of constant {K} N/m oscillates with an amplitude of {A} cm.',
     vars: { M: [0.2, 2, 0.2], K: [20, 200, 20], A: [2, 10, 2] },
     derive: (v) => ({ W: Math.sqrt(v.K / v.M) }),
@@ -1000,6 +1017,7 @@ const blueprints: Blueprint[] = [
     diagram: () => ({ kind: 'wave', amplitude: 'A', wavelength: 'λ' }),
   }),
   num('string', [10, 'b', 3, 2], {
+    diagram: (v) => ({ kind: 'standing', ends: 'fixed', L: `${v.L} m`, note: `tension ${v.T} N` }),
     text: 'A sonometer wire {L} m long has a tension of {T} N, and a mass of {M} g per metre.',
     vars: { L: [0.5, 1.5, 0.5], T: [20, 100, 20], M: [1, 5, 1] },
     parts: [
@@ -1009,8 +1027,8 @@ const blueprints: Blueprint[] = [
   }),
   num('organ-pipe', [10, 'b', 2, 2], {
     variants: [
-      { text: 'Find the fundamental frequency of an open organ pipe {L} m long. Take the speed of sound as {V} m/s.', parts: [{ ask: 'Fundamental frequency', use: 'p-xi-10-14', find: 'f', given: { v: 'V m/s', L: 'L m' }, marks: 2 }] },
-      { text: 'Find the fundamental frequency of a closed organ pipe {L} m long. Take the speed of sound as {V} m/s.', parts: [{ ask: 'Fundamental frequency', use: 'p-xi-10-15', find: 'f', given: { v: 'V m/s', L: 'L m' }, marks: 2 }] },
+      { diagram: (v) => ({ kind: 'standing', ends: 'open', L: `${v.L} m` }), text: 'Find the fundamental frequency of an open organ pipe {L} m long. Take the speed of sound as {V} m/s.', parts: [{ ask: 'Fundamental frequency', use: 'p-xi-10-14', find: 'f', given: { v: 'V m/s', L: 'L m' }, marks: 2 }] },
+      { diagram: (v) => ({ kind: 'standing', ends: 'closed', L: `${v.L} m` }), text: 'Find the fundamental frequency of a closed organ pipe {L} m long. Take the speed of sound as {V} m/s.', parts: [{ ask: 'Fundamental frequency', use: 'p-xi-10-15', find: 'f', given: { v: 'V m/s', L: 'L m' }, marks: 2 }] },
     ],
     vars: { L: [0.5, 2, 0.25], V: [330, 350, 10] },
   }),

@@ -258,7 +258,8 @@ function classify(text, context, options, subject, parent = '') {
     if (has(/find the error|correct the|identify the error|errors? in the/)) return 'error';
     if (has(/complete the (code|program|method|following|statement)|fill in the blank|\?\s*1\s*\?/)) return 'complete';
     if (has(/truth table|k-?map|karnaugh|simplif|reduce the|sop\b|pos\b|logic (gate|circuit)|boolean/)) return 'boolean';
-    if (has(/address of|base address|row[- ]major|column[- ]major|big ?o|complexity|inorder|preorder|postorder|traversal/)) return 'numerical';
+    if (has(/address of|base address|row[- ]major|column[- ]major|big ?o|complexity|inorder|preorder|postorder|traversal/)) return 'short';
+    if (!options?.length && !/which of the following|choose the correct/.test(near) && /\bcalculate|\bfind\b|determine|evaluate|what is the value|how much|how many|compute|\bsolve\b|value of/.test(own)) return 'short';
   }
   if (options?.length || /choose the correct|select the correct|correct (option|alternative)|which of the following|multiple choice/.test(near)) return 'mcq';
   if (has(/match the|column a\b|column i\b|match column/)) return 'match';
@@ -269,6 +270,7 @@ function classify(text, context, options, subject, parent = '') {
   if (subject === 'mathematics' && has(/\bprove\b|show that|verify/)) return 'proof';
   if (has(/\bprove\b|show that/)) return 'derivation';
   if (has(/give (a )?reasons?|account for|explain why|\bwhy\b/)) return 'reason';
+  if (subject === 'chemistry' && /^\W*(calculate|find|determine|what is the value)/.test(own)) return 'numerical';
   if (subject === 'chemistry' && has(/convert|how (will|would|can) you|what happens when|write the (chemical |balanced )?equation|complete (and balance )?the|balance the|name reaction|reaction (of|between|for)|identify (the )?compound|compounds? [a-e]\b|predict the product|major product|from grignard|obtained from|prepared from|chemical equation/)) return 'reaction';
   if (subject === 'chemistry' && has(/arrange .* order|increasing order|decreasing order|stronger (acid|base)|more (basic|acidic|reactive)/)) return 'reason';
   if (subject === 'chemistry' && has(/iupac|structure of|hybridi[sz]|isomer|geometry of|magnetic|oxidation state/)) return 'structure';
@@ -546,13 +548,26 @@ function matcher(subject, level) {
   return matchers.get(key);
 }
 
-function topicOf(subject, level, text, context, tag) {
+const OUTSIDE_MATHS = /marginal|revenue|average cost|cost function|demand function|break.?even|profit function|regression|correlation|\bAC falls\b/i;
+
+const singular = (s) => s.toLowerCase().replace(/\bapplications\b/g, 'application').replace(/&/g, 'and');
+
+/** The words of an assertion question's options, when a file sets them out as separate parts. */
+const AR_OPTION = /^\W*(both\b.*\b(assertion|statement|a\b)|assertion\b.{0,40}\b(true|false|correct|incorrect)|(a|statement)\s*\(?(i|1|a)?\)?\s*is\s*(true|false)|reason\b.{0,40}\b(true|false|correct|incorrect)|\(?a\)?\s+is\s+(true|false))/i;
+const assertionSeen = new Set();
+
+/** A reaction to write isn't a question on rates or cells just because those words share letters with it. */
+const wrongForReaction = (text) => (t) =>
+  (/^rate|collision theory/i.test(t.topicName) && !/\brate\b|\border\b|half[- ]life|kinetic/i.test(text)) || (/^cells/i.test(t.topicName) && !/\bcell\b|electrod|galvanic|nernst|anode|cathode|electroly/i.test(text));
+
+function topicOf(subject, level, text, context, tag, exclude) {
   const haystack = ` ${`${tag ?? ''} ${context} ${text}`.toLowerCase().replace(/[’']/g, "'")} `;
   const list = matcher(subject, level);
   let best = null;
   let bestScore = 0;
   const concepts = [];
   for (const t of list) {
+    if (exclude?.(t)) continue;
     let score = 0;
     const hits = [];
     for (const p of t.phrases) {
@@ -562,8 +577,8 @@ function topicOf(subject, level, text, context, tag) {
         hits.push(p);
       }
     }
-    if (tag && tag.toLowerCase().includes(t.unitName.toLowerCase().slice(0, 12))) score += 20;
-    if (tag && tag.toLowerCase().includes(t.topicName.toLowerCase().slice(0, 12))) score += 12;
+    if (tag && singular(tag).includes(singular(t.unitName).slice(0, 18))) score += 20;
+    if (tag && singular(tag).includes(singular(t.topicName).slice(0, 18))) score += 12;
     if (score > bestScore) {
       bestScore = score;
       best = t;
@@ -636,7 +651,12 @@ for (const paper of index) {
       }
       const tag = /\[([A-Z][^\]]{3,70})\]/.exec(q.lines[0] ?? '')?.[1] ?? null;
       const type = classify(body, context, leaf.options, subject, clean(leaf.parent ?? ''));
-      let where = topicOf(subject, level, body, context, tag);
+      if (type === 'assertion' && AR_OPTION.test(body)) {
+        const once = `${id}|${q.number}`;
+        if (assertionSeen.has(once)) continue;
+        assertionSeen.add(once);
+      }
+      let where = topicOf(subject, level, body, context, tag, type === 'reaction' ? wrongForReaction(`${context} ${body}`) : undefined);
       let recordLevel = level;
       // A question can be on the other class's syllabus, as older papers mix them.
       if (where.score < 2) {
@@ -647,6 +667,8 @@ for (const paper of index) {
           recordLevel = other;
         }
       }
+      // Older Mathematics papers set commerce and regression, which the 2028 syllabus doesn't have.
+      if (subject === 'mathematics' && OUTSIDE_MATHS.test(`${context} ${body}`)) where = { unit: null, concepts: [], score: 0 };
       const garble = paper.readable === 'text' ? 0 : garbleOf(body);
       const { skill, tagged } = skillOf(`${body}`, type);
       const whole = `${context} ${body}`;

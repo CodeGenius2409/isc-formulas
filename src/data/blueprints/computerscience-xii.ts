@@ -1015,6 +1015,103 @@ const blueprints: Blueprint[] = [
       ['(c) The stack would overflow.', 1],
     ]);
   }),
+  custom('complete-bubble', [4, 'a', 3, 2], { type: 'complete', format: 'short' }, (g) => {
+    const values = g.sample([3, 5, 7, 9, 11, 13, 15, 17, 19], 5);
+    const code = (one: string, two: string, three: string) => inMain(`int[] a = {${values.join(', ')}};\nint n = a.length;\nfor (int i = 0; i < ${one}; i++) {\n  for (int j = 0; j < n - i - 1; j++) {\n    if (a[j] > ${two}) {\n      int t = a[j];\n      a[j] = a[j + 1];\n      ${three} = t;\n    }\n  }\n}\nfor (int i = 0; i < n; i++) System.out.print(a[i] + " ");`);
+    return complete(g, code('?1?', '?2?', '?3?'), code('n - 1', 'a[j + 1]', 'a[j + 1]'), [['?1? is n - 1, the number of passes.', 1], ['?2? is a[j + 1], the next element.', 1], ['?3? is a[j + 1], which completes the swap.', 1]], 'This program sorts an array in ascending order by bubble sort.');
+  }),
+  custom('complete-binary-search', [4, 'a', 3, 3], { type: 'complete', format: 'short' }, (g) => {
+    const values = [2, 5, 8, 12, 16, 23, 38, 56, 72, 91];
+    const key = g.pick(values);
+    const code = (one: string, two: string, three: string) => inMain(`int[] a = {${values.join(', ')}};\nint low = 0, high = a.length - 1, at = -1;\nwhile (low <= high) {\n  int mid = ${one};\n  if (a[mid] == ${key}) {\n    at = mid;\n    break;\n  } else if (a[mid] < ${key}) {\n    low = ${two};\n  } else {\n    high = ${three};\n  }\n}\nSystem.out.println(at);`);
+    return complete(g, code('?1?', '?2?', '?3?'), code('(low + high) / 2', 'mid + 1', 'mid - 1'), [['?1? is (low + high) / 2, the middle position.', 1], ['?2? is mid + 1, as the key lies in the upper half.', 1], ['?3? is mid - 1, as the key lies in the lower half.', 1]], `This program finds ${key} in a sorted array by binary search, and prints its position.`);
+  }),
+  custom('design-sort', [4, 'a', 10, 3], { type: 'program', format: 'program' }, (g) => {
+    const values = g.sample([4, 9, 2, 7, 11, 3, 8, 6, 15], 6);
+    const code = `class Sorter {\n  int[] a;\n  Sorter(int[] x) {\n    a = x;\n  }\n  void sort() {\n    for (int i = 0; i < a.length - 1; i++) {\n      int small = i;\n      for (int j = i + 1; j < a.length; j++) {\n        if (a[j] < a[small]) small = j;\n      }\n      int t = a[i];\n      a[i] = a[small];\n      a[small] = t;\n    }\n  }\n  void show() {\n    for (int i = 0; i < a.length; i++) System.out.print(a[i] + " ");\n  }\n  public static void main(String[] args) {\n    int[] x = {${values.join(', ')}};\n    Sorter s = new Sorter(x);\n    s.sort();\n    s.show();\n  }\n}`;
+    return designClass(g, 'Design a class Sorter that arranges an array of integers in ascending order by selection sort.\nData member: a[] (the array).\nMember functions:\nSorter(int[] x): a constructor that stores the array.\nvoid sort(): sorts the array by selection sort.\nvoid show(): prints the elements.\nSpecify the class, and define main() to create an object and use it.', code, [
+      ['Declares the array and writes the constructor.', 2],
+      ['Outer loop runs over each position.', 1],
+      ['Inner loop finds the smallest remaining element.', 3],
+      ['Swaps it into place.', 2],
+      ['Writes show(), and main() to call the functions.', 2],
+    ]);
+  }),
+  custom('design-transpose', [4, 'a', 10, 3], { type: 'program', format: 'program' }, (g) => {
+    const [p, q, r, s] = g.sample([1, 2, 3, 4, 5, 6, 7, 8, 9], 4);
+    const code = `class Transpose {\n  int[][] m;\n  Transpose(int[][] x) {\n    m = x;\n  }\n  int[][] flip() {\n    int[][] t = new int[m[0].length][m.length];\n    for (int i = 0; i < m.length; i++) {\n      for (int j = 0; j < m[0].length; j++) {\n        t[j][i] = m[i][j];\n      }\n    }\n    return t;\n  }\n  public static void main(String[] args) {\n    int[][] x = {{${p}, ${q}}, {${r}, ${s}}};\n    Transpose o = new Transpose(x);\n    int[][] t = o.flip();\n    System.out.println(t[0][1]);\n  }\n}`;
+    return designClass(g, 'Design a class Transpose for the transpose of a matrix.\nData member: m[][] (the matrix).\nMember functions:\nTranspose(int[][] x): a constructor.\nint[][] flip(): returns the transpose of the matrix.\nSpecify the class, and define main() to create an object and use it.', code, [
+      ['Declares the matrix and writes the constructor.', 2],
+      ['Creates a new matrix with its rows and columns exchanged.', 2],
+      ['Nested loops over rows and columns.', 3],
+      ['Assigns t[j][i] = m[i][j] and returns t.', 2],
+      ['Writes main() to call the function.', 1],
+    ]);
+  }),
+  custom('design-tree-count', [8, 'a', 5, 3], { type: 'program', format: 'program' }, (g) => {
+    const [a, b, c] = g.sample([5, 8, 12, 17, 21, 30, 44], 3);
+    const code = `class Node {\n  int data;\n  Node left;\n  Node right;\n  Node(int d) {\n    data = d;\n    left = null;\n    right = null;\n  }\n  static int count(Node n) {\n    if (n == null) return 0;\n    return 1 + count(n.left) + count(n.right);\n  }\n  public static void main(String[] args) {\n    Node root = new Node(${a});\n    root.left = new Node(${b});\n    root.right = new Node(${c});\n    System.out.println(count(root));\n  }\n}`;
+    return designClass(g, 'A class Node holds an integer and links to a left and a right child. Write the class, with a constructor, and a recursive function int count(Node n) that returns the number of nodes in the tree rooted at n.', code, [
+      ['Declares data and the two links, and writes the constructor.', 2],
+      ['The base case returns 0 for an empty tree.', 1],
+      ['Adds 1 to the counts of the two subtrees.', 2],
+    ]);
+  }),
+  custom('interface-write', [6, 'b', 4, 2], { type: 'program', format: 'program' }, (g) => {
+    const [shape, field, area] = g.pick([['Square', 'side', 'side * side'], ['Circle', 'radius', '3.14 * radius * radius']]);
+    const model = `interface Shape {\n  double area();\n}\nclass ${shape} implements Shape {\n  double ${field};\n  ${shape}(double v) {\n    ${field} = v;\n  }\n  public double area() {\n    return ${area};\n  }\n}`;
+    return g.theory(`Write an interface Shape with a method area() that returns a double. Then write a class ${shape}, with a data member ${field} and a constructor, that implements it.`, [
+      ['Declares the interface with the method’s heading only.', 1],
+      ['Uses the keyword implements in the class heading.', 1],
+      ['Writes the data member and the constructor.', 1],
+      ['Defines area() as public, with the right formula.', 1],
+    ], { model: fence(model) });
+  }),
+  // ---- Real-life questions. Their answers are worked out by code here, or by the same algorithms as the rest.
+  custom('cbq-undo-stack', [8, 'a', 3, 2], { type: 'short', format: 'cbq', style: 'cbq-style' }, (g) => {
+    const actions = g.sample(['type', 'bold', 'paste', 'delete', 'underline', 'cut', 'italic'], 4);
+    const undo = g.int(1, 2);
+    const stack = [...actions];
+    const removed: string[] = [];
+    for (let i = 0; i < undo; i++) removed.push(stack.pop()!);
+    return g.theory(`An editor keeps your actions on a stack, to undo them. You do these in order: ${actions.join(', ')}. You then press undo ${undo === 1 ? 'once' : 'twice'}.\n(i) Which ${undo === 1 ? 'action is' : 'actions are'} undone? (ii) What is on top of the stack now? (iii) Why does a stack suit this job?`, [
+      [`(i) ${removed.join(', then ')}.`, 1],
+      [`(ii) ${stack[stack.length - 1]}.`, 1],
+      ['(iii) A stack is last in, first out, so the most recent action is undone first.', 1],
+    ]);
+  }),
+  custom('cbq-print-queue', [8, 'a', 3, 2], { type: 'short', format: 'cbq', style: 'cbq-style' }, (g) => {
+    const jobs = g.sample(['report', 'photo', 'letter', 'invoice', 'ticket', 'poster'], 4);
+    const served = g.int(1, 2);
+    const left = jobs.slice(served);
+    return g.theory(`A printer takes jobs from a queue. The jobs arrive in this order: ${jobs.join(', ')}. It finishes ${served === 1 ? 'one job' : 'two jobs'}.\n(i) Which ${served === 1 ? 'job has' : 'jobs have'} been printed? (ii) Which job is at the front now? (iii) Why does a queue suit this job?`, [
+      [`(i) ${jobs.slice(0, served).join(' and ')}.`, 1],
+      [`(ii) ${left[0]}.`, 1],
+      ['(iii) A queue is first in, first out, so jobs are printed in the order they arrived.', 1],
+    ]);
+  }),
+  custom('cbq-alarm-boolean', [1, 'b', 3, 2], { type: 'short', format: 'cbq', style: 'cbq-style' }, (g) => {
+    const on = [[1, 1], [1, 0], [0, 1], [0, 0]].filter(() => g.chance(0.5));
+    if (on.length < 1 || on.length > 3) g.retry('needs a real function');
+    const minterms = on.map(([a, b]) => a * 2 + b);
+    const cover = minimalCover(minterms, primeImplicants(minterms));
+    const answer = sopText(cover, 2);
+    return g.theory(`A car’s alarm sounds according to two inputs: A (door open) and B (window open), where 1 means open. It sounds in exactly these cases: ${on.map(([a, b]) => `A = ${a}, B = ${b}`).join('; ')}.\n(i) Write the minterms. (ii) Write the simplest SOP expression for the alarm.`, [
+      [`(i) Minterms ${[...minterms].sort((x, y) => x - y).join(', ')}, reading AB as a binary number.`, 1],
+      [`(ii) Alarm = ${answer}.`, 2],
+    ]);
+  }),
+  custom('cbq-marks-array', [4, 'a', 3, 2], { type: 'output', format: 'cbq', style: 'cbq-style' }, (g) => {
+    const marks = g.sample([34, 45, 52, 61, 68, 73, 80, 88, 92], 5);
+    const pass = g.pick([50, 60, 70]);
+    const code = inMain(`int[] marks = {${marks.join(', ')}};\nint count = 0, best = 0;\nfor (int i = 0; i < marks.length; i++) {\n  if (marks[i] >= ${pass}) count++;\n  if (marks[i] > best) best = marks[i];\n}\nSystem.out.println(count + " " + best);`);
+    return outputOf(g, code, undefined, `A teacher’s program counts how many students reached ${pass}, and finds the top mark. Write what it prints.`);
+  }),
+  custom('cbq-recursion-steps', [5, 'a', 2, 2], { type: 'output', format: 'cbq', style: 'cbq-style' }, (g) => {
+    const n = g.int(3, 6);
+    const code = withMethods('static int stairs(int n) {\n  if (n <= 2) return n;\n  return stairs(n - 1) + stairs(n - 2);\n}', `System.out.println(stairs(${n}));`);
+    return outputOf(g, code, undefined, `A person climbs stairs one or two steps at a time. This program counts the ways to climb ${n} steps. Write what it prints.`);
+  }),
 ];
 
 export default blueprints;

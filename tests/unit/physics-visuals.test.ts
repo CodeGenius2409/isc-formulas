@@ -15,7 +15,7 @@ function labelsOf(spec: DiagramSpec): string[] {
   const out: string[] = [];
   const walk = (node: unknown, key = ''): void => {
     if (typeof node === 'string') {
-      if (key !== 'kind' && key !== 'type' && key !== 'meter' && key !== 'dir' && key !== 'sign' && key !== 'lens' && key !== 'mirror') out.push(node);
+      if (key !== 'kind' && key !== 'type' && key !== 'meter' && key !== 'dir' && key !== 'sign' && key !== 'lens' && key !== 'mirror' && key !== 'ends' && key !== 'body') out.push(node);
     } else if (Array.isArray(node)) {
       node.forEach((n) => walk(n, key));
     } else if (node && typeof node === 'object') {
@@ -49,8 +49,8 @@ for (const level of ['XI', 'XII'] as ClassLevel[]) {
           const shown = numbersIn(labelsOf(item.diagram).join(' '));
           for (const n of shown) {
             if (n === 0) continue;
-            // Worked-out labels, like level energies, are still tied to the words by the test on answers below.
-            if (bp.id.endsWith('bohr-energy') || bp.id.endsWith('stopping-graph')) continue;
+            // Its frequencies are read off the graph: the words point to them and don't repeat them.
+            if (bp.id.endsWith('stopping-graph')) continue;
             expect(inText, `${bp.id} seed ${seed}: ${n} is on the figure but not in the question: ${text}`).toContain(n);
           }
           if (item.form === 'numeric') {
@@ -106,6 +106,28 @@ it('every kind of figure can be put in words', () => {
     { kind: 'capacitor', A: '1 cm²', d: '1 mm' },
     { kind: 'table', head: ['x'], rows: [['1']] },
     { kind: 'tree', nodes: [{ label: 'A' }] },
+    { kind: 'vectors', a: '2 N', b: '3 N', angle: '60°', deg: 60 },
+    { kind: 'circle', r: '1 m', v: '2 m/s' },
+    { kind: 'hill', H: '10 m', point: { label: '2 m', fraction: 0.2 } },
+    { kind: 'trolleys', a: '1 kg', b: '2 kg', v: '3 m/s' },
+    { kind: 'lever', r: '1 m', F: '2 N', angle: '30°', deg: 30 },
+    { kind: 'axis-masses', items: [{ m: '1 kg', x: 'x = 0' }] },
+    { kind: 'pipe', a1: '2 cm²', v1: '1 m/s', a2: '1 cm²' },
+    { kind: 'tank', h: '2 m' },
+    { kind: 'capillary', r: '1 mm' },
+    { kind: 'engine', hot: '500 K', cold: '300 K' },
+    { kind: 'standing', ends: 'closed', L: '1 m' },
+    { kind: 'in-field', body: 'wire', B: '1 T', label: '1 m', angle: '30°', deg: 30 },
+    { kind: 'parallel-wires', i1: '1 A', i2: '2 A', d: '3 cm', same: true },
+    { kind: 'field-entry', B: '1 T', v: '1 m/s', q: 'electron' },
+    { kind: 'transformer', primary: ['220 V'], secondary: ['6 V'] },
+    { kind: 'refraction', i: '30°', r: '20°', iDeg: 30, rDeg: 20, top: 'air', bottom: 'glass' },
+    { kind: 'telescope', fo: '50 cm', fe: '2 cm' },
+    { kind: 'photoelectric', light: '300 nm', metal: '2 eV' },
+    { kind: 'drop', h: '5 m', rebound: { label: '1 m', fraction: 0.2 } },
+    { kind: 'hanging', L: '1 m', A: '1 mm²', F: '10 N' },
+    { kind: 'lens-surfaces', r1: '10 cm', r2: '20 cm', n: '1.5' },
+    { kind: 'coil', turns: '10 turns', r: '5 cm', I: '1 A' },
   ];
   for (const spec of kinds) expect(describeFigure(spec).length, spec.kind).toBeGreaterThan(10);
 });

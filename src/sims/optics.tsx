@@ -1,5 +1,4 @@
 import { usePreset } from './lib/question-mode';
-import { useState } from 'react';
 import { Canvas, Plot, token } from './lib/plot';
 import { Equation, fmt, Readouts, Slider, ToolLayout } from './lib/ui';
 
@@ -119,9 +118,9 @@ export function Lens() {
 }
 
 export function Snell() {
-  const [n1, setN1] = useState(1.5);
-  const [n2, setN2] = useState(1);
-  const [iDeg, setI] = useState(30);
+  const [n1, setN1] = usePreset('n1', 1.5);
+  const [n2, setN2] = usePreset('n2', 1);
+  const [iDeg, setI] = usePreset('iDeg', 30);
   const i = (iDeg * Math.PI) / 180;
   const s = (n1 * Math.sin(i)) / n2;
   const tir = s > 1;

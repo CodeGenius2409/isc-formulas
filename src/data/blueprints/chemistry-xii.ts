@@ -1230,6 +1230,66 @@ const blueprints: Blueprint[] = [
       ['Guanine and cytosine are joined by three hydrogen bonds.', 'Guanine and cytosine are joined by two hydrogen bonds.'],
     ],
   }),
+  custom('oxidant-equations', [4, 'b', 2, 2], { type: 'reaction', format: 'short' }, (g) => {
+    const [ask, products, why] = g.pick([
+      ['Acidified potassium dichromate with iron(II) ions', 'Cr₂O₇²⁻ + 14H⁺ + 6Fe²⁺ → 2Cr³⁺ + 6Fe³⁺ + 7H₂O', 'Orange dichromate turns green as Cr³⁺ forms.'],
+      ['Acidified potassium dichromate with iodide ions', 'Cr₂O₇²⁻ + 14H⁺ + 6I⁻ → 2Cr³⁺ + 3I₂ + 7H₂O', 'Iodide is oxidised to iodine.'],
+      ['Acidified potassium dichromate with hydrogen sulphide', 'Cr₂O₇²⁻ + 8H⁺ + 3H₂S → 2Cr³⁺ + 3S + 7H₂O', 'Sulphur separates out.'],
+      ['Acidified potassium permanganate with iron(II) ions', 'MnO₄⁻ + 8H⁺ + 5Fe²⁺ → Mn²⁺ + 5Fe³⁺ + 4H₂O', 'Purple permanganate is decolourised.'],
+      ['Acidified potassium permanganate with iodide ions', '2MnO₄⁻ + 16H⁺ + 10I⁻ → 2Mn²⁺ + 5I₂ + 8H₂O', 'Iodide is oxidised to iodine.'],
+      ['Acidified potassium permanganate with oxalate ions', '2MnO₄⁻ + 16H⁺ + 5C₂O₄²⁻ → 2Mn²⁺ + 10CO₂ + 8H₂O', 'Oxalate is oxidised to carbon dioxide.'],
+      ['Potassium permanganate with sulphur dioxide', '2MnO₄⁻ + 5SO₂ + 2H₂O → 2Mn²⁺ + 5SO₄²⁻ + 4H⁺', 'Sulphur dioxide is oxidised to sulphate.'],
+      ['Potassium permanganate with iodide in alkaline solution', '2MnO₄⁻ + H₂O + I⁻ → 2MnO₂ + 2OH⁻ + IO₃⁻', 'In alkali, MnO₂ forms rather than Mn²⁺.'],
+    ]);
+    return g.theory(`Write the balanced ionic equation for the reaction of: ${ask.toLowerCase()}.`, [[`${products}`, 1], [why, 1]]);
+  }),
+  custom('oxidant-preparation', [4, 'b', 3, 2], { type: 'reaction', format: 'short' }, (g) => {
+    const dichromate = g.chance(0.5);
+    return dichromate
+      ? g.theory('Write the equations for the steps that turn sodium chromate into potassium dichromate, starting from the acidification.', [
+          ['2Na₂CrO₄ + 2H⁺ → Na₂Cr₂O₇ + 2Na⁺ + H₂O.', 1],
+          ['Na₂Cr₂O₇ + 2KCl → K₂Cr₂O₇ + 2NaCl.', 1],
+          ['Potassium dichromate crystallises first, as it is the less soluble.', 1],
+        ])
+      : g.theory('Write the equations for the steps that turn manganese dioxide into potassium permanganate.', [
+          ['2MnO₂ + 4KOH + O₂ → 2K₂MnO₄ + 2H₂O, by fusing with alkali in air.', 1],
+          ['In acid, manganate disproportionates: 3MnO₄²⁻ + 4H⁺ → 2MnO₄⁻ + MnO₂ + 2H₂O.', 1],
+          ['The purple permanganate is then crystallised out.', 1],
+        ]);
+  }),
+  custom('transition-equations', [4, 'a', 2, 2], { type: 'reaction', format: 'short' }, (g) => {
+    const [ask, equation, why] = g.pick([
+      ['Copper(I) ions disproportionate in water', '2Cu⁺ → Cu²⁺ + Cu', 'Cu²⁺ is more stable in water, owing to its large hydration enthalpy.'],
+      ['Manganese(III) ions disproportionate in water', '2Mn³⁺ + 2H₂O → Mn²⁺ + MnO₂ + 4H⁺', 'Mn²⁺, with a half-filled d subshell, is especially stable.'],
+      ['Copper(II) ions oxidise iodide ions', '2Cu²⁺ + 4I⁻ → 2CuI + I₂', 'Copper(II) iodide isn’t stable, so it gives copper(I) iodide and iodine.'],
+      ['Iron(III) ions oxidise iodide ions', '2Fe³⁺ + 2I⁻ → 2Fe²⁺ + I₂', 'Iron(III) is a strong enough oxidant to free iodine.'],
+    ]);
+    return g.theory(`Write the balanced equation for this change, and give a reason for it: ${ask.toLowerCase()}.`, [[equation, 1], [why, 1]]);
+  }),
+  custom('transition-moment', [4, 'a', 3, 2], { type: 'structure', format: 'short' }, (g) => {
+    const [ion, config, unpaired] = g.pick<[string, string, number]>([
+      ['Sc³⁺', '[Ar] 3d⁰', 0], ['Ti³⁺', '[Ar] 3d¹', 1], ['V³⁺', '[Ar] 3d²', 2], ['Cr³⁺', '[Ar] 3d³', 3], ['Mn²⁺', '[Ar] 3d⁵', 5], ['Fe²⁺', '[Ar] 3d⁶', 4], ['Fe³⁺', '[Ar] 3d⁵', 5], ['Co²⁺', '[Ar] 3d⁷', 3], ['Ni²⁺', '[Ar] 3d⁸', 2], ['Cu²⁺', '[Ar] 3d⁹', 1], ['Zn²⁺', '[Ar] 3d¹⁰', 0],
+    ]);
+    const moment = Math.sqrt(unpaired * (unpaired + 2));
+    return g.theory(`For the free ion ${ion}, write the electronic configuration, the number of unpaired electrons, and the spin-only magnetic moment.`, [
+      [`The configuration is ${config}.`, 1],
+      [`It has ${unpaired} unpaired ${unpaired === 1 ? 'electron' : 'electrons'}.`, 1],
+      [`$\\mu = \\sqrt{n(n + 2)} = ${moment.toFixed(2)}$ BM.`, 1],
+    ]);
+  }),
+  custom('protein-levels', [10, 'b', 3, 2], { type: 'structure', format: 'short' }, (g) => {
+    const [level, bond, what] = g.pick([
+      ['primary', 'peptide bonds', 'The order of the amino acids along the chain.'],
+      ['secondary', 'hydrogen bonds between peptide groups', 'The folding of the chain into an α-helix or a β-pleated sheet.'],
+      ['tertiary', 'hydrogen bonds, disulphide links and other side-chain forces', 'The overall folding of the whole chain.'],
+      ['quaternary', 'forces between separate chains', 'The arrangement of two or more chains in one protein.'],
+    ]);
+    return g.theory(`What is meant by the ${level} structure of a protein? Which bonds or forces hold it together? How is it affected on denaturation, if at all?`, [
+      [what, 1],
+      [`It is held by ${bond}.`, 1],
+      [level === 'primary' ? 'Denaturation leaves it unchanged, as peptide bonds aren’t broken.' : 'Denaturation destroys it, as these weaker forces are disrupted.', 1],
+    ]);
+  }),
 ];
 
 export default blueprints;

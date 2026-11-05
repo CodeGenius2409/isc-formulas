@@ -1,5 +1,4 @@
 import { usePreset } from './lib/question-mode';
-import { useState } from 'react';
 import { Canvas, Plot, token } from './lib/plot';
 import { Equation, fmt, Readouts, Slider, ToolLayout } from './lib/ui';
 
@@ -50,8 +49,8 @@ export function Bohr() {
 const H_EV = 4.136e-15;
 
 export function Photoelectric() {
-  const [f14, setF] = useState(8);
-  const [phi, setPhi] = useState(2.5);
+  const [f14, setF] = usePreset('f14', 8);
+  const [phi, setPhi] = usePreset('phi', 2.5);
   const f = f14 * 1e14;
   const E = H_EV * f;
   const K = E - phi;

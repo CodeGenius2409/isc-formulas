@@ -38,6 +38,7 @@ const blueprints: Blueprint[] = [
     vars: { Q: [2, 10, 1], F: [1, 9, 1], D: [10, 30, 5] },
   }),
   num('dipole-torque', [1, 'a', 2, 2], {
+    diagram: (v) => ({ kind: 'in-field', body: 'dipole', B: `${v.E} × 10⁴ N/C`, label: `${v.P} × 10⁻⁹ C m`, angle: `${v.T}°`, deg: v.T }),
     text: 'An electric dipole of moment {P} × 10⁻⁹ C m lies at {T}° to a uniform field of {E} × 10⁴ N/C. Calculate the torque on it.',
     vars: { P: [2, 9, 1], T: [30, 60, 30], E: [1, 9, 1] },
     parts: [{ ask: 'Torque on the dipole', use: 'p-xii-1-44', find: 'tau', given: { p: 'P*1e-9 C*m', E: 'E*1e4 V/m', theta: 'T deg' }, marks: 2 }],
@@ -192,6 +193,7 @@ const blueprints: Blueprint[] = [
       ['Two equipotential surfaces can never cross.', 'Two equipotential surfaces can cross at right angles.'],
       ['Inside a charged conductor at equilibrium, the potential is the same everywhere.', 'Inside a charged conductor at equilibrium, the potential is zero everywhere.'],
     ],
+    figures: { 'Derive an expression for the capacitance of a parallel plate capacitor with air between its plates.': { kind: 'capacitor', A: 'A', d: 'd' } },
     long: [
       ['Derive an expression for the capacitance of a parallel plate capacitor with air between its plates.', 'The field between the plates is E = σ/ε₀ = Q/(ε₀A).', 'The potential difference is V = Ed = Qd/(ε₀A).', 'So C = Q/V = ε₀A/d.'],
       ['Derive an expression for the energy stored in a charged capacitor.', 'Moving a small charge dq against a potential q/C takes work dW = (q/C)dq.', 'Integrate from 0 to Q to get W = Q²/2C.', 'Using Q = CV, this is also ½CV², which is the stored energy.'],
@@ -385,6 +387,7 @@ const blueprints: Blueprint[] = [
       ['Sensitivity of a potentiometer improves as its wire is made longer.', 'Sensitivity of a potentiometer improves as its wire is made shorter.'],
       ['Swapping the cell and galvanometer in a balanced bridge leaves it balanced.', 'Swapping the cell and galvanometer in a balanced bridge unbalances it.'],
     ],
+    figures: { 'Using Kirchhoff’s laws, derive the balance condition of a Wheatstone bridge.': { kind: 'wheatstone', p: 'P', q: 'Q', r: 'R', s: 'S' } },
     long: [
       ['Using Kirchhoff’s laws, derive the balance condition of a Wheatstone bridge.', 'Apply the loop rule to the loop containing P, the galvanometer and R, with no galvanometer current.', 'Apply it to the loop containing Q, the galvanometer and S.', 'Dividing the two equations gives P/Q = R/S.'],
       ['Derive the current when m identical cells, each of emf E and internal resistance r, are joined in series with a resistor R. Compare with the same cells in parallel.', 'In series the emf is mE and the internal resistance is mr.', 'So I = mE/(R + mr).', 'In parallel, the emf is E and the internal resistance is r/m.', 'So I = E/(R + r/m).', 'Series is better when R is much larger than r, and parallel when R is much smaller.'],
@@ -421,6 +424,7 @@ const blueprints: Blueprint[] = [
     diagram: (v) => ({ kind: 'wire', I: `${v.I} A`, r: `${v.D} cm` }),
   }),
   num('coil-centre', [3, 'a', 2, 1], {
+    diagram: (v) => ({ kind: 'coil', turns: `${v.N} turns`, r: `${v.R} cm`, I: `${v.I} A` }),
     text: 'A circular coil of {N} turns and radius {R} cm carries {I} A. Find the magnetic field at its centre.',
     vars: { N: [20, 200, 20], R: [5, 20, 5], I: [1, 5, 1] },
     parts: [{ ask: 'Field at the centre', use: 'p-xii-3-17', find: 'B', given: { N: 'N', I: 'I A', R: 'R cm' }, marks: 2 }],
@@ -432,11 +436,13 @@ const blueprints: Blueprint[] = [
     diagram: (v) => ({ kind: 'solenoid', turns: `${v.N} turns/m`, I: `${v.I} A`, length: 'long' }),
   }),
   num('parallel-wires', [3, 'a', 2, 2], {
+    diagram: (v) => ({ kind: 'parallel-wires', i1: `${v.A} A`, i2: `${v.B} A`, d: `${v.D} cm`, same: true }),
     text: 'Two long parallel wires {D} cm apart carry currents of {A} A and {B} A in the same direction. Find the force per metre on each, and state whether they attract or repel.',
     vars: { D: [2, 20, 2], A: [2, 20, 2], B: [2, 20, 2] },
     parts: [{ ask: 'Force per metre, which is attractive here', use: 'p-xii-3-12', find: 'F_l', given: { I_1: 'A A', I_2: 'B A', d: 'D cm' }, marks: 2 }],
   }),
   num('charge-in-field', [3, 'a', 3, 2], {
+    diagram: (v) => ({ kind: 'field-entry', B: `${v.B} mT`, v: `${v.V} × 10⁶ m/s`, q: 'electron' }),
     text: 'An electron enters a uniform magnetic field of {B} mT at right angles, at {V} × 10⁶ m/s.',
     vars: { B: [1, 9, 1], V: [1, 9, 1] },
     parts: [
@@ -445,6 +451,7 @@ const blueprints: Blueprint[] = [
     ],
   }),
   num('force-on-wire', [3, 'a', 2, 1], {
+    diagram: (v) => ({ kind: 'in-field', body: 'wire', B: `${v.B} T`, label: `${v.L} cm, ${v.I} A`, angle: `${v.T}°`, deg: v.T }),
     text: 'A straight conductor {L} cm long carries {I} A at {T}° to a uniform field of {B} T. Find the force on it.',
     vars: { L: [10, 50, 10], I: [1, 10, 1], T: [30, 90, 30], B: [0.1, 0.9, 0.1] },
     parts: [{ ask: 'Force on the conductor', use: 'p-xii-3-48', find: 'F', given: { B: 'B T', I: 'I A', l: 'L cm', theta: 'T deg' }, marks: 2 }],
@@ -458,6 +465,7 @@ const blueprints: Blueprint[] = [
     diagram: (v) => ({ kind: 'circuit', source: { type: 'cell', label: `up to ${v.A} A in the circuit` }, loop: [{ type: 'parallel', branches: [[{ type: 'meter', meter: 'G', label: `${v.G} Ω` }], [{ type: 'R', label: 'S = ?' }]] }] }),
   }),
   num('coil-torque', [3, 'a', 3, 2], {
+    diagram: (v) => ({ kind: 'in-field', body: 'coil', B: `${v.B} T`, label: `${v.N} turns, ${v.I} A`, angle: 'right angles', deg: 90 }),
     text: 'A rectangular coil of {N} turns and area {A} cm² carries {I} A in a {B} T field, with its plane parallel to the field.',
     vars: { N: [20, 100, 20], A: [10, 50, 10], I: [1, 5, 1], B: [0.1, 0.5, 0.1] },
     parts: [
@@ -499,6 +507,7 @@ const blueprints: Blueprint[] = [
       ['State Ampere’s circuital law.', 'The line integral of B around a closed path equals μ₀ times the net current through the area it encloses.'],
       ['State the Biot–Savart law in words.', 'The field of a small current element is proportional to the current, the length of the element and the sine of the angle to the line joining the point.', 'It is inversely proportional to the square of the distance to the point.'],
     ],
+    figures: { 'Derive an expression for the radius of the path of a charged particle moving at right angles to a uniform magnetic field, and show that its period doesn’t depend on its speed.': { kind: 'field-entry', B: 'B', v: 'v', q: 'charge q' }, 'Using the Biot–Savart law, derive the field at the centre of a circular coil of N turns.': { kind: 'coil', turns: 'N turns', r: 'R', I: 'I' } },
     long: [
       ['Using the Biot–Savart law, derive the field at the centre of a circular coil of N turns.', 'Each element dl of the loop is at right angles to the radius.', 'So dB = μ₀I dl/(4πR²), and all the contributions point the same way.', 'Adding over the circumference 2πR gives B = μ₀I/2R for one turn.', 'With N turns, B = μ₀NI/2R.'],
       ['Using Ampere’s circuital law, derive the field inside a long solenoid.', 'Take a rectangular path with one side of length L inside, parallel to the axis.', 'Only this side contributes, since the field outside is negligible, and the short sides are at right angles to B.', 'The current enclosed is nLI.', 'So BL = μ₀nLI, which gives B = μ₀nI.'],
@@ -620,12 +629,14 @@ const blueprints: Blueprint[] = [
     sim: (v) => ({ id: 'lcr', preset: { R: v.R, Lm: v.L, Cu: v.C } }),
   }),
   num('transformer', [4, 'b', 2, 1], {
+    diagram: (v) => ({ kind: 'transformer', primary: [`${v.P} V`, `${v.N} turns`], secondary: [`${v.S} V`] }),
     style: 'cbq-style',
     text: 'A phone charger uses a transformer to step {P} V mains down to {S} V. Its primary has {N} turns. Find the number of turns on the secondary.',
     vars: { P: [220, 240, 20], S: [6, 24, 6], N: [1000, 4000, 500] },
     parts: [{ ask: 'Turns on the secondary', use: 'p-xii-4-12', find: 'N_s', given: { V_s: 'S V', V_p: 'P V', N_p: 'N' }, marks: 2 }],
   }),
   num('transformer-current', [4, 'b', 3, 2], {
+    diagram: (v) => ({ kind: 'transformer', primary: [`${v.P} V`], secondary: [`${v.S} V`, `load ${v.R} Ω`] }),
     text: 'An ideal transformer has {P} V on its primary and {S} V on its secondary, and a load of {R} Ω on the secondary.',
     vars: { P: [200, 240, 20], S: [10, 40, 10], R: [5, 20, 5] },
     parts: [
@@ -663,6 +674,7 @@ const blueprints: Blueprint[] = [
       ['State Faraday’s laws of electromagnetic induction.', 'An emf is induced whenever the flux through a circuit changes.', 'The size of the emf equals the rate of change of the flux.'],
       ['State Lenz’s law.', 'The induced current flows in the direction that opposes the change producing it.'],
     ],
+    figures: { 'Derive an expression for the emf across a straight rod moving at right angles to a uniform magnetic field.': { kind: 'rail', B: 'B', l: 'l', v: 'v' } },
     long: [
       ['Derive an expression for the emf across a straight rod moving at right angles to a uniform magnetic field.', 'In time dt, the rod sweeps out an area lv dt.', 'So the flux through the circuit changes by Blv dt.', 'By Faraday’s law, emf = dΦ/dt = Blv.'],
       ['Derive the expression for the energy stored in an inductor.', 'While current rises, the emf in the coil is L dI/dt.', 'Work done in time dt is LI dI, against this emf.', 'Integrating from 0 to I gives U = ½LI².'],
@@ -710,6 +722,7 @@ const blueprints: Blueprint[] = [
       ['Reactance is measured in ohms.', 'Reactance is measured in henries.'],
       ['An ideal transformer has the same power in its primary and secondary.', 'An ideal transformer has more power in its secondary than in its primary.'],
     ],
+    figures: { 'Using a phasor diagram, derive the expression for the impedance of a series LCR circuit.': { kind: 'circuit', source: { type: 'ac', label: 'V' }, loop: [{ type: 'R', label: 'R' }, { type: 'L', label: 'L' }, { type: 'C', label: 'C' }] } },
     long: [
       ['Using a phasor diagram, derive the expression for the impedance of a series LCR circuit.', 'Draw V_R in phase with I, V_L leading I by 90°, and V_C lagging I by 90°.', 'V_L and V_C are opposite, so their difference is V_L − V_C.', 'So V² = V_R² + (V_L − V_C)², by Pythagoras.', 'Dividing by I gives Z = √(R² + (X_L − X_C)²).', ['Then tan φ = (X_L − X_C)/R gives the phase.', 1]],
       ['Show that the average power in an a.c. circuit is V_rms I_rms cos φ, and explain why it is zero for a pure inductor.', 'Instantaneous power is VI = V₀I₀ sin ωt sin(ωt − φ).', 'Averaging over a cycle leaves ½V₀I₀ cos φ.', 'That equals V_rms I_rms cos φ.', 'For a pure inductor, φ = 90°, so cos φ = 0.', 'So no average power is used.'],
@@ -822,6 +835,7 @@ const blueprints: Blueprint[] = [
     diagram: (v) => ({ kind: 'mirror', mirror: 'concave', f: v.F, u: v.U, fLabel: `f = ${v.F} cm`, uLabel: `${v.U} cm` }),
   }),
   num('lensmaker', [6, 'a', 2, 2], {
+    diagram: (v) => ({ kind: 'lens-surfaces', r1: `${v.A} cm`, r2: `${v.B} cm`, n: `${v.N}` }),
     text: 'A biconvex lens of refractive index {N} has surfaces of radii {A} cm and {B} cm. Find its focal length.',
     vars: { N: [1.4, 1.6, 0.1], A: [10, 40, 10], B: [10, 40, 10] },
     parts: [{ ask: 'Focal length', use: 'p-xii-6-4', find: 'f', given: { mu: 'N', R_1: 'A cm', R_2: '-B cm' }, unit: 'cm', marks: 2 }],
@@ -841,6 +855,8 @@ const blueprints: Blueprint[] = [
     ],
   }),
   num('snell', [6, 'a', 2, 1], {
+    diagram: (v) => ({ kind: 'refraction', i: `${v.I}°`, r: `${v.R}°`, iDeg: v.I, rDeg: v.R, top: 'air', bottom: 'block' }),
+    sim: (v) => ({ id: 'snell', preset: { n1: 1, n2: Math.sin((v.I * Math.PI) / 180) / Math.sin((v.R * Math.PI) / 180), iDeg: v.I } }),
     text: 'A ray passes from air into a transparent block at an angle of incidence of {I}°, and bends to {R}° inside it. Find the refractive index of the block, and the speed of light in it.',
     vars: { I: [30, 60, 15], R: [15, 25, 5] },
     when: (v) => v.I > v.R,
@@ -864,6 +880,7 @@ const blueprints: Blueprint[] = [
     parts: [{ ask: 'Combined focal length', use: 'p-xii-6-56', find: 'F_c', given: { f_1: 'A cm', f_2: 'B cm' }, unit: 'cm', marks: 2 }],
   }),
   num('telescope', [6, 'b', 2, 1], {
+    diagram: (v) => ({ kind: 'telescope', fo: `${v.O} cm`, fe: `${v.E} cm` }),
     style: 'cbq-style',
     text: 'A student builds a telescope from a {O} cm objective and a {E} cm eyepiece, in normal adjustment, to look at the Moon.',
     vars: { O: [50, 150, 10], E: [2, 10, 1] },
@@ -944,6 +961,7 @@ const blueprints: Blueprint[] = [
       ['Scattering by small particles varies as 1/λ⁴.', 'Scattering by small particles varies as λ⁴.'],
       ['A ray going to the optical centre of a thin lens carries on undeviated.', 'A ray going to the optical centre of a thin lens is bent to the focus.'],
     ],
+    figures: { 'Show that the refractive index of a prism is n = sin((A + δₘ)/2)/sin(A/2).': { kind: 'prism', angle: 'A' }, 'Derive the lens maker’s formula for a thin lens of refractive index n in air.': { kind: 'lens-surfaces', r1: 'R₁', r2: 'R₂', n: 'n' } },
     long: [
       ['Derive the mirror formula for a concave mirror forming a real image.', 'Draw the two standard rays, and use the two pairs of similar triangles.', 'They give A′B′/AB = −v/−u = (−v + f)/−f, using the sign convention.', 'Rearranging gives v/u = (v − f)/f.', 'Dividing through by v gives 1/v + 1/u = 1/f.'],
       ['Derive the lens maker’s formula for a thin lens of refractive index n in air.', 'Refraction at the first surface gives n/v₁ − 1/u = (n − 1)/R₁.', 'Refraction at the second surface gives 1/v − n/v₁ = (1 − n)/R₂.', 'Adding them removes v₁, which gives 1/v − 1/u = (n − 1)(1/R₁ − 1/R₂).', 'For an object at infinity, v = f, so 1/f = (n − 1)(1/R₁ − 1/R₂).', ['Conclusion: focal length depends on the index and the two radii.', 1]],
@@ -998,6 +1016,7 @@ const blueprints: Blueprint[] = [
       ['Magnifying power of a simple microscope is greater when the image is at the near point.', 'Magnifying power of a simple microscope is greater when the image is at infinity.'],
       ['A larger objective aperture improves a telescope’s resolving power.', 'A larger objective aperture worsens a telescope’s resolving power.'],
     ],
+    figures: { 'Derive an expression for the magnifying power of an astronomical telescope in normal adjustment.': { kind: 'telescope', fo: 'fₒ', fe: 'fₑ' } },
     long: [
       ['Derive an expression for the magnifying power of an astronomical telescope in normal adjustment.', 'A distant object makes an angle α at the objective, forming an image at its focus.', 'That image is at the focus of the eyepiece as well, so the final image is at infinity.', 'The angles are α = h/f_o and β = h/f_e.', 'So M = β/α = f_o/f_e.'],
     ],
@@ -1036,6 +1055,7 @@ const blueprints: Blueprint[] = [
       ['Immersing a double slit in water narrows the fringes.', 'Immersing a double slit in water widens the fringes.'],
       ['Every point on a wavefront is a source of secondary wavelets.', 'Only the centre of a wavefront is a source of secondary wavelets.'],
     ],
+    figures: { 'Derive the expression for fringe width in Young’s double slit experiment.': { kind: 'ydse', d: 'd', D: 'D', lambda: 'λ' } },
     long: [
       ['Using Huygens’ principle, verify the law of reflection.', 'Draw a plane wavefront AB meeting a mirror, with B still a distance from the mirror.', 'While B reaches the mirror at C, the wavelet from A travels the same distance to D.', 'Triangles ABC and ADC are congruent.', 'So the angle of incidence equals the angle of reflection.'],
       ['Derive the expression for fringe width in Young’s double slit experiment.', 'Two slits a distance d apart are at a distance D from the screen.', 'The path difference at a point y from the centre is yd/D.', 'A bright fringe needs yd/D = nλ, so y = nλD/d.', 'The difference between neighbouring fringes is β = λD/d.', ['So fringe width grows with the wavelength and the distance to the screen.', 1]],
@@ -1072,6 +1092,8 @@ const blueprints: Blueprint[] = [
     ],
   }),
   num('photoelectric', [7, 'a', 3, 2], {
+    diagram: (v) => ({ kind: 'photoelectric', light: `${v.L} nm`, metal: `${v.W} eV` }),
+    sim: (v) => ({ id: 'photoelectric', preset: { f14: v.NU / 1e14, phi: v.W } }),
     text: 'Light of wavelength {L} nm falls on a metal with a work function of {W} eV.',
     vars: { L: [200, 400, 25], W: [1.8, 2.6, 0.2] },
     derive: (v) => ({ NU: 3e8 / (v.L * 1e-9) }),
@@ -1211,7 +1233,7 @@ const blueprints: Blueprint[] = [
     return {
       form: 'numeric',
       text: `In a hydrogen atom, an electron falls from the n = ${high} level to the n = ${low} level.`,
-      diagram: { kind: 'levels', levels: [{ n: `n = ${low}`, E: `${eLow.toFixed(2)} eV`, at: eLow }, { n: `n = ${high}`, E: `${eHigh.toFixed(2)} eV`, at: eHigh }], from: 1, to: 0 },
+      diagram: { kind: 'levels', levels: [{ n: `n = ${low}`, at: eLow }, { n: `n = ${high}`, at: eHigh }], from: 1, to: 0 },
       simulator: { id: 'bohr', preset: { n: high } },
       parts: [
         g.answerPart('Energy of the photon emitted', de, 2, [{ label: 'Use the energy of each level', math: [`E_n = -\\dfrac{13.6}{n^2}\\text{ eV}`, `\\Delta E = ${eHigh.toFixed(3)} - (${eLow.toFixed(3)}) = ${de.toFixed(3)}\\text{ eV}`] }], 'eV'),
@@ -1344,6 +1366,7 @@ const blueprints: Blueprint[] = [
     diagram: (v) => ({ kind: 'circuit', source: { type: 'cell', label: `${v.V} V` }, loop: [{ type: 'diode', label: 'Si' }, { type: 'R', label: ohms(v.R) }] }),
   }),
   num('zener', [9, 'b', 2, 2], {
+    diagram: (v) => ({ kind: 'circuit', source: { type: 'cell', label: 'supply' }, loop: [{ type: 'R', label: 'series R' }, { type: 'parallel', branches: [[{ type: 'diode', label: `${v.Z} V`, reverse: 1 }], [{ type: 'R', label: `${v.R} Ω` }]] }] }),
     text: 'A Zener diode rated at {Z} V keeps the voltage steady across a {R} Ω load. Find the load current.',
     vars: { Z: [5, 15, 1], R: [100, 1000, 100] },
     parts: [{ ask: 'Load current', use: 'p-xii-9-41', find: 'I_L', given: { V_Z: 'Z V', R_L: 'R ohm' }, unit: 'mA', marks: 2 }],

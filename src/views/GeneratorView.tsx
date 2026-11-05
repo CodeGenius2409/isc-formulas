@@ -12,7 +12,7 @@ import { useStore } from '../lib/store';
 import type { BankItem, Difficulty } from '../practice/bank/types';
 import { answerLines, saveBlob, STUDENT_FOOTER } from '../practice/gen/docx';
 import { describePlan, generatedCount, planShare, teacherShareStore } from '../practice/gen/mix';
-import { allItems, arranged, buildFullPaper, buildQuestionSet, countAvailable, deleteItem, deletePaper, emptyFilters, FORMATS, makeSets, moveItem, moveItemTo, officialStructure, paperFromFile, paperToFile, presetsStore, regenerateItem, regenerateUnlocked, savePaper, savePreset, teacherHistoryStore, totalMarks, updateItem, usedInHistory, type CustomSection, type Filters, type FormatChoice, type PaperItem, type TeacherPaper } from '../practice/gen/teacher';
+import { allItems, arranged, bankForSections, buildFullPaper, buildQuestionSet, countAvailable, deleteItem, deletePaper, emptyFilters, FORMATS, makeSets, moveItem, moveItemTo, officialStructure, paperFromFile, paperToFile, presetsStore, regenerateItem, regenerateUnlocked, savePaper, savePreset, teacherHistoryStore, totalMarks, updateItem, usedInHistory, type CustomSection, type Filters, type FormatChoice, type PaperItem, type TeacherPaper } from '../practice/gen/teacher';
 
 const freshSeed = () => Math.floor(Math.random() * 2 ** 31);
 
@@ -516,10 +516,14 @@ export default function GeneratorView() {
 
   const available = useAsync(() => countAvailable(effective, avoid ? usedInHistory() : new Set()), JSON.stringify([effective.subject, effective.levels, effective.units, effective.topics, effective.formats, effective.styles, effective.difficulties, effective.marks, avoid]));
 
-  const structure = mode === 'paper' ? (structureKind === 'official' ? officialStructure(filters.subject, paperLevel) : custom) : [];
+  const structure = useMemo(() => (mode === 'paper' ? (structureKind === 'official' ? officialStructure(filters.subject, paperLevel) : custom) : []), [mode, structureKind, filters.subject, paperLevel, custom]);
+  const sectionBank = useAsync(() => bankForSections(effective, paperLevel, structure, avoid ? usedInHistory() : new Set()), JSON.stringify([effective.subject, effective.units, effective.topics, effective.formats, effective.styles, effective.difficulties, paperLevel, structure, avoid]));
   const plan = useMemo(() => {
     if (available.status !== 'ready') return null;
-    if (mode === 'paper') return planShare(structure.map((s) => ({ marks: s.marks, count: s.count, bankHas: s.count })), share);
+    if (mode === 'paper') {
+      if (sectionBank.status !== 'ready') return null;
+      return planShare(structure.map((s, i) => ({ marks: s.marks, count: s.count, bankHas: sectionBank.value[i] ?? 0, worth: s.choose ? (s.marks * s.choose) / s.count : undefined })), share);
+    }
     const count = Math.max(1, Number(amount) || 1);
     if (countMode === 'marks') {
       const typical = 2;
@@ -527,7 +531,7 @@ export default function GeneratorView() {
       return { ...planShare([{ marks: typical, count: questions, bankHas: available.value.bank }], share), marks: count, generatedMarks: Math.round((generatedCount(questions, share) * count) / questions) };
     }
     return planShare([{ marks: 2, count, bankHas: available.value.bank }], share);
-  }, [available, mode, structure, share, amount, countMode]);
+  }, [available, sectionBank, mode, structure, share, amount, countMode]);
 
   const generate = async () => {
     setBusy(true);

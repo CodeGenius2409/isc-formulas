@@ -1,6 +1,7 @@
 // An editable Word file of a paper or its answer key. The library loads only when someone asks for one.
 import { createElement } from 'react';
 import { BankDiagram } from '../../components/bank/BankDiagram';
+import { loadStructures } from '../../data/structures';
 import type { BankItem } from '../bank/types';
 import { allItems, type PaperItem, type TeacherPaper } from './teacher';
 
@@ -54,16 +55,14 @@ function pieces(text: string): { code: boolean; text: string }[] {
     .filter((p) => p.text);
 }
 
-/** Draws a figure to a PNG, so it can go into the document. */
-async function figurePng(item: BankItem): Promise<{ data: Uint8Array; width: number; height: number } | null> {
-  if (!item.diagram) return null;
-  const { renderToStaticMarkup } = await import('react-dom/server');
-  const svg = renderToStaticMarkup(createElement(BankDiagram, { spec: item.diagram, plain: true }))
-    .replace('<svg', '<svg xmlns="http://www.w3.org/2000/svg" style="color:#000000;font-family:sans-serif"')
-    .replace(/<button[\s\S]*?>|<\/button>/g, '');
-  const viewBox = /viewBox="0 0 (\d+) (\d+)"/.exec(svg);
-  if (!viewBox) return null;
-  const [width, height] = [Number(viewBox[1]), Number(viewBox[2])];
+interface Png {
+  data: Uint8Array;
+  width: number;
+  height: number;
+}
+
+/** Turns a drawing into a PNG on a white page, at twice its size so that it stays sharp. */
+async function svgToPng(svg: string, width: number, height: number): Promise<Png | null> {
   const sized = svg.replace('<svg', `<svg width="${width * 2}" height="${height * 2}"`);
   const url = URL.createObjectURL(new Blob([sized], { type: 'image/svg+xml' }));
   try {
@@ -86,6 +85,44 @@ async function figurePng(item: BankItem): Promise<{ data: Uint8Array; width: num
   } finally {
     URL.revokeObjectURL(url);
   }
+}
+
+/** The compounds a question draws, in order. */
+export function compoundsIn(item: BankItem): string[] {
+  const structure = item.structure;
+  if (!structure) return [];
+  const inRows = (structure.rows ?? []).flat().flatMap((token) => ('s' in token ? [token.s] : []));
+  return [...(structure.list ?? []), ...inRows];
+}
+
+/** Everything drawn for a question. A compound the question asks about is drawn even with figures switched off. */
+async function figuresOf(item: BankItem, withFigures: boolean): Promise<Png[]> {
+  const out: Png[] = [];
+  if (withFigures && item.diagram) {
+    const { renderToStaticMarkup } = await import('react-dom/server');
+    const svg = renderToStaticMarkup(createElement(BankDiagram, { spec: item.diagram, plain: true }))
+      .replace('<svg', '<svg xmlns="http://www.w3.org/2000/svg" style="color:#000000;font-family:sans-serif"')
+      .replace(/<button[\s\S]*?>|<\/button>/g, '');
+    const viewBox = /viewBox="0 0 (\d+) (\d+)"/.exec(svg);
+    if (viewBox) {
+      const png = await svgToPng(svg, Number(viewBox[1]), Number(viewBox[2]));
+      if (png) out.push(png);
+    }
+  }
+  if (withFigures || item.structure?.unnamed) {
+    const names = compoundsIn(item);
+    if (names.length) {
+      const compounds = await loadStructures();
+      for (const name of names) {
+        const c = compounds[name];
+        if (!c) continue;
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${c.w} ${c.h}"><path d="${c.l}" fill="none" stroke="#000000" stroke-width="1.6"/><path d="${c.f}" fill="#000000"/></svg>`;
+        const png = await svgToPng(svg, Math.ceil(c.w), Math.ceil(c.h));
+        if (png) out.push(png);
+      }
+    }
+  }
+  return out;
 }
 
 export const STUDENT_FOOTER = 'This paper contains generated questions, which are not official ISC questions and may contain mistakes.';
@@ -150,9 +187,8 @@ export async function buildDocx(paper: TeacherPaper, kind: DocKind): Promise<Blo
         }
       }
     });
-    if (paper.options.diagrams) {
-      const png = await figurePng(q).catch(() => null);
-      if (png) body.push(new Paragraph({ children: [new ImageRun({ type: 'png', data: png.data, transformation: { width: png.width, height: png.height } })] }));
+    for (const png of await figuresOf(q, paper.options.diagrams).catch(() => [] as Png[])) {
+      body.push(new Paragraph({ children: [new ImageRun({ type: 'png', data: png.data, transformation: { width: png.width, height: png.height } })] }));
     }
     if (q.form === 'output') for (const line of q.code.split('\n')) body.push(new Paragraph({ children: [run(line, { font: 'Consolas' })] }));
     if (q.form === 'mcq') q.options.forEach((option, i) => body.push(new Paragraph({ indent: { left: 360 }, children: [run(`(${'abcdef'[i]}) ${plainMaths(option.text)}`)] })));

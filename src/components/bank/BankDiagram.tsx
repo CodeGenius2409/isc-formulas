@@ -104,7 +104,7 @@ function DrawElement({ e, x, y }: { e: CircuitElement; x: number; y: number }) {
     case 'diode':
       return (
         <>
-          <path d={`M${x} ${y} L${mid - 10} ${y} M${mid + 10} ${y} L${x + w} ${y} M${mid - 10} ${y - 10} L${mid - 10} ${y + 10} L${mid + 10} ${y} Z M${mid + 10} ${y - 10} L${mid + 10} ${y + 10}`} />
+          <path d={`M${x} ${y} L${mid - 10} ${y} M${mid + 10} ${y} L${x + w} ${y} ${e.reverse ? `M${mid + 10} ${y - 10} L${mid + 10} ${y + 10} L${mid - 10} ${y} Z M${mid - 10} ${y - 10} L${mid - 10} ${y + 10}` : `M${mid - 10} ${y - 10} L${mid - 10} ${y + 10} L${mid + 10} ${y} Z M${mid + 10} ${y - 10} L${mid + 10} ${y + 10}`}`} />
           {e.label && <Label x={mid} y={y - 16}>{e.label}</Label>}
         </>
       );
@@ -124,7 +124,7 @@ function DrawElement({ e, x, y }: { e: CircuitElement; x: number; y: number }) {
 
 function CircuitFigure({ spec }: { spec: Extract<DiagramSpec, { kind: 'circuit' }> }) {
   const inner = spec.loop.reduce((sum, e) => sum + elementWidth(e), 0);
-  const width = Math.max(inner + 60, 240);
+  const width = Math.max(inner + 60, 320);
   const tall = Math.max(...spec.loop.map(elementHeight), 40);
   const top = 22 + tall / 2;
   const bottom = top + tall / 2 + 50;
@@ -208,7 +208,7 @@ function GraphFigure({ spec }: { spec: Extract<DiagramSpec, { kind: 'graph' }> }
   const maxX = Math.max(...xs);
   const minY = Math.min(0, ...ys);
   const maxY = Math.max(...ys);
-  const [left, right, top, bottom] = [46, 300, 14, 170];
+  const [left, right, top, bottom] = [46, 300, 28, 170];
   const px = (x: number) => left + ((x - minX) / (maxX - minX || 1)) * (right - left);
   const py = (y: number) => bottom - ((y - minY) / (maxY - minY || 1)) * (bottom - top);
   const originY = py(0);
@@ -289,6 +289,50 @@ const inWords = (list: CircuitElement[]): string =>
 
 export function describe(spec: DiagramSpec): string {
   switch (spec.kind) {
+    case 'vectors':
+      return `Two arrows from one point, ${spec.a} and ${spec.b}, with ${spec.angle} between them.`;
+    case 'circle':
+      return `A body${spec.m ? ` of ${spec.m}` : ''} moving at ${spec.v} on a circular path of radius ${spec.r}.`;
+    case 'hill':
+      return `A track falling from a height of ${spec.H}${spec.point ? `, with a point on it at ${spec.point.label}` : ''}.`;
+    case 'trolleys':
+      return `A trolley of ${spec.a} moving at ${spec.v} towards a trolley of ${spec.b} at rest.`;
+    case 'lever':
+      return `A door hinged at one end. A force of ${spec.F} acts ${spec.r} from the hinge, at ${spec.angle} to the door.`;
+    case 'axis-masses':
+      return `Masses on an axis: ${spec.items.map((i) => `${i.m} at ${i.x}`).join(', ')}.`;
+    case 'pipe':
+      return `A pipe narrowing from a cross-section of ${spec.a1}, where the flow is ${spec.v1}, to ${spec.a2}.`;
+    case 'tank':
+      return `A tank of water with a hole in its side, ${spec.h} below the surface.`;
+    case 'capillary':
+      return `A thin tube of radius ${spec.r} standing in a liquid, with the rise marked h.`;
+    case 'engine':
+      return `A heat engine taking heat from a reservoir at ${spec.hot}, giving out work, and rejecting heat to a reservoir at ${spec.cold}.`;
+    case 'standing':
+      return `The fundamental mode of ${spec.ends === 'fixed' ? 'a string fixed at both ends' : spec.ends === 'open' ? 'an air column open at both ends' : 'an air column closed at one end'}, of length ${spec.L}.`;
+    case 'in-field':
+      return `A ${spec.body} (${spec.label})${spec.body === 'coil' ? ' with its normal' : ''} at ${spec.angle} to a uniform field of ${spec.B}.`;
+    case 'parallel-wires':
+      return `Two parallel wires ${spec.d} apart, carrying ${spec.i1} and ${spec.i2} in ${spec.same ? 'the same direction' : 'opposite directions'}.`;
+    case 'field-entry':
+      return `A ${spec.q} entering at ${spec.v}, at right angles, a magnetic field of ${spec.B} going into the page.`;
+    case 'transformer':
+      return `A transformer. Primary: ${spec.primary.join(', ')}. Secondary: ${spec.secondary.join(', ')}.`;
+    case 'refraction':
+      return `A ray going from ${spec.top} into ${spec.bottom}, with angle of incidence ${spec.i} and angle of refraction ${spec.r}.`;
+    case 'telescope':
+      return `An objective of focal length ${spec.fo} and an eyepiece of focal length ${spec.fe} on one axis.`;
+    case 'photoelectric':
+      return `Light of ${spec.light} falling on a metal with a work function of ${spec.metal}, and an electron leaving the surface.`;
+    case 'drop':
+      return `A ball falling from a height of ${spec.h}${spec.rebound ? ` and rebounding to ${spec.rebound.label}` : ''}.`;
+    case 'hanging':
+      return `A wire of length ${spec.L} and cross-section ${spec.A} hanging from a support, with a load of ${spec.F}${spec.e ? `, stretching it by ${spec.e}` : ''}.`;
+    case 'lens-surfaces':
+      return `A biconvex lens of refractive index ${spec.n}, with faces of radii ${spec.r1} and ${spec.r2}.`;
+    case 'coil':
+      return `A flat circular coil of ${spec.turns} and radius ${spec.r}, carrying ${spec.I}, with its centre marked.`;
     case 'cell-parallel':
       return `A cell of emf ${spec.emf} and internal resistance ${spec.r}, connected across resistors of ${spec.r1} and ${spec.r2} in parallel.`;
     case 'series-capacitors':
@@ -330,7 +374,7 @@ export function describe(spec: DiagramSpec): string {
     case 'orbit':
       return `A satellite in a circular orbit ${spec.height} above a planet of mass ${spec.mass}.`;
     case 'levels':
-      return `Energy levels: ${spec.levels.map((l) => `${l.n} at ${l.E}`).join(', ')}${spec.from !== undefined && spec.to !== undefined ? `, with an arrow from ${spec.levels[spec.from].n} to ${spec.levels[spec.to].n}` : ''}.`;
+      return `Energy levels: ${spec.levels.map((l) => (l.E ? `${l.n} at ${l.E}` : l.n)).join(', ')}${spec.from !== undefined && spec.to !== undefined ? `, with an arrow from ${spec.levels[spec.from].n} to ${spec.levels[spec.to].n}` : ''}.`;
     case 'capacitor':
       return `A parallel plate capacitor with plates of area ${spec.A}, ${spec.d} apart${spec.V ? `, across a supply of ${spec.V}` : ''}${spec.dielectric ? `, filled with a dielectric of ${spec.dielectric}` : ''}.`;
     case 'table':
@@ -341,6 +385,38 @@ export function describe(spec: DiagramSpec): string {
 }
 
 /** The figure itself, drawn in the theme's ink so it works in both themes and in print. */
+/** "R = 20 Ω", or just "R" when the figure is for a derivation and has no values. */
+const arm = (symbol: string, value: string) => (value === symbol ? symbol : `${symbol} = ${value}`);
+
+/** A wave along a straight line, for light. */
+function wavy(x1: number, y1: number, x2: number, y2: number, waves = 4, size = 4): string {
+  const length = Math.hypot(x2 - x1, y2 - y1);
+  const [ux, uy] = [(x2 - x1) / length, (y2 - y1) / length];
+  const out: string[] = [];
+  for (let i = 0; i <= 48; i++) {
+    const along = (i / 48) * length;
+    const side = size * Math.sin((i / 48) * waves * 2 * Math.PI);
+    out.push(`${i ? 'L' : 'M'}${(x1 + ux * along - uy * side).toFixed(1)} ${(y1 + uy * along + ux * side).toFixed(1)}`);
+  }
+  return out.join(' ');
+}
+
+/** Where a track of this shape reaches a given fraction of its height. */
+function pointOnHill(fraction: number): [number, number] {
+  const at = (t: number): [number, number] => {
+    const u = 1 - t;
+    return [u ** 3 * 20 + 3 * u ** 2 * t * 90 + 3 * u * t ** 2 * 130 + t ** 3 * 220, u ** 3 * 40 + 3 * u ** 2 * t * 40 + 3 * u * t ** 2 * 170 + t ** 3 * 170];
+  };
+  const wanted = 170 - 130 * fraction;
+  let [low, high] = [0, 1];
+  for (let i = 0; i < 30; i++) {
+    const mid = (low + high) / 2;
+    if (at(mid)[1] < wanted) low = mid;
+    else high = mid;
+  }
+  return at(low);
+}
+
 function Figure({ spec }: { spec: DiagramSpec }) {
   const box = (viewBox: string, body: ReactNode) => (
     <svg className="bank-diagram" viewBox={viewBox} role="img" aria-label={describe(spec)} fill="none" stroke="currentColor" strokeWidth={1.5}>
@@ -423,10 +499,10 @@ function Figure({ spec }: { spec: DiagramSpec }) {
           <circle cx={160} cy={100} r={12} />
           <Label x={160} y={105}>G</Label>
           <Cell x1={50} x2={270} y={215} />
-          <Label x={90} y={50} anchor="end">{`P = ${spec.p}`}</Label>
-          <Label x={230} y={50} anchor="start">{`Q = ${spec.q}`}</Label>
-          <Label x={68} y={180} anchor="start">{`R = ${spec.r}`}</Label>
-          <Label x={252} y={180} anchor="end">{`S = ${spec.s}`}</Label>
+          <Label x={90} y={50} anchor="end">{arm('P', spec.p)}</Label>
+          <Label x={230} y={50} anchor="start">{arm('Q', spec.q)}</Label>
+          <Label x={68} y={180} anchor="start">{arm('R', spec.r)}</Label>
+          <Label x={252} y={180} anchor="end">{arm('S', spec.s)}</Label>
         </>,
       );
     case 'prism':
@@ -443,7 +519,7 @@ function Figure({ spec }: { spec: DiagramSpec }) {
       );
     case 'ydse':
       return box(
-        '0 0 340 190',
+        '0 0 360 190',
         <>
           <path d="M100 20 L100 74 M100 86 L100 104 M100 116 L100 170 M300 20 L300 170" strokeWidth={2.5} />
           <path d="M20 95 L100 95" strokeDasharray="5 4" strokeWidth={1} />
@@ -454,7 +530,7 @@ function Figure({ spec }: { spec: DiagramSpec }) {
           <Label x={70} y={124}>{spec.d}</Label>
           <path d="M100 180 L300 180" strokeWidth={1} />
           <Label x={200} y={174}>{spec.D}</Label>
-          <Label x={316} y={100}>Screen</Label>
+          <Label x={306} y={100} anchor="start">Screen</Label>
         </>,
       );
     case 'projectile': {
@@ -494,12 +570,12 @@ function Figure({ spec }: { spec: DiagramSpec }) {
         '0 0 260 220',
         <>
           <path d="M60 10 L200 10 M130 10 L130 40" />
-          <circle cx={130} cy={60} r={24} />
-          <path d="M106 60 L106 130 M154 60 L154 100" />
-          <rect x={80} y={130} width={52} height={44} fill="var(--paper)" />
-          <rect x={128} y={100} width={52} height={44} fill="var(--paper)" />
-          <Label x={106} y={157}>{spec.m1}</Label>
-          <Label x={154} y={127}>{spec.m2}</Label>
+          <circle cx={130} cy={70} r={32} />
+          <path d="M98 70 L98 130 M162 70 L162 100" />
+          <rect x={68} y={130} width={60} height={44} fill="var(--paper)" />
+          <rect x={132} y={100} width={60} height={44} fill="var(--paper)" />
+          <Label x={98} y={157}>{spec.m1}</Label>
+          <Label x={162} y={127}>{spec.m2}</Label>
         </>,
       );
     case 'block': {
@@ -551,14 +627,14 @@ function Figure({ spec }: { spec: DiagramSpec }) {
     case 'wave': {
       const points = Array.from({ length: 121 }, (_, i) => `${i ? 'L' : 'M'}${30 + i * 2.2} ${80 - 40 * Math.sin((i / 60) * 2 * Math.PI * 1.5)}`).join(' ');
       return box(
-        '0 0 320 160',
+        '0 0 320 130',
         <>
-          <path d="M30 80 L300 80" strokeDasharray="4 4" strokeWidth={1} />
+          <path d="M18 80 L300 80" strokeDasharray="4 4" strokeWidth={1} />
           <path d={points} strokeWidth={2} />
-          <path d="M60 30 L60 80" strokeWidth={1} />
-          <Label x={66} y={60} anchor="start">{spec.amplitude}</Label>
-          <path d="M60 148 L148 148" strokeWidth={1} />
-          <Label x={104} y={142}>{spec.wavelength}</Label>
+          <path d="M18 40 L18 80 M18 40 L52 40" strokeWidth={1} />
+          <Label x={12} y={64} anchor="end">{spec.amplitude}</Label>
+          <path d="M52 28 L140 28 M52 22 L52 34 M140 22 L140 34" strokeWidth={1} />
+          <Label x={96} y={20}>{spec.wavelength}</Label>
         </>,
       );
     }
@@ -578,10 +654,10 @@ function Figure({ spec }: { spec: DiagramSpec }) {
           <Arrow x1={185} y1={80} x2={235} y2={80} />
           <Label x={240} y={84} anchor="start">{spec.v}</Label>
           <Label x={170} y={84} anchor="end">{spec.l}</Label>
-          <Label x={120} y={20}>{`${spec.B}, into the page`}</Label>
-          {[80, 120, 260, 290].map((x) => (
-            <Label key={x} x={x} y={150}>×</Label>
-          ))}
+          <Label x={170} y={20}>{`${spec.B}, into the page`}</Label>
+          {[52, 108].flatMap((y) => [80, 120, 150, 210, 250, 290].map((x) => (
+            <Label key={`${x}-${y}`} x={x} y={y + 4}>×</Label>
+          )))}
         </>,
       );
     case 'wire':
@@ -605,7 +681,7 @@ function Figure({ spec }: { spec: DiagramSpec }) {
           <path d={coils} />
           <path d="M60 110 L30 130 M258 110 L290 130" />
           <Label x={160} y={22}>{spec.turns}</Label>
-          <Label x={160} y={136}>{`${spec.I}, ${spec.length}`}</Label>
+          <Label x={160} y={136}>{spec.length === 'long' ? spec.I : `${spec.I}, ${spec.length}`}</Label>
         </>,
       );
     }
@@ -625,13 +701,13 @@ function Figure({ spec }: { spec: DiagramSpec }) {
     }
     case 'orbit':
       return box(
-        '0 0 300 220',
+        '0 0 340 220',
         <>
           <circle cx={150} cy={110} r={46} />
           <circle cx={150} cy={110} r={88} strokeDasharray="5 4" />
           <rect x={232} y={100} width={14} height={14} fill="currentColor" stroke="none" />
           <path d="M196 110 L232 110" strokeWidth={1} />
-          <Label x={214} y={100}>{spec.height}</Label>
+          <Label x={254} y={115} anchor="start">{spec.height}</Label>
           <Label x={150} y={115}>{spec.mass}</Label>
         </>,
       );
@@ -647,13 +723,390 @@ function Figure({ spec }: { spec: DiagramSpec }) {
             <g key={l.n}>
               <path d={`M90 ${y(l.at)} L230 ${y(l.at)}`} strokeWidth={2} />
               <Label x={82} y={y(l.at) + 5} anchor="end">{l.n}</Label>
-              <Label x={238} y={y(l.at) + 5} anchor="start">{l.E}</Label>
+              {l.E && <Label x={238} y={y(l.at) + 5} anchor="start">{l.E}</Label>}
             </g>
           ))}
           {spec.from !== undefined && spec.to !== undefined && <Arrow x1={160} y1={y(spec.levels[spec.from].at)} x2={160} y2={y(spec.levels[spec.to].at)} />}
         </>,
       );
     }
+    case 'vectors': {
+      const rad = (spec.deg * Math.PI) / 180;
+      const [cos, sin] = [Math.cos(rad), Math.sin(rad)];
+      const [ox, oy] = [110, 130];
+      const [bx, by] = [ox + 110 * cos, oy - 110 * sin];
+      const half = rad / 2;
+      return box(
+        '0 0 320 160',
+        <>
+          <Arrow x1={ox} y1={oy} x2={290} y2={oy} />
+          <Arrow x1={ox} y1={oy} x2={bx} y2={by} />
+          <path d={`M${ox + 32} ${oy} A32 32 0 0 0 ${ox + 32 * cos} ${oy - 32 * sin}`} strokeWidth={1} />
+          <Label x={290} y={oy + 18} anchor="end">{spec.a}</Label>
+          <Label x={bx + (cos >= 0 ? 8 : -8)} y={by + 2} anchor={cos >= 0 ? 'start' : 'end'}>{spec.b}</Label>
+          <Label x={ox + 40 * Math.cos(half)} y={oy - 40 * Math.sin(half) + 4} anchor="start">{spec.angle}</Label>
+        </>,
+      );
+    }
+    case 'circle':
+      return box(
+        '0 0 320 190',
+        <>
+          <circle cx={130} cy={100} r={72} />
+          <path d="M130 100 L202 100" strokeWidth={1} strokeDasharray="4 3" />
+          <circle cx={130} cy={100} r={2} fill="currentColor" />
+          <circle cx={202} cy={100} r={7} fill="currentColor" stroke="none" />
+          <Arrow x1={202} y1={100} x2={202} y2={40} />
+          <Label x={210} y={50} anchor="start">{spec.v}</Label>
+          <Label x={160} y={94}>{spec.r}</Label>
+          {spec.m && <Label x={214} y={112} anchor="start">{spec.m}</Label>}
+        </>,
+      );
+    case 'hill': {
+      const point = spec.point ? pointOnHill(spec.point.fraction) : null;
+      return box(
+        '0 0 320 190',
+        <>
+          <path d="M10 170 L310 170" />
+          <path d="M20 40 C90 40 130 170 220 170 L300 170" strokeWidth={2} />
+          <rect x={24} y={24} width={26} height={14} fill="var(--paper)" />
+          <path d="M14 40 L14 170" strokeWidth={1} />
+          <Label x={22} y={110} anchor="start">{spec.H}</Label>
+          {spec.m && <Label x={56} y={32} anchor="start">{spec.m}</Label>}
+          {point && (
+            <>
+              <circle cx={point[0]} cy={point[1]} r={4} fill="currentColor" stroke="none" />
+              <path d={`M${point[0]} ${point[1]} L${point[0]} 170`} strokeWidth={1} strokeDasharray="4 3" />
+              <Label x={point[0] + 8} y={point[1] - 6} anchor="start">{spec.point!.label}</Label>
+            </>
+          )}
+        </>,
+      );
+    }
+    case 'trolleys':
+      return box(
+        '0 0 320 130',
+        <>
+          <path d="M16 112 L304 112" />
+          <rect x={50} y={62} width={76} height={38} fill="var(--paper)" />
+          <rect x={194} y={62} width={76} height={38} fill="var(--paper)" />
+          {[66, 110, 210, 254].map((x) => <circle key={x} cx={x} cy={106} r={6} />)}
+          <Label x={88} y={86}>{spec.a}</Label>
+          <Label x={232} y={86}>{spec.b}</Label>
+          <Arrow x1={70} y1={46} x2={130} y2={46} />
+          <Label x={100} y={36}>{spec.v}</Label>
+          <Label x={232} y={50}>at rest</Label>
+        </>,
+      );
+    case 'lever': {
+      const rad = (spec.deg * Math.PI) / 180;
+      const [cos, sin] = [Math.cos(rad), Math.sin(rad)];
+      const [ex, ey] = [230 + 70 * cos, 110 - 70 * sin];
+      return box(
+        '0 0 340 150',
+        <>
+          <circle cx={40} cy={110} r={6} />
+          <path d="M46 110 L230 110" strokeWidth={4} />
+          <path d="M230 110 L304 110" strokeWidth={1} strokeDasharray="4 3" />
+          <Arrow x1={230} y1={110} x2={ex} y2={ey} />
+          <path d={`M${230 + 34} 110 A34 34 0 0 0 ${230 + 34 * cos} ${110 - 34 * sin}`} strokeWidth={1} />
+          <Label x={ex + 6} y={ey - 2} anchor="start">{spec.F}</Label>
+          <Label x={230 + 42 * Math.cos(rad / 2)} y={110 - 42 * Math.sin(rad / 2) + 4} anchor="start">{spec.angle}</Label>
+          <path d="M40 128 L230 128" strokeWidth={1} />
+          <Label x={135} y={144}>{spec.r}</Label>
+          <Label x={40} y={94}>hinge</Label>
+        </>,
+      );
+    }
+    case 'axis-masses': {
+      const step = spec.items.length > 1 ? 210 / (spec.items.length - 1) : 0;
+      return box(
+        '0 0 320 110',
+        <>
+          <Arrow x1={20} y1={60} x2={304} y2={60} />
+          {spec.items.map((item, i) => (
+            <g key={i}>
+              <circle cx={50 + i * step} cy={60} r={13} fill="var(--paper)" />
+              <Label x={50 + i * step} y={34}>{item.m}</Label>
+              <Label x={50 + i * step} y={94}>{item.x}</Label>
+            </g>
+          ))}
+        </>,
+      );
+    }
+    case 'pipe':
+      return box(
+        '0 0 320 150',
+        <>
+          <path d="M20 40 L150 40 L210 62 L300 62 M20 120 L150 120 L210 98 L300 98" strokeWidth={2} />
+          <Arrow x1={40} y1={80} x2={110} y2={80} />
+          <Label x={75} y={70}>{spec.v1}</Label>
+          <Label x={85} y={32}>{spec.a1}</Label>
+          <Arrow x1={226} y1={80} x2={286} y2={80} />
+          <Label x={256} y={54}>{spec.a2}</Label>
+          <Label x={256} y={116}>speed = ?</Label>
+        </>,
+      );
+    case 'tank':
+      return box(
+        '0 0 320 190',
+        <>
+          <rect x={62} y={50} width={156} height={108} fill="var(--paper-3)" stroke="none" />
+          <path d="M60 24 L60 160 L220 160 L220 136 M220 124 L220 24" strokeWidth={2} />
+          <path d="M60 50 L220 50" strokeDasharray="4 3" strokeWidth={1} />
+          <path d="M190 50 L190 130" strokeWidth={1} />
+          <path d="M183 50 L197 50 M183 130 L197 130" strokeWidth={1} />
+          <Label x={182} y={94} anchor="end">{spec.h}</Label>
+          <path d="M220 130 Q262 130 288 180" />
+          <Arrow x1={224} y1={130} x2={250} y2={134} />
+        </>,
+      );
+    case 'capillary':
+      return box(
+        '0 0 320 190',
+        <>
+          <rect x={42} y={130} width={236} height={38} fill="var(--paper-3)" stroke="none" />
+          <rect x={151} y={70} width={18} height={60} fill="var(--paper-3)" stroke="none" />
+          <path d="M40 104 L40 170 L280 170 L280 104" />
+          <path d="M40 130 L150 130 M170 130 L280 130" strokeDasharray="4 3" strokeWidth={1} />
+          <path d="M150 28 L150 150 M170 28 L170 150" />
+          <path d="M150 70 Q160 80 170 70" strokeWidth={1} />
+          <path d="M186 70 L186 130 M180 70 L192 70 M180 130 L192 130" strokeWidth={1} />
+          <Label x={196} y={104} anchor="start">h</Label>
+          <Label x={160} y={20}>{`radius ${spec.r}`}</Label>
+        </>,
+      );
+    case 'engine':
+      return box(
+        '0 0 320 190',
+        <>
+          <rect x={90} y={10} width={120} height={32} />
+          <Label x={150} y={31}>{spec.hot}</Label>
+          <circle cx={150} cy={95} r={24} />
+          <Label x={150} y={100}>Engine</Label>
+          <rect x={90} y={148} width={120} height={32} />
+          <Label x={150} y={169}>{spec.cold}</Label>
+          <Arrow x1={150} y1={42} x2={150} y2={71} />
+          <Arrow x1={150} y1={119} x2={150} y2={148} />
+          <Arrow x1={174} y1={95} x2={236} y2={95} />
+          <Label x={160} y={62} anchor="start">Heat in</Label>
+          <Label x={160} y={138} anchor="start">Heat out</Label>
+          <Label x={242} y={100} anchor="start">Work</Label>
+        </>,
+      );
+    case 'standing': {
+      const [x1, x2] = [50, 270];
+      const mid = 70;
+      const curve =
+        spec.ends === 'fixed'
+          ? `M${x1} ${mid} Q160 ${mid - 80} ${x2} ${mid} M${x1} ${mid} Q160 ${mid + 80} ${x2} ${mid}`
+          : spec.ends === 'open'
+            ? `M${x1} ${mid - 36} Q160 ${mid + 36} ${x2} ${mid - 36} M${x1} ${mid + 36} Q160 ${mid - 36} ${x2} ${mid + 36}`
+            : `M${x1} ${mid} Q200 ${mid - 10} ${x2} ${mid - 36} M${x1} ${mid} Q200 ${mid + 10} ${x2} ${mid + 36}`;
+      return box(
+        '0 0 320 150',
+        <>
+          {spec.ends === 'fixed' ? (
+            <path d={`M${x1} 26 L${x1} 114 M${x2} 26 L${x2} 114`} strokeWidth={3} />
+          ) : (
+            <path d={`M${x1} 30 L${x2} 30 M${x1} 110 L${x2} 110${spec.ends === 'closed' ? ` M${x1} 30 L${x1} 110` : ''}`} strokeWidth={2} />
+          )}
+          <path d={curve} />
+          <path d={`M${x1} 128 L${x2} 128`} strokeWidth={1} />
+          <Label x={160} y={145}>{spec.L}</Label>
+          {spec.note && <Label x={160} y={18}>{spec.note}</Label>}
+        </>,
+      );
+    }
+    case 'in-field': {
+      const rad = (spec.deg * Math.PI) / 180;
+      const [cos, sin] = [Math.cos(rad), Math.sin(rad)];
+      const [cx, cy] = [130, 86];
+      const reach = 58;
+      const [tipX, tipY] = [cx + reach * cos, cy - reach * sin];
+      return box(
+        '0 0 320 170',
+        <>
+          <Arrow x1={20} y1={20} x2={296} y2={20} />
+          <Arrow x1={20} y1={152} x2={296} y2={152} />
+          <Label x={300} y={14} anchor="end">{spec.B}</Label>
+          <path d={`M${cx} ${cy} L${cx + 90} ${cy}`} strokeWidth={1} strokeDasharray="4 3" />
+          {spec.body === 'coil' ? (
+            <>
+              <path d={`M${cx - reach * sin} ${cy - reach * cos} L${cx + reach * sin} ${cy + reach * cos}`} strokeWidth={4} />
+              <Arrow x1={cx} y1={cy} x2={tipX} y2={tipY} />
+            </>
+          ) : spec.body === 'dipole' ? (
+            <>
+              <path d={`M${cx - reach * cos} ${cy + reach * sin} L${tipX} ${tipY}`} strokeWidth={2} />
+              <circle cx={tipX} cy={tipY} r={9} fill="var(--paper)" />
+              <Label x={tipX} y={tipY + 4}>+</Label>
+              <circle cx={cx - reach * cos} cy={cy + reach * sin} r={9} fill="var(--paper)" />
+              <Label x={cx - reach * cos} y={cy + reach * sin + 4}>−</Label>
+            </>
+          ) : (
+            <path d={`M${cx - reach * cos} ${cy + reach * sin} L${tipX} ${tipY}`} strokeWidth={3} />
+          )}
+          <path d={`M${cx + 28} ${cy} A28 28 0 0 0 ${cx + 28 * cos} ${cy - 28 * sin}`} strokeWidth={1} />
+          <Label x={cx + 34 * Math.cos(rad / 2)} y={cy - 34 * Math.sin(rad / 2) + 4} anchor="start">{spec.angle}</Label>
+          <Label x={cx + 96} y={cy + 28} anchor="start">{spec.label}</Label>
+        </>,
+      );
+    }
+    case 'parallel-wires':
+      return box(
+        '0 0 320 170',
+        <>
+          <path d="M110 30 L110 150 M210 30 L210 150" strokeWidth={2.5} />
+          <Arrow x1={110} y1={100} x2={110} y2={60} />
+          {spec.same ? <Arrow x1={210} y1={100} x2={210} y2={60} /> : <Arrow x1={210} y1={60} x2={210} y2={100} />}
+          <Label x={110} y={22}>{spec.i1}</Label>
+          <Label x={210} y={22}>{spec.i2}</Label>
+          <path d="M110 125 L210 125" strokeWidth={1} strokeDasharray="4 3" />
+          <Label x={160} y={119}>{spec.d}</Label>
+        </>,
+      );
+    case 'field-entry':
+      return box(
+        '0 0 320 165',
+        <>
+          <rect x={120} y={24} width={180} height={126} strokeWidth={1} />
+          {[50, 90, 130].flatMap((y) => [145, 185, 225, 265].map((x) => (
+            <Label key={`${x}-${y}`} x={x} y={y}>×</Label>
+          )))}
+          <Label x={210} y={18}>{`${spec.B}, into the page`}</Label>
+          <circle cx={34} cy={86} r={5} fill="currentColor" stroke="none" />
+          <Arrow x1={40} y1={86} x2={119} y2={86} />
+          <Label x={76} y={76}>{spec.v}</Label>
+          <Label x={34} y={106}>{spec.q}</Label>
+        </>,
+      );
+    case 'transformer': {
+      const loops = (x: number, side: number) => Array.from({ length: 6 }, (_, i) => `M${x} ${44 + i * 14} q${side * 14} 7 0 14`).join(' ');
+      return box(
+        '0 0 320 160',
+        <>
+          <rect x={138} y={26} width={44} height={108} strokeWidth={2} />
+          <rect x={150} y={38} width={20} height={84} strokeWidth={1} />
+          <path d={loops(138, -1)} />
+          <path d={loops(182, 1)} />
+          <path d="M138 44 L108 44 M138 128 L108 128 M182 44 L212 44 M182 128 L212 128" />
+          {spec.primary.map((line, i) => (
+            <Label key={i} x={100} y={80 + i * 18} anchor="end">{line}</Label>
+          ))}
+          {spec.secondary.map((line, i) => (
+            <Label key={i} x={220} y={80 + i * 18} anchor="start">{line}</Label>
+          ))}
+        </>,
+      );
+    }
+    case 'refraction': {
+      const ray = (deg: number): [number, number] => [Math.sin((deg * Math.PI) / 180), Math.cos((deg * Math.PI) / 180)];
+      const [si, ci] = ray(spec.iDeg);
+      const [sr, cr] = ray(spec.rDeg);
+      return box(
+        '0 0 320 180',
+        <>
+          <rect x={20} y={90} width={280} height={80} fill="var(--paper-3)" stroke="none" />
+          <path d="M20 90 L300 90" />
+          <path d="M160 16 L160 170" strokeWidth={1} strokeDasharray="4 3" />
+          <Arrow x1={160 - 80 * si} y1={90 - 80 * ci} x2={160} y2={90} />
+          <path d={`M160 90 L${160 + 76 * sr} ${90 + 76 * cr}`} />
+          <Label x={160 - 36 * Math.sin(((spec.iDeg / 2) * Math.PI) / 180) - 2} y={90 - 40} anchor="end">{spec.i}</Label>
+          <Label x={160 + 26 * sr + 22} y={90 + 44} anchor="start">{spec.r}</Label>
+          <Label x={296} y={40} anchor="end">{spec.top}</Label>
+          <Label x={296} y={160} anchor="end">{spec.bottom}</Label>
+        </>,
+      );
+    }
+    case 'telescope':
+      return box(
+        '0 0 320 150',
+        <>
+          <path d="M16 70 L304 70" strokeWidth={1} strokeDasharray="5 4" />
+          <path d="M60 20 Q76 70 60 120 Q44 70 60 20 Z" />
+          <path d="M262 44 Q270 70 262 96 Q254 70 262 44 Z" />
+          <Label x={60} y={14}>Objective</Label>
+          <Label x={262} y={38}>Eyepiece</Label>
+          <circle cx={230} cy={70} r={3} fill="currentColor" stroke="none" />
+          <path d="M60 132 L230 132 M230 132 L262 132 M60 126 L60 138 M230 126 L230 138 M262 126 L262 138" strokeWidth={1} />
+          <Label x={145} y={126}>{spec.fo}</Label>
+          <Label x={262} y={118}>{spec.fe}</Label>
+        </>,
+      );
+    case 'photoelectric':
+      return box(
+        '0 0 320 150',
+        <>
+          <rect x={50} y={110} width={220} height={26} fill="var(--paper-3)" />
+          <Label x={160} y={128}>{`metal, work function ${spec.metal}`}</Label>
+          <path d={wavy(66, 30, 136, 108)} />
+          <Arrow x1={130} y1={100} x2={136} y2={108} />
+          <Label x={40} y={22} anchor="start">{`light, ${spec.light}`}</Label>
+          <Arrow x1={170} y1={108} x2={224} y2={46} />
+          <Label x={230} y={44} anchor="start">electron</Label>
+        </>,
+      );
+    case 'drop': {
+      const top = spec.rebound ? 170 - 130 * spec.rebound.fraction : 0;
+      return box(
+        '0 0 320 190',
+        <>
+          <path d="M40 170 L280 170" strokeWidth={2} />
+          <circle cx={110} cy={40} r={8} fill="var(--paper)" />
+          <path d="M110 48 L110 162" strokeWidth={1} strokeDasharray="4 3" />
+          <path d="M76 40 L76 170 M70 40 L82 40" strokeWidth={1} />
+          <Label x={68} y={110} anchor="end">{spec.h}</Label>
+          {spec.rebound && (
+            <>
+              <circle cx={180} cy={top} r={8} fill="var(--paper)" />
+              <path d={`M180 ${top + 8} L180 164`} strokeWidth={1} strokeDasharray="4 3" />
+              <path d={`M214 ${top} L214 170 M208 ${top} L220 ${top}`} strokeWidth={1} />
+              <Label x={222} y={Math.min((top + 170) / 2 + 4, 160)} anchor="start">{spec.rebound.label}</Label>
+            </>
+          )}
+        </>,
+      );
+    }
+    case 'hanging':
+      return box(
+        '0 0 320 170',
+        <>
+          <path d="M100 16 L220 16" strokeWidth={3} />
+          <path d="M160 16 L160 116" />
+          <rect x={130} y={116} width={60} height={38} fill="var(--paper)" />
+          <Label x={160} y={140}>{spec.F}</Label>
+          <path d="M112 16 L112 116 M106 116 L118 116" strokeWidth={1} />
+          <Label x={104} y={70} anchor="end">{spec.L}</Label>
+          <Label x={170} y={60} anchor="start">{spec.A}</Label>
+          {spec.e && <Label x={198} y={140} anchor="start">{`stretches ${spec.e}`}</Label>}
+        </>,
+      );
+    case 'lens-surfaces':
+      return box(
+        '0 0 320 160',
+        <>
+          <path d="M16 80 L304 80" strokeWidth={1} strokeDasharray="5 4" />
+          <path d="M160 16 Q204 80 160 144 Q116 80 160 16 Z" />
+          <Label x={100} y={60} anchor="end">{spec.r1}</Label>
+          <Label x={220} y={60} anchor="start">{spec.r2}</Label>
+          <Label x={160} y={156}>{arm('n', spec.n)}</Label>
+        </>,
+      );
+    case 'coil':
+      return box(
+        '0 0 320 170',
+        <>
+          <circle cx={140} cy={88} r={62} strokeWidth={2.5} />
+          <circle cx={140} cy={88} r={3} fill="currentColor" stroke="none" />
+          <path d="M140 88 L202 88" strokeWidth={1} strokeDasharray="4 3" />
+          <Label x={170} y={82}>{spec.r}</Label>
+          <Label x={140} y={106}>O</Label>
+          <Arrow x1={118} y1={30} x2={158} y2={29} />
+          <Label x={140} y={18}>{spec.I}</Label>
+          <Label x={212} y={92} anchor="start">{spec.turns}</Label>
+        </>,
+      );
     case 'capacitor':
       return box(
         '0 0 320 170',

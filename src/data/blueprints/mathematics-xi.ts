@@ -624,6 +624,187 @@ const blueprints: Blueprint[] = [
       ['The probabilities of all the outcomes add up to 1.', 'The probabilities of all the outcomes add up to 100.'],
     ],
   }),
+  custom('one-one-proof', [1, 'b', 2, 2], { type: 'proof', format: 'short' }, (g) => {
+    const a = g.int(2, 7);
+    const b = g.int(1, 9);
+    return g.theory(`Show that the function ${$(`f(x) = ${a}x ${signed(b)}`)} on the real numbers is one-one.`, [
+      [`Suppose ${$('f(x_1) = f(x_2)')}. Then ${$(`${a}x_1 ${signed(b)} = ${a}x_2 ${signed(b)}`)}.`, 1],
+      [`Subtracting ${b} and dividing by ${a} gives ${$('x_1 = x_2')}, so f is one-one.`, 1],
+    ]);
+  }),
+  custom('sets-distributive-proof', [1, 'a', 3, 2], { type: 'proof', format: 'short' }, (g) => {
+    const universe = [1, 2, 3, 4, 5, 6, 7, 8];
+    const pick = () => g.sample(universe, g.int(3, 5)).sort((x, y) => x - y);
+    const [A, B, C] = [pick(), pick(), pick()];
+    const has = (list: number[], x: number) => list.includes(x);
+    const left = universe.filter((x) => has(A, x) && (has(B, x) || has(C, x)));
+    const AB = universe.filter((x) => has(A, x) && has(B, x));
+    const AC = universe.filter((x) => has(A, x) && has(C, x));
+    const right = universe.filter((x) => has(AB, x) || has(AC, x));
+    if (left.join() !== right.join() || !left.length) g.retry('the two sides must be the same, and not empty');
+    const show = (list: number[]) => `{${list.join(', ')}}`;
+    return g.theory(`If A = ${show(A)}, B = ${show(B)} and C = ${show(C)}, verify that A ∩ (B ∪ C) = (A ∩ B) ∪ (A ∩ C).`, [
+      [`B ∪ C = ${show(universe.filter((x) => has(B, x) || has(C, x)))}, so A ∩ (B ∪ C) = ${show(left)}.`, 1],
+      [`A ∩ B = ${show(AB)} and A ∩ C = ${show(AC)}.`, 1],
+      [`Their union is ${show(right)}, the same set.`, 1],
+    ]);
+  }),
+  custom('ellipse-find', [3, 'c', 3, 2], { type: 'numerical', format: 'numerical' }, (g) => {
+    const [c, a] = g.pick([[3, 5], [4, 5], [5, 13], [12, 13], [6, 10], [8, 10]]);
+    const b = Math.sqrt(a * a - c * c);
+    return {
+      form: 'numeric',
+      text: `An ellipse has the equation ${$(`\\dfrac{x^2}{${a * a}} + \\dfrac{y^2}{${b * b}} = 1`)}.`,
+      parts: [
+        g.answerPart('Distance of each focus from the centre', c, 1, [step('Use $c^2 = a^2 - b^2$', `c^2 = ${a * a} - ${b * b} = ${c * c}`, `c = ${c}`)]),
+        g.answerPart('Eccentricity', c / a, 1, [step('Use $e = c/a$', `e = \\dfrac{${c}}{${a}}`)]),
+        g.answerPart('Length of the latus rectum', (2 * b * b) / a, 1, [step('Use $2b^2/a$', `\\dfrac{2 \\times ${b * b}}{${a}}`)]),
+      ],
+    };
+  }),
+  custom('parabola-find', [3, 'c', 2, 1], { type: 'numerical', format: 'numerical' }, (g) => {
+    const a = g.int(1, 8);
+    return {
+      form: 'numeric',
+      text: `A parabola has the equation ${$(`y^2 = ${4 * a}x`)}.`,
+      parts: [
+        g.answerPart('x-coordinate of its focus', a, 1, [step('Compare with $y^2 = 4ax$', `4a = ${4 * a}`, `a = ${a}`)]),
+        g.answerPart('Length of its latus rectum', 4 * a, 1, [step('It is $4a$', `4a = ${4 * a}`)]),
+      ],
+    };
+  }),
+  custom('circle-find', [3, 'b', 2, 1], { type: 'numerical', format: 'numerical' }, (g) => {
+    const h = g.int(-5, 5);
+    const k = g.int(-5, 5);
+    const r = g.int(2, 9);
+    const c = h * h + k * k - r * r;
+    return {
+      form: 'numeric',
+      text: `A circle has the equation ${$(`x^2 + y^2 ${signed(-2 * h)}x ${signed(-2 * k)}y ${signed(c)} = 0`)}.`,
+      parts: [g.answerPart('Radius of the circle', r, 2, [step('Complete the squares', `(x ${signed(-h)})^2 + (y ${signed(-k)})^2 = ${h * h} + ${k * k} ${signed(-c)} = ${r * r}`, `r = ${r}`)])],
+    };
+  }),
+  custom('complex-modulus-find', [2, 'a', 2, 1], { type: 'numerical', format: 'numerical' }, (g) => {
+    const [a, b] = g.pick([[3, 4], [5, 12], [8, 15], [6, 8], [7, 24]]);
+    const [sa, sb] = [g.sign() * a, g.sign() * b];
+    return {
+      form: 'numeric',
+      text: `Find the modulus of the complex number ${$(`z = ${sa} ${signed(sb)}i`)}.`,
+      parts: [g.answerPart('Modulus', Math.hypot(a, b), 2, [step('Use $|z| = \\sqrt{a^2 + b^2}$', `|z| = \\sqrt{${a * a} + ${b * b}} = ${Math.hypot(a, b)}`)])],
+    };
+  }),
+  // ---- Real-life and data-based questions.
+  custom('cbq-savings', [2, 'e', 3, 1], { type: 'numerical', format: 'cbq', style: 'cbq-style' }, (g) => {
+    const first = g.pick([100, 200, 300, 500]);
+    const rise = g.pick([50, 100, 150]);
+    const months = g.pick([6, 8, 10, 12]);
+    const last = first + (months - 1) * rise;
+    const total = (months * (first + last)) / 2;
+    return {
+      form: 'numeric',
+      text: `A student saves ₹${first} in the first month, and ₹${rise} more each month after that.`,
+      parts: [
+        g.answerPart(`Savings in month ${months}, in rupees`, last, 1, [step('Use $a_n = a + (n - 1)d$', `${first} + ${months - 1} \\times ${rise} = ${last}`)]),
+        g.answerPart(`Total saved over ${months} months, in rupees`, total, 2, [step('Use $S_n = \\dfrac{n}{2}(a + l)$', `\\dfrac{${months}}{2}(${first} + ${last}) = ${total}`)]),
+      ],
+    };
+  }),
+  custom('cbq-password', [2, 'c', 3, 2], { type: 'numerical', format: 'cbq', style: 'cbq-style' }, (g) => {
+    const letters = g.pick([2, 3]);
+    const digits = g.pick([2, 3]);
+    const noRepeat = 26 * 25 * (letters === 3 ? 24 : 1) * 10 * 9 * (digits === 3 ? 8 : 1);
+    const repeat = 26 ** letters * 10 ** digits;
+    return {
+      form: 'numeric',
+      text: `A locker code has ${letters} capital letters followed by ${digits} digits.`,
+      parts: [
+        g.answerPart('Number of codes if letters and digits may repeat', repeat, 1, [step('Multiply the choices', `26^{${letters}} \\times 10^{${digits}} = ${repeat}`)]),
+        g.answerPart('Number of codes if nothing may repeat', noRepeat, 2, [step('Each choice removes one', `= ${noRepeat}`)]),
+      ],
+    };
+  }),
+  custom('cbq-marks-stats', [5, 'a', 3, 2], { type: 'numerical', format: 'cbq', style: 'cbq-style' }, (g) => {
+    const mean = g.int(10, 20);
+    const gaps = g.pick([[-4, -2, 0, 2, 4], [-3, -1, 0, 1, 3], [-6, -2, 0, 2, 6], [-4, -3, 0, 3, 4]]);
+    const data = gaps.map((x) => mean + x);
+    const variance = frac(gaps.reduce((sum, x) => sum + x * x, 0), 5);
+    return {
+      form: 'numeric',
+      text: 'Five students score these marks in a test. The table gives the marks.',
+      diagram: { kind: 'table', head: ['Student', 'A', 'B', 'C', 'D', 'E'], rows: [['Marks', ...data.map(String)]] },
+      parts: [
+        g.answerPart('Mean mark', mean, 1, [step('Add and divide', `\\dfrac{${data.join(' + ')}}{5} = ${mean}`)]),
+        g.answerPart('Variance', variance.value, 2, [step('Average the squared deviations', `\\dfrac{${gaps.map((x) => `(${x})^2`).join(' + ')}}{5} = ${variance.tex()}`)]),
+      ],
+    };
+  }),
+  custom('cbq-taxi-line', [3, 'a', 3, 1], { type: 'numerical', format: 'cbq', style: 'cbq-style' }, (g) => {
+    const base = g.pick([20, 30, 40, 50]);
+    const rate = g.pick([8, 10, 12, 15]);
+    const km = g.int(3, 12);
+    const far = km + g.int(2, 6);
+    return {
+      form: 'numeric',
+      text: `A taxi’s fare in rupees follows a straight line against distance in km. A ride of ${km} km costs ₹${base + rate * km}, and one of ${far} km costs ₹${base + rate * far}.`,
+      parts: [
+        g.answerPart('Slope of the line, the fare per km', rate, 2, [step('Rise over run', `\\dfrac{${base + rate * far} - ${base + rate * km}}{${far} - ${km}} = ${rate}`)]),
+        g.answerPart('The fixed charge, where the line meets the fare axis', base, 1, [step('Use one point', `${base + rate * km} - ${rate} \\times ${km} = ${base}`)]),
+      ],
+    };
+  }),
+  custom('cbq-sprinkler', [3, 'b', 3, 2], { type: 'short', format: 'cbq', style: 'cbq-style' }, (g) => {
+    const h = g.int(1, 6);
+    const k = g.int(1, 6);
+    const r = g.int(2, 7);
+    return g.theory(`A garden sprinkler at the point ${$(`(${h}, ${k})`)}, in metres, waters everything within ${r} m. (i) Write the equation of the edge of the watered circle. (ii) Is a flowerpot at ${$(`(${h + r}, ${k + 1})`)} watered?`, [
+      [`(i) ${$(`(x - ${h})^2 + (y - ${k})^2 = ${r * r}`)}.`, 1],
+      [`(ii) Its distance squared from the sprinkler is ${$(`${r * r} + 1 = ${r * r + 1}`)}.`, 1],
+      [`This is more than ${r * r}, so the pot is just outside and isn’t watered.`, 1],
+    ]);
+  }),
+  custom('cbq-ball-height', [2, 'b', 3, 2], { type: 'numerical', format: 'cbq', style: 'cbq-style' }, (g) => {
+    const t = g.int(2, 6);
+    const start = g.pick([0]);
+    const u = 5 * t;
+    const peak = (u * u) / 20;
+    return {
+      form: 'numeric',
+      text: `A ball is thrown up, and its height in metres after t seconds is ${$(`h = ${u}t - 5t^2`)}.`,
+      parts: [
+        g.answerPart('Time for which it is in the air, in seconds', t + start, 1, [step('Solve $h = 0$', `5t(${t} - t) = 0`)]),
+        g.answerPart('Greatest height, in metres', peak, 2, [step('The vertex is half-way through the flight', `t = ${t / 2}`, `h = ${u} \\times ${t / 2} - 5 \\times ${t / 2}^2 = ${peak}`)]),
+      ],
+    };
+  }),
+  custom('cbq-tree-height', [1, 'c', 2, 1], { type: 'numerical', format: 'cbq', style: 'cbq-style' }, (g) => {
+    const [deg, tan, text] = g.pick<[number, number, string]>([[45, 1, '1'], [30, 1 / Math.sqrt(3), '\\dfrac{1}{\\sqrt3}'], [60, Math.sqrt(3), '\\sqrt3']]);
+    const d = g.pick([10, 20, 30, 40]);
+    return {
+      form: 'numeric',
+      text: `From a point ${d} m from the foot of a tree, on level ground, the angle up to its top is ${deg}°.`,
+      parts: [g.answerPart('Height of the tree, in metres', d * tan, 2, [step('Use the tangent', `h = ${d} \\tan ${deg}^\\circ = ${d} \\times ${text}`)])],
+    };
+  }),
+  custom('cbq-card-draw', [5, 'b', 2, 1], { type: 'numerical', format: 'cbq', style: 'cbq-style' }, (g) => {
+    const [what, count] = g.pick<[string, number]>([['a king', 4], ['a heart', 13], ['a red card', 26], ['a face card', 12], ['the ace of spades', 1]]);
+    const p = frac(count, 52);
+    return {
+      form: 'numeric',
+      text: `At a school fair, a player draws one card from a well-shuffled pack of 52, and wins by drawing ${what}.`,
+      parts: [g.answerPart('The probability of winning', p.value, 2, [step('Favourable over total', `\\dfrac{${count}}{52} = ${p.tex()}`)], '', p.text())],
+    };
+  }),
+  custom('cbq-limit-speed', [4, 'a', 2, 2], { type: 'numerical', format: 'cbq', style: 'cbq-style' }, (g) => {
+    const a = g.int(1, 4);
+    const b = g.int(1, 6);
+    const t = g.int(1, 5);
+    const v = 2 * a * t + b;
+    return {
+      form: 'numeric',
+      text: `A car’s distance in metres after t seconds is ${$(`s = ${polyTex([[a, 2], [b, 1]], 't')}`)}.`,
+      parts: [g.answerPart(`Its speed at t = ${t} s, in m/s, found by differentiating`, v, 2, [step('Differentiate', `\\dfrac{ds}{dt} = ${2 * a}t + ${b}`, `= ${v}`)])],
+    };
+  }),
 ];
 
 export default blueprints;

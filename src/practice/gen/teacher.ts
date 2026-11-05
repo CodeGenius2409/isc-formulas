@@ -107,6 +107,17 @@ export async function countAvailable(f: Filters, avoid: Set<string> = new Set())
   };
 }
 
+/** How many bank questions each section of a paper could draw on, for the live description under the slider. */
+export async function bankForSections(filters: Filters, level: ClassLevel, structure: (CustomSection & { units?: number[] })[], avoid: Set<string> = new Set()): Promise<number[]> {
+  const [source] = await loadSources({ ...filters, levels: [level] });
+  if (!source) return structure.map(() => 0);
+  return structure.map((part) => {
+    const units = part.units?.map((u) => `${level} ${u}`);
+    const f: Filters = { ...filters, levels: [level], marks: [part.marks], formats: part.formats, units: units ?? filters.units, topics: units ? [] : filters.topics };
+    return source.bank.defs.filter((d) => bankMatches(d, level, f) && !avoid.has(d.id)).length;
+  });
+}
+
 /** One question on the review screen. */
 export interface PaperItem {
   key: string;

@@ -17,6 +17,8 @@ export type Values = Record<string, number>;
 interface NumVariant {
   text: string;
   parts: NumericPartDef[];
+  /** When this variant needs a different figure from the others. */
+  diagram?: (v: Values) => DiagramSpec;
 }
 
 export interface NumSpec {
@@ -70,6 +72,8 @@ export interface Facts {
   explain?: [question: string, ...points: string[]][];
   /** A long answer or derivation, then its marking points. */
   long?: [question: string, ...points: (string | [string, number])[]][];
+  /** Figures for long answers, by the words of the question. These have symbols only, so they never change. */
+  figures?: Record<string, DiagramSpec>;
   /** A real-life case: the situation, then asks with their answers and marks. */
   cases?: { scene: string; parts: [ask: string, answer: string, marks: number][] }[];
   /** Diagram-based: what to draw, then what earns marks. */
@@ -121,7 +125,7 @@ export function blueprintsFor(subject: SubjectId, level: ClassLevel) {
       const variant: NumVariant = spec.variants ? g.pick(spec.variants) : { text: spec.text!, parts: spec.parts! };
       const scene = spec.scenes ? g.pick(spec.scenes) : '';
       const text = fillIn(fillIn(variant.text, { scene }), values);
-      return { ...g.numeric(text, variant.parts, values), diagram: spec.diagram?.(values), simulator: spec.sim?.(values) };
+      return { ...g.numeric(text, variant.parts, values), diagram: (variant.diagram ?? spec.diagram)?.(values), simulator: spec.sim?.(values) };
     },
   });
 
@@ -146,6 +150,19 @@ export function blueprintsFor(subject: SubjectId, level: ClassLevel) {
     const at = (marks: number, difficulty: Difficulty): Place => [unit, topic, marks, difficulty];
     const add = (key: string, marks: number, difficulty: Difficulty, type: BankType, format: Format, style: Style, make: (g: Gen) => Body) => out.push({ ...base(key, at(marks, difficulty), type, format, style), make });
 
+    if (f.define && f.define.length >= 3 && (subject === 'chemistry' || subject === 'physics')) {
+      const list = f.define;
+      const size = Math.min(4, list.length);
+      add('match', size, 2, 'short', 'very-short', 'paper-style', (g) => {
+        const pairs = g.sample(list, size);
+        const order = g.shuffle(pairs.map((_, i) => i));
+        if (order.every((j, i) => j === i)) g.retry('the columns line up');
+        const letters = 'abcd';
+        const columnA = pairs.map(([term], i) => `(${i + 1}) ${term}`).join('\n');
+        const columnB = order.map((j, i) => `(${letters[i]}) ${pairs[j][1]}`).join('\n');
+        return g.theory(`Match each item in Column A with its description in Column B.\nColumn A\n${columnA}\nColumn B\n${columnB}`, pairs.map(([term], i): [string, number] => [`(${i + 1}) ${term} goes with (${letters[order.indexOf(i)]}).`, 1]));
+      });
+    }
     if (f.define?.length) {
       const list = f.define;
       add('define', 1, 1, 'definition', 'very-short', 'paper-style', (g) => {
@@ -239,7 +256,8 @@ export function blueprintsFor(subject: SubjectId, level: ClassLevel) {
       for (const [marks, list] of sums) {
         add(`long${marks}`, marks, marks >= 5 ? 3 : 2, 'derivation', marks >= 5 ? 'long' : 'derivation', 'paper-style', (g) => {
           const [q, ...points] = g.pick(list);
-          return g.theory(q, points as (string | [string, number])[]);
+          const diagram = f.figures?.[q];
+          return g.theory(q, points as (string | [string, number])[], diagram ? { diagram } : undefined);
         });
       }
     }

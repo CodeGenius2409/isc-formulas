@@ -655,6 +655,70 @@ const blueprints: Blueprint[] = [
       },
     ],
   }),
+  custom('object-output', [5, 'a', 2, 2], { type: 'output', format: 'output' }, (g) => {
+    const start = g.int(2, 9);
+    const by = g.int(2, 5);
+    const code = `class Counter {\n  int value;\n  Counter(int v) {\n    value = v;\n  }\n  void add(int x) {\n    value = value + x;\n  }\n  public static void main(String[] args) {\n    Counter a = new Counter(${start});\n    Counter b = a;\n    b.add(${by});\n    System.out.println(a.value);\n  }\n}`;
+    return outputOf(g, code);
+  }),
+  custom('complete-expression', [7, 'a', 3, 2], { type: 'complete', format: 'short' }, (g) => {
+    const [a, b] = [g.int(2, 9), g.int(2, 9)];
+    const code = (one: string, two: string, three: string) => inMain(`int a = ${a}, b = ${b};\ndouble mean = ${one};\nint bigger = ${two};\nboolean same = ${three};\nSystem.out.println(mean + " " + bigger + " " + same);`);
+    return complete(g, code('?1?', '?2?', '?3?'), code('(a + b) / 2.0', 'a > b ? a : b', 'a == b'), [['?1? is (a + b) / 2.0, as dividing by 2 alone would drop the fraction.', 1], ['?2? is a > b ? a : b, using the conditional operator.', 1], ['?3? is a == b, a test of equality.', 1]], 'This program finds the mean and the larger of two integers, and tests if they are equal.');
+  }),
+  custom('design-digits', [8, 'a', 5, 2], { type: 'program', format: 'program' }, (g) => {
+    const n = g.int(100, 9999);
+    const code = `class Digits {\n  public static void main(String[] args) {\n    int n = ${n};\n    int sum = 0;\n    while (n > 0) {\n      sum = sum + n % 10;\n      n = n / 10;\n    }\n    System.out.println(sum);\n  }\n}`;
+    return designClass(g, `Write a program that finds the sum of the digits of the number ${n}, using a while loop, and prints it.`, code, [
+      ['Starts the sum at 0.', 1],
+      ['Loops while the number is above 0.', 1],
+      ['Adds the last digit, found with % 10.', 2],
+      ['Removes that digit with / 10, and prints the sum.', 1],
+    ]);
+  }),
+  custom('design-base', [1, 'a', 5, 3], { type: 'program', format: 'program' }, (g) => {
+    const n = g.int(20, 200);
+    const code = `class ToBinary {\n  public static void main(String[] args) {\n    int n = ${n};\n    String s = "";\n    while (n > 0) {\n      s = (n % 2) + s;\n      n = n / 2;\n    }\n    System.out.println(s);\n  }\n}`;
+    return designClass(g, `Write a program that converts the decimal number ${n} to binary, and prints it as a string.`, code, [
+      ['Starts with an empty string.', 1],
+      ['Loops while the number is above 0.', 1],
+      ['Puts each remainder on 2 at the front of the string.', 2],
+      ['Halves the number, and prints the result.', 1],
+    ]);
+  }),
+  // ---- Real-life questions.
+  custom('cbq-door-logic', [3, 'a', 2, 2], { type: 'short', format: 'cbq', style: 'cbq-style' }, (g) => {
+    const [name, on, why] = g.pick([
+      ['AND', 'both A and B are 1', 'Only when both inputs are 1 does an AND gate give 1.'],
+      ['OR', 'at least one of A and B is 1', 'An OR gate gives 1 when any input is 1.'],
+      ['NAND', 'A and B aren’t both 1', 'A NAND gate gives 0 only when both inputs are 1.'],
+      ['XOR', 'A and B differ', 'An XOR gate gives 1 only when its inputs differ.'],
+    ]);
+    return g.theory(`A lift’s motor should run when ${on}, where A and B are two sensors. (i) Which gate does this? (ii) Give a reason.`, [[`(i) ${name}.`, 1], [`(ii) ${why}`, 1]]);
+  }),
+  custom('cbq-fee-loop', [8, 'a', 2, 2], { type: 'output', format: 'cbq', style: 'cbq-style' }, (g) => {
+    const fee = g.pick([100, 200, 500]);
+    const rise = g.pick([10, 20, 50]);
+    const years = g.int(2, 4);
+    const code = inMain(`int fee = ${fee};\nfor (int year = 1; year <= ${years}; year++) {\n  fee = fee + ${rise};\n}\nSystem.out.println(fee);`);
+    return outputOf(g, code, undefined, `A club’s yearly fee rises by the same amount each year. Write what this program prints.`);
+  }),
+  custom('cbq-storage-units', [1, 'a', 2, 1], { type: 'numerical', format: 'cbq', style: 'cbq-style' }, (g) => {
+    const bytes = 2 ** g.int(4, 9);
+    return {
+      form: 'numeric',
+      text: `A small sensor stores ${bytes} bytes of readings in its memory.`,
+      parts: [
+        g.answerPart('The size in bits', bytes * 8, 1, [{ label: 'A byte is 8 bits', math: [`${bytes} \\times 8 = ${bytes * 8}`] }]),
+        g.answerPart('The size as a power of 2: the value of n in 2ⁿ bytes', Math.log2(bytes), 1, [{ label: 'Find the power', math: [`${bytes} = 2^{${Math.log2(bytes)}}`] }]),
+      ],
+    };
+  }),
+  custom('cbq-grade-if', [8, 'a', 2, 2], { type: 'output', format: 'cbq', style: 'cbq-style' }, (g) => {
+    const mark = g.int(30, 95);
+    const code = inMain(`int mark = ${mark};\nchar grade;\nif (mark >= 80) grade = 'A';\nelse if (mark >= 60) grade = 'B';\nelse if (mark >= 40) grade = 'C';\nelse grade = 'D';\nSystem.out.println(grade);`);
+    return outputOf(g, code, undefined, 'A report card program gives a grade from a mark. Write what it prints.');
+  }),
 ];
 
 export default blueprints;

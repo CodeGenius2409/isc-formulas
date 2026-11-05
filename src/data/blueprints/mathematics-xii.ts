@@ -1019,6 +1019,231 @@ const blueprints: Blueprint[] = [
       },
     ],
   }),
+  custom('increasing-proof', [3, 'b', 3, 2], { type: 'proof', format: 'short' }, (g) => {
+    const a = g.int(1, 9);
+    const b = g.int(1, 9);
+    return g.theory(`Show that ${$(`f(x) = x^3 + ${a}x ${signed(-b)}`)} is strictly increasing on ${$('\\mathbb{R}')}.`, [
+      [`${$(`f'(x) = 3x^2 + ${a}`)}.`, 1],
+      [`As ${$('x^2 \\ge 0')} for every real x, ${$(`f'(x) \\ge ${a} > 0`)}.`, 1],
+      [`So f is strictly increasing on ${$('\\mathbb{R}')}.`, 1],
+    ]);
+  }),
+  custom('largest-rectangle-proof', [3, 'b', 4, 3], { type: 'proof', format: 'long' }, (g) => {
+    const k = g.int(5, 20);
+    return g.theory(`Show that, of all rectangles with a perimeter of ${4 * k} cm, the square has the largest area.`, [
+      [`Let the sides be x and y. Then ${$(`2(x + y) = ${4 * k}`)}, so ${$(`y = ${2 * k} - x`)}.`, 1],
+      [`The area is ${$(`A = x(${2 * k} - x) = ${2 * k}x - x^2`)}.`, 1],
+      [`${$(`\\dfrac{dA}{dx} = ${2 * k} - 2x = 0`)} gives ${$(`x = ${k}`)}, and ${$('\\dfrac{d^2A}{dx^2} = -2 < 0')}, so this is a maximum.`, 1],
+      [`Then ${$(`y = ${2 * k} - ${k} = ${k} = x`)}, so the rectangle is a square.`, 1],
+    ]);
+  }),
+  custom('tangent-derivation', [3, 'b', 3, 2], { type: 'derivation', format: 'derivation' }, (g) => {
+    const a = g.int(1, 4);
+    const x0 = g.int(1, 4);
+    const y0 = a * x0 * x0;
+    return g.theory(`Find the equation of the tangent to the curve ${$(`y = ${a === 1 ? '' : a}x^2`)} at the point ${$(`(${x0}, ${y0})`)}, and deduce where it meets the x-axis.`, [
+      [`${$(`\\dfrac{dy}{dx} = ${2 * a}x`)}, which is ${2 * a * x0} at ${$(`x = ${x0}`)}.`, 1],
+      [`The tangent is ${$(`y - ${y0} = ${2 * a * x0}(x - ${x0})`)}.`, 1],
+      [`Setting ${$('y = 0')} gives ${$(`x = ${x0} - \\dfrac{${y0}}{${2 * a * x0}}`)}, which is ${frac(x0, 2).text()}.`, 1],
+    ]);
+  }),
+  custom('perpendicular-proof', [4, 'a', 2, 1], { type: 'proof', format: 'short' }, (g) => {
+    const p = g.int(1, 6);
+    const q = g.int(1, 6);
+    const r = g.int(1, 6);
+    const t = g.int(1, 3);
+    const u = [t * q, -t * p, 0];
+    const v = [p, q, r];
+    const dot = u[0] * v[0] + u[1] * v[1] + u[2] * v[2];
+    if (dot !== 0) g.retry('the dot product must vanish');
+    return g.theory(`Show that the vectors ${$(`\\vec a = ${vecTex(v)}`)} and ${$(`\\vec b = ${vecTex(u)}`)} are perpendicular.`, [
+      [`${$('\\vec a \\cdot \\vec b')} ${$(`= (${p})(${u[0]}) + (${q})(${u[1]}) + (${r})(0) = 0`)}.`, 1],
+      [`Neither vector is zero, so a zero dot product means they are at right angles.`, 1],
+    ]);
+  }),
+  custom('collinear-proof', [4, 'a', 3, 2], { type: 'proof', format: 'short' }, (g) => {
+    const start = [g.int(-3, 4), g.int(-3, 4), g.int(-3, 4)];
+    const d = [g.int(1, 3), g.int(1, 3), g.int(1, 3)];
+    const s = g.int(2, 4);
+    const A = start;
+    const B = start.map((x, i) => x + d[i]);
+    const C = start.map((x, i) => x + s * d[i]);
+    return g.theory(`Show that the points with position vectors ${$(vecTex(A))}, ${$(vecTex(B))} and ${$(vecTex(C))} are collinear.`, [
+      [`${$(`\\vec{AB} = ${vecTex(d)}`)}.`, 1],
+      [`${$(`\\vec{AC} = ${vecTex(d.map((x) => s * x))} = ${s}\\,\\vec{AB}`)}.`, 1],
+      [`So AB and AC are parallel and share the point A, which makes the three points collinear.`, 1],
+    ]);
+  }),
+  custom('det-zero-proof', [2, 'b', 3, 2], { type: 'proof', format: 'short' }, (g) => {
+    const r1 = [g.int(1, 6), g.int(1, 6), g.int(1, 6)];
+    const r2 = [g.int(1, 6), g.int(1, 6), g.int(1, 6)];
+    const k = g.int(2, 3);
+    const r3 = r1.map((x, i) => x + k * r2[i]);
+    if (det3([r1, r2, r3]) !== 0) g.retry('the determinant must vanish');
+    return g.theory(`Without expanding, show that ${$(`\\begin{vmatrix}${[r1, r2, r3].map((r) => r.join(' & ')).join(' \\\\ ')}\\end{vmatrix} = 0`)}.`, [
+      [`Apply ${$(`R_3 \\to R_3 - R_1 - ${k}R_2`)}, which doesn't change the value.`, 1],
+      [`Every entry of the new third row is 0.`, 1],
+      [`A determinant with a row of zeros has the value 0.`, 1],
+    ]);
+  }),
+  custom('vandermonde-proof', [2, 'b', 4, 3], { type: 'proof', format: 'long' }, (g) => {
+    const [a, b, c] = g.pick([['a', 'b', 'c'], ['x', 'y', 'z'], ['p', 'q', 'r']]);
+    return g.theory(`Using the properties of determinants, prove that ${$(`\\begin{vmatrix}1 & ${a} & ${a}^2 \\\\ 1 & ${b} & ${b}^2 \\\\ 1 & ${c} & ${c}^2\\end{vmatrix} = (${a} - ${b})(${b} - ${c})(${c} - ${a})`)}.`, [
+      [`Apply ${$('R_1 \\to R_1 - R_2')} and ${$('R_2 \\to R_2 - R_3')}, so the first column becomes ${$('0, 0, 1')}.`, 1],
+      [`Take out the common factors ${$(`(${a} - ${b})`)} and ${$(`(${b} - ${c})`)} from the first two rows.`, 1],
+      [`Expanding along the first column leaves ${$(`(${a} - ${b})(${b} - ${c})\\begin{vmatrix}1 & ${a} + ${b} \\\\ 1 & ${b} + ${c}\\end{vmatrix}`)}.`, 1],
+      [`This 2 by 2 determinant is ${$(`${b} + ${c} - ${a} - ${b} = ${c} - ${a}`)}, which gives the result.`, 1],
+    ]);
+  }),
+  custom('de-solution-proof', [3, 'e', 2, 1], { type: 'proof', format: 'short' }, (g) => {
+    const k = g.int(2, 5);
+    const c = g.int(1, 9);
+    return g.theory(`Show that ${$(`y = Ae^{${k}x} + ${c}`)}, where A is a constant, is a solution of ${$(`\\dfrac{dy}{dx} = ${k}(y - ${c})`)}.`, [
+      [`Differentiating, ${$(`\\dfrac{dy}{dx} = ${k}Ae^{${k}x}`)}.`, 1],
+      [`And ${$(`${k}(y - ${c}) = ${k}Ae^{${k}x}`)}, which is the same, so the equation holds.`, 1],
+    ]);
+  }),
+  custom('independent-proof', [7, 'a', 3, 2], { type: 'proof', format: 'short' }, (g) => {
+    const pa = frac(g.int(1, 4), 5);
+    const pb = frac(g.int(1, 3), 4);
+    const both = pa.mul(pb);
+    const either = pa.add(pb).sub(both);
+    return g.theory(`For two events, ${$(`P(A) = ${pa.tex()}`)}, ${$(`P(B) = ${pb.tex()}`)} and ${$(`P(A \\cap B) = ${both.tex()}`)}. Show that A and B are independent, and find ${$('P(A \\cup B)')}.`, [
+      [`${$(`P(A)P(B) = ${pa.tex()} \\times ${pb.tex()} = ${both.tex()}`)}.`, 1],
+      [`This equals ${$('P(A \\cap B)')}, so the events are independent.`, 1],
+      [`${$(`P(A \\cup B) = ${pa.tex()} + ${pb.tex()} - ${both.tex()} = ${either.tex()}`)}.`, 1],
+    ]);
+  }),
+  // ---- Real-life and data-based questions. Each is built backwards, so its numbers come out clean.
+  custom('cbq-sales-matrix', [2, 'a', 3, 1], { type: 'numerical', format: 'cbq', style: 'cbq-style' }, (g) => {
+    const [a, b, c, d] = [g.int(10, 40), g.int(10, 40), g.int(10, 40), g.int(10, 40)];
+    const [p, q] = [g.int(5, 20), g.int(5, 20)];
+    const first = a * p + b * q;
+    const second = c * p + d * q;
+    return {
+      form: 'numeric',
+      text: `A stall sells pens and notebooks. On Monday it sells ${a} pens and ${b} notebooks, and on Tuesday ${c} pens and ${d} notebooks. A pen costs ₹${p} and a notebook ₹${q}. Write the sales as ${$(`S = ${matrixTex([[a, b], [c, d]])}`)} and the prices as ${$(`P = ${matrixTex([[p], [q]])}`)}.`,
+      parts: [
+        g.answerPart('Monday’s takings, from SP, in rupees', first, 1, [step('Multiply the first row by the prices', `${a} \\times ${p} + ${b} \\times ${q} = ${first}`)]),
+        g.answerPart('Tuesday’s takings, in rupees', second, 1, [step('Multiply the second row by the prices', `${c} \\times ${p} + ${d} \\times ${q} = ${second}`)]),
+        g.answerPart('Total for the two days, in rupees', first + second, 1, [step('Add them', `${first} + ${second} = ${first + second}`)]),
+      ],
+    };
+  }),
+  custom('cbq-open-box', [3, 'b', 4, 2], { type: 'numerical', format: 'cbq', style: 'cbq-style' }, (g) => {
+    const side = 6 * g.int(2, 8);
+    const x = side / 6;
+    const volume = (side - 2 * x) ** 2 * x;
+    return {
+      form: 'numeric',
+      text: `A workshop makes an open box from a square sheet of tin of side ${side} cm, by cutting a square of side x cm from each corner and folding up the sides. It wants the largest possible volume.`,
+      parts: [
+        g.answerPart('The value of x, in cm, that gives the largest volume', x, 3, [step('Write the volume and differentiate', `V = x(${side} - 2x)^2`, `\\dfrac{dV}{dx} = (${side} - 2x)(${side} - 6x) = 0`, `x = ${x}\\text{ (the other root gives no box)}`)]),
+        g.answerPart('That largest volume, in cm³', volume, 1, [step('Substitute', `V = ${x} \\times ${side - 2 * x}^2 = ${volume}`)]),
+      ],
+    };
+  }),
+  custom('cbq-balloon', [3, 'b', 3, 2], { type: 'numerical', format: 'cbq', style: 'cbq-style' }, (g) => {
+    const rate = g.pick([2, 3, 4, 5]);
+    const r = g.pick([5, 10, 15]);
+    const dv = 4 * r * r * rate;
+    return {
+      form: 'numeric',
+      text: `A spherical balloon is being filled, and its radius grows at ${rate} cm/s. Take the volume as $V = \\dfrac{4}{3}\\pi r^3$, and give the answer as a multiple of π.`,
+      parts: [g.answerPart(`The rate of growth of its volume when the radius is ${r} cm, as a multiple of π cm³/s`, dv, 3, [step('Differentiate with respect to time', `\\dfrac{dV}{dt} = 4\\pi r^2 \\dfrac{dr}{dt}`, `= 4\\pi \\times ${r * r} \\times ${rate} = ${dv}\\pi`)])],
+    };
+  }),
+  custom('cbq-garden-area', [3, 'd', 3, 2], { type: 'numerical', format: 'cbq', style: 'cbq-style' }, (g) => {
+    const k = g.int(1, 6);
+    const area = (4 * k ** 3) / 3 * 3 / 3;
+    const whole = frac(4 * k ** 3, 3);
+    if (Math.abs(whole.value - area) > 1e-9) g.retry('the two forms must agree');
+    return {
+      form: 'numeric',
+      text: `The edge of a flower bed follows the curve ${$(`y = ${2 * k}x - x^2`)}, in metres, and its other edge is the x-axis.`,
+      parts: [
+        g.answerPart('The width of the bed along the x-axis, in metres', 2 * k, 1, [step('Find where the curve meets the axis', `x(${2 * k} - x) = 0`)]),
+        g.answerPart('Its area, in square metres', whole.value, 2, [step('Integrate between the two roots', `\\int_0^{${2 * k}} (${2 * k}x - x^2)\\,dx = ${whole.tex()}`)]),
+      ],
+    };
+  }),
+  custom('cbq-bacteria-de', [3, 'e', 3, 2], { type: 'numerical', format: 'cbq', style: 'cbq-style' }, (g) => {
+    const start = g.pick([100, 200, 500, 1000]);
+    const hours = g.pick([2, 3, 4, 5]);
+    const n = g.int(2, 4);
+    const final = start * 2 ** n;
+    return {
+      form: 'numeric',
+      text: `In a lab, a culture of ${start} bacteria grows at a rate proportional to its size, so ${$('\\dfrac{dP}{dt} = kP')}. It doubles every ${hours} hours.`,
+      parts: [g.answerPart(`The number of bacteria after ${hours * n} hours`, final, 3, [step('Solve the equation', 'P = P_0 e^{kt}', `e^{${hours}k} = 2`, `P = ${start} \\times 2^{${n}} = ${final}`)])],
+    };
+  }),
+  custom('cbq-work-force', [4, 'a', 2, 1], { type: 'numerical', format: 'cbq', style: 'cbq-style' }, (g) => {
+    const F = [g.int(1, 6), g.int(1, 6), g.int(1, 6)];
+    const d = [g.int(1, 6), g.int(1, 6), g.int(1, 6)];
+    const work = F[0] * d[0] + F[1] * d[1] + F[2] * d[2];
+    return {
+      form: 'numeric',
+      text: `A crane pulls a load with a force ${$(`\\vec F = ${vecTex(F)}`)} newtons, and moves it through ${$(`\\vec d = ${vecTex(d)}`)} metres.`,
+      parts: [g.answerPart('The work done, in joules', work, 2, [step('Take the dot product', `\\vec F \\cdot \\vec d = ${F[0]} \\times ${d[0]} + ${F[1]} \\times ${d[1]} + ${F[2]} \\times ${d[2]} = ${work}`)])],
+    };
+  }),
+  custom('cbq-drone-plane', [5, 'a', 3, 2], { type: 'numerical', format: 'cbq', style: 'cbq-style' }, (g) => {
+    const [a, b, c, s] = g.pick([[1, 2, 2, 3], [2, 1, 2, 3], [2, 2, 1, 3], [3, 4, 0, 5], [0, 3, 4, 5], [2, 3, 6, 7], [1, 4, 8, 9]]);
+    const h = g.int(2, 6);
+    const [x, y, z] = [g.int(1, 5), g.int(1, 5), g.int(1, 5)];
+    const d = a * x + b * y + c * z - s * h;
+    return {
+      form: 'numeric',
+      text: `A drone is at the point ${$(`(${x}, ${y}, ${z})`)}, in metres. A sloping roof lies in the plane ${$(`${a}x + ${b}y + ${c}z = ${d}`)}.`,
+      parts: [g.answerPart('The shortest distance from the drone to the plane of the roof, in metres', h, 3, [step('Use the distance formula', `\\dfrac{|${a} \\times ${x} + ${b} \\times ${y} + ${c} \\times ${z} - (${d})|}{\\sqrt{${a * a} + ${b * b} + ${c * c}}} = \\dfrac{${s * h}}{${s}} = ${h}`)])],
+    };
+  }),
+  custom('cbq-diet-lp', [6, 'a', 4, 2], { type: 'numerical', format: 'cbq', style: 'cbq-style' }, (g) => {
+    const x = g.int(2, 6);
+    const y = g.int(2, 6);
+    const [p, q] = [g.int(2, 9), g.int(2, 9)];
+    const total = x + y;
+    const cornerA = p * total;
+    const cornerB = q * total;
+    const corners: [string, number][] = [[`(${total}, 0)`, cornerA], [`(0, ${total})`, cornerB], ['(0, 0)', 0]];
+    const best = Math.max(cornerA, cornerB);
+    return {
+      form: 'numeric',
+      text: `A stall can make at most ${total} trays a day of two snacks, A and B. A tray of A earns ₹${p} and a tray of B earns ₹${q}. Taking x and y as the trays of each, maximise ${$(`Z = ${p}x + ${q}y`)} subject to ${$(`x + y \\le ${total}`)}, ${$('x \\ge 0')}, ${$('y \\ge 0')}.`,
+      parts: [g.answerPart('The largest daily earning, in rupees', best, 4, [step('Test the corners of the region', ...corners.map(([point, value]) => `\\text{At } ${point}: Z = ${value}`))])],
+    };
+  }),
+  custom('cbq-factory-bayes', [7, 'a', 4, 3], { type: 'numerical', format: 'cbq', style: 'cbq-style' }, (g) => {
+    const a = g.pick([40, 50, 60, 70]);
+    const b = 100 - a;
+    const da = g.int(1, 4);
+    const db = g.int(1, 4);
+    const pa = frac(a * da, a * da + b * db);
+    return {
+      form: 'numeric',
+      text: `Machine A makes ${a}% of a factory’s bolts, and machine B the rest. Of A’s bolts ${da}% are faulty, and of B’s ${db}%. A bolt picked at random is faulty.`,
+      parts: [g.answerPart('The probability that machine A made it', pa.value, 4, [step('Use Bayes’ theorem', `\\dfrac{${a / 100} \\times ${da / 100}}{${a / 100} \\times ${da / 100} + ${b / 100} \\times ${db / 100}} = ${pa.tex()}`)], '', pa.text())],
+    };
+  }),
+  custom('cbq-game-expected', [7, 'a', 3, 2], { type: 'numerical', format: 'cbq', style: 'cbq-style' }, (g) => {
+    const win = g.pick([10, 20, 30]);
+    const lose = g.pick([2, 4, 6]);
+    const value = frac(win - 5 * lose, 6);
+    return {
+      form: 'numeric',
+      text: `At a fair, you roll a die. A six wins ₹${win}, and anything else loses ₹${lose}.`,
+      parts: [g.answerPart('The expected gain in rupees for one roll', value.value, 3, [step('Multiply each result by its probability', `E = ${win} \\times \\dfrac16 - ${lose} \\times \\dfrac56 = ${value.tex()}`)], '', value.text())],
+    };
+  }),
+  custom('cbq-ticket-function', [1, 'a', 2, 2], { type: 'short', format: 'cbq', style: 'cbq-style' }, (g) => {
+    const seats = g.int(4, 8);
+    const people = seats + g.int(1, 3);
+    return g.theory(`A cinema gives each of ${people} people one of its ${seats} seats, with every seat taken. (i) Can this rule be a one-one function from people to seats? (ii) Can it be onto?`, [
+      [`(i) No. There are more people than seats, so two people must share a seat.`, 1],
+      [`(ii) Yes, as every seat can have someone in it.`, 1],
+    ]);
+  }),
 ];
 
 export default blueprints;
