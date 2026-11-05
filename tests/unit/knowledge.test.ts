@@ -60,6 +60,8 @@ describe('every row', () => {
         once('truths', r[0]);
         if (r[0] === r[1]) say(`truth equals its wrong version: ${r[0]}`);
       }
+      // Fewer than three leave nothing to build a "which is correct" question with.
+      if (f.truths?.length && f.truths.length < 3) say(`only ${f.truths.length} truths`);
       for (const r of f.define ?? []) {
         once('define', r[0]);
         if (r.length < 2 || r.length > 3) say(`define needs 1 or 2 meanings: ${r[0]}`);
@@ -77,7 +79,7 @@ describe('every row', () => {
       }
       for (const r of f.ar ?? []) once('ar', r[0]);
       const text = JSON.stringify([f.ar, f.define, f.recall, f.reason, f.compare, f.truths, f.explain]);
-      for (const bad of ['undefined', 'NaN', 'TODO', '[object']) if (text.includes(bad)) say(`contains "${bad}"`);
+      for (const bad of [/\bundefined\b/, /\bNaN\b/, /\bTODO\b/, /\[object/]) if (bad.test(text)) say(`contains ${bad}`);
     }
     expect(problems).toEqual([]);
   });

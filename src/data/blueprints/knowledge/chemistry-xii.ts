@@ -1,5 +1,8 @@
 // Chemistry, Class XII: knowledge added to what chemistry-xii.ts holds. Written fresh from the syllabus.
-import type { Facts } from '../dsl';
+import { mergeKnowledge, type Facts } from '../dsl';
+import MORE_A from './more/chemistry-xii-a';
+import MORE_B from './more/chemistry-xii-b';
+import MORE_C from './more/chemistry-xii-c';
 
 const knowledge: Record<string, Facts> = {
   '1a': {
@@ -181,4 +184,4 @@ const knowledge: Record<string, Facts> = {
   },
 };
 
-export default knowledge;
+export default mergeKnowledge(knowledge, MORE_A, MORE_B, MORE_C);
