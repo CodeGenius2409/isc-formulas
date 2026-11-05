@@ -16,8 +16,8 @@ export type DiagramSpec =
   /** A loop of elements in series, some of them parallel groups, around a cell or an a.c. source. */
   | { kind: 'circuit'; source: { type: 'cell' | 'ac'; label: string; r?: string }; loop: CircuitElement[] }
   /** Object, lens and focal points to scale. The image is left out so the figure doesn't give the answer away. */
-  | { kind: 'lens'; lens: 'convex' | 'concave'; f: number; u: number; fLabel: string; uLabel: string }
-  | { kind: 'mirror'; mirror: 'concave' | 'convex'; f: number; u: number; fLabel: string; uLabel: string }
+  | { kind: 'lens'; lens: 'convex' | 'concave'; f: number; u: number; fLabel: string; uLabel: string; rays?: 1 }
+  | { kind: 'mirror'; mirror: 'concave' | 'convex'; f: number; u: number; fLabel: string; uLabel: string; rays?: 1 }
   | { kind: 'prism'; angle: string; incidence?: string }
   /** Two slits and a screen. */
   | { kind: 'ydse'; d: string; D: string; lambda: string }

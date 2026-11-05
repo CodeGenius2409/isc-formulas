@@ -94,6 +94,8 @@ export interface Paper {
   timedOut?: boolean;
   /** With the subject, class and share, this rebuilds the same paper. */
   seed?: number;
+  /** Whether figures are shown. Those a question can't do without stay either way. */
+  diagrams?: boolean;
   /** The share of generated questions asked for, from 0 to 100. */
   generatedShare?: number;
 }
@@ -215,11 +217,11 @@ export function assemblePaper(subject: SubjectId, level: ClassLevel, bank: Loade
   return { subject, level, total: spec.total, startedAt: now, endsAt: now + PAPER_MINUTES * 60_000, sections, answers: {}, generatedShare: generated ? share : 0 };
 }
 
-export async function startPaper(subject: SubjectId, level: ClassLevel, options: { share?: number; seed?: number } = {}): Promise<Paper> {
+export async function startPaper(subject: SubjectId, level: ClassLevel, options: { share?: number; seed?: number; diagrams?: boolean } = {}): Promise<Paper> {
   const share = options.share ?? 0;
   const [bank, weights, set] = await Promise.all([loadBank(subject, level), unitWeights(subject, level), share > 0 ? loadBlueprints(subject, level) : null]);
   const seed = options.seed ?? Math.floor(Math.random() * 2 ** 31);
-  const paper = { ...assemblePaper(subject, level, bank, weights, seededRng(seed), Date.now(), set ? { set, share } : undefined), seed };
+  const paper = { ...assemblePaper(subject, level, bank, weights, seededRng(seed), Date.now(), set ? { set, share } : undefined), seed, diagrams: options.diagrams ?? true };
   paperStore.set(paper);
   return paper;
 }

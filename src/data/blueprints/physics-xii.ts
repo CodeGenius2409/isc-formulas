@@ -827,6 +827,7 @@ const blueprints: Blueprint[] = [
     vars: { U: [20, 90, 10], F: [10, 15, 5], V: [20, 60, 10] },
     when: (v) => v.U > v.F * 1.2,
     diagram: (v) => ({ kind: 'lens', lens: 'convex', f: v.F, u: v.U, fLabel: 'f', uLabel: `${v.U} cm` }),
+    answerDiagram: (v) => ({ kind: 'lens', lens: 'convex', f: v.F, u: v.U, fLabel: 'f', uLabel: `${v.U} cm`, rays: 1 }),
     sim: (v) => ({ id: 'lens', preset: { f: v.F, u: -v.U } }),
   }),
   num('mirror', [6, 'a', 3, 2], {
@@ -838,6 +839,7 @@ const blueprints: Blueprint[] = [
       { ask: 'Size of the magnification', use: 'p-xii-6-2', find: 'm', given: { v: 'v', u: 'U cm' }, marks: 1 },
     ],
     diagram: (v) => ({ kind: 'mirror', mirror: 'concave', f: v.F, u: v.U, fLabel: `f = ${v.F} cm`, uLabel: `${v.U} cm` }),
+    answerDiagram: (v) => ({ kind: 'mirror', mirror: 'concave', f: v.F, u: v.U, fLabel: `f = ${v.F} cm`, uLabel: `${v.U} cm`, rays: 1 }),
   }),
   num('lensmaker', [6, 'a', 2, 2], {
     diagram: (v) => ({ kind: 'lens-surfaces', r1: `${v.A} cm`, r2: `${v.B} cm`, n: `${v.N}` }),

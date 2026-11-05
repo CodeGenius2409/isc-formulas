@@ -35,6 +35,7 @@ export interface NumSpec {
   style?: Style;
   format?: Format;
   diagram?: (v: Values) => DiagramSpec;
+  answerDiagram?: (v: Values) => DiagramSpec;
   sim?: (v: Values) => SimulatorRef;
 }
 
@@ -83,6 +84,8 @@ export interface Facts {
   long?: [question: string, ...points: (string | [string, number])[]][];
   /** Figures for long answers, by the words of the question. These have symbols only, so they never change. */
   figures?: Record<string, DiagramSpec>;
+  /** Figures for answers, by the start of the question's words. A question that asks you to draw something gets it in the key. */
+  answerFigures?: Record<string, DiagramSpec>;
   /** A real-life case: the situation, then asks with their answers and marks. */
   cases?: { scene: string; parts: [ask: string, answer: string, marks: number][] }[];
   /** Diagram-based: what to draw, then what earns marks. */
@@ -150,7 +153,7 @@ export function blueprintsFor(subject: SubjectId, level: ClassLevel, knowledge: 
       const variant: NumVariant = spec.variants ? g.pick(spec.variants) : { text: spec.text!, parts: spec.parts! };
       const scene = spec.scenes ? g.pick(spec.scenes) : '';
       const text = fillIn(fillIn(variant.text, { scene }), values);
-      return { ...g.numeric(text, variant.parts, values), diagram: (variant.diagram ?? spec.diagram)?.(values), simulator: spec.sim?.(values) };
+      return { ...g.numeric(text, variant.parts, values), diagram: (variant.diagram ?? spec.diagram)?.(values), answerDiagram: spec.answerDiagram?.(values), simulator: spec.sim?.(values) };
     },
   });
 
@@ -280,7 +283,8 @@ export function blueprintsFor(subject: SubjectId, level: ClassLevel, knowledge: 
         if (!list.length) continue;
         add(`draw${marks}`, marks, 2, 'short', 'diagram', 'paper-style', (g) => {
           const [q, ...points] = g.pick(list);
-          return g.theory(q, points);
+          const key = Object.keys(f.answerFigures ?? {}).find((start) => q.startsWith(start));
+          return g.theory(q, points, key ? { answerDiagram: f.answerFigures![key] } : undefined);
         });
       }
     }

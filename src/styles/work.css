@@ -342,6 +342,25 @@ mark {
   margin-top: 0.75rem;
 }
 
+/* A numbered figure in a paper: under its question, and never parted from it. */
+.bank-figure {
+  margin: 0.5rem 0;
+  break-inside: avoid;
+  text-align: center;
+}
+
+.bank-figure figcaption {
+  color: var(--ink-2);
+  font-size: var(--step--1);
+}
+
+.bank-figure-note {
+  margin-top: 0.125rem;
+  color: var(--ink-2);
+  font-size: var(--step--1);
+  font-style: italic;
+}
+
 .bank-part-ask {
   display: flex;
   justify-content: space-between;

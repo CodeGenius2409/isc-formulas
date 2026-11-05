@@ -8,6 +8,7 @@ import { EntryStructures, Molecule } from '../Structures';
 import { LazyLewis } from '../LazyLewis';
 import { StepsList } from '../work/StepsList';
 import { lazyRetry } from '../../lib/retry-import';
+import { KEPT_NOTE, withFigureNote, type FigureMark } from '../../practice/gen/figures';
 import { CodeBlock, RichText } from './RichText';
 
 // The drawings are their own file, fetched the first time a question has a figure.
@@ -15,17 +16,31 @@ const BankDiagram = lazyRetry(() => import('./BankDiagram'));
 
 export const marksLabel = (marks: number): string => `${marks} ${marks === 1 ? 'mark' : 'marks'}`;
 
-/** What is asked: the words, then any structure, figure or program. */
-export const BankPrompt = memo(function BankPrompt({ item }: { item: BankItem }) {
+/**
+ * What is asked: the words, then any structure, figure or program. In a paper, `figure` gives the figure its number,
+ * and 'none' leaves it out.
+ */
+export const BankPrompt = memo(function BankPrompt({ item, figure }: { item: BankItem; figure?: FigureMark | 'none' }) {
+  const mark = figure && figure !== 'none' ? figure : undefined;
+  const drawn = figure !== 'none' && item.diagram;
   return (
     <div className="bank-prompt">
-      <RichText text={item.text} python={Boolean(item.python)} />
+      <RichText text={withFigureNote(item.text, mark)} python={Boolean(item.python)} />
       {item.structure && <EntryStructures structure={item.structure} scale={1} />}
-      {item.diagram && (
-        <Suspense fallback={<div className="bank-diagram-wait" aria-hidden />}>
-          <BankDiagram spec={item.diagram} />
-        </Suspense>
-      )}
+      {drawn &&
+        (mark ? (
+          <figure className="bank-figure" data-testid="paper-figure" data-kept={mark.kept || undefined}>
+            <Suspense fallback={<div className="bank-diagram-wait" aria-hidden />}>
+              <BankDiagram spec={item.diagram!} />
+            </Suspense>
+            <figcaption>Fig. {mark.number}</figcaption>
+            {mark.kept && <p className="bank-figure-note">{KEPT_NOTE}</p>}
+          </figure>
+        ) : (
+          <Suspense fallback={<div className="bank-diagram-wait" aria-hidden />}>
+            <BankDiagram spec={item.diagram!} />
+          </Suspense>
+        ))}
       {item.form === 'output' && <CodeBlock code={item.code} python={Boolean(item.python)} />}
     </div>
   );
@@ -164,6 +179,22 @@ function TheoryReview({ item, answer, onChange }: { item: TheoryItem; answer: Ba
 
 /** After answering: what was right, with the working or the marking scheme. */
 export function BankReview({ item, answer, onChange }: { item: BankItem; answer: BankAnswer; onChange: (change: Partial<BankAnswer>) => void }) {
+  return (
+    <>
+      <ReviewBody item={item} answer={answer} onChange={onChange} />
+      {item.answerDiagram && (
+        <figure className="bank-figure" data-testid="answer-figure">
+          <Suspense fallback={<div className="bank-diagram-wait" aria-hidden />}>
+            <BankDiagram spec={item.answerDiagram} />
+          </Suspense>
+          <figcaption>The diagram for this answer</figcaption>
+        </figure>
+      )}
+    </>
+  );
+}
+
+function ReviewBody({ item, answer, onChange }: { item: BankItem; answer: BankAnswer; onChange: (change: Partial<BankAnswer>) => void }) {
   if (item.form === 'numeric') return <NumericReview item={item} answer={answer} />;
   if (item.form === 'theory') {
     return (

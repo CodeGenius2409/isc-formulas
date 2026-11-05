@@ -133,6 +133,17 @@
     font-style: italic;
   }
 
+  /* Figures in plain black lines, kept on the same page as their question. */
+  .bank-diagram {
+    color: #000000;
+    max-width: 8cm;
+  }
+
+  .paper-question,
+  .bank-figure {
+    break-inside: avoid;
+  }
+
   .gen-print-q {
     padding: 5pt 0 5pt 6pt;
     border-left: 1.5pt solid transparent;

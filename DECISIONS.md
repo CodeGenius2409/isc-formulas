@@ -325,3 +325,6 @@ Work is on a `rebuild` branch. `master` still holds your original files.
 
 - **Task 3, assertion and reason:** a pair is now built from one concept node: a statement and its false version, why it's true and a false explanation, and something else true of it that doesn't explain it. So all four outcomes stay correct, and a true reason that doesn't explain is still about the same thing.
   452 nodes were written fresh, replacing random pairs of facts. The old way could pair a statement about double bonds with one about water's dipole. A test generates 1,000 per blueprint.
+
+- **Task 5, figures in papers:** an "Include diagrams" switch on both screens, on by default and remembered apart. Figures are numbered across the paper, and the question refers to its number. With the switch off, a question that points at its figure keeps it, with a note: it would make no sense without it.
+  Answer keys can have their own figure, such as a completed ray diagram, which never appears in the question. Word files get them as PNGs at three times their size, with alt text. In a paper, a simulator's button only appears after marking.

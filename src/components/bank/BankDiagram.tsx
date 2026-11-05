@@ -158,16 +158,29 @@ function CircuitFigure({ spec }: { spec: Extract<DiagramSpec, { kind: 'circuit' 
 
 // ---- Optics
 
-/** Object, optical element and focal points, to scale. The image is never drawn, as that would answer the question. */
+/** Object, optical element and focal points, to scale. The image is only drawn for an answer key, with `rays`. */
 function LensFigure({ spec }: { spec: Extract<DiagramSpec, { kind: 'lens' | 'mirror' }> }) {
-  const reach = Math.max(spec.u * 1.15, spec.f * 2.4);
   const isLens = spec.kind === 'lens';
+  const converging = isLens ? spec.lens === 'convex' : spec.mirror === 'concave';
+  // From 1/v = 1/f − 1/u, with distances in the object's direction taken as positive for a real object.
+  const signedF = converging ? spec.f : -spec.f;
+  const v = spec.u === signedF ? Infinity : 1 / (1 / signedF - 1 / spec.u);
+  const real = v > 0;
+  const onRight = isLens ? real : !real;
+  const showRays = Boolean(spec.rays) && Number.isFinite(v);
   const w = 360;
-  const cx = isLens ? 220 : 300;
-  const scale = (cx - 20) / reach;
+  const cx = isLens ? 220 : showRays && onRight ? 240 : 300;
+  const reach = Math.max(spec.u * 1.15, spec.f * 2.4, showRays && !onRight ? Math.abs(v) * 1.15 : 0);
+  const right = w - cx - 12;
+  const scale = Math.min((cx - 20) / reach, showRays && onRight ? right / (Math.abs(v) * 1.1) : Infinity);
   const axis = 90;
   const fx = spec.f * scale;
   const ox = cx - spec.u * scale;
+  const objectTop = axis - 38;
+  const ix = cx + (onRight ? 1 : -1) * Math.abs(v) * scale;
+  const iy = axis + (real ? 1 : -1) * Math.min(66, (38 * Math.abs(v)) / spec.u);
+  // Where the ray along the axis meets the lens or mirror, and where a line through two points reaches an edge.
+  const edge = (x1: number, y1: number, x2: number, y2: number, toX: number) => y1 + ((y2 - y1) / (x2 - x1)) * (toX - x1);
   return (
     <svg className="bank-diagram" viewBox={`0 0 ${w} 170`} role="img" aria-label={describe(spec)} fill="none" stroke="currentColor" strokeWidth={1.5}>
       <path d={`M6 ${axis} L${w - 6} ${axis}`} strokeDasharray="5 4" strokeWidth={1} />
@@ -180,7 +193,7 @@ function LensFigure({ spec }: { spec: Extract<DiagramSpec, { kind: 'lens' | 'mir
       ) : (
         <path d={spec.mirror === 'concave' ? `M${cx - 16} ${axis - 58} Q${cx + 16} ${axis} ${cx - 16} ${axis + 58}` : `M${cx + 8} ${axis - 58} Q${cx - 16} ${axis} ${cx + 8} ${axis + 58}`} />
       )}
-      <Arrow x1={ox} y1={axis} x2={ox} y2={axis - 38} />
+      <Arrow x1={ox} y1={axis} x2={ox} y2={objectTop} />
       <Label x={ox} y={axis - 44}>Object</Label>
       <circle cx={cx - fx} cy={axis} r={2.5} fill="currentColor" />
       <Label x={cx - fx} y={axis + 18}>F</Label>
@@ -192,8 +205,30 @@ function LensFigure({ spec }: { spec: Extract<DiagramSpec, { kind: 'lens' | 'mir
       )}
       <path d={`M${ox} ${axis + 34} L${cx} ${axis + 34}`} strokeWidth={1} />
       <Label x={(ox + cx) / 2} y={axis + 50}>{spec.uLabel}</Label>
-      <path d={`M${cx - fx} ${axis - 62} L${cx} ${axis - 62}`} strokeWidth={1} />
-      <Label x={cx - fx / 2} y={axis - 67}>{spec.fLabel}</Label>
+      {!showRays && <path d={`M${cx - fx} ${axis - 62} L${cx} ${axis - 62}`} strokeWidth={1} />}
+      {!showRays && <Label x={cx - fx / 2} y={axis - 67}>{spec.fLabel}</Label>}
+      {showRays && (
+        <g data-testid="ray-diagram" strokeWidth={1}>
+          <path d={`M${ox} ${objectTop} L${cx} ${objectTop}`} />
+          <path d={`M${ox} ${objectTop} L${cx} ${axis}`} />
+          {isLens && real && <path d={`M${cx} ${objectTop} L${ix} ${iy} M${cx} ${axis} L${ix} ${iy}`} />}
+          {isLens && !real && (
+            <>
+              <path d={`M${cx} ${objectTop} L${w - 6} ${edge(ix, iy, cx, objectTop, w - 6)} M${cx} ${axis} L${w - 6} ${edge(ox, objectTop, cx, axis, w - 6)}`} />
+              <path d={`M${ix} ${iy} L${cx} ${objectTop}`} strokeDasharray="3 3" />
+            </>
+          )}
+          {!isLens && real && <path d={`M${cx} ${objectTop} L${ix} ${iy} M${cx} ${axis} L${ix} ${iy}`} />}
+          {!isLens && !real && (
+            <>
+              <path d={`M${cx} ${objectTop} L6 ${edge(ix, iy, cx, objectTop, 6)} M${cx} ${axis} L6 ${edge(ix, iy, cx, axis, 6)}`} />
+              <path d={`M${ix} ${iy} L${cx} ${objectTop} M${ix} ${iy} L${cx} ${axis}`} strokeDasharray="3 3" />
+            </>
+          )}
+          <path d={`M${ix} ${axis} L${ix} ${iy}`} strokeWidth={2} strokeDasharray={real ? undefined : '3 3'} />
+          <Label x={ix} y={iy + (real ? 14 : -6)}>Image</Label>
+        </g>
+      )}
     </svg>
   );
 }

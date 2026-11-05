@@ -1,6 +1,12 @@
 // Physics, Class XII: knowledge added to what physics-xii.ts holds. Written fresh from the syllabus.
 import type { Facts } from '../dsl';
 
+/** Points along a curve, for a sketch in an answer. These carry no values from any question. */
+const curve = (f: (x: number) => number, from: number, to: number, steps = 24): [number, number][] => Array.from({ length: steps + 1 }, (_, i) => {
+  const x = from + ((to - from) * i) / steps;
+  return [x, f(x)];
+});
+
 const knowledge: Record<string, Facts> = {
   '1a': {
     ar: [
@@ -19,6 +25,9 @@ const knowledge: Record<string, Facts> = {
     ],
   },
   '2a': {
+    answerFigures: {
+      'Sketch how the resistivity of a metal': { kind: 'graph', x: 'Temperature', y: 'Resistivity', lines: [{ points: curve((t) => 1 + 0.2 * t + 0.01 * t * t, 0, 6) }] },
+    },
     ar: [
       ['the resistivity of metals', 'The resistance of a metal rises with temperature.', 'The resistance of a metal falls with temperature.', 'Its ions vibrate more, so electrons collide with them more often.', 'It has fewer free electrons at higher temperatures.', 'The temperature coefficient of a metal is positive.'],
       ['resistance and resistivity', 'Resistivity doesn’t depend on the size of a wire.', 'Resistivity is doubled when a wire’s length is doubled.', 'It is a property of the material at a given temperature.', 'It is a property only of the wire’s shape.', 'The resistance of a wire is proportional to its length.'],
@@ -43,6 +52,9 @@ const knowledge: Record<string, Facts> = {
     ],
   },
   '3b': {
+    answerFigures: {
+      'Sketch a hysteresis loop': { kind: 'graph', x: 'H', y: 'B', lines: [{ points: [...curve((h) => 2 * Math.tanh(h + 1), -3, 3), ...curve((h) => 2 * Math.tanh(h - 1), 3, -3)] }], ticksY: [[1.52, 'Retentivity']], ticksX: [[-1, 'Coercivity']] },
+    },
     ar: [
       ['soft iron', 'Soft iron is used in electromagnets.', 'Steel is used in electromagnets, as it stays magnetised.', 'It magnetises and demagnetises easily, as it has low coercivity.', 'It has very high coercivity.', 'Permanent magnets are made of materials with high retentivity.'],
       ['types of magnetic material', 'A diamagnetic material is pushed out of a strong field.', 'A diamagnetic material is pulled into a strong field.', 'Its induced moment opposes the applied field.', 'Its permanent moments line up with the field.', 'Its susceptibility is small and negative.'],
@@ -57,6 +69,10 @@ const knowledge: Record<string, Facts> = {
     ],
   },
   '4b': {
+    answerFigures: {
+      'Sketch how the current in a series LCR circuit': { kind: 'graph', x: 'Frequency', y: 'Current', lines: [{ points: curve((f) => 1 / Math.sqrt(0.04 + (f - 1 / f) ** 2), 0.2, 3) }], ticksX: [[1, 'f₀']] },
+      'Sketch how inductive and capacitive reactance': { kind: 'graph', x: 'Frequency', y: 'Reactance', lines: [{ label: 'X_L', points: [[0, 0], [4, 4]] }, { label: 'X_C', points: curve((f) => 2 / f, 0.5, 4) }] },
+    },
     ar: [
       ['the power factor', 'A pure inductor uses no average power in an a.c. circuit.', 'A pure inductor uses a large average power in an a.c. circuit.', 'The current and voltage are 90° out of phase, so the power factor is zero.', 'The current and voltage are in phase, so the power factor is one.', 'The average power is VI cos φ.'],
       ['reactance', 'A capacitor blocks steady current, but passes alternating current.', 'A capacitor passes steady current, but blocks alternating current.', 'Its reactance is 1/(2πfC), which is infinite for f = 0.', 'Its reactance is 2πfC, which is zero for f = 0.', 'An inductor’s reactance rises with frequency.'],
@@ -72,6 +88,11 @@ const knowledge: Record<string, Facts> = {
     ],
   },
   '6a': {
+    answerFigures: {
+      'Draw a ray diagram for a convex lens': { kind: 'lens', lens: 'convex', f: 10, u: 15, fLabel: 'f', uLabel: 'between F and 2F', rays: 1 },
+      'Draw the ray path through a prism': { kind: 'prism', angle: 'A' },
+      'Draw a ray diagram for a convex mirror': { kind: 'mirror', mirror: 'convex', f: 10, u: 20, fLabel: 'f', uLabel: 'u', rays: 1 },
+    },
     ar: [
       ['the sparkle of diamond', 'A diamond sparkles strongly.', 'A diamond sparkles only because it has many colours inside.', 'Its small critical angle traps light by total internal reflection.', 'Its large critical angle lets light straight through.', 'Diamond has a very high refractive index.'],
       ['the colour of the sky', 'The sky looks blue.', 'The sky looks blue because the air itself is a blue gas.', 'Air scatters blue light much more than red.', 'Air scatters red light much more than blue.', 'The scattering is inversely proportional to the fourth power of the wavelength.'],
@@ -81,6 +102,9 @@ const knowledge: Record<string, Facts> = {
     ],
   },
   '6b': {
+    answerFigures: {
+      'Draw a labelled ray diagram of an astronomical telescope': { kind: 'telescope', fo: 'fₒ', fe: 'fₑ' },
+    },
     ar: [
       ['the telescope’s lenses', 'An astronomical telescope has an objective of long focal length.', 'An astronomical telescope has an objective of short focal length.', 'The magnifying power is fₒ/fₑ in normal adjustment.', 'The magnifying power is fₑ/fₒ in normal adjustment.', 'A large aperture gathers more light.'],
       ['the microscope’s lenses', 'Both lenses of a compound microscope have short focal lengths.', 'Both lenses of a compound microscope have long focal lengths.', 'Short focal lengths give a larger magnifying power.', 'Short focal lengths give a smaller magnifying power.', 'The objective forms a real, enlarged image.'],
@@ -88,6 +112,10 @@ const knowledge: Record<string, Facts> = {
     ],
   },
   '6c': {
+    answerFigures: {
+      'Sketch the intensity against distance': { kind: 'graph', x: 'Distance on the screen', y: 'Intensity', lines: [{ points: curve((x) => Math.cos(Math.PI * x) ** 2, -2.5, 2.5, 80) }], ticksX: [[1, 'β']] },
+      'Sketch how intensity varies across the screen in single-slit': { kind: 'graph', x: 'Distance on the screen', y: 'Intensity', lines: [{ points: curve((x) => (x === 0 ? 1 : (Math.sin(Math.PI * x) / (Math.PI * x)) ** 2), -3, 3, 90) }] },
+    },
     ar: [
       ['coherent sources', 'Two separate lamps can’t give a steady interference pattern.', 'Two separate lamps always give a steady interference pattern.', 'Their phase difference isn’t constant.', 'They have no wavelength.', 'Young’s experiment gets two coherent sources from one.'],
       ['fringe width', 'Fringes get wider if the slits are moved closer together.', 'Fringes get narrower if the slits are moved closer together.', 'The fringe width is λD/d.', 'The fringe width is dD/λ.', 'Fringes are narrower in water than in air.'],
@@ -96,6 +124,10 @@ const knowledge: Record<string, Facts> = {
     ],
   },
   '7a': {
+    answerFigures: {
+      'Sketch how photocurrent varies': { kind: 'graph', x: 'Collector potential', y: 'Photocurrent', lines: [{ label: 'Brighter', points: [[-2, 0], [0, 1.6], [1, 2], [3, 2]] }, { label: 'Dimmer', points: [[-2, 0], [0, 0.8], [1, 1], [3, 1]] }], ticksX: [[-2, 'V₀']] },
+      'Sketch how maximum kinetic energy': { kind: 'graph', x: 'Frequency', y: 'Maximum kinetic energy', lines: [{ points: [[2, 0], [6, 3]] }], ticksX: [[2, 'ν₀']] },
+    },
     ar: [
       ['the threshold frequency', 'Bright red light may eject no electrons from a metal, though dim violet light does.', 'Bright red light always ejects more electrons from a metal than dim violet light.', 'Ejection depends on each photon’s energy, not on the brightness.', 'Ejection depends only on the brightness.', 'A photon’s energy is hν.'],
       ['intensity and photocurrent', 'A brighter light gives a larger photocurrent, above the threshold.', 'A brighter light gives a smaller photocurrent, above the threshold.', 'More photons each second eject more electrons.', 'Each photon is more energetic in a brighter light.', 'Stopping potential doesn’t depend on the intensity.'],
@@ -103,6 +135,9 @@ const knowledge: Record<string, Facts> = {
     ],
   },
   '8a': {
+    answerFigures: {
+      'Draw an energy level diagram for hydrogen': { kind: 'levels', levels: [{ n: 'n = 1', E: '−13.6 eV', at: -13.6 }, { n: 'n = 2', E: '−3.4 eV', at: -3.4 }, { n: 'n = 3', E: '−1.5 eV', at: -1.5 }, { n: 'n = 4', E: '−0.85 eV', at: -0.85 }], from: 1, to: 0 },
+    },
     ar: [
       ['the line spectrum', 'An atom’s spectrum is made of lines, not a continuous band.', 'An atom’s spectrum is a continuous band.', 'Its energy levels are discrete, so only certain photon energies are emitted.', 'Its electrons can have any energy at all.', 'Each element has its own line spectrum.'],
       ['the nuclear model', 'Most α-particles pass straight through a thin gold foil.', 'Most α-particles are turned straight back by a thin gold foil.', 'An atom is mostly empty space.', 'An atom is a solid sphere of positive charge.', 'A few α-particles are scattered through large angles.'],
@@ -110,6 +145,10 @@ const knowledge: Record<string, Facts> = {
     ],
   },
   '8b': {
+    answerFigures: {
+      'Sketch binding energy per nucleon': { kind: 'graph', x: 'Mass number', y: 'Binding energy per nucleon', lines: [{ points: [[2, 1.1], [4, 7.1], [12, 7.7], [56, 8.8], [120, 8.5], [238, 7.6]] }], ticksX: [[56, '56']] },
+      'Sketch the number of undecayed nuclei': { kind: 'graph', x: 'Time', y: 'Undecayed nuclei', lines: [{ points: curve((t) => 2 ** -t, 0, 5) }], ticksY: [[1, 'N₀'], [0.5, 'N₀/2']], ticksX: [[1, 'T½']] },
+    },
     ar: [
       ['fusion and temperature', 'Fusion needs a very high temperature.', 'Fusion happens easily at room temperature.', 'Nuclei must have enough kinetic energy to overcome their repulsion.', 'Nuclei attract each other strongly at any distance.', 'Fusion powers the Sun.'],
       ['binding energy', 'Both fission of heavy nuclei and fusion of light ones release energy.', 'Only fusion of light nuclei releases energy.', 'Each makes a product with more binding energy per nucleon.', 'Each makes a product with less binding energy per nucleon.', 'Binding energy per nucleon is greatest near iron.'],
@@ -125,6 +164,9 @@ const knowledge: Record<string, Facts> = {
     ],
   },
   '9b': {
+    answerFigures: {
+      'Sketch the V–I characteristic': { kind: 'graph', x: 'Voltage', y: 'Current', lines: [{ points: [[-4, -0.1], [0, 0], [0.6, 0.1], [0.8, 1], [1, 3]] }], ticksX: [[0.7, 'Knee']] },
+    },
     ar: [
       ['the depletion region', 'A depletion region has almost no free charge carriers.', 'A depletion region is full of free charge carriers.', 'Electrons and holes diffuse across and recombine there.', 'It has been heavily doped with extra atoms.', 'A barrier potential forms across it.'],
       ['the diode as a rectifier', 'A p-n junction diode can be used as a rectifier.', 'A p-n junction diode can’t be used as a rectifier.', 'It conducts well in only one direction.', 'It conducts equally well in both directions.', 'A full-wave rectifier makes use of both half-cycles.'],

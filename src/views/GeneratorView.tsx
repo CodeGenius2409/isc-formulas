@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type DragEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type DragEvent, Suspense } from 'react';
 import { ArrowDown, ArrowUp, Dices, Download, FileText, FileUp, GripVertical, Lock, LockOpen, PenLine, Plus, Printer, RefreshCw, Save, Trash2, Wand2 } from 'lucide-react';
 import { BankPrompt } from '../components/bank/BankParts';
 import { GeneratedMark, GENERATED_NOTICE, PAPER_NOTICE, ReportProblem } from '../components/bank/GeneratedMark';
@@ -8,6 +8,8 @@ import { getSubject, manifest } from '../data/book';
 import { loadSyllabus } from '../data/syllabus';
 import type { ClassLevel, Syllabus, SubjectId } from '../data/types';
 import { useAsync } from '../lib/hooks';
+import { markFigures, teacherDiagramsStore, type FigureMark } from '../practice/gen/figures';
+import { lazyRetry } from '../lib/retry-import';
 import { useStore } from '../lib/store';
 import type { BankItem, Difficulty } from '../practice/bank/types';
 import { answerLines, saveBlob, STUDENT_FOOTER } from '../practice/gen/docx';
@@ -19,6 +21,8 @@ const freshSeed = () => Math.floor(Math.random() * 2 ** 31);
 function toggle<T>(list: T[], value: T): T[] {
   return list.includes(value) ? list.filter((v) => v !== value) : [...list, value];
 }
+
+const BankDiagram = lazyRetry(() => import('../components/bank/BankDiagram'));
 
 function Check({ label, checked, onChange, testId }: { label: string; checked: boolean; onChange: () => void; testId?: string }) {
   return (
@@ -112,7 +116,7 @@ function CustomStructureEditor({ parts, onChange }: { parts: CustomSection[]; on
 
 const withEdit = (entry: PaperItem): BankItem => (entry.editedText !== undefined ? { ...entry.question.item, text: entry.editedText } : entry.question.item);
 
-function ReviewItem({ entry, number, canMove, onChange, onMove, onDrop, onRegenerate, busy }: { entry: PaperItem; number: number; canMove: [boolean, boolean]; onChange: (change: Partial<PaperItem> | null) => void; onMove: (by: number) => void; onDrop: (from: string) => void; onRegenerate: () => void; busy: boolean }) {
+function ReviewItem({ entry, number, figure, canMove, onChange, onMove, onDrop, onRegenerate, busy }: { entry: PaperItem; number: number; figure: FigureMark | undefined; canMove: [boolean, boolean]; onChange: (change: Partial<PaperItem> | null) => void; onMove: (by: number) => void; onDrop: (from: string) => void; onRegenerate: () => void; busy: boolean }) {
   const [editing, setEditing] = useState(false);
   const [over, setOver] = useState(false);
   const item = withEdit(entry);
@@ -162,7 +166,7 @@ function ReviewItem({ entry, number, canMove, onChange, onMove, onDrop, onRegene
           </button>
         </div>
       ) : (
-        <BankPrompt item={item} />
+        <BankPrompt item={item} figure={figure ?? 'none'} />
       )}
       {!editing && item.form === 'mcq' && (
         <ol className="gen-options">
@@ -212,6 +216,7 @@ function PrintSheet({ paper, kind }: { paper: TeacherPaper; kind: 'paper' | 'key
   const shown = useMemo(() => arranged(paper), [paper]);
   const { header, options } = shown;
   const anyGenerated = allItems(shown).some((i) => i.question.item.generated);
+  const figures = markFigures(allItems(shown).map((i) => i.question.item), options.diagrams);
   let number = 0;
   return (
     <div className="gen-print" style={{ fontSize: `${options.fontSize}pt` }} data-testid="print-sheet" data-kind={kind}>
@@ -252,6 +257,13 @@ function PrintSheet({ paper, kind }: { paper: TeacherPaper; kind: 'paper' | 'key
                       </li>
                     ))}
                   </ul>
+                  {item.answerDiagram && (
+                    <figure className="bank-figure" data-testid="key-figure">
+                      <Suspense fallback={<div className="bank-diagram-wait" aria-hidden />}>
+                        <BankDiagram spec={item.answerDiagram} plain />
+                      </Suspense>
+                    </figure>
+                  )}
                 </div>
               );
             }
@@ -261,7 +273,7 @@ function PrintSheet({ paper, kind }: { paper: TeacherPaper; kind: 'paper' | 'key
                   <span className="font-semibold">{number}.</span> <GeneratedMark item={item} />
                   {options.showMarks && <span className="bank-marks">[{item.marks}]</span>}
                 </p>
-                {options.diagrams ? <BankPrompt item={item} /> : <BankPrompt item={{ ...item, diagram: undefined }} />}
+                <BankPrompt item={item} figure={figures.get(item.id) ?? 'none'} />
                 {item.form === 'mcq' && (
                   <ol className="gen-options">
                     {item.options.map((o, i) => (
@@ -298,7 +310,11 @@ function Review({ paper, onChange, onClose, sets, onSets }: { paper: TeacherPape
   const [printKind, setPrintKind] = useState<'paper' | 'key'>('paper');
   const [saved, setSaved] = useState('');
   const set = (field: keyof TeacherPaper['header'], value: string) => onChange({ ...paper, header: { ...paper.header, [field]: value } });
-  const setOption = (change: Partial<TeacherPaper['options']>) => onChange({ ...paper, options: { ...paper.options, ...change } });
+  const setOption = (change: Partial<TeacherPaper['options']>) => {
+    if (change.diagrams !== undefined) teacherDiagramsStore.set(change.diagrams);
+    onChange({ ...paper, options: { ...paper.options, ...change } });
+  };
+  const reviewFigures = useMemo(() => markFigures(allItems(paper).map((i) => withEdit(i)), paper.options.diagrams), [paper]);
   const anyGenerated = allItems(paper).some((i) => i.question.item.generated);
 
   const print = (kind: 'paper' | 'key') => {
@@ -428,7 +444,7 @@ function Review({ paper, onChange, onClose, sets, onSets }: { paper: TeacherPape
                       entry={entry}
                       number={number}
                       busy={busy}
-                      canMove={[i > 0, i < section.items.length - 1]}
+                      figure={reviewFigures.get(withEdit(entry).id)} canMove={[i > 0, i < section.items.length - 1]}
                       onChange={(change) => onChange(change === null ? deleteItem(paper, entry.key) : updateItem(paper, entry.key, change))}
                       onMove={(by) => onChange(moveItem(paper, entry.key, by))}
                       onDrop={(from) => onChange(moveItemTo(paper, from, entry.key))}
@@ -489,6 +505,7 @@ function Review({ paper, onChange, onClose, sets, onSets }: { paper: TeacherPape
 
 export default function GeneratorView() {
   const presets = useStore(presetsStore);
+  const diagrams = useStore(teacherDiagramsStore);
   const history = useStore(teacherHistoryStore);
   const share = useStore(teacherShareStore);
   const [filters, setFilters] = useState<Filters>(() => emptyFilters());
@@ -696,6 +713,9 @@ export default function GeneratorView() {
         <section className="today-section" aria-labelledby="source-h">
           <h2 id="source-h">Source</h2>
           {plan && <ShareSlider value={share} onChange={(v) => teacherShareStore.set(v)} message={describePlan(plan)} warning={plan.raised} />}
+          <label className="switch-row mt-2">
+            <input type="checkbox" checked={diagrams} onChange={(e) => teacherDiagramsStore.set(e.target.checked)} /> Include diagrams
+          </label>
           {available.status === 'ready' && (
             <p className="mt-1 text-step--1 text-ink-2" data-testid="available">
               For these choices, the bank has {available.value.bank} questions, and there are {available.value.blueprints} blueprints that can make new ones.

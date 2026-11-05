@@ -123,6 +123,8 @@ export interface SimulatorRef {
 }
 
 interface InstanceTags extends Omit<Tags, 'structure' | 'diagram'> {
+  /** A figure the answer needs. Only shown after answering, and in the answer key. */
+  answerDiagram?: DiagramSpec;
   structure?: EntryStructure;
   diagram?: DiagramSpec;
   simulator?: SimulatorRef;

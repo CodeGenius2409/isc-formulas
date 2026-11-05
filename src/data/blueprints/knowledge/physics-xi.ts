@@ -1,6 +1,12 @@
 // Physics, Class XI: knowledge added to what physics-xi.ts holds. Written fresh from the syllabus.
 import type { Facts } from '../dsl';
 
+/** Points along a curve, for a sketch in an answer. These carry no values from any question. */
+const curve = (f: (x: number) => number, from: number, to: number, steps = 24): [number, number][] => Array.from({ length: steps + 1 }, (_, i) => {
+  const x = from + ((to - from) * i) / steps;
+  return [x, f(x)];
+});
+
 const knowledge: Record<string, Facts> = {
   '1a': {
     ar: [
@@ -17,6 +23,9 @@ const knowledge: Record<string, Facts> = {
     ],
   },
   '2a': {
+    answerFigures: {
+      'Sketch the velocity–time graph': { kind: 'graph', x: 'Time', y: 'Velocity', lines: [{ points: [[0, 2], [4, -2]] }], ticksY: [[2, 'u'], [-2, '−u']], ticksX: [[2, 'top'], [4, 'return']] },
+    },
     ar: [
       ['velocity and acceleration', 'A body can have zero velocity and non-zero acceleration at the same instant.', 'A body with zero velocity must also have zero acceleration.', 'Acceleration depends on how velocity is changing, not on its value at that instant.', 'Acceleration is equal to velocity divided by distance.', 'At the top of its flight, a ball thrown upwards is momentarily at rest.'],
       ['the area under a graph', 'The area under a velocity–time graph gives the displacement.', 'The area under a velocity–time graph gives the acceleration.', 'Velocity multiplied by time is displacement.', 'Velocity divided by time is displacement.', 'The slope of a velocity–time graph gives the acceleration.'],
@@ -31,6 +40,9 @@ const knowledge: Record<string, Facts> = {
     ],
   },
   '3a': {
+    answerFigures: {
+      'Draw a free-body diagram of a person standing in a lift': { kind: 'block', m: 'person', forces: [{ dir: 'up', label: 'N' }, { dir: 'down', label: 'mg' }] },
+    },
     ar: [
       ['the third law', 'Action and reaction don’t cancel each other.', 'Action and reaction cancel each other, as they are equal and opposite.', 'They act on different bodies.', 'They act on the same body.', 'Action and reaction forces are always equal in size.'],
       ['impulse', 'A cricketer draws the hands back when catching a fast ball.', 'A cricketer pushes the hands forward when catching a fast ball, to reduce the force.', 'A longer contact time means a smaller force for the same change in momentum.', 'A longer contact time means a larger change in momentum.', 'Impulse is equal to the change in momentum.'],
@@ -101,6 +113,9 @@ const knowledge: Record<string, Facts> = {
     ],
   },
   '7a': {
+    answerFigures: {
+      'Sketch a stress–strain graph': { kind: 'graph', x: 'Strain', y: 'Stress', lines: [{ points: [[0, 0], [2, 4], [3, 4.5], [4, 4.8], [6, 5.2], [7, 4.8]] }], ticksX: [[2, 'Elastic limit'], [7, 'Breaking']] },
+    },
     ar: [
       ['elastic behaviour', 'Steel is more elastic than rubber.', 'Rubber is more elastic than steel.', 'For the same stress, steel shows much the smaller strain.', 'For the same stress, steel shows much the larger strain.', 'Young’s modulus has the same unit as stress.'],
       ['stress and strain', 'Up to the elastic limit, stress is proportional to strain.', 'Up to the elastic limit, stress is proportional to the square of the strain.', 'This is Hooke’s law.', 'This is Bernoulli’s principle.', 'Beyond the elastic limit, a wire keeps some permanent stretch.'],
@@ -129,6 +144,9 @@ const knowledge: Record<string, Facts> = {
     ],
   },
   '8b': {
+    answerFigures: {
+      'Sketch isothermal and adiabatic curves': { kind: 'graph', x: 'Volume', y: 'Pressure', lines: [{ label: 'Isothermal', points: curve((v) => 2 / v, 1, 5) }, { label: 'Adiabatic', points: curve((v) => 2 / v ** 1.4, 1, 5) }] },
+    },
     ar: [
       ['the limit on an engine', 'No heat engine working between two temperatures can beat a Carnot engine.', 'A real heat engine can beat a Carnot engine at the same temperatures.', 'A reversible cycle has the greatest possible efficiency.', 'A Carnot engine wastes more heat than any other engine.', 'A Carnot engine’s efficiency is 1 − T₂/T₁.'],
       ['the first law', 'In an isothermal expansion of an ideal gas, all the heat taken in becomes work.', 'In an isothermal expansion of an ideal gas, all the heat taken in raises the internal energy.', 'The internal energy of an ideal gas depends only on its temperature.', 'The internal energy of an ideal gas depends only on its volume.', 'The first law is a statement of the conservation of energy.'],
@@ -143,6 +161,9 @@ const knowledge: Record<string, Facts> = {
     ],
   },
   '10a': {
+    answerFigures: {
+      'Sketch how kinetic and potential energy vary': { kind: 'graph', x: 'Displacement', y: 'Energy', lines: [{ label: 'Potential', points: curve((x) => x * x, -2, 2) }, { label: 'Kinetic', points: curve((x) => 4 - x * x, -2, 2) }], ticksX: [[-2, '−A'], [2, 'A']] },
+    },
     ar: [
       ['the period of a pendulum', 'A pendulum clock runs slow on a mountain.', 'A pendulum clock runs fast on a mountain.', 'The value of g is smaller there, so the period is longer.', 'The value of g is greater there, so the period is longer.', 'A pendulum’s period doesn’t depend on the mass of its bob.'],
       ['energy in SHM', 'In SHM, the kinetic energy is greatest at the mean position.', 'In SHM, the kinetic energy is greatest at the extreme positions.', 'The speed is greatest there.', 'The speed is zero there.', 'The total energy stays constant in undamped SHM.'],
@@ -150,6 +171,9 @@ const knowledge: Record<string, Facts> = {
     ],
   },
   '10b': {
+    answerFigures: {
+      'Draw the first two modes': { kind: 'graph', x: 'Along the string', y: 'Displacement', lines: [{ label: 'First mode', points: curve((x) => Math.sin(Math.PI * x), 0, 1) }, { label: 'Second mode', points: curve((x) => Math.sin(2 * Math.PI * x), 0, 1) }], ticksX: [[0.5, 'Node, second mode']] },
+    },
     ar: [
       ['sound in gases', 'Sound travels faster in warm air than in cold air.', 'Sound travels slower in warm air than in cold air.', 'The speed of sound is proportional to the square root of the absolute temperature.', 'The speed of sound is proportional to the pressure of the air.', 'A change of pressure alone, at constant temperature, doesn’t change the speed of sound.'],
       ['beats', 'Beats need two frequencies that are close to each other.', 'Beats need two frequencies that are exactly equal.', 'The ear can follow only slow changes of loudness, and the beat frequency is the difference.', 'The ear hears the sum of the two frequencies as the beat.', 'At one beat in each second, the two frequencies differ by 1 Hz.'],

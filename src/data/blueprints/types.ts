@@ -11,6 +11,8 @@ export type Format = GeneratedTag['format'];
 interface Attachments {
   structure?: EntryStructure;
   diagram?: DiagramSpec;
+  /** A figure the answer needs, such as a completed ray diagram. It's only shown after answering, and in the answer key. */
+  answerDiagram?: DiagramSpec;
   answerLewis?: string[];
   python?: 1;
   simulator?: SimulatorRef;

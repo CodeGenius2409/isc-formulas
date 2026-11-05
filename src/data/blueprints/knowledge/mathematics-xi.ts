@@ -60,7 +60,7 @@ const knowledge: Record<string, Facts> = {
   },
   '3a': {
     ar: [
-      ['the slopes of perpendicular lines', 'Lines of slopes m₁ and m₂ are perpendicular if m₁m₂ = −1.', 'Lines of slopes m₁ and m₂ are perpendicular if m₁ = m₂.', 'tan 90° is undefined, which needs 1 + m₁m₂ = 0.', 'tan 0° is 0, which needs m₁ − m₂ = 0.', 'Parallel lines have equal slopes.'],
+      ['the slopes of perpendicular lines', 'Lines of slopes m₁ and m₂ are perpendicular if m₁m₂ = −1.', 'Lines of slopes m₁ and m₂ are perpendicular if m₁ = m₂.', 'tan 90° has no value, which needs 1 + m₁m₂ = 0.', 'tan 0° is 0, which needs m₁ − m₂ = 0.', 'Parallel lines have equal slopes.'],
       ['the distance of a point from a line', 'The point (0, 0) is at a distance of |c|/√(a² + b²) from ax + by + c = 0.', 'The point (0, 0) is at a distance of |c| from ax + by + c = 0, for all a and b.', 'The formula |ax₁ + by₁ + c|/√(a² + b²) gives this at the origin.', 'The formula gives a distance of zero at the origin.', 'Distance is measured along the perpendicular.'],
       ['the slope of a vertical line', 'A vertical line has no defined slope.', 'A vertical line has a slope of 0.', 'It makes 90° with the x-axis, and tan 90° isn’t defined.', 'It makes 0° with the x-axis.', 'Its equation has the form x = k.'],
     ],

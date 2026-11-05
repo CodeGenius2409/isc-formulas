@@ -3,6 +3,7 @@
 import { loadBlueprints, type LoadedBlueprints } from '../../data/blueprints';
 import type { Blueprint } from '../../data/blueprints/types';
 import { createStore } from '../../lib/store';
+import { teacherDiagramsStore } from './figures';
 import { readJson, writeJson } from '../../lib/storage';
 import type { ClassLevel, SubjectId } from '../../data/types';
 import { bankQuestion, loadBank, type LoadedBank } from '../bank/index';
@@ -275,7 +276,7 @@ export async function buildQuestionSet(filters: Filters, request: SetRequest, su
     seed,
     filters,
     header: DEFAULT_HEADER(subjectLabel, items.reduce((s, i) => s + i.question.item.marks, 0)),
-    options: { ...DEFAULT_OPTIONS },
+    options: { ...DEFAULT_OPTIONS, diagrams: teacherDiagramsStore.get() },
     sections: [{ name: 'Questions', note: '', items }],
     createdAt: Date.now(),
     shortfall,
@@ -322,7 +323,7 @@ export async function buildFullPaper(filters: Filters, level: ClassLevel, struct
     seed,
     filters,
     header: DEFAULT_HEADER(subjectLabel, 0),
-    options: { ...DEFAULT_OPTIONS },
+    options: { ...DEFAULT_OPTIONS, diagrams: teacherDiagramsStore.get() },
     sections,
     createdAt: Date.now(),
     shortfall: short ? `${short} ${short === 1 ? 'question' : 'questions'} couldn’t be found for these choices.` : undefined,
