@@ -1,4 +1,5 @@
 // Physics, Class XII. Numericals are answered by the solver registry. The facts are written for this app.
+import { derivationBlueprints } from '../derivations';
 import KNOWLEDGE from './knowledge/physics-xii';
 import { blueprintsFor, type Values } from './dsl';
 import type { DiagramSpec } from '../../practice/bank/diagram';
@@ -1474,6 +1475,7 @@ const blueprints: Blueprint[] = [
     ],
   }),
   ...rest(),
+  ...derivationBlueprints('physics', 'XII', { custom } as never),
 ];
 
 export default blueprints;

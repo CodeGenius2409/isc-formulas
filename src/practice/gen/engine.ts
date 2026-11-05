@@ -96,6 +96,7 @@ export interface Names {
 export function generateItem(bp: Blueprint, seed: number, names: Names): BankItem {
   const rng = seededRng((seed ^ hash(bp.id)) >>> 0);
   const g = new Gen(rng, bp.subject, bp.id);
+  g.seed = seed;
   let last = '';
   for (let attempt = 0; attempt < MAX_TRIES; attempt++) {
     try {

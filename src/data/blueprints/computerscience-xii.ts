@@ -3,6 +3,7 @@
 import { classify, coverIsRight, groupNames, minimalCover, primeImplicants, sopText, termText, truthColumn, VARS } from '../../practice/gen/boolean';
 import type { Gen } from '../../practice/gen/gen';
 import { complete, designChecked, designClass, findError, inMain, outputOf, pyList, pySlice, SHORT_WORDS, withMethods } from './cs-common';
+import { derivationBlueprints } from '../derivations';
 import KNOWLEDGE from './knowledge/computerscience-xii';
 import { blueprintsFor } from './dsl';
 import type { Blueprint, Body, OutputBody, TheoryBody } from './types';
@@ -1178,6 +1179,7 @@ const blueprints: Blueprint[] = [
     ]);
   }),
   ...rest(),
+  ...derivationBlueprints('computerscience', 'XII', { custom } as never),
 ];
 
 export default blueprints;

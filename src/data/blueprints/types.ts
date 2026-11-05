@@ -15,6 +15,8 @@ interface Attachments {
   answerDiagram?: DiagramSpec;
   answerLewis?: string[];
   python?: 1;
+  /** For a derivation: the blueprint that asks one step of it, so that a step you miss comes back. */
+  stepBlueprint?: string;
   /** The facts a question tests, so that a paper never asks one twice, even in another format. */
   facts?: string[];
   simulator?: SimulatorRef;

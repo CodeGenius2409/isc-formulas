@@ -14,7 +14,7 @@ import { useStore } from '../lib/store';
 import type { BankItem, Difficulty } from '../practice/bank/types';
 import { answerLines, saveBlob, STUDENT_FOOTER } from '../practice/gen/docx';
 import { describePlan, generatedCount, planShare, teacherShareStore } from '../practice/gen/mix';
-import { allItems, arranged, bankForSections, buildFullPaper, capacityOf, buildQuestionSet, countAvailable, deleteItem, deletePaper, emptyFilters, FORMATS, makeSets, moveItem, moveItemTo, officialStructure, paperFromFile, paperToFile, presetsStore, regenerateItem, regenerateUnlocked, savePaper, savePreset, teacherHistoryStore, totalMarks, updateItem, usedInHistory, type CustomSection, type Filters, type FormatChoice, type PaperItem, type TeacherPaper } from '../practice/gen/teacher';
+import { allItems, answerSpace, arranged, bankForSections, buildFullPaper, capacityOf, buildQuestionSet, countAvailable, deleteItem, deletePaper, emptyFilters, FORMATS, makeSets, moveItem, moveItemTo, officialStructure, paperFromFile, paperToFile, presetsStore, regenerateItem, regenerateUnlocked, savePaper, savePreset, teacherHistoryStore, totalMarks, updateItem, usedInHistory, type CustomSection, type Filters, type FormatChoice, type PaperItem, type TeacherPaper } from '../practice/gen/teacher';
 
 const freshSeed = () => Math.floor(Math.random() * 2 ** 31);
 
@@ -300,7 +300,7 @@ function PrintSheet({ paper, kind }: { paper: TeacherPaper; kind: 'paper' | 'key
                     ))}
                   </ol>
                 )}
-                {Array.from({ length: options.answerLines }, (_, i) => (
+                {Array.from({ length: answerSpace(item, options.answerLines) }, (_, i) => (
                   <div key={i} className="gen-answer-line" />
                 ))}
               </div>

@@ -3,7 +3,7 @@ import { getSubject } from '../../data/book';
 import { answerFeedback } from '../../lib/motion';
 import { answerSummary, isPassing, qualityOf, scoreOf, yourAnswerSummary } from '../../practice/bank/mark';
 import type { BankAnswer, BankQuestion } from '../../practice/bank/types';
-import { recordAnswer } from '../../practice/progress';
+import { noteMissedSteps, recordAnswer } from '../../practice/progress';
 import { nextQuestion, noteResult } from '../../practice/session';
 import { BankInputs, BankPrompt, BankReview, marksLabel } from './BankParts';
 import { GeneratedMark, GeneratedNote, ReportProblem } from './GeneratedMark';
@@ -36,6 +36,7 @@ export function BankCard({ question, mistakeId }: { question: BankQuestion; mist
       mistakeId,
     });
     noteResult(correct);
+    if (item.form === 'theory') noteMissedSteps(item.stepBlueprint, item.points, final.ticks);
     setSaved(true);
   };
 

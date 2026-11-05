@@ -342,6 +342,14 @@ mark {
   margin-top: 0.75rem;
 }
 
+/* The result of a derivation stands out from its steps, by weight and a rule, in both themes and in print. */
+.bank-result {
+  margin-top: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--rule-2);
+  font-weight: 600;
+}
+
 /* A numbered figure in a paper: under its question, and never parted from it. */
 .bank-figure {
   margin: 0.5rem 0;

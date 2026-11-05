@@ -5,7 +5,7 @@ import type { DiagramSpec } from '../bank/diagram';
 import { markFigures, withFigureNote } from './figures';
 import { loadStructures } from '../../data/structures';
 import type { BankItem } from '../bank/types';
-import { allItems, type PaperItem, type TeacherPaper } from './teacher';
+import { allItems, answerSpace, type PaperItem, type TeacherPaper } from './teacher';
 
 /** LaTeX as text a person can read and edit in Word. */
 export function plainMaths(text: string): string {
@@ -222,7 +222,7 @@ export async function buildDocx(paper: TeacherPaper, kind: DocKind): Promise<Blo
     if (q.form === 'output') for (const line of q.code.split('\n')) body.push(new Paragraph({ children: [run(line, { font: 'Consolas' })] }));
     if (q.form === 'mcq') q.options.forEach((option, i) => body.push(new Paragraph({ indent: { left: 360 }, children: [run(`(${'abcdef'[i]}) ${plainMaths(option.text)}`)] })));
     if (q.form === 'numeric' && q.parts.length > 1) q.parts.forEach((p, i) => body.push(new Paragraph({ indent: { left: 360 }, children: [run(`(${i + 1}) ${plainMaths(p.ask)} [${p.marks}]`)] })));
-    for (let i = 0; i < paper.options.answerLines; i++) body.push(new Paragraph({ border: { bottom: { color: '888888', size: 4, style: 'single', space: 12 } }, children: [run('')] }));
+    for (let i = 0; i < answerSpace(q, paper.options.answerLines); i++) body.push(new Paragraph({ border: { bottom: { color: '888888', size: 4, style: 'single', space: 12 } }, children: [run('')] }));
   }
 
   const footerText = anyGenerated ? (kind === 'key' ? 'Generated, not official ISC. Check the answers before use.' : STUDENT_FOOTER) : '';

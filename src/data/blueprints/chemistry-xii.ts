@@ -1,5 +1,6 @@
 // Chemistry, Class XII. Numericals come from the solver registry. Named compounds and their drawings come from the
 // structures checked against PubChem and RDKit, and reactions only join compounds from that same list.
+import { derivationBlueprints } from '../derivations';
 import KNOWLEDGE from './knowledge/chemistry-xii';
 import { blueprintsFor, n } from './dsl';
 import type { Blueprint } from './types';
@@ -1292,6 +1293,7 @@ const blueprints: Blueprint[] = [
     ]);
   }),
   ...rest(),
+  ...derivationBlueprints('chemistry', 'XII', { custom } as never),
 ];
 
 export default blueprints;

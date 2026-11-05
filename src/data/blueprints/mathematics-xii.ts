@@ -2,6 +2,7 @@
 import { det2, det3, evalPoly, frac, Frac, matrixTex, nCr, polyTex, signed, vecTex } from '../../practice/gen/exact';
 import type { Gen } from '../../practice/gen/gen';
 import type { Step } from '../../solver/solve';
+import { derivationBlueprints } from '../derivations';
 import KNOWLEDGE from './knowledge/mathematics-xii';
 import { blueprintsFor } from './dsl';
 import type { Blueprint, Body } from './types';
@@ -1257,6 +1258,7 @@ const blueprints: Blueprint[] = [
     ]);
   }),
   ...rest(),
+  ...derivationBlueprints('mathematics', 'XII', { custom } as never),
 ];
 
 export default blueprints;

@@ -40,6 +40,8 @@ export interface Mistake {
 }
 
 export class Gen {
+  /** The question's seed. Most blueprints leave choices to the dice, and a few need it. */
+  seed = 0;
   constructor(
     readonly rng: Rng,
     readonly subject: string,

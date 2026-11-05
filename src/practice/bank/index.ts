@@ -1,5 +1,6 @@
 // Loads a class's questions on first need, and turns a definition into one attempt at it. Numerical
 // answers always come from the solver registry, so they can't drift from what the solver says.
+import { derivationDefs } from '../../data/derivations';
 import { loadSyllabus } from '../../data/syllabus';
 import { retryImport } from '../../lib/retry-import';
 import type { ClassLevel, SubjectId } from '../../data/types';
@@ -41,7 +42,7 @@ export function loadBank(subject: SubjectId, level: ClassLevel): Promise<LoadedB
         names.set(String(unit.number), unit.name);
         for (const topic of unit.topics) names.set(`${unit.number} ${topic.key}`, topic.name);
       }
-      return { defs: module.default, names };
+      return { defs: [...module.default, ...derivationDefs(subject, level)], names };
     });
     cache.set(key, loading);
     // A failed load isn't kept, so the next try starts again.

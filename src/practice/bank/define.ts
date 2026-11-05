@@ -9,6 +9,9 @@ export type Place = [unit: number, topic: string, marks: number, difficulty: Dif
 
 export interface Extras {
   structure?: EntryStructure;
+  facts?: string[];
+  stepBlueprint?: string;
+  answerDiagram?: DiagramSpec;
   answerLewis?: string[];
   diagram?: DiagramSpec;
   recall?: 1;

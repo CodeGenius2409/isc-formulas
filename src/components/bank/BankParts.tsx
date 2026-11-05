@@ -170,7 +170,11 @@ function TheoryReview({ item, answer, onChange }: { item: TheoryItem; answer: Ba
       {item.model && (
         <details className="mt-2">
           <summary className="text-action">Show a full model answer</summary>
-          <RichText text={item.model} python={Boolean(item.python)} className="mt-2" />
+          <div className="mt-2">
+            {item.model.split('\n').map((line, i) => (
+              <RichText key={i} text={line} python={Boolean(item.python)} className={line.startsWith('Result:') ? 'bank-result' : undefined} />
+            ))}
+          </div>
         </details>
       )}
     </>

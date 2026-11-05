@@ -1,9 +1,10 @@
 // Physics, Class XI. Numericals are answered by the solver registry. The facts are written for this app.
+import { derivationBlueprints } from '../derivations';
 import KNOWLEDGE from './knowledge/physics-xi';
 import { blueprintsFor } from './dsl';
 import type { Blueprint } from './types';
 
-const { num, mcqNum, facts, rest } = blueprintsFor('physics', 'XI', KNOWLEDGE);
+const { num, mcqNum, facts, rest, custom } = blueprintsFor('physics', 'XI', KNOWLEDGE);
 
 const blueprints: Blueprint[] = [
   // ---- Unit 1: Measurement
@@ -1107,6 +1108,7 @@ const blueprints: Blueprint[] = [
     ],
   }),
   ...rest(),
+  ...derivationBlueprints('physics', 'XI', { custom } as never),
 ];
 
 export default blueprints;

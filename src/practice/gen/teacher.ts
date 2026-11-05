@@ -87,7 +87,8 @@ function matches(item: { unit: number; topic: string; marks: number; difficulty:
   return true;
 }
 
-export const blueprintMatches = (bp: Blueprint, f: Filters): boolean => matches(bp, bp.level, bp.format, bp.style, f);
+const isDerivation = (type: BankType) => type === 'derivation' || type === 'proof';
+export const blueprintMatches = (bp: Blueprint, f: Filters): boolean => matches(bp, bp.level, isDerivation(bp.type) && f.formats.includes('derivation') ? 'derivation' : bp.format, bp.style, f);
 export const bankMatches = (def: BankDef, level: ClassLevel, f: Filters): boolean => matches(def, level, bankFormat(def), bankStyle(def), f);
 
 async function loadSources(f: Filters): Promise<Source[]> {
@@ -142,10 +143,18 @@ function probe(set: LoadedBlueprints, bp: Blueprint): { key: string; facts: stri
 /** How many different questions these filters can give. It stops counting at `limit`. */
 function countDistinct(sources: Source[], f: Filters, avoid: Set<string>, limit: number): number {
   let total = 0;
-  if (f.share < 100) for (const s of sources) total += s.bank.defs.filter((d) => bankMatches(d, s.level, f) && !avoid.has(d.id)).length;
-  if (f.share <= 0 || total >= limit) return Math.min(total, limit);
   const facts = new Set<string>();
   const keys = new Set<string>();
+  if (f.share < 100) {
+    for (const s of sources) {
+      for (const d of s.bank.defs) {
+        if (!bankMatches(d, s.level, f) || avoid.has(d.id)) continue;
+        total++;
+        for (const x of d.facts ?? []) facts.add(x);
+      }
+    }
+  }
+  if (f.share <= 0 || total >= limit) return Math.min(total, limit);
   // Questions on one fact first, so that a matching question, which uses up several, is counted last.
   for (const multi of [false, true]) {
     for (const s of sources) {
@@ -178,6 +187,12 @@ export async function capacityOf(f: Filters, avoid: Set<string> = new Set(), lim
   const sources = await loadSources(f);
   const exact = countDistinct(sources, f, avoid, limit);
   return { exact, withRelated: f.topics.length && exact < limit ? countDistinct(sources, widened(f), avoid, limit) : exact };
+}
+
+/** Lines to leave for an answer. A derivation gets room for its marks, if lines are wanted at all. */
+export function answerSpace(item: { type: BankType; marks: number }, chosen: number): number {
+  if (!chosen) return 0;
+  return isDerivation(item.type) ? Math.max(chosen, item.marks * 2) : chosen;
 }
 
 /** One question on the review screen. */
@@ -304,8 +319,12 @@ async function drawOnce(req: DrawRequest, usedBlueprints: Set<string>, seenText:
   const wantBank = f.share >= 100 ? 0 : Math.min(count - wantGen, bankPool.length);
   const bankOrder = shuffled(bankPool, rng);
   const fromBank = bankOrder.slice(0, wantBank).map(({ def, bank }) => bankQuestion(def, bank, rng));
-  for (const q of fromBank) seenText.add(questionKey(q));
+  for (const q of fromBank) {
+    seenText.add(questionKey(q));
+    for (const x of factsOf(q)) seenFacts.add(x);
+  }
   // Whatever the bank can't supply, generated questions make up if the share allows any.
+  // Enough of the bank to reach the share: a bank question and a generated one can't both ask one fact.
   const needGen = f.share > 0 ? count - fromBank.length : 0;
   const made: BankQuestion[] = [];
   const order = shuffled(pools, rng);
@@ -315,8 +334,17 @@ async function drawOnce(req: DrawRequest, usedBlueprints: Set<string>, seenText:
     made.push(...pickGenerated(order[i].s.set, order[i].list, { count: portion, rng, used: usedBlueprints, seenText, seenFacts }));
   }
   // The generated side ran short, so the bank makes up the rest if the slider allows it.
-  const extra = f.share < 100 ? bankOrder.slice(wantBank, wantBank + count - fromBank.length - made.length).map(({ def, bank }) => bankQuestion(def, bank, rng)) : [];
-  for (const q of extra) seenText.add(questionKey(q));
+  const extra: BankQuestion[] = [];
+  if (f.share < 100) {
+    for (const { def, bank } of bankOrder.slice(wantBank)) {
+      if (extra.length >= count - fromBank.length - made.length) break;
+      if ((def.facts ?? []).some((x) => seenFacts.has(x))) continue;
+      const q = bankQuestion(def, bank, rng);
+      extra.push(q);
+      seenText.add(questionKey(q));
+      for (const x of factsOf(q)) seenFacts.add(x);
+    }
+  }
   const all = shuffled([...fromBank, ...extra, ...made], rng).map((q) => toItem(q, slot));
   let short = count - all.length;
   // The last resort: related subtopics in the chapters chosen, which are labelled.

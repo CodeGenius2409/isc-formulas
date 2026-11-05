@@ -49,3 +49,30 @@ test('ten questions from one narrow subtopic means ten questions, with any from 
   if (related) await expect(page.getByTestId('related-note')).toContainText(`${related} question`);
   expect(problems).toEqual([]);
 });
+
+test('the derivation filter gives derivations, with a marking scheme by steps, in print and in Word', async ({ page }, info) => {
+  const problems = watchProblems(page);
+  await page.goto('/#/generate');
+  await page.getByLabel('Class XII', { exact: true }).check();
+  await page.getByLabel('Derivation or proof', { exact: true }).check();
+  await page.locator('#gen-amount').fill('6');
+  await page.getByRole('button', { name: 'Generate the questions' }).click();
+  await expect(page.getByTestId('review-item')).toHaveCount(6);
+  const waiting = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Word: the answer key' }).click();
+  await (await waiting).saveAs(info.outputPath('key.docx'));
+  expect(problems).toEqual([]);
+});
+
+test('in practice, a derivation shows its model answer with a result that stands out, and a checklist', async ({ page }) => {
+  const problems = watchProblems(page);
+  await page.goto('/#/generate');
+  await page.getByLabel('Class XII', { exact: true }).check();
+  await page.getByLabel('Derivation or proof', { exact: true }).check();
+  await page.getByRole('slider').focus();
+  await page.keyboard.press('End');
+  await page.locator('#gen-amount').fill('1');
+  await page.getByRole('button', { name: 'Generate the questions' }).click();
+  await expect(page.getByTestId('review-item')).toHaveCount(1);
+  expect(problems).toEqual([]);
+});

@@ -2,6 +2,7 @@
 // structures in src/data/lewis.
 import { LEWIS } from '../lewis/figures';
 import { formulaText } from '../lewis/check';
+import { derivationBlueprints } from '../derivations';
 import KNOWLEDGE from './knowledge/chemistry-xi';
 import { blueprintsFor } from './dsl';
 import type { Blueprint } from './types';
@@ -774,6 +775,7 @@ const blueprints: Blueprint[] = [
     ],
   }),
   ...rest(),
+  ...derivationBlueprints('chemistry', 'XI', { custom } as never),
 ];
 
 export default blueprints;

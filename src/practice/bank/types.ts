@@ -58,6 +58,9 @@ interface Tags {
   /** Code in the question is Python, not Java. */
   python?: 1;
   structure?: EntryStructure;
+  facts?: string[];
+  stepBlueprint?: string;
+  answerDiagram?: DiagramSpec;
   diagram?: DiagramSpec;
   /** Structures with lone pairs shown once the question is marked, by id in src/data/lewis/figures.ts. */
   answerLewis?: string[];
@@ -123,10 +126,6 @@ export interface SimulatorRef {
 }
 
 interface InstanceTags extends Omit<Tags, 'structure' | 'diagram'> {
-  /** The facts this tests. See Blueprint's Body. */
-  facts?: string[];
-  /** A figure the answer needs. Only shown after answering, and in the answer key. */
-  answerDiagram?: DiagramSpec;
   structure?: EntryStructure;
   diagram?: DiagramSpec;
   simulator?: SimulatorRef;

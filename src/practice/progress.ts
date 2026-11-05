@@ -117,6 +117,25 @@ export function recordAnswer(record: AnswerRecord): void {
   }
 }
 
+/**
+ * The steps of a derivation you didn't tick. Each comes back on its own in review, asked as "write the missing step",
+ * while the rest of the derivation stays on its own schedule.
+ */
+export function noteMissedSteps(stepBlueprint: string | undefined, points: unknown[], ticks: boolean[] | undefined): void {
+  if (!stepBlueprint) return;
+  const day = today();
+  const missed = points.map((_, i) => i).filter((i) => !ticks?.[i]);
+  if (!missed.length) return;
+  srsStore.set((all) => {
+    const next = { ...all };
+    for (const i of missed) {
+      const id = `g-${stepBlueprint}-${i}`;
+      next[id] = schedule(next[id] ?? newItem(id, day), 1, day);
+    }
+    return next;
+  });
+}
+
 /** Removes the mistake log entry without touching the review schedule. */
 export function deleteMistake(id: string): void {
   mistakesStore.set((list) => list.filter((m) => m.id !== id));

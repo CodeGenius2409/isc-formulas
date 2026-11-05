@@ -4,7 +4,7 @@ import { loadSyllabus } from '../../data/syllabus';
 import type { ClassLevel, SubjectId } from '../../data/types';
 import { createStore } from '../../lib/store';
 import { readJson, writeJson } from '../../lib/storage';
-import { papersImported, recordAnswer } from '../progress';
+import { noteMissedSteps, papersImported, recordAnswer } from '../progress';
 import { seededRng, type Rng } from '../questions';
 import { loadBlueprints, type LoadedBlueprints } from '../../data/blueprints';
 import { CBQ_SHARE, generatedCount, pickGenerated, planShare, type SlotCount } from '../gen/mix';
@@ -180,6 +180,19 @@ async function unitWeights(subject: SubjectId, level: ClassLevel): Promise<Map<n
   return weights;
 }
 
+/**
+ * The share of each mark value that is a derivation or proof, from the board and specimen papers in the analysis.
+ * Computer Science has none. See reports/derivations.md.
+ */
+export const DERIVATION_SHARE: Record<SubjectId, Record<number, number>> = {
+  physics: { 2: 0.03, 3: 0.58, 5: 0.33 },
+  chemistry: { 2: 0.04, 3: 0.04 },
+  mathematics: { 2: 0.08, 3: 0.08, 4: 0.3, 5: 0.18, 6: 0.09 },
+  computerscience: {},
+};
+
+const isDerivationType = (type: string) => type === 'derivation' || type === 'proof';
+
 export interface GeneratedOption {
   set: LoadedBlueprints;
   share: number;
@@ -211,16 +224,33 @@ export function assemblePaper(subject: SubjectId, level: ClassLevel, bank: Loade
   const sections = spec.sections.map((section) => {
     const questions = section.slots.flatMap((slot) => {
       const inSection = (unit: number) => !section.units || section.units.includes(unit);
-      const pool = bank.defs.filter((d) => d.marks === slot.marks && inSection(d.unit) && !used.has(d.id));
-      const made = generated ? pickGenerated(generated.set, generated.set.blueprints.filter((b) => b.marks === slot.marks && inSection(b.unit)), { count: Math.max(generatedCount(slot.count, share), slot.count - pool.length), weights, rng, used: usedBlueprints, seenText, seenFacts, cbqShare: CBQ_SHARE }) : [];
-      const inBank = bank.defs.filter((d) => d.marks === slot.marks && inSection(d.unit));
-      const unusedBank = inBank.filter((d) => !used.has(d.id)).length;
-      const fromBank = Math.min(slot.count - made.length, unusedBank);
-      const defs = fromBank > 0 ? draw(inBank, fromBank, weights, used, rng) : [];
-      // A paper is never handed out short: if the bank runs out, generated questions fill the rest, whatever the slider says.
-      const fill = made.length + defs.length < slot.count && generated ? pickGenerated(generated.set, generated.set.blueprints.filter((b) => b.marks === slot.marks && inSection(b.unit)), { count: slot.count - made.length - defs.length, weights, rng, used: usedBlueprints, seenText, seenFacts }) : [];
-      if (made.length + defs.length + fill.length < slot.count) throw new Error(`There are too few ${slot.marks}-mark questions for this paper.`);
-      return shuffled([...defs.map((d) => bankQuestion(d, bank, rng)), ...made, ...fill], rng);
+      const fresh = (d: BankDef) => !(d.facts ?? []).some((f) => seenFacts.has(f));
+      const bankFor = (wantDerivation: boolean | null) => bank.defs.filter((d) => d.marks === slot.marks && inSection(d.unit) && !used.has(d.id) && fresh(d) && (wantDerivation === null || isDerivationType(d.type) === wantDerivation));
+      const blueprintsFor = (wantDerivation: boolean | null) => (generated?.set.blueprints ?? []).filter((b) => b.marks === slot.marks && inSection(b.unit) && (wantDerivation === null || isDerivationType(b.type) === wantDerivation));
+      const pickMade = (pool: ReturnType<typeof blueprintsFor>, count: number, cbqShare = 0) => (generated && count > 0 ? pickGenerated(generated.set, pool, { count, weights, rng, used: usedBlueprints, seenText, seenFacts, cbqShare }) : []);
+      const takeBank = (pool: BankDef[], count: number) => {
+        const defs = count > 0 && pool.length ? draw(pool, Math.min(count, pool.length), weights, used, rng) : [];
+        for (const d of defs) for (const f of d.facts ?? []) seenFacts.add(f);
+        return defs;
+      };
+      // Derivations first, in the share the real papers give them, from the bank or generated as the slider says.
+      const wantDerivations = Math.round(slot.count * (DERIVATION_SHARE[subject][slot.marks] ?? 0));
+      const genDerivations = pickMade(blueprintsFor(true), generatedCount(wantDerivations, share));
+      const bankDerivations = takeBank(bankFor(true), wantDerivations - genDerivations.length);
+      const lateDerivations = pickMade(blueprintsFor(true), wantDerivations - genDerivations.length - bankDerivations.length);
+      const derivationCount = genDerivations.length + bankDerivations.length + lateDerivations.length;
+      // Then everything else.
+      const others = slot.count - derivationCount;
+      const pool = bankFor(false);
+      const made = pickMade(blueprintsFor(false), generatedCount(others, share), CBQ_SHARE);
+      const defs = takeBank(pool, others - made.length);
+      // A paper is never handed out short: if one kind runs out, anything of the right marks fills the rest, whatever the slider says.
+      let left = others - made.length - defs.length;
+      const moreBank = takeBank(bankFor(null), left);
+      left -= moreBank.length;
+      const fill = pickMade(blueprintsFor(null), left);
+      if (fill.length < left) throw new Error(`There are too few ${slot.marks}-mark questions for this paper.`);
+      return shuffled([...[...bankDerivations, ...defs, ...moreBank].map((d) => bankQuestion(d, bank, rng)), ...genDerivations, ...lateDerivations, ...made, ...fill], rng);
     });
     return { name: section.name, note: section.note, choose: section.choose, questions };
   });
@@ -299,6 +329,7 @@ export function finishMarking(): PaperResult | null {
       // In an "any two" section, a question left alone isn't a mistake. Choosing not to answer is allowed.
       if (section.choose && (!counted.has(item.id) || !isAttempted(item, answer))) continue;
       const score = scoreOf(item, answer);
+      if (item.form === 'theory') noteMissedSteps(item.stepBlueprint, item.points, answer?.ticks);
       recordAnswer({
         question,
         correct: isPassing(item, score),

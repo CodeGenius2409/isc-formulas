@@ -2,6 +2,7 @@
 import { classify, truthColumn } from '../../practice/gen/boolean';
 import type { Gen } from '../../practice/gen/gen';
 import { complete, designClass, findError, inMain, outputOf, pyList, pySlice, SHORT_WORDS, withMethods } from './cs-common';
+import { derivationBlueprints } from '../derivations';
 import KNOWLEDGE from './knowledge/computerscience-xi';
 import { blueprintsFor } from './dsl';
 import type { Blueprint, Body, OutputBody } from './types';
@@ -736,6 +737,7 @@ const blueprints: Blueprint[] = [
     return outputOf(g, code, undefined, 'A report card program gives a grade from a mark. Write what it prints.');
   }),
   ...rest(),
+  ...derivationBlueprints('computerscience', 'XI', { custom } as never),
 ];
 
 export default blueprints;

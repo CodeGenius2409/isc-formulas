@@ -1,6 +1,7 @@
 // Mathematics, Class XI. Built backwards from clean answers, in exact arithmetic where it can be.
 import { evalPoly, factorial, frac, nCr, polyTex, signed } from '../../practice/gen/exact';
 import type { Step } from '../../solver/solve';
+import { derivationBlueprints } from '../derivations';
 import KNOWLEDGE from './knowledge/mathematics-xi';
 import { blueprintsFor } from './dsl';
 import type { Blueprint } from './types';
@@ -806,6 +807,7 @@ const blueprints: Blueprint[] = [
     };
   }),
   ...rest(),
+  ...derivationBlueprints('mathematics', 'XI', { custom } as never),
 ];
 
 export default blueprints;
