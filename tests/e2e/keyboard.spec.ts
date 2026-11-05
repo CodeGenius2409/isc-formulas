@@ -40,7 +40,7 @@ for (const [label, viewport] of [
     const input = page.getByRole('combobox', { name: 'Find a formula' });
     await expect(input).toBeFocused();
     await page.keyboard.type('average velocty');
-    await expect(page.getByRole('option').first()).toContainText(/average velocity/i);
+    await expect(page.getByRole('listbox', { name: 'Results' }).getByRole('option').first()).toContainText(/average velocity/i);
     await page.keyboard.press('Enter');
 
     // Open

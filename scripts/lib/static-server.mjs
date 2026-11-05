@@ -19,7 +19,7 @@ const TYPES = {
 
 const COMPRESSIBLE = new Set(['.html', '.js', '.css', '.json', '.webmanifest', '.svg']);
 
-export function serveStatic(dir, port = 0) {
+export function serveStatic(dir, port = 0, { noStore = false } = {}) {
   const server = createServer((req, res) => {
     const pathname = decodeURIComponent(new URL(req.url, 'http://x').pathname);
     let file = normalize(join(dir, pathname));
@@ -34,7 +34,8 @@ export function serveStatic(dir, port = 0) {
     }
     const ext = extname(file);
     const headers = { 'content-type': TYPES[ext] ?? 'application/octet-stream' };
-    if (/\/assets\//.test(pathname)) headers['cache-control'] = 'public, max-age=31536000, immutable';
+    if (noStore) headers['cache-control'] = 'no-store';
+    else if (/\/assets\//.test(pathname)) headers['cache-control'] = 'public, max-age=31536000, immutable';
     else headers['cache-control'] = 'no-cache';
     if (COMPRESSIBLE.has(ext) && /\bgzip\b/.test(req.headers['accept-encoding'] ?? '')) {
       const body = gzipSync(readFileSync(file));

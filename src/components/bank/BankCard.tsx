@@ -6,6 +6,8 @@ import type { BankAnswer, BankQuestion } from '../../practice/bank/types';
 import { recordAnswer } from '../../practice/progress';
 import { nextQuestion, noteResult } from '../../practice/session';
 import { BankInputs, BankPrompt, BankReview, marksLabel } from './BankParts';
+import { GeneratedMark, GeneratedNote, ReportProblem } from './GeneratedMark';
+import { SimPanel } from './SimPanel';
 
 /** A question from the bank in a practice session: answer, then see the working or mark yourself. */
 export function BankCard({ question, mistakeId }: { question: BankQuestion; mistakeId?: string }) {
@@ -71,9 +73,14 @@ export function BankCard({ question, mistakeId }: { question: BankQuestion; mist
     >
       <p className="bank-meta">
         <span>{getSubject(item.subject).label} {item.level}, {item.topicName}</span>
+        <GeneratedMark item={item} />
         <span className="bank-marks">[{item.marks}]</span>
       </p>
-      <BankPrompt item={item} />
+      <div className="bank-body" data-generated={item.generated ? true : undefined}>
+        <BankPrompt item={item} />
+      </div>
+      <GeneratedNote item={item} />
+      {item.simulator && <SimPanel simulator={item.simulator} answered={checked} />}
       <BankInputs item={item} answer={answer} onChange={change} marked={checked} />
 
       {!checked && item.form !== 'mcq' && (
@@ -102,6 +109,7 @@ export function BankCard({ question, mistakeId }: { question: BankQuestion; mist
           )}
         </div>
       )}
+      <ReportProblem item={item} />
     </form>
   );
 }

@@ -96,4 +96,105 @@
   a {
     text-decoration: none;
   }
+
+  /* A paper from the teacher's generator: only the sheet prints. */
+  .gen-print {
+    display: block;
+    color: #000000;
+    line-height: 1.35;
+  }
+
+  .gen-print-head {
+    text-align: center;
+    border-bottom: 1px solid #000000;
+    padding-bottom: 6pt;
+    margin-bottom: 8pt;
+  }
+
+  .gen-print-head h1 {
+    font-size: 1.3em;
+    font-weight: 700;
+  }
+
+  .gen-instructions {
+    margin: 0 0 8pt 1.2em;
+    padding: 0;
+    list-style: disc;
+    font-size: 0.9em;
+  }
+
+  .gen-print-section h2 {
+    font-size: 1.1em;
+    font-weight: 700;
+    margin-top: 10pt;
+  }
+
+  .gen-note-line {
+    font-style: italic;
+  }
+
+  .gen-print-q {
+    padding: 5pt 0 5pt 6pt;
+    border-left: 1.5pt solid transparent;
+    break-inside: avoid;
+  }
+
+  .gen-print-q[data-generated] {
+    border-left: 1.5pt dotted #000000;
+  }
+
+  .gen-print-num {
+    display: flex;
+    align-items: baseline;
+    gap: 6pt;
+  }
+
+  .gen-print-num .bank-marks {
+    margin-left: auto;
+  }
+
+  .gen-print .gen-mark {
+    color: #000000;
+    font-size: 0.85em;
+  }
+
+  .gen-answer-line {
+    border-bottom: 0.75pt solid #666666;
+    height: 18pt;
+  }
+
+  .gen-key-lines {
+    margin: 0 0 0 1.2em;
+    padding: 0;
+    list-style: disc;
+  }
+
+  .gen-print-legend {
+    border-left: 1.5pt dotted #000000;
+    color: #000000;
+  }
+
+  .gen-print-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 8pt;
+    color: #000000;
+  }
+
+  .gen-legend {
+    color: #000000;
+    border-left: 1.5pt dotted #000000;
+  }
+
+  .paper-question[data-generated],
+  .bank-body[data-generated] {
+    border-left: 1.5pt dotted #000000;
+  }
+
+  .gen-mark {
+    color: #000000;
+  }
 }

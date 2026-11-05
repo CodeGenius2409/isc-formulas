@@ -419,3 +419,268 @@ mark {
     height: 1.25rem;
   }
 }
+
+/* A generated question: a die and a word beside its number, and a dotted stretch of margin rule. Custom formulas use a
+   dashed one, so the two can't be mistaken. Ink and dots, so it survives a black-and-white printer. */
+.gen-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: var(--step--1);
+  font-style: italic;
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+
+.bank-body[data-generated],
+.paper-question[data-generated] {
+  border-left: 2px dotted var(--ink-2);
+  padding-left: 0.625rem;
+}
+
+.gen-note {
+  margin-top: 0.5rem;
+  font-size: var(--step--1);
+  color: var(--ink-2);
+}
+
+.gen-note summary {
+  cursor: pointer;
+}
+
+.gen-legend {
+  margin-top: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border-left: 2px dotted var(--ink-2);
+  font-size: var(--step--1);
+  color: var(--ink-2);
+}
+
+.report-open {
+  margin-top: 0.5rem;
+  font-size: var(--step--1);
+}
+
+.report-box {
+  margin-top: 0.75rem;
+}
+
+.report-sent {
+  margin-top: 0.5rem;
+  font-size: var(--step--1);
+  color: var(--ink-2);
+}
+
+.share-slider {
+  margin-top: 0.75rem;
+}
+
+.share-slider input[type='range'] {
+  display: block;
+  width: 100%;
+  min-height: 1.5rem;
+  accent-color: var(--accent);
+}
+
+.share-ticks {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--step--1);
+  color: var(--ink-3);
+}
+
+@media (pointer: coarse) {
+  .share-slider input[type='range'] {
+    min-height: 2.75rem;
+  }
+}
+
+.switch-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+}
+
+.practice-settings {
+  border-top: 1px solid var(--rule);
+  padding: 0.5rem 0;
+}
+
+.practice-settings summary {
+  cursor: pointer;
+  min-height: 1.75rem;
+}
+
+/* The teacher's generator. */
+.gen-check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 1.75rem;
+}
+
+.gen-checks {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+  gap: 0 0.75rem;
+}
+
+.gen-group {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+.gen-chapters {
+  margin-top: 0.75rem;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  padding: 0.5rem 0;
+}
+
+.gen-chapters summary {
+  cursor: pointer;
+  min-height: 1.75rem;
+  font-weight: 600;
+}
+
+.gen-topics {
+  margin-left: 1.5rem;
+}
+
+.gen-section-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+  gap: 0.5rem;
+  align-items: end;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.gen-review {
+  padding: 0.75rem 0 0.75rem 0.625rem;
+  border-bottom: 1px solid var(--rule);
+  border-left: 2px solid transparent;
+}
+
+.gen-review[data-generated] {
+  border-left: 2px dotted var(--ink-2);
+}
+
+.gen-review[data-over] {
+  background: var(--paper-3);
+}
+
+.gen-review[data-locked] {
+  background: var(--paper-2);
+}
+
+.gen-review-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.gen-review-head .bank-marks {
+  margin-left: auto;
+}
+
+.gen-grip {
+  display: inline-flex;
+  color: var(--ink-3);
+  cursor: grab;
+}
+
+.gen-options {
+  margin: 0.25rem 0 0 1.5rem;
+  padding: 0;
+  list-style: lower-alpha;
+}
+
+.gen-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.125rem;
+  margin-top: 0.375rem;
+}
+
+.gen-actions .report-open {
+  margin-top: 0;
+}
+
+.gen-saved {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.25rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.gen-print {
+  display: none;
+}
+
+@media (pointer: coarse) {
+  .gen-check {
+    min-height: 2.75rem;
+  }
+
+  .gen-chapters summary,
+  .practice-settings summary,
+  .gen-note summary {
+    min-height: 2.75rem;
+    padding-block: 0.625rem;
+  }
+}
+
+.diagram-button {
+  display: block;
+  width: 100%;
+  cursor: zoom-in;
+  border-radius: 3px;
+}
+
+@media (hover: hover) {
+  .diagram-button:hover {
+    background: var(--paper-2);
+  }
+}
+
+.bank-diagram-wait {
+  min-height: 8rem;
+}
+
+.diagram-zoom-body {
+  padding: 0.75rem;
+  width: min(44rem, calc(100vw - 2rem));
+}
+
+.diagram-zoom-body .bank-diagram {
+  max-width: none;
+}
+
+.bank-table {
+  max-width: 28rem;
+  margin: 0.75rem 0;
+}
+
+.bank-table th:last-child,
+.bank-table td:last-child {
+  text-align: left;
+}
+
+.sim-panel {
+  margin-top: 0.5rem;
+}
+
+.sim-embed {
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--rule);
+}

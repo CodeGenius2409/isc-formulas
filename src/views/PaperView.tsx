@@ -1,11 +1,17 @@
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
+import { Wand2 } from 'lucide-react';
 import { BankInputs, BankPrompt, BankReview, marksLabel } from '../components/bank/BankParts';
+import { GeneratedMark, PaperLegend, ReportProblem } from '../components/bank/GeneratedMark';
+import { ShareSlider } from '../components/bank/ShareSlider';
 import { manifest, getSubject } from '../data/book';
 import type { ClassLevel, SubjectId } from '../data/types';
-import { openWork } from '../lib/router';
+import { useAsync } from '../lib/hooks';
+import { href, openWork, useRoute } from '../lib/router';
 import { useStore } from '../lib/store';
 import { isAttempted, scoreOf } from '../practice/bank/mark';
-import { abandonPaper, answerPaper, finishMarking, PAPER_MINUTES, paperHistoryStore, paperResult, paperSpec, paperStore, startPaper, submitPaper, type Paper, type PaperResult } from '../practice/bank/paper';
+import { loadBank } from '../practice/bank';
+import { abandonPaper, answerPaper, finishMarking, PAPER_MINUTES, paperHistoryStore, paperResult, paperSlots, paperSpec, paperStore, startPaper, submitPaper, type Paper, type PaperResult } from '../practice/bank/paper';
+import { describePlan, paperShareStore, paperUsesGeneratedStore, planShare } from '../practice/gen/mix';
 import type { BankAnswer, BankItem } from '../practice/bank/types';
 import { lastReadStore } from '../state/library';
 
@@ -33,17 +39,26 @@ export default function PaperView() {
 function PaperHome() {
   const last = useStore(lastReadStore);
   const history = useStore(paperHistoryStore);
-  const [subject, setSubject] = useState<SubjectId>(last?.subject ?? 'physics');
-  const [level, setLevel] = useState<ClassLevel>(last?.classLevel ?? 'XII');
+  const route = useRoute();
+  const q = route.query;
+  const linkedSeed = q.get('seed') ? Number(q.get('seed')) : undefined;
+  const [subject, setSubject] = useState<SubjectId>((q.get('subject') as SubjectId | null) ?? last?.subject ?? 'physics');
+  const [level, setLevel] = useState<ClassLevel>((q.get('level') as ClassLevel | null) ?? last?.classLevel ?? 'XII');
   const [busy, setBusy] = useState(false);
   const [problem, setProblem] = useState('');
   const spec = useMemo(() => paperSpec(subject, level), [subject, level]);
+  const useGenerated = useStore(paperUsesGeneratedStore);
+  const share = useStore(paperShareStore);
+  const bank = useAsync(() => loadBank(subject, level), `${subject}-${level}`);
+  const plan = bank.status === 'ready' ? planShare(paperSlots(subject, level, bank.value), useGenerated ? share : 0) : null;
+  // Nothing can rule out the bank running short, even with the switch off.
+  const needsGenerated = !useGenerated && Boolean(plan?.raised);
 
-  const start = async () => {
+  const start = async (seed?: number, shareOverride?: number) => {
     setBusy(true);
     setProblem('');
     try {
-      await startPaper(subject, level);
+      await startPaper(subject, level, { share: shareOverride ?? (useGenerated ? (plan?.share ?? share) : needsGenerated ? plan!.share : 0), seed });
     } catch (e) {
       setProblem(e instanceof Error ? e.message : 'The paper could not be built.');
     }
@@ -55,6 +70,11 @@ function PaperHome() {
       <div className="page-pad max-w-[48rem]">
         <h1 className="text-step-3">Build a mock paper</h1>
         <p className="mt-2 max-w-[65ch] text-ink-2">Three hours, with the same sections and marks as the real paper. The questions are written for this app in the style of past papers, not copied from them. Numericals get fresh values each time. When you hand it in, you mark the written answers against the marking scheme and see how you did in each topic.</p>
+        <p className="mt-2">
+          <a className="text-action" href={href('generate')}>
+            <Wand2 size={15} aria-hidden className="inline" /> Generate questions, for teachers and for worksheets
+          </a>
+        </p>
 
         <div className="mt-3 grid gap-2 sm:grid-cols-2">
           <div>
@@ -89,9 +109,22 @@ function PaperHome() {
               </li>
             ))}
           </ul>
-          <button type="button" className="btn btn-solid mt-3" disabled={busy} onClick={() => void start()}>
-            {busy ? 'Building the paper' : 'Start the paper'}
-          </button>
+          <div className="mt-3">
+            <label className="switch-row">
+              <input type="checkbox" checked={useGenerated} onChange={(e) => paperUsesGeneratedStore.set(e.target.checked)} /> Use generated questions
+            </label>
+            {useGenerated && plan && <ShareSlider value={share} onChange={(v) => paperShareStore.set(v)} message={describePlan(plan)} warning={plan.raised} />}
+            {!useGenerated && <p className="mt-1 text-step--1 text-ink-2">{needsGenerated && plan ? plan.raised : 'This paper will use only questions from the bank.'}</p>}
+          </div>
+          {linkedSeed !== undefined ? (
+            <button type="button" className="btn btn-solid mt-3" disabled={busy} onClick={() => void start(linkedSeed, Number(q.get('share') ?? 0))}>
+              {busy ? 'Building the paper' : 'Open the linked paper'}
+            </button>
+          ) : (
+            <button type="button" className="btn btn-solid mt-3" disabled={busy} onClick={() => void start()}>
+              {busy ? 'Building the paper' : 'Start the paper'}
+            </button>
+          )}
           {problem && (
             <p className="mt-2 text-bad" role="alert">
               {problem}
@@ -110,6 +143,11 @@ function PaperHome() {
                       {getSubject(r.subject).label} {r.level}: <span className="num font-semibold">{r.got}</span> of <span className="num">{r.total}</span>, {DATE.format(new Date(r.date))}
                     </summary>
                     <ResultTables result={r} />
+                    {r.seed !== undefined && (
+                      <a className="btn btn-line mt-2" href={href('paper', { subject: r.subject, level: r.level, seed: String(r.seed), share: String(r.generatedShare ?? 0) })}>
+                        Sit this paper again
+                      </a>
+                    )}
                   </details>
                 </li>
               ))}
@@ -151,14 +189,16 @@ const PaperQuestion = memo(function PaperQuestion({ item, number, answer, markin
   const current = answer ?? {};
   const onChange = (change: Partial<BankAnswer>) => answerPaper(item.id, change);
   return (
-    <li className="paper-question" id={`pq-${item.id}`}>
+    <li className="paper-question" id={`pq-${item.id}`} data-generated={item.generated ? true : undefined}>
       <p className="bank-meta">
         <span className="font-semibold">Question {number}</span>
+        <GeneratedMark item={item} />
         <span className="bank-marks">{marking ? `${scoreOf(item, current)} of ${item.marks}` : `[${item.marks}]`}</span>
       </p>
       <BankPrompt item={item} />
       <BankInputs item={item} answer={current} onChange={onChange} marked={marking} />
       {marking && <BankReview item={item} answer={current} onChange={onChange} />}
+      <ReportProblem item={item} />
     </li>
   );
 });
@@ -177,6 +217,7 @@ function PaperSheet({ paper, onFinished }: { paper: Paper; onFinished: (result: 
   const toAnswer = items.filter((i) => i.form !== 'theory');
   const unanswered = toAnswer.filter((i) => !isAttempted(i, paper.answers[i.id])).length;
   const result = marking ? paperResult(paper) : null;
+  const anyGenerated = items.some((i) => i.generated);
   let number = 0;
 
   return (
@@ -200,6 +241,7 @@ function PaperSheet({ paper, onFinished }: { paper: Paper; onFinished: (result: 
         ) : (
           <p className="mt-2 max-w-[65ch] text-ink-2">Write theory answers on paper. Your work is saved as you go, so you can leave and come back, but the clock keeps running.</p>
         )}
+        {anyGenerated && <PaperLegend />}
 
         {paper.sections.map((section) => (
           <section key={section.name} className="today-section" aria-label={section.name}>

@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { usePreset } from './lib/question-mode';
 import { Canvas, Plot, token } from './lib/plot';
 import { Equation, fmt, Readouts, Slider, ToolLayout } from './lib/ui';
 
 export function Bohr() {
-  const [n, setN] = useState(1);
+  const [n, setN] = usePreset('n', 1);
   const E = -13.6 / (n * n);
   const r = 0.529 * n * n;
   const ionise = 13.6 / (n * n);
@@ -49,8 +49,8 @@ export function Bohr() {
 const H_EV = 4.136e-15;
 
 export function Photoelectric() {
-  const [f14, setF] = useState(8);
-  const [phi, setPhi] = useState(2.5);
+  const [f14, setF] = usePreset('f14', 8);
+  const [phi, setPhi] = usePreset('phi', 2.5);
   const f = f14 * 1e14;
   const E = H_EV * f;
   const K = E - phi;
@@ -91,9 +91,9 @@ export function Photoelectric() {
 }
 
 export function Radioactive() {
-  const [N0, setN0] = useState(1000);
-  const [half, setHalf] = useState(10);
-  const [t, setT] = useState(10);
+  const [N0, setN0] = usePreset('N0', 1000);
+  const [half, setHalf] = usePreset('half', 10);
+  const [t, setT] = usePreset('t', 10);
   const lambda = Math.LN2 / half;
   const N = N0 * Math.exp(-lambda * t);
   return (

@@ -1,6 +1,7 @@
 // KaTeX loads on first use, and each rendered formula is cached so scrolling back
 // through a long list never re-renders it.
 import { useSyncExternalStore } from 'react';
+import { retryImport } from './retry-import';
 
 type Katex = typeof import('katex').default;
 
@@ -12,9 +13,12 @@ const CACHE_LIMIT = 4000;
 const cache = new Map<string, string>();
 
 export function ensureKatex(): Promise<void> {
-  loading ??= Promise.all([import('katex'), import('katex/dist/katex.min.css')]).then(([mod]) => {
+  loading ??= retryImport(() => Promise.all([import('katex'), import('katex/dist/katex.min.css')])).then(([mod]) => {
     katex = mod.default;
     listeners.forEach((l) => l());
+  });
+  loading.catch(() => {
+    loading = null;
   });
   return loading;
 }

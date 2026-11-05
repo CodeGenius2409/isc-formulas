@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { usePreset } from './lib/question-mode';
 import { Canvas, Plot, token } from './lib/plot';
 import { Equation, fmt, Readouts, Slider, ToolLayout } from './lib/ui';
 
@@ -14,8 +14,8 @@ const arrow = (ctx: CanvasRenderingContext2D, x: number, y0: number, y1: number)
 };
 
 export function Lens() {
-  const [f, setF] = useState(20);
-  const [u, setU] = useState(-40);
+  const [f, setF] = usePreset('f', 20);
+  const [u, setU] = usePreset('u', -40);
   const atFocus = Math.abs(u + f) < 0.01;
   // Cartesian sign convention: 1/v − 1/u = 1/f, with u negative for a real object.
   const v = atFocus ? Infinity : 1 / (1 / f + 1 / u);
@@ -118,9 +118,9 @@ export function Lens() {
 }
 
 export function Snell() {
-  const [n1, setN1] = useState(1.5);
-  const [n2, setN2] = useState(1);
-  const [iDeg, setI] = useState(30);
+  const [n1, setN1] = usePreset('n1', 1.5);
+  const [n2, setN2] = usePreset('n2', 1);
+  const [iDeg, setI] = usePreset('iDeg', 30);
   const i = (iDeg * Math.PI) / 180;
   const s = (n1 * Math.sin(i)) / n2;
   const tir = s > 1;
@@ -195,9 +195,9 @@ export function Snell() {
 }
 
 export function Ydse() {
-  const [nm, setNm] = useState(600);
-  const [dmm, setD] = useState(0.5);
-  const [L, setL] = useState(1);
+  const [nm, setNm] = usePreset('nm', 600);
+  const [dmm, setD] = usePreset('dmm', 0.5);
+  const [L, setL] = usePreset('L', 1);
   const lambda = nm * 1e-9;
   const d = dmm * 1e-3;
   const beta = (lambda * L) / d;

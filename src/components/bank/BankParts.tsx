@@ -1,4 +1,4 @@
-import { memo, useId } from 'react';
+import { memo, Suspense, useId } from 'react';
 import { CircleCheck, CircleX } from 'lucide-react';
 import type { BankAnswer, BankItem, NumericItem, TheoryItem } from '../../practice/bank/types';
 import { markPart, normaliseOutput } from '../../practice/bank/mark';
@@ -7,8 +7,11 @@ import { useStructures } from '../../data/structures';
 import { EntryStructures, Molecule } from '../Structures';
 import { LazyLewis } from '../LazyLewis';
 import { StepsList } from '../work/StepsList';
-import { BankDiagram } from './BankDiagram';
+import { lazyRetry } from '../../lib/retry-import';
 import { CodeBlock, RichText } from './RichText';
+
+// The drawings are their own file, fetched the first time a question has a figure.
+const BankDiagram = lazyRetry(() => import('./BankDiagram'));
 
 export const marksLabel = (marks: number): string => `${marks} ${marks === 1 ? 'mark' : 'marks'}`;
 
@@ -18,7 +21,11 @@ export const BankPrompt = memo(function BankPrompt({ item }: { item: BankItem })
     <div className="bank-prompt">
       <RichText text={item.text} python={Boolean(item.python)} />
       {item.structure && <EntryStructures structure={item.structure} scale={1} />}
-      {item.diagram && <BankDiagram spec={item.diagram} />}
+      {item.diagram && (
+        <Suspense fallback={<div className="bank-diagram-wait" aria-hidden />}>
+          <BankDiagram spec={item.diagram} />
+        </Suspense>
+      )}
       {item.form === 'output' && <CodeBlock code={item.code} python={Boolean(item.python)} />}
     </div>
   );

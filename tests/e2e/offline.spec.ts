@@ -46,7 +46,7 @@ test('search, the solver and practice work with no connection', async ({ page, c
   // Search runs in a worker, whose code must also be in the cache.
   await page.keyboard.press('/');
   await page.getByRole('combobox', { name: 'Find a formula' }).fill('escape velocty');
-  await expect(page.getByRole('option').first()).toContainText(/escape/i);
+  await expect(page.getByRole('listbox', { name: 'Results' }).getByRole('option').first()).toContainText(/escape/i);
   await page.keyboard.press('Escape');
 
   // The solver needs the maths engine, which loads lazily.

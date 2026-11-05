@@ -7,8 +7,11 @@ import { getEntry } from '../solver/registry';
 import { mistakesStore, srsStore, today } from './progress';
 import { customInPracticeStore } from '../custom/store';
 import { loadStructures } from '../data/structures';
+import { generatedQuestionForId, loadBlueprints } from '../data/blueprints';
 import { bankQuestion, loadBank, questionForId } from './bank';
 import { isBankId } from './bank/define';
+import { generatedCount, pickGenerated, practiceShareStore } from './gen/mix';
+import { isGeneratedId } from './gen/engine';
 import { conceptQuestion, numericQuestion, seededRng, type Question, type Rng, structureQuestion } from './questions';
 import { reviewOrder } from './srs';
 
@@ -104,17 +107,26 @@ export async function startReview(limit = 20): Promise<Session | null> {
   const asked = await Promise.all(
     due.map(async (d) => {
       if (isBankId(d.id)) return questionForId(d.id, rng);
+      if (isGeneratedId(d.id)) return generatedQuestionForId(d.id);
       const formula = await findFormula(d.id);
       return formula ? questionFor(formula, rng) : null;
     }),
   );
   // A question reworded or taken out of the bank has a new id, so its old schedule is finished with.
-  const gone = due.filter((d, i) => !asked[i] && isBankId(d.id)).map((d) => d.id);
+  const gone = due.filter((d, i) => !asked[i] && (isBankId(d.id) || isGeneratedId(d.id))).map((d) => d.id);
   if (gone.length) srsStore.set((all) => Object.fromEntries(Object.entries(all).filter(([id]) => !gone.includes(id))));
   return begin("Today's review", asked.flatMap((question) => (question ? [{ question }] : [])));
 }
 
-export async function startUnit(subject: SubjectId, level: ClassLevel, unitIndex: number, subtopicIndex?: number): Promise<Session | null> {
+export interface UnitOptions {
+  /** A topic key from the syllabus map, to practise just that. */
+  topic?: string;
+  difficulty?: 1 | 2 | 3;
+  /** The share of generated questions. It rises when the bank has no unseen questions left. */
+  share?: number;
+}
+
+export async function startUnit(subject: SubjectId, level: ClassLevel, unitIndex: number, subtopicIndex?: number, options: UnitOptions = {}): Promise<Session | null> {
   const units = await loadUnits(subject, level);
   const unit = units[unitIndex];
   if (!unit) return null;
@@ -123,11 +135,20 @@ export async function startUnit(subject: SubjectId, level: ClassLevel, unitIndex
   // A whole unit is exam-style questions first. A section has no questions of its own, so it stays with formulas.
   const exam: SessionItem[] = [];
   if (subtopicIndex == null) {
-    const bank = await loadBank(subject, level);
+    const [bank, set] = await Promise.all([loadBank(subject, level), loadBlueprints(subject, level)]);
     const seen = srsStore.get();
-    const here = bank.defs.filter((d) => d.unit === Number(unit.number));
-    const ordered = [...shuffled(here.filter((d) => !seen[d.id]), rng), ...shuffled(here.filter((d) => seen[d.id]), rng)];
-    exam.push(...ordered.slice(0, EXAM_SHARE).map((d) => ({ question: bankQuestion(d, bank, rng) })));
+    const number = Number(unit.number);
+    const fits = (d: { unit: number; topic: string; difficulty: number }) => d.unit === number && (!options.topic || d.topic === options.topic) && (!options.difficulty || d.difficulty === options.difficulty);
+    const here = bank.defs.filter(fits);
+    const unseen = shuffled(here.filter((d) => !seen[d.id]), rng);
+    const pool = set.blueprints.filter(fits);
+    const share = options.share ?? practiceShareStore.get();
+    // More are generated when the bank has run out of unseen questions for this choice.
+    const wanted = pool.length ? Math.max(generatedCount(EXAM_SHARE, share), share > 0 ? EXAM_SHARE - unseen.length : 0) : 0;
+    const made = pickGenerated(set, pool, { count: Math.min(EXAM_SHARE, wanted), rng });
+    const ordered = [...unseen, ...shuffled(here.filter((d) => seen[d.id]), rng)];
+    const fromBank = ordered.slice(0, EXAM_SHARE - made.length).map((d) => ({ question: bankQuestion(d, bank, rng) }));
+    exam.push(...shuffled([...fromBank, ...made.map((question) => ({ question }))], rng));
   }
   const chosen = shuffled(list, rng).slice(0, SESSION_SIZE - exam.length);
   const items = await Promise.all(chosen.map(async (f) => ({ question: await questionFor(f, rng) })));
@@ -154,6 +175,12 @@ export async function startFormula(rawId: string): Promise<Session | null> {
   }
   items.push({ question: conceptQuestion(formula, pool, rng) });
   return begin(formula.name, items);
+}
+
+/** Opens one generated question from its id, as a link does. */
+export async function startGenerated(id: string): Promise<Session | null> {
+  const question = await generatedQuestionForId(id);
+  return question ? begin('Generated question', [{ question }]) : null;
 }
 
 export function startMistakes(filter?: (id: string) => boolean): Session | null {

@@ -26,6 +26,9 @@ function hash(text: string): string {
 
 export const isBankId = (id: string): boolean => /^q-[pcmk]1[12]-/.test(id);
 
+/** A question from the bank, or one generated from a blueprint and a seed. */
+export const isExamId = (id: string): boolean => isBankId(id) || id.startsWith('g-');
+
 /** Which bank file an id lives in, so that finding it loads only that file. */
 export function bankOfId(id: string): { subject: SubjectId; level: ClassLevel } | null {
   const match = /^q-([pcmk])(1[12])-/.exec(id);

@@ -1,4 +1,5 @@
 // Controls shared by the simulators.
+import { useSimQuestion } from './question-mode';
 import { useId, type ReactNode } from 'react';
 import { Math as MathTex } from '../../components/Math';
 
@@ -66,6 +67,8 @@ export function NumField({ label, value, onChange, hint }: { label: string; valu
 }
 
 export function Readouts({ items }: { items: [ReactNode, ReactNode][] }) {
+  const { hide } = useSimQuestion();
+  if (hide) return <p className="readouts-hidden text-step--1 text-ink-2" data-testid="readouts-hidden">Results are hidden until you’ve answered.</p>;
   return (
     <dl className="readouts" aria-live="polite">
       {items.map(([k, v], i) => (

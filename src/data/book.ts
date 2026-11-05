@@ -1,5 +1,6 @@
 // Access to the formula data. Each subject and class is its own lazily loaded
 // chunk, so opening Physics XI never pays for Mathematics XII.
+import { retryImport } from '../lib/retry-import';
 import manifestJson from './generated/manifest.json';
 import { canonicalId } from './aliases';
 import { mergeCustom, resolveCustom } from '../custom/merge';
@@ -31,7 +32,10 @@ const chunkCache = new Map<string, Promise<Chunk>>();
 let sharedPromise: Promise<Record<string, SharedEntry>> | null = null;
 
 export function loadShared(): Promise<Record<string, SharedEntry>> {
-  sharedPromise ??= import('./generated/shared.json').then((m) => m.default as unknown as Record<string, SharedEntry>);
+  sharedPromise ??= retryImport(() => import('./generated/shared.json')).then((m) => m.default as unknown as Record<string, SharedEntry>);
+  sharedPromise.catch(() => {
+    sharedPromise = null;
+  });
   return sharedPromise;
 }
 

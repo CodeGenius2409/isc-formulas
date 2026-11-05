@@ -6,11 +6,12 @@ Every structure in the app is drawn from a SMILES string by RDKit 2026.09.1, in 
 2. Its molecular formula, worked out from the SMILES, matches every condensed formula in the data that points at it. A mis-mapped compound stops the build here.
 3. Its InChIKey matches the one [PubChem](https://pubchem.ncbi.nlm.nih.gov/) gives for that compound's name, and PubChem's molecular weight is within 0.1 of the SMILES.
 
-Date checked: 2026-11-02. PubChem's answers are kept in `scripts/structures/pubchem-cache.json`.
+Date checked: 2026-11-04. PubChem's answers are kept in `scripts/structures/pubchem-cache.json`.
 
 ## Result
 
 - Compounds in the dictionary: 254, of which 233 are used and shipped.
+- Offered under "Pick by name" in the formula editor: **254**, which is every compound that passed. The name comes from PubChem's check above, and `tests/unit/smiles-guide.test.ts` checks the formula and mass of each one against its SMILES a second time, with the editor's own reader.
 - Exact match with PubChem, including stereochemistry: **247**
 - Same connectivity as PubChem, stereochemistry differs or is unspecified: **4** (listed below)
 - Same formula and mass, drawn with a covalent metal bond as taught, where PubChem stores it as ionic: **3** (listed below)

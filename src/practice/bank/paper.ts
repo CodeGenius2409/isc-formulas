@@ -6,6 +6,8 @@ import { createStore } from '../../lib/store';
 import { readJson, writeJson } from '../../lib/storage';
 import { papersImported, recordAnswer } from '../progress';
 import { seededRng, type Rng } from '../questions';
+import { loadBlueprints, type LoadedBlueprints } from '../../data/blueprints';
+import { CBQ_SHARE, generatedCount, pickGenerated, planShare, type SlotCount } from '../gen/mix';
 import { bankQuestion, loadBank, type LoadedBank } from './index';
 import { answerSummary, isAttempted, isPassing, qualityOf, scoreOf, yourAnswerSummary } from './mark';
 import type { BankAnswer, BankDef, BankItem, BankQuestion } from './types';
@@ -90,6 +92,10 @@ export interface Paper {
   submittedAt?: number;
   /** True for a paper that ran out of time rather than being handed in. */
   timedOut?: boolean;
+  /** With the subject, class and share, this rebuilds the same paper. */
+  seed?: number;
+  /** The share of generated questions asked for, from 0 to 100. */
+  generatedShare?: number;
 }
 
 export interface TopicResult {
@@ -109,6 +115,8 @@ export interface PaperResult {
   minutes: number;
   sections: { name: string; got: number; outOf: number }[];
   topics: TopicResult[];
+  seed?: number;
+  generatedShare?: number;
 }
 
 export const paperStore = createStore<Paper | null>(readJson<Paper | null>(CURRENT_KEY, null), (v) => writeJson(CURRENT_KEY, v));
@@ -166,23 +174,52 @@ async function unitWeights(subject: SubjectId, level: ClassLevel): Promise<Map<n
   return weights;
 }
 
-/** Builds a paper. Pure apart from reading the bank, so that a test can check its structure. */
-export function assemblePaper(subject: SubjectId, level: ClassLevel, bank: LoadedBank, weights: Map<number, number>, rng: Rng, now: number): Paper {
-  const spec = paperSpec(subject, level);
-  const used = new Set<string>();
-  const sections = spec.sections.map((section) => {
-    const defs = section.slots.flatMap((slot) => {
-      const pool = bank.defs.filter((d) => d.marks === slot.marks && (!section.units || section.units.includes(d.unit)));
-      return draw(pool, slot.count, weights, used, rng);
-    });
-    return { name: section.name, note: section.note, choose: section.choose, questions: defs.map((d) => bankQuestion(d, bank, rng)) };
-  });
-  return { subject, level, total: spec.total, startedAt: now, endsAt: now + PAPER_MINUTES * 60_000, sections, answers: {} };
+export interface GeneratedOption {
+  set: LoadedBlueprints;
+  share: number;
 }
 
-export async function startPaper(subject: SubjectId, level: ClassLevel): Promise<Paper> {
-  const [bank, weights] = await Promise.all([loadBank(subject, level), unitWeights(subject, level)]);
-  const paper = assemblePaper(subject, level, bank, weights, seededRng(Math.floor(Math.random() * 2 ** 31)), Date.now());
+/** The slots of a paper, with what the bank can supply for each, so a share can be planned and explained. */
+export function paperSlots(subject: SubjectId, level: ClassLevel, bank: LoadedBank): SlotCount[] {
+  const spec = paperSpec(subject, level);
+  const taken = new Map<number, number>();
+  return spec.sections.flatMap((section) =>
+    section.slots.map((slot) => {
+      const have = bank.defs.filter((d) => d.marks === slot.marks && (!section.units || section.units.includes(d.unit))).length;
+      // Sections that share a mark value also share the bank's questions for it.
+      const before = section.units ? 0 : (taken.get(slot.marks) ?? 0);
+      if (!section.units) taken.set(slot.marks, before + slot.count);
+      return { marks: slot.marks, count: slot.count, bankHas: Math.max(0, have - before), worth: section.choose ? (slot.marks * section.choose) / slot.count : undefined };
+    }),
+  );
+}
+
+/** Builds a paper. Pure apart from reading the bank, so that a test can check its structure. */
+export function assemblePaper(subject: SubjectId, level: ClassLevel, bank: LoadedBank, weights: Map<number, number>, rng: Rng, now: number, generated?: GeneratedOption): Paper {
+  const spec = paperSpec(subject, level);
+  const used = new Set<string>();
+  const usedBlueprints = new Set<string>();
+  const seenText = new Set<string>();
+  const share = generated ? planShare(paperSlots(subject, level, bank), generated.share).share : 0;
+  const sections = spec.sections.map((section) => {
+    const questions = section.slots.flatMap((slot) => {
+      const inSection = (unit: number) => !section.units || section.units.includes(unit);
+      const pool = bank.defs.filter((d) => d.marks === slot.marks && inSection(d.unit) && !used.has(d.id));
+      const made = generated ? pickGenerated(generated.set, generated.set.blueprints.filter((b) => b.marks === slot.marks && inSection(b.unit)), { count: Math.max(generatedCount(slot.count, share), slot.count - pool.length), weights, rng, used: usedBlueprints, seenText, cbqShare: CBQ_SHARE }) : [];
+      const fromBank = slot.count - made.length;
+      const defs = fromBank > 0 ? draw(bank.defs.filter((d) => d.marks === slot.marks && inSection(d.unit)), fromBank, weights, used, rng) : [];
+      return shuffled([...defs.map((d) => bankQuestion(d, bank, rng)), ...made], rng);
+    });
+    return { name: section.name, note: section.note, choose: section.choose, questions };
+  });
+  return { subject, level, total: spec.total, startedAt: now, endsAt: now + PAPER_MINUTES * 60_000, sections, answers: {}, generatedShare: generated ? share : 0 };
+}
+
+export async function startPaper(subject: SubjectId, level: ClassLevel, options: { share?: number; seed?: number } = {}): Promise<Paper> {
+  const share = options.share ?? 0;
+  const [bank, weights, set] = await Promise.all([loadBank(subject, level), unitWeights(subject, level), share > 0 ? loadBlueprints(subject, level) : null]);
+  const seed = options.seed ?? Math.floor(Math.random() * 2 ** 31);
+  const paper = { ...assemblePaper(subject, level, bank, weights, seededRng(seed), Date.now(), set ? { set, share } : undefined), seed };
   paperStore.set(paper);
   return paper;
 }
@@ -232,6 +269,8 @@ export function paperResult(paper: Paper): PaperResult {
     minutes: Math.max(1, Math.round(((paper.submittedAt ?? Date.now()) - paper.startedAt) / 60_000)),
     sections,
     topics: [...topics.values()].sort((a, b) => a.got / a.outOf - b.got / b.outOf || b.outOf - a.outOf),
+    seed: paper.seed,
+    generatedShare: paper.generatedShare,
   };
 }
 

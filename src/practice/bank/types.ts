@@ -24,6 +24,14 @@ export type BankType =
 
 export type Difficulty = 1 | 2 | 3;
 
+/** Set on a question the app made itself, from a blueprint and a seed. Bank questions don't have one. */
+export interface GeneratedTag {
+  blueprint: string;
+  seed: number;
+  style: 'paper-style' | 'cbq-style';
+  format: 'mcq' | 'assertion' | 'very-short' | 'short' | 'long' | 'numerical' | 'derivation' | 'reason' | 'distinguish' | 'diagram' | 'cbq' | 'output' | 'error' | 'program';
+}
+
 /** One marking point. */
 export interface MarkPoint {
   text: string;
@@ -108,11 +116,19 @@ export interface NumericDef extends Tags {
 
 export type BankDef = McqDef | TheoryDef | OutputDef | NumericDef;
 
+/** A simulator that shows this question's set-up, with the values to start it from. */
+export interface SimulatorRef {
+  id: string;
+  preset: Record<string, number>;
+}
+
 interface InstanceTags extends Omit<Tags, 'structure' | 'diagram'> {
   structure?: EntryStructure;
   diagram?: DiagramSpec;
+  simulator?: SimulatorRef;
   unitName: string;
   topicName: string;
+  generated?: GeneratedTag;
 }
 
 export interface McqItem extends InstanceTags {

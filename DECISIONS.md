@@ -213,7 +213,47 @@ Work is on a `rebuild` branch. `master` still holds your original files.
 - **Your own program is kept.** Typing into a sample turns it into "My program", which
   is saved in this browser. Picking a sample never overwrites it.
 
+## The structure section going missing (v4, Task 0)
+
+- **The cause.** `tests/e2e/editor-structure.spec.ts` reproduced it on the old build. The section was shown only when `subject === 'chemistry'`, and `subject` was read once, when the editor opened, from the address or from the last unit read. The choice of subject itself is on the second step. So the section vanished, with no way back on that screen, in three cases that a reload cures: another tab had moved to Chemistry (this tab's memory of the last subject was stale), the address changed while the editor was open (the same `key` meant no fresh start), and any arrival from outside a unit, such as the Chemistry contents page, where nothing recorded the subject at all. That last case isn't cured by a reload, which is why it looked intermittent.
+- **A second, separate cause of "a reload fixes it".** `React.lazy` and a remembered promise both keep a failed import for good. One dropped request for the drawing engine meant every later SMILES said it couldn't be read, until a reload, and a failed lone-pair chunk took the whole editor down with it. The likely suspect, a stale service worker, was tested and is not what removed the section: its only effect is this failed import.
+- **The fix.** Chemistry always shows the section. Every other subject has an "Add a structure" button, and a structure can now be saved on any subject. The subject follows the address and the book, across tabs. Loads go through `src/lib/retry-import.tsx`, which retries, forgets failures, and looks for an update when a file has gone. `RetryBoundary` keeps a failure inside the section, with a Retry that needs no reload.
+- **A half-written formula now survives a reload** in `sessionStorage`, including one that installs an update. Cancel throws it away, and moving elsewhere in the app leaves it behind.
+- **Old and new code can't mix.** File names carry hashes, so old code can only ask for old files. After another tab presses Update now, a tab that has noticed the waiting version reloads onto the new one, which comes from the PWA library and is why a draft has to survive it. A tab that hadn't noticed is told in words. **This can still end an unsaved practice session in a second tab,** because that is in-memory state. Mock papers and drafts are stored, so they survive. `tests/e2e/update-flow.spec.ts` publishes a real renamed build to check both paths.
+
+## SMILES help in the editor (v4, Task 3)
+
+- **A small SMILES reader of our own, `src/custom/smiles-read.ts`,** rather than the drawing library's parser. That library can't report which character is which atom, and its errors are parser jargon. A test holds the reader to RDKit's formula for every compound in the book. It is deliberately stricter than the library, and refuses a neutral nitrogen with four bonds.
+- **"Same compound" compares atoms, charges, hydrogen counts and connections, ignoring bond orders.** So every Kekulé form of benzene matches, and `N(=O)=O` matches `[N+](=O)[O-]`. **Stereochemistry is ignored,** so cis and trans count as the same answer. None of the guide's exercises depend on it.
+- **"Pick by name" offers all 254 compounds that passed the PubChem and RDKit check,** used in the book or not, which fits the 200 to 300 asked for. No new compounds were added, so no new names needed checking.
+- **The builder overwrites the box each time.** It keeps its own description rather than trying to edit whatever was typed, which is what keeps its output correct.
+
+## The question generator (v4, Task 1)
+
+- **Step A, the analysis:** `scripts/private/question-analysis.mjs` splits and classifies each paper by rules, not by reading all 4,699 parts by hand. Rules were checked against 12 page images and samples, and that found real bugs: a tag match sent every "Application of Derivatives" question to Integrals, and assertion options were counted as questions.
+- **Step B, what "covered" means:** the same subject, class and topic, and the same kind of question. That's strict, as a question with no matching topic can't count. 88.2% of all parts are covered, and 97.1% of those with a topic.
+- **Blueprints carry no paper text.** They're typed code in `src/data/blueprints/`, one file per subject and class, loaded when needed. The novelty check and `check-private` both enforce this, and each caught real phrases along the way.
+- **A numerical is solved by the same registry as the solver,** so dimensions and steps come free, and a wrong formula would break both places. Where no entry applies, as in Maths, the question is built backwards from a clean answer, in exact fractions.
+- **A distractor must name its mistake.** `mcqNumber` takes `[slip, value]` pairs and prints the slip in the working, so an arbitrary number has nowhere to hide. Reading the output caught several that were arbitrary all the same.
+- **Generated ids hold their own recipe:** `g-<blueprint>-<seed>`. The mistakes log and review queue need no copy of the question, and a link can reopen one exactly. Only the id is stored, so a fixed blueprint fixes its past questions, and a removed blueprint drops out of review quietly.
+- **Default mix:** about a third generated in unit practice, half on the teacher's screen and in mock papers when switched on, and 30% of a mock paper's generated questions are CBQ-style, from the share in recent papers. Each side remembers its own slider.
+- **When the bank runs short, the share goes up and says so,** instead of quietly giving fewer questions. That's `planShare`, and a test holds it to within one question of what the slider says.
+- **The teacher's paper is kept whole in the saved file,** not rebuilt from the seed, so editing the wording of a question or reordering it survives. The seed is for regenerating, and for linking a student's mock paper.
+- **Word comes from `docx`, as a lazy chunk,** with figures as PNGs. Maths becomes readable text rather than Word equations: it survives editing and doesn't need Word's equation editor, though it's plainer than the screen.
+- **Stacks and queues are left out,** though papers up to 2025 have them. The 2028 syllabus doesn't. The first version of the blueprints had them, and reading against the syllabus removed them.
+
+## Physics figures and simulators (v4, Task 2)
+
+- **A figure first, a simulator second.** A figure is light, prints, and suits a mock paper. A simulator is closed by default even where it's safe, under "Try this set-up in the simulator", because it's a second thing to load and to read while answering.
+- **Only some simulators can open before answering.** Projectile, Atwood, inclined plane and spring don't show the answer once their readouts are hidden. A lens simulator draws the image, and the double slit draws the fringes to scale, so they wait. `reports/physics-visuals.md` has the reason for each.
+- **Question mode is a context, not a prop.** `SimQuestionContext` holds a question's values, and `Readouts` goes quiet by itself. A simulator only swaps `useState` for `usePreset`. It also means a link can open a simulator at those values.
+- **One drawing file, `BankDiagram.tsx`, draws from a typed spec,** and a question's spec is built from its own values. A test reads each number off the figure and insists it's in the question's words, which is the point of one source of truth. It found that level energies were adding information, so they came off.
+- **A fixed figure is the same code with letters for values.** A derivation's figure is a spec with `d` and `D` rather than numbers. So there's no second set of drawings.
+- **A figure is its own lazy chunk,** so a question with none costs nothing.
+
 ## PWA and performance
+
+- **What v4 cost:** first load went from 119 KB to 121 KB gzipped, and everything saved for offline from 1,854 KB to 2,198 KB. Blueprints, figures, the teacher's screen and Word export are each their own chunks, so the first screen pays almost nothing for them.
 
 - **The service worker precaches everything,** including every data chunk, simulator
   and font: about 3.3 MB, or 1.2 MB compressed. After one visit the whole app works
@@ -261,6 +301,8 @@ Work is on a `rebuild` branch. `master` still holds your original files.
   share that screen. I kept the room for the formulas, since they are the content.
 
 ## What could not be tested
+
+- **Word files in Word itself.** Tests open the .docx as a zip and read its XML. Whether Word lays it out well hasn't been seen.
 
 - **Real phones.** Android and iPhone behaviour was checked by emulating touch and
   screen size in Edge, plus the install signals and iOS tags. Nobody has actually

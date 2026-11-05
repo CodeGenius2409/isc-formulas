@@ -251,13 +251,20 @@ for (const r of report) if (used.has(r.key) && r.check === 'not checked' && !OFF
 const shipped = Object.fromEntries(Object.entries(compounds).filter(([k]) => used.has(k)));
 writeJson('structures.json', shipped);
 
+// "Pick by name" in the formula editor offers every compound that passed, used in the book or not.
+const pickable = report.filter((r) => r.check === 'exact' || r.check === 'same skeleton' || r.check === 'drawn covalent');
+writeJson('compound-list.json', pickable.map((r) => ({ n: r.name, s: r.smiles, m: r.formula, a: Number(r.mass) })).sort((a, b) => a.n.localeCompare(b.n)));
+
 // ---- Report ----------------------------------------------------------------------------------
 const counts = { exact: 0, 'same skeleton': 0, 'drawn covalent': 0, 'name not found': 0, 'not checked': 0 };
 for (const r of report) counts[r.check]++;
 const rowsOf = (list) => list.map((r) => `| ${r.name} | ${r.formula} | ${r.mass} | \`${r.smiles}\` | ${r.queried}${r.cid ? ` ([CID ${r.cid}](https://pubchem.ncbi.nlm.nih.gov/compound/${r.cid}))` : ''} | ${r.check} |`).join('\n');
 const needsLook = report.filter((r) => r.check !== 'exact');
+// tests/unit/lewis.test.ts owns the section on lone pairs, so it stays as it is.
+const reportPath = path.resolve('reports/structures-report.md');
+const lewisSection = fs.existsSync(reportPath) ? (/<!-- lewis-check-start -->[\s\S]*<!-- lewis-check-end -->/.exec(fs.readFileSync(reportPath, 'utf8'))?.[0] ?? '') : '';
 fs.writeFileSync(
-  path.resolve('reports/structures-report.md'),
+  reportPath,
   `# Structures report
 
 Every structure in the app is drawn from a SMILES string by RDKit ${RDKit.version()}, in the build. None is drawn by hand. The build fails if any of these checks fails.
@@ -271,6 +278,7 @@ Date checked: ${new Date().toISOString().slice(0, 10)}. PubChem's answers are ke
 ## Result
 
 - Compounds in the dictionary: ${report.length}, of which ${Object.keys(shipped).length} are used and shipped.
+- Offered under "Pick by name" in the formula editor: **${pickable.length}**, which is every compound that passed. The name comes from PubChem's check above, and \`tests/unit/smiles-guide.test.ts\` checks the formula and mass of each one against its SMILES a second time, with the editor's own reader.
 - Exact match with PubChem, including stereochemistry: **${counts.exact}**
 - Same connectivity as PubChem, stereochemistry differs or is unspecified: **${counts['same skeleton']}** (listed below)
 - Same formula and mass, drawn with a covalent metal bond as taught, where PubChem stores it as ionic: **${counts['drawn covalent']}** (listed below)
@@ -297,7 +305,7 @@ From the syllabus map, structures are given to the organic units: Class XI Unit 
 | Compound | Formula | Mass | SMILES | PubChem name | Result |
 |---|---|---|---|---|---|
 ${rowsOf(report)}
-`,
+${lewisSection ? `\n${lewisSection}\n` : ''}`,
 );
 
 const log = `Structures: ${report.length} compounds checked (${counts.exact} exact, ${counts['same skeleton']} same skeleton, ${counts['name not found']} name not found, ${counts['not checked']} not checked), ${withStructure} entries drawn`;

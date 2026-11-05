@@ -1,15 +1,17 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ListChecks, RotateCcw, Trash2 } from 'lucide-react';
+import { Dices, Download, Flag, ListChecks, RotateCcw, Trash2, Wand2 } from 'lucide-react';
 import { RichText } from '../components/bank/RichText';
 import { manifest } from '../data/book';
-import { isBankId } from '../practice/bank/define';
-import { href, openWork } from '../lib/router';
+import { isExamId } from '../practice/bank/define';
+import { href, openWork, useRoute } from '../lib/router';
 import { useStore } from '../lib/store';
 import { deleteMistake, mistakesStore, srsStore, statsStore, today } from '../practice/progress';
 import { reviewOrder } from '../practice/srs';
-import { startMistakes } from '../practice/session';
+import { startGenerated, startMistakes } from '../practice/session';
+import { clearReports, exportReports, reportsStore } from '../practice/gen/report';
 import { startReviewNow } from '../practice/session-link';
 import { BackupControls } from '../components/BackupControls';
+import { GENERATED_NOTICE } from '../components/bank/GeneratedMark';
 import { Math as MathTex } from '../components/Math';
 
 const DATE = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
@@ -21,14 +23,25 @@ export default function ProgressView() {
   const [subject, setSubject] = useState('');
   const [topic, setTopic] = useState('');
   const [showResolved, setShowResolved] = useState(false);
+  const reports = useStore(reportsStore);
+  const route = useRoute();
+  const linked = route.query.get('q');
 
   useEffect(() => {
     document.title = 'Progress: ISC Formula Book';
   }, []);
 
+  // A link to one generated question opens it for practice.
+  useEffect(() => {
+    if (!linked?.startsWith('g-')) return;
+    void startGenerated(linked).then((session) => {
+      if (session) openWork('practice');
+    });
+  }, [linked]);
+
   const due = useMemo(() => reviewOrder(Object.values(srs), today()).length, [srs]);
   const learned = useMemo(() => Object.values(srs).filter((i) => i.repetitions >= 2).length, [srs]);
-  const seenQuestions = useMemo(() => Object.keys(srs).filter(isBankId).length, [srs]);
+  const seenQuestions = useMemo(() => Object.keys(srs).filter(isExamId).length, [srs]);
   const seen = Object.keys(srs).length - seenQuestions;
   const accuracy = stats.answered ? Math.round((stats.correct / stats.answered) * 100) : 0;
 
@@ -56,6 +69,11 @@ export default function ProgressView() {
           <span><b>{learned}</b> learned</span>
           <span><b>{due}</b> due today</span>
           {stats.answered > 0 && <span><b>{accuracy}%</b> right over {stats.answered} answers</span>}
+        </p>
+        <p className="mt-3">
+          <a className="btn btn-line" href={href('generate')}>
+            <Wand2 size={15} aria-hidden /> Generate questions
+          </a>
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
           <button
@@ -125,8 +143,15 @@ export default function ProgressView() {
                 {shown.slice(0, 200).map((m) => (
                   <li key={m.id} className="mistake" data-subject={m.subject || undefined}>
                     <div className="flex items-start justify-between gap-2">
-                      {isBankId(m.formulaId) ? (
-                        <span className="font-semibold">{m.formulaName}</span>
+                      {isExamId(m.formulaId) ? (
+                        <span className="font-semibold">
+                          {m.formulaName}
+                          {m.formulaId.startsWith('g-') && (
+                            <span className="gen-mark ml-2" data-testid="generated-mark" title={GENERATED_NOTICE}>
+                              <Dices size={14} aria-hidden /> Generated
+                            </span>
+                          )}
+                        </span>
                       ) : (
                         <a href={href(`f/${m.formulaId}`)} className="font-semibold">
                           {m.formulaName}
@@ -136,12 +161,12 @@ export default function ProgressView() {
                         <Trash2 size={15} aria-hidden />
                       </button>
                     </div>
-                    {isBankId(m.formulaId) ? <RichText text={m.asked} className="mt-1" /> : <p className="mt-1">{m.asked}</p>}
+                    {isExamId(m.formulaId) ? <RichText text={m.asked} className="mt-1" /> : <p className="mt-1">{m.asked}</p>}
                     <p className="mt-1 text-bad">
                       You answered: {m.yourAnswerIsLatex ? <MathTex latex={m.yourAnswer} /> : m.yourAnswer}
                     </p>
                     <p className="text-good">
-                      Correct answer: {m.correctAnswerIsLatex ? <MathTex latex={m.correctAnswer} /> : isBankId(m.formulaId) ? <RichText text={m.correctAnswer} className="rich-inline" /> : m.correctAnswer}
+                      Correct answer: {m.correctAnswerIsLatex ? <MathTex latex={m.correctAnswer} /> : isExamId(m.formulaId) ? <RichText text={m.correctAnswer} className="rich-inline" /> : m.correctAnswer}
                     </p>
                     <p className="mt-1 text-step--1 text-ink-3">
                       {m.topic}, {DATE.format(new Date(m.date))}
@@ -156,6 +181,22 @@ export default function ProgressView() {
         </section>
 
         <BackupControls />
+        {reports.length > 0 && (
+          <section className="today-section" aria-labelledby="reports-h">
+            <h2 id="reports-h">Problems you’ve reported</h2>
+            <p className="mt-1 text-ink-2">
+              <Flag size={14} aria-hidden className="inline" /> {reports.length} {reports.length === 1 ? 'report is' : 'reports are'} saved on this device. Export them to send them on.
+            </p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              <button type="button" className="btn btn-line" onClick={exportReports}>
+                <Download size={15} aria-hidden /> Export reports
+              </button>
+              <button type="button" className="btn btn-quiet" onClick={clearReports}>
+                Clear reports
+              </button>
+            </div>
+          </section>
+        )}
 
         <section className="today-section" aria-labelledby="how-h">
           <h2 id="how-h">How reviews are scheduled</h2>

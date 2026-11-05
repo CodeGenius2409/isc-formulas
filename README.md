@@ -4,7 +4,7 @@ Every ISC 2028 formula for Physics, Chemistry, Mathematics and Computer Science,
 problem solver, practice with spaced repetition, and simulators. It installs as an app
 and works with no network after the first visit.
 
-7,828 formulas mapped to the official 2028 syllabus, with Computer Science written as Java, verified bond-line structures for organic chemistry, 586 exam-style questions, your own formulas alongside the printed ones, timed mock papers, 448 solvable for any variable, 41 simulators including a step-through Java
+7,828 formulas mapped to the official 2028 syllabus, with Computer Science written as Java, verified bond-line structures for organic chemistry, 586 exam-style questions, 1,484 question blueprints that generate new ones offline, your own formulas alongside the printed ones, timed mock papers, 448 solvable for any variable, 41 simulators including a step-through Java
 tracer.
 
 ## Run it
@@ -65,6 +65,14 @@ by default.
     npm run lighthouse    # writes reports/lighthouse.md
     npm run sizes         # writes reports/bundle-sizes.md
 
+These need the private papers, so they only do anything on a machine that has them. In PowerShell:
+
+    node scripts/private/question-analysis.mjs                      # analyse every paper
+    $env:WRITE_BLUEPRINT_TAGS=1; npx vitest run tests/unit/blueprint-tags-private.test.ts
+    node scripts/private/blueprint-coverage.mjs                     # how much is covered
+    node scripts/private/write-reports.mjs                          # the reports made from them
+    $env:NOVELTY_SAMPLES=500; npx vitest run tests/unit/novelty-private.test.ts
+
 `npm run build` also runs `scripts/check-private.mjs`, which fails if git tracks anything in
 `papers/` or `data-private/`, or if text from the papers has reached `dist/`.
 
@@ -89,6 +97,10 @@ the generated files is lost the next time that runs.
 
 **A simulator.** Add a component in `src/sims/` and one line in `src/sims/registry.ts`.
 
+**A question blueprint.** Add it to the right file in `src/data/blueprints/`, using `num`, `mcqNum`, `facts` or `custom` from `dsl.ts`. A numerical names its formula in the solver registry, and an MCQ gives each wrong answer with the mistake that leads to it. A test then generates 1,000 of them. Don't copy wording from a paper: `tests/unit/novelty-private.test.ts` looks for that where the papers are present.
+
+**A figure for a question.** Add a `kind` to `DiagramSpec` in `src/practice/bank/diagram.ts`, draw it and describe it in `src/components/bank/BankDiagram.tsx`, and set `diagram` on the blueprint from its own values. `tests/unit/physics-visuals.test.ts` checks that each number on it is in the question, and that none gives the answer.
+
 **A Java sample.** Add it to `src/java/samples.ts` with its expected output, and a test
 checks it automatically.
 
@@ -106,6 +118,9 @@ doesn't need this.
 | `src/search/` | Search, in a web worker, and quantity search |
 | `src/practice/` | Question generation, spaced repetition and the mistakes log |
 | `src/practice/bank/` | The exam-style question bank, marking and mock papers |
+| `src/practice/gen/` | The generator: exact arithmetic, Quine–McCluskey, the mix, the teacher's papers and Word export |
+| `src/data/blueprints/` | Question blueprints, one file per subject and class, with no text from the papers |
+| `scripts/private/` | Reads the private papers on your machine. Its results stay in `data-private/` and aren't committed |
 | `src/custom/` | Your own formulas: IndexedDB storage, placing them in the book, backup files, and SMILES |
 | `src/data/lewis/` | Structures with lone pairs as data, and the automated check every one must pass |
 | `src/sims/` | The simulators |
@@ -119,3 +134,4 @@ doesn't need this.
 - `DESIGN.md`: the design system, for keeping additions consistent.
 - `DECISIONS.md`: the calls made while building, and what could not be done or tested.
 - `reports/dedupe-review.md`: the uncertain duplicates that are waiting for your decision.
+- `reports/question-analysis.md`, `reports/question-quality.md`, `reports/physics-visuals.md`: what the papers contain, how far the generator covers them, how its questions were checked, and how Physics questions are drawn.

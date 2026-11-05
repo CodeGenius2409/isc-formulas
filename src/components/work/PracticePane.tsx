@@ -1,5 +1,10 @@
 import { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState, type FormEvent } from 'react';
-import { CircleCheck, CircleX, FileText, ListChecks, Lightbulb, RotateCcw, Sparkles } from 'lucide-react';
+import { CircleCheck, CircleX, FileText, ListChecks, Lightbulb, RotateCcw, Sparkles, Wand2 } from 'lucide-react';
+import { loadSyllabus } from '../../data/syllabus';
+import type { ClassLevel, SubjectId } from '../../data/types';
+import { loadBank } from '../../practice/bank';
+import { planShare, practiceShareStore } from '../../practice/gen/mix';
+import { ShareSlider } from '../bank/ShareSlider';
 import { findFormula, getSubject, unitTitle } from '../../data/book';
 import type { Formula } from '../../data/types';
 import { useAsync } from '../../lib/hooks';
@@ -59,6 +64,9 @@ function PracticeHome() {
   const due = useMemo(() => reviewOrder(Object.values(srs), today()).length, [srs]);
   const open = mistakes.filter((m) => !m.resolved).length;
   const [message, setMessage] = useState('');
+  const [topic, setTopic] = useState('');
+  const [difficulty, setDifficulty] = useState('');
+  const share = useStore(practiceShareStore);
 
   // Practising what is on screen beats practising what was last open.
   const here = route.path[0] === 'book' && route.path[3] != null ? { subject: route.path[1], level: route.path[2], unit: Number(route.path[3]) } : last ? { subject: last.subject, level: last.classLevel, unit: last.unitIndex ?? 0 } : null;
@@ -78,12 +86,16 @@ function PracticeHome() {
           <ListChecks size={16} aria-hidden /> {due ? `Review ${due} due today` : 'Nothing due today'}
         </button>
         {here && (
-          <button type="button" className={due ? 'btn btn-line' : 'btn btn-solid'} onClick={() => void run(() => startUnit(here.subject as never, here.level as never, here.unit), 'That unit has no formulas to practise.')}>
+          <button type="button" className={due ? 'btn btn-line' : 'btn btn-solid'} onClick={() => void run(() => startUnit(here.subject as never, here.level as never, here.unit, undefined, { topic: topic || undefined, difficulty: difficulty ? (Number(difficulty) as 1 | 2 | 3) : undefined }), 'That unit has no formulas to practise.')}>
             <Sparkles size={16} aria-hidden /> Practise this unit
           </button>
         )}
+        {here && <UnitSettings subject={here.subject as SubjectId} level={here.level as ClassLevel} unit={here.unit} topic={topic} onTopic={setTopic} difficulty={difficulty} onDifficulty={setDifficulty} share={share} />}
         <a className="btn btn-line" href={href('paper')}>
           <FileText size={16} aria-hidden /> Build a mock paper
+        </a>
+        <a className="btn btn-line" href={href('generate')}>
+          <Wand2 size={16} aria-hidden /> Generate questions
         </a>
         <button type="button" className="btn btn-line" disabled={!open} onClick={() => void run(() => startMistakes(), 'No mistakes to retry.')}>
           <RotateCcw size={16} aria-hidden /> {open ? `Retry ${open} ${open === 1 ? 'mistake' : 'mistakes'}` : 'No mistakes to retry'}
@@ -101,6 +113,55 @@ function PracticeHome() {
         <a className="text-action" href={href('practice')}>See progress and mistakes</a>
       </p>
     </div>
+  );
+}
+
+const SESSION_EXAM = 8;
+
+/** What goes into a unit's practice: which topic, how hard, and how much of it is generated. */
+function UnitSettings({ subject, level, unit, topic, onTopic, difficulty, onDifficulty, share }: { subject: SubjectId; level: ClassLevel; unit: number; topic: string; onTopic: (t: string) => void; difficulty: string; onDifficulty: (d: string) => void; share: number }) {
+  const srs = useStore(srsStore);
+  const info = useAsync(async () => {
+    const [syllabus, bank] = await Promise.all([loadSyllabus(subject), loadBank(subject, level)]);
+    const units = syllabus.classes.find((c) => c.level === level)?.units ?? [];
+    return { units, bank };
+  }, `${subject}-${level}`);
+  if (info.status !== 'ready') return null;
+  const here = info.value.units[unit];
+  if (!here) return null;
+  const unseen = info.value.bank.defs.filter((d) => d.unit === here.number && (!topic || d.topic === topic) && (!difficulty || d.difficulty === Number(difficulty)) && !srs[d.id]).length;
+  const plan = planShare([{ marks: 1, count: SESSION_EXAM, bankHas: unseen }], share);
+  return (
+    <details className="practice-settings">
+      <summary>Practice settings</summary>
+      <div className="mt-2 grid gap-2">
+        <div>
+          <label className="lbl" htmlFor="practice-topic">
+            Topic
+          </label>
+          <select id="practice-topic" className="field" value={topic} onChange={(e) => onTopic(e.target.value)}>
+            <option value="">The whole unit</option>
+            {here.topics.map((t) => (
+              <option key={t.key} value={t.key}>
+                {t.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="lbl" htmlFor="practice-difficulty">
+            Difficulty
+          </label>
+          <select id="practice-difficulty" className="field" value={difficulty} onChange={(e) => onDifficulty(e.target.value)}>
+            <option value="">Mixed</option>
+            <option value="1">Easy</option>
+            <option value="2">Medium</option>
+            <option value="3">Hard</option>
+          </select>
+        </div>
+      </div>
+      <ShareSlider value={share} onChange={(v) => practiceShareStore.set(v)} message={plan.generated ? `About ${plan.generated} of ${SESSION_EXAM} exam-style questions will be generated.` : 'Every exam-style question will come from the bank.'} warning={plan.raised} />
+    </details>
   );
 }
 

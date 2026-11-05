@@ -1,3 +1,4 @@
+import { usePreset } from './lib/question-mode';
 import { useState } from 'react';
 import { Canvas, drawPlot, Plot, token, useAnimation } from './lib/plot';
 import { Equation, fmt, Legend, NumField, num, Readouts, Slider, ToolLayout } from './lib/ui';
@@ -120,8 +121,8 @@ export function Wave() {
 }
 
 export function Atwood() {
-  const [m1, setM1] = useState(5);
-  const [m2, setM2] = useState(3);
+  const [m1, setM1] = usePreset('m1', 5);
+  const [m2, setM2] = usePreset('m2', 3);
   const g = 9.8;
   const a = ((m1 - m2) * g) / (m1 + m2);
   const T = (2 * m1 * m2 * g) / (m1 + m2);
@@ -178,8 +179,8 @@ export function Atwood() {
 }
 
 export function Inclined() {
-  const [deg, setDeg] = useState(30);
-  const [mu, setMu] = useState(0.2);
+  const [deg, setDeg] = usePreset('deg', 30);
+  const [mu, setMu] = usePreset('mu', 0.2);
   const g = 9.8;
   const th = (deg * Math.PI) / 180;
   const smooth = g * Math.sin(th);
@@ -282,8 +283,8 @@ export function Collision() {
 }
 
 export function Spring() {
-  const [k, setK] = useState(100);
-  const [x, setX] = useState(0.1);
+  const [k, setK] = usePreset('k', 100);
+  const [x, setX] = usePreset('x', 0.1);
   return (
     <ToolLayout
       controls={

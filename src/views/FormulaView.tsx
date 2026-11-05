@@ -11,7 +11,7 @@ import { copyableExpr, isBodyExpr } from '../data/expr';
 import { useAsync } from '../lib/hooks';
 import { href, openWork } from '../lib/router';
 import { useStore } from '../lib/store';
-import { favouritesStore, noteRecent, toggleFavourite } from '../state/library';
+import { favouritesStore, noteRecent, rememberPlace, toggleFavourite } from '../state/library';
 import { copyText, toast } from '../state/toast';
 import { useSolvableIds } from '../solver/index-lite';
 import { startPracticeOn } from '../practice/session-link';
@@ -27,6 +27,7 @@ export default function FormulaView({ id }: { id: string }) {
   useEffect(() => {
     if (f) {
       noteRecent(f.id);
+      rememberPlace(f.subject, f.classLevel);
       document.title = `${f.name}: ISC Formula Book`;
     }
   }, [f]);

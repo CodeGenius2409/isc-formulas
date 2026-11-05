@@ -1,97 +1,71 @@
-import { lazy, Suspense, useCallback, useEffect, useId, useMemo, useState } from 'react';
+import { Suspense, useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { PenLine, Plus, Trash2 } from 'lucide-react';
 import { FormulaRow } from '../components/FormulaRow';
-import { StructureDrawing } from '../components/custom/CustomStructure';
-import { LazyLewis } from '../components/LazyLewis';
+import { StructureSection, type StructureMode } from '../components/custom/StructureSection';
+import { RetryBoundary } from '../components/RetryBoundary';
 import { equationFromLatex, equationProblem } from '../custom/entry';
 import { additions } from '../custom/merge';
-import { parseStructure, SmilesProblem, type ParsedStructure } from '../custom/smiles';
 import { customBackupStore, customStore, ensureCustomLoaded, findCustom, newCustomId, saveCustom, unsavedCount, type CustomFormula, type CustomVariable } from '../custom/store';
 import { getClass, manifest, splitUnitName, unitTitle } from '../data/book';
 import type { ClassLevel, Formula, SubjectId } from '../data/types';
 import { ensureKatex, latexProblem, useKatexReady } from '../lib/katex';
+import { lazyRetry } from '../lib/retry-import';
 import { navigate, useRoute } from '../lib/router';
 import { useStore } from '../lib/store';
-import { lastReadStore } from '../state/library';
+import { lastPlaceStore, lastReadStore } from '../state/library';
 import { toast } from '../state/toast';
 
-const MathField = lazy(() => import('../components/custom/MathField'));
+const MathField = lazyRetry(() => import('../components/custom/MathField'));
 
 const NEW_SECTION = '__new__';
 
-type StructureMode = 'none' | 'smiles' | 'reaction' | 'lewis';
+/** What was on the page when it went away. A reload, including one that picks up an update, brings it back. */
+const DRAFT_KEY = 'isc-editor-draft';
 
-/** Which figures to offer. Only those that have passed the structure check. */
-function useLewisChoices(wanted: boolean) {
-  const [choices, setChoices] = useState<{ id: string; name: string }[]>([]);
-  useEffect(() => {
-    if (!wanted || choices.length) return;
-    void import('../data/lewis/figures').then(({ LEWIS }) => setChoices(Object.values(LEWIS).map((f) => ({ id: f.id, name: f.name })).sort((a, b) => a.name.localeCompare(b.name))));
-  }, [wanted, choices.length]);
-  return choices;
+interface Draft {
+  where: string;
+  latex: string;
+  name: string;
+  note: string;
+  variables: CustomVariable[];
+  equation: string;
+  mode: StructureMode;
+  smiles: string;
+  lewisId: string;
+  structureWanted: boolean;
+  subject: SubjectId;
+  level: ClassLevel;
+  unit: string;
+  section: string;
+  newSection: string;
+  step: 1 | 2;
 }
 
-function SmilesField({ value, onChange, reaction, onResult }: { value: string; onChange: (v: string) => void; reaction: boolean; onResult: (ok: boolean) => void }) {
-  const id = useId();
-  const [parsed, setParsed] = useState<ParsedStructure | null>(null);
-  const [problem, setProblem] = useState('');
-  useEffect(() => {
-    let live = true;
-    const text = value.trim();
-    if (!text) {
-      setParsed(null);
-      setProblem('');
-      onResult(false);
-      return undefined;
-    }
-    const timer = window.setTimeout(() => {
-      parseStructure(text).then(
-        (result) => {
-          if (!live) return;
-          if (reaction && !result.isReaction) {
-            setParsed(null);
-            setProblem('A reaction is written reactants>>products.');
-            onResult(false);
-          } else {
-            setParsed(result);
-            setProblem('');
-            onResult(true);
-          }
-        },
-        (err) => {
-          if (!live) return;
-          setParsed(null);
-          setProblem(err instanceof SmilesProblem ? err.message : 'That can\'t be read as SMILES.');
-          onResult(false);
-        },
-      );
-    }, 200);
-    return () => {
-      live = false;
-      window.clearTimeout(timer);
-    };
-  }, [value, reaction, onResult]);
-  return (
-    <div className="mt-2">
-      <label className="lbl" htmlFor={id}>
-        {reaction ? 'Reaction SMILES, as reactants>>products' : 'SMILES'}
-      </label>
-      <input id={id} className="field num" autoComplete="off" spellCheck={false} value={value} placeholder={reaction ? 'CCO>>CC=O' : 'CCO'} onChange={(e) => onChange(e.target.value)} />
-      {problem && (
-        <p className="var-warn mt-1" role="alert">
-          {problem}
-        </p>
-      )}
-      {parsed && (
-        <div className="structures" data-testid="smiles-preview">
-          <StructureDrawing parsed={parsed} scale={0.7} />
-          <p className="mt-1 text-step--1 text-ink-2" role="status">
-            Computed formula: <b className="num" data-testid="smiles-formula">{[...parsed.reactants, ...parsed.products].map((m) => m.formula).join(', ')}</b>. Check this is the compound you meant.
-          </p>
-        </div>
-      )}
-    </div>
-  );
+function readDraft(): Draft | null {
+  try {
+    const raw = sessionStorage.getItem(DRAFT_KEY);
+    if (!raw) return null;
+    const draft = JSON.parse(raw) as Draft;
+    return draft.where === window.location.hash ? draft : null;
+  } catch {
+    return null;
+  }
+}
+
+function forgetDraft(): void {
+  try {
+    sessionStorage.removeItem(DRAFT_KEY);
+  } catch {
+    // Nothing was kept, then.
+  }
+}
+
+function keepDraft(draft: Draft): void {
+  try {
+    sessionStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+  } catch {
+    // Storage is blocked, so a reload loses it, as it would anywhere.
+  }
 }
 
 /** The editor: first the formula itself, and last where it goes. */
@@ -101,31 +75,64 @@ export default function FormulaEditor({ editId }: { editId: string | null }) {
   const last = useStore(lastReadStore);
   const existing = editId ? custom.formulas.find((f) => f.id === editId) : undefined;
   const q = route.query;
-  const startSubject = (q.get('subject') as SubjectId | null) ?? last?.subject ?? 'physics';
-  const startLevel = (q.get('level') as ClassLevel | null) ?? last?.classLevel ?? 'XI';
+  const place = useStore(lastPlaceStore);
+  const startSubject = (q.get('subject') as SubjectId | null) ?? place?.subject ?? last?.subject ?? 'physics';
+  const startLevel = (q.get('level') as ClassLevel | null) ?? place?.level ?? last?.classLevel ?? 'XI';
 
-  const [step, setStep] = useState<1 | 2>(1);
-  const [latex, setLatex] = useState('');
+  const [draft] = useState(readDraft);
+  const [step, setStep] = useState<1 | 2>(draft?.step ?? 1);
+  const [latex, setLatex] = useState(draft?.latex ?? '');
   const [visual, setVisual] = useState(true);
   const [mathFailed, setMathFailed] = useState(false);
-  const [name, setName] = useState('');
-  const [note, setNote] = useState('');
-  const [variables, setVariables] = useState<CustomVariable[]>([]);
-  const [equation, setEquation] = useState('');
-  const [mode, setMode] = useState<StructureMode>('none');
-  const [smiles, setSmiles] = useState('');
+  const [name, setName] = useState(draft?.name ?? '');
+  const [note, setNote] = useState(draft?.note ?? '');
+  const [variables, setVariables] = useState<CustomVariable[]>(draft?.variables ?? []);
+  const [equation, setEquation] = useState(draft?.equation ?? '');
+  const [mode, setMode] = useState<StructureMode>(draft?.mode ?? 'none');
+  const [structureWanted, setStructureWanted] = useState(draft?.structureWanted ?? false);
+  const [smiles, setSmiles] = useState(draft?.smiles ?? '');
   const [smilesOk, setSmilesOk] = useState(false);
-  const [lewisId, setLewisId] = useState('');
-  const [subject, setSubject] = useState<SubjectId>(startSubject);
-  const [level, setLevel] = useState<ClassLevel>(startLevel);
-  const [unit, setUnit] = useState(q.get('unit') ?? '');
-  const [section, setSection] = useState(q.get('sub') ?? '');
-  const [newSection, setNewSection] = useState('');
+  const [lewisId, setLewisId] = useState(draft?.lewisId ?? '');
+  const [subject, setSubject] = useState<SubjectId>(draft?.subject ?? startSubject);
+  const [level, setLevel] = useState<ClassLevel>(draft?.level ?? startLevel);
+  const [unit, setUnit] = useState(draft?.unit ?? q.get('unit') ?? '');
+  const [section, setSection] = useState(draft?.section ?? q.get('sub') ?? '');
+  const [newSection, setNewSection] = useState(draft?.newSection ?? '');
   const [problems, setProblems] = useState<string[]>([]);
-  const [loaded, setLoaded] = useState(false);
+  const [loaded, setLoaded] = useState(Boolean(draft));
   const labelId = useId();
   const katexReady = useKatexReady();
-  const lewisChoices = useLewisChoices(mode === 'lewis');
+
+  // The section follows the address, not only the address it opened with. What's been typed stays.
+  const askedSubject = q.get('subject') as SubjectId | null;
+  const askedLevel = q.get('level') as ClassLevel | null;
+  const askedUnit = q.get('unit');
+  const askedSection = q.get('sub');
+  const [asked, setAsked] = useState(`${askedSubject} ${askedLevel} ${askedUnit} ${askedSection}`);
+  if (asked !== `${askedSubject} ${askedLevel} ${askedUnit} ${askedSection}`) {
+    setAsked(`${askedSubject} ${askedLevel} ${askedUnit} ${askedSection}`);
+    if (askedSubject) setSubject(askedSubject);
+    if (askedLevel) setLevel(askedLevel);
+    setUnit(askedUnit ?? '');
+    setSection(askedSection ?? '');
+  }
+
+  // Chemistry always offers it. Anywhere else it's one press away, or already open if you've chosen one.
+  const showStructure = subject === 'chemistry' || structureWanted || mode !== 'none';
+
+  // Only once this is really on screen: a first render can be thrown away and run again.
+  useEffect(forgetDraft, []);
+
+  const discarded = useRef(false);
+  useEffect(() => {
+    const keep = () => {
+      if (!discarded.current && (latex.trim() || name.trim() || note.trim() || smiles.trim() || variables.length)) {
+        keepDraft({ where: window.location.hash, latex, name, note, variables, equation, mode, smiles, lewisId, structureWanted, subject, level, unit, section, newSection, step });
+      }
+    };
+    window.addEventListener('pagehide', keep);
+    return () => window.removeEventListener('pagehide', keep);
+  });
 
   useEffect(() => {
     void ensureKatex();
@@ -218,8 +225,8 @@ export default function FormulaEditor({ editId }: { editId: string | null }) {
       note: note.trim() || undefined,
       variables: vars.length ? vars : undefined,
       equation: equation.trim() || undefined,
-      smiles: subject === 'chemistry' && (mode === 'smiles' || mode === 'reaction') && smilesOk ? smiles.trim() : undefined,
-      lewis: subject === 'chemistry' && mode === 'lewis' && lewisId ? [lewisId] : undefined,
+      smiles: (mode === 'smiles' || mode === 'reaction') && smilesOk ? smiles.trim() : undefined,
+      lewis: mode === 'lewis' && lewisId ? [lewisId] : undefined,
       subject,
       level,
       unit: unitNumber,
@@ -273,9 +280,11 @@ export default function FormulaEditor({ editId }: { editId: string | null }) {
               </div>
               <div className="mt-1">
                 {visual && !mathFailed ? (
-                  <Suspense fallback={<p className="field text-ink-3">Opening the maths editor</p>}>
-                    <MathField value={latex} onChange={onLatexFromField} labelledBy={labelId} onUnavailable={() => setMathFailed(true)} />
-                  </Suspense>
+                  <RetryBoundary message="Couldn't load the visual editor. Try again, or use the LaTeX box above.">
+                    <Suspense fallback={<p className="field text-ink-3">Opening the maths editor</p>}>
+                      <MathField value={latex} onChange={onLatexFromField} labelledBy={labelId} onUnavailable={() => setMathFailed(true)} />
+                    </Suspense>
+                  </RetryBoundary>
                 ) : (
                   <textarea className="field num" rows={3} aria-labelledby={labelId} autoComplete="off" spellCheck={false} value={latex} placeholder="F = ma" onChange={(e) => setLatex(e.target.value)} />
                 )}
@@ -343,38 +352,15 @@ export default function FormulaEditor({ editId }: { editId: string | null }) {
               )}
             </section>
 
-            {subject === 'chemistry' && (
-              <section className="today-section" aria-labelledby="structure-h">
-                <h2 id="structure-h">Structure</h2>
-                <div className="mt-2">
-                  <label className="lbl" htmlFor="custom-mode">
-                    Add a structure
-                  </label>
-                  <select id="custom-mode" className="field" value={mode} onChange={(e) => setMode(e.target.value as StructureMode)}>
-                    <option value="none">None</option>
-                    <option value="smiles">A compound, from SMILES</option>
-                    <option value="reaction">A reaction, from SMILES</option>
-                    <option value="lewis">A checked structure with lone pairs</option>
-                  </select>
-                </div>
-                {(mode === 'smiles' || mode === 'reaction') && <SmilesField value={smiles} onChange={setSmiles} reaction={mode === 'reaction'} onResult={onSmilesResult} />}
-                {mode === 'lewis' && (
-                  <div className="mt-2">
-                    <label className="lbl" htmlFor="custom-lewis">
-                      Structure
-                    </label>
-                    <select id="custom-lewis" className="field" value={lewisId} onChange={(e) => setLewisId(e.target.value)}>
-                      <option value="">Choose</option>
-                      {lewisChoices.map((c) => (
-                        <option key={c.id} value={c.id}>
-                          {c.name}
-                        </option>
-                      ))}
-                    </select>
-                    {lewisId && <LazyLewis ids={[lewisId]} />}
-                  </div>
-                )}
-              </section>
+            {showStructure ? (
+              <StructureSection mode={mode} onMode={setMode} smiles={smiles} onSmiles={setSmiles} onSmilesResult={onSmilesResult} lewisId={lewisId} onLewis={setLewisId} />
+            ) : (
+              <div className="today-section">
+                <button type="button" className="btn btn-line" onClick={() => setStructureWanted(true)}>
+                  <Plus size={15} aria-hidden /> Add a structure
+                </button>
+                <p className="mt-1 text-step--1 text-ink-2">Optional. A compound or reaction drawn beside the formula.</p>
+              </div>
             )}
 
             {problems.length > 0 && (
@@ -388,7 +374,14 @@ export default function FormulaEditor({ editId }: { editId: string | null }) {
               <button type="button" className="btn btn-solid" onClick={goNext}>
                 Next: where it goes
               </button>
-              <button type="button" className="btn btn-quiet" onClick={() => window.history.back()}>
+              <button
+                type="button"
+                className="btn btn-quiet"
+                onClick={() => {
+                  discarded.current = true;
+                  window.history.back();
+                }}
+              >
                 Cancel
               </button>
             </div>

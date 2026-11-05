@@ -1,4 +1,5 @@
-import { lazy, Suspense, useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react';
+import { Suspense, useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react';
+import { lazyRetry } from '../lib/retry-import';
 import { CircleAlert, Pause, Pencil, Play, SkipBack, SkipForward, StepBack, StepForward } from 'lucide-react';
 import { runProgram, type FrameView, type RunResult, type TraceRow, type TraceStep } from '../java/trace';
 import { SAMPLES } from '../java/samples';
@@ -7,7 +8,7 @@ import { JavaTokens } from '../components/JavaCode';
 import { readJson, writeJson } from '../lib/storage';
 
 // Most people only trace the samples, so the editor loads when someone chooses to edit.
-const CodeEditor = lazy(() => import('./CodeEditor'));
+const CodeEditor = lazyRetry(() => import('./CodeEditor'));
 
 const OWN_KEY = 'isc-java-draft';
 const OWN_ID = 'own';

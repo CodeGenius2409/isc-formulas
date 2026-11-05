@@ -1,5 +1,6 @@
 // Bond-line structures, drawn and checked in the build by scripts/apply-structures.mjs. They arrive as
 // finished paths, in one file that loads the first time a page needs a structure.
+import { retryImport } from '../lib/retry-import';
 import { useEffect, useState } from 'react';
 
 export interface Compound {
@@ -26,7 +27,7 @@ let loaded: Compounds | null = null;
 let loading: Promise<Compounds> | null = null;
 
 export function loadStructures(): Promise<Compounds> {
-  loading ??= import('./generated/structures.json').then((m) => {
+  loading ??= retryImport(() => import('./generated/structures.json')).then((m) => {
     loaded = m.default as unknown as Compounds;
     return loaded;
   });
