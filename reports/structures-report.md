@@ -6,7 +6,7 @@ Every structure in the app is drawn from a SMILES string by RDKit 2026.09.1, in 
 2. Its molecular formula, worked out from the SMILES, matches every condensed formula in the data that points at it. A mis-mapped compound stops the build here.
 3. Its InChIKey matches the one [PubChem](https://pubchem.ncbi.nlm.nih.gov/) gives for that compound's name, and PubChem's molecular weight is within 0.1 of the SMILES.
 
-Date checked: 2026-11-04. PubChem's answers are kept in `scripts/structures/pubchem-cache.json`.
+Date checked: 2026-11-05. PubChem's answers are kept in `scripts/structures/pubchem-cache.json`.
 
 ## Result
 

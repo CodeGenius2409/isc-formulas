@@ -44,7 +44,7 @@ for (const b of blueprints) {
   push(bySubject, key(b.subject, b.level), b);
 }
 
-const empty = () => ({ total: 0, topic: 0, unit: 0, subject: 0, none: 0, untagged: 0 });
+const empty = () => ({ total: 0, topic: 0, unit: 0, subject: 0, none: 0, untagged: 0, outOfSyllabus: 0 });
 const totals = { all: empty(), subject: {}, type: {}, style: {}, source: {} };
 const gaps = new Map();
 const uncovered = new Map();
@@ -52,6 +52,11 @@ const uncovered = new Map();
 for (const r of records) {
   const same = SAME_KIND[r.type];
   const tallies = [totals.all, (totals.subject[r.subject] ??= empty()), (totals.type[r.type] ??= empty()), (totals.style[r.style] ??= empty()), (totals.source[r.paperType] ??= empty())];
+  // On a topic the 2028 syllabus doesn't have: counted on its own, and left out of the coverage figures.
+  if (r.outOfSyllabus) {
+    for (const t of tallies) t.outOfSyllabus++;
+    continue;
+  }
   const inTopic = r.topic ? (byTopic.get(key(r.subject, r.level, r.unit, r.topic)) ?? []).filter(same) : [];
   const inUnit = r.unit ? (byUnit.get(key(r.subject, r.level, r.unit)) ?? []).filter(same) : [];
   const inSubject = (bySubject.get(key(r.subject, r.level)) ?? []).filter(same);

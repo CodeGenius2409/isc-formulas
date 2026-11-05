@@ -30,10 +30,10 @@ Each entry is counted once, at the subject where it was first stored, though it 
 | Physics (861) | 2499 | 573 | 1562 | 47 | 257 | 60 | 2182 |
 | Chemistry (862) | 2414 | 2281 | 15 | 5 | 92 | 21 | 2301 |
 | Mathematics (860) | 2648 | 470 | 2029 | 4 | 55 | 90 | 2503 |
-| Computer Science (868) | 861 | 823 | 6 | 13 | 12 | 7 | 842 |
-| **Total** | **8422** | **4147** | **3612** | **69** | **416** | **178** | **7828** |
+| Computer Science (868) | 861 | 823 | 6 | 7 | 18 | 7 | 836 |
+| **Total** | **8422** | **4147** | **3612** | **63** | **422** | **178** | **7822** |
 
-**Reconciliation:** 8736 in the old app − 314 merged as repeats − 594 archived = 7828 now in the app. A test checks this.
+**Reconciliation:** 8736 in the old app − 314 merged as repeats − 600 archived = 7822 now in the app. A test checks this.
 
 ## How entries were classified
 
@@ -347,11 +347,15 @@ De Moivre’s theorem; Negative power in De Moivre
 
 Approximate error; Point of inflexion
 
-### Computer Science (868): 19 removed
+### Computer Science (868): 25 removed
 
 **Trivia, not used in answering ISC questions.** (7)
 
 Bit, nibble, byte; Storage unit conversions; Evil and odious numbers; Binet's formula; Leibniz series for pi; Largest factorial in int and long; Largest Fibonacci number in int
+
+**Not in 2028 syllabus.** (6, XII Unit 8)
+
+Stack operations; Queue operations; Infix to postfix (example); Space complexity stack; Queue operations; Stack operations
 
 **Databases and SQL are not in the 2028 syllabus.** (4, XII units 1 to 9)
 

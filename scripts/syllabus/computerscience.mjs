@@ -58,8 +58,9 @@ export const rules = [
   { level: 'XII', unit: 12, verdict: 'out', reason: 'Databases and SQL are not in the 2028 syllabus.', ref: 'XII units 1 to 9', force: true },
   { level: 'XII', unit: 13, verdict: 'out', reason: 'Networking is not in the 2028 syllabus.', ref: 'XII units 1 to 9', force: true },
 
-  review({ level: 'XII', sub: 'Stacks, Queues, Linked Lists' }, 'The 2028 syllabus has only "Data structures - Binary trees [Conceptual]", but stacks, queues and linked lists were in papers up to 2025. Remove them?'),
-  review({ level: 'XII', name: /^(Space complexity stack|Queue operations|Stack operations)$/ }, 'The 2028 syllabus has only "Data structures - Binary trees [Conceptual]", but stacks, queues and linked lists were in papers up to 2025. Remove them?'),
+  // Confirmed by the owner: these were in papers up to 2025, and aren't in the 2028 syllabus.
+  { level: 'XII', sub: 'Stacks, Queues, Linked Lists', verdict: 'out', reason: 'Not in 2028 syllabus.', ref: 'XII Unit 8', force: true },
+  { level: 'XII', name: /^(Space complexity stack|Queue operations|Stack operations)$/, verdict: 'out', reason: 'Not in 2028 syllabus.', ref: 'XII Unit 8', force: true },
   review({ level: 'XI', sub: 'Bitwise Operators (supporting)' }, 'Unit 7 says "expressions (arithmetic and logical)". Bitwise operators are not named. Keep them?'),
 
   out(/Number of binary trees with n nodes|Array representation of a binary tree|Expression tree|Binary search tree ordering/, 'Unit 8 is conceptual, and lists terminology and the three traversals.', 'XII Unit 8'),

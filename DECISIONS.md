@@ -314,3 +314,8 @@ Work is on a `rebuild` branch. `master` still holds your original files.
 - **The GitHub Pages workflow.** It can only run on GitHub. I tested what it does, from
   a fresh clone on this machine: install, test, build, and serving that build from a
   sub-path. The workflow file itself hasn't run.
+
+## v5 fixes
+
+- **Task 1, stacks and queues:** confirmed not in the 2028 syllabus. The 6 formulas left in the book moved to `archive/removed-formulas.json`, with the reason. Papers' questions on them now count as out of syllabus, not as uncovered.
+  A test scans the formula book, bank, blueprints, samples and syllabus map for them. A call stack is fine, as that's how a program runs.

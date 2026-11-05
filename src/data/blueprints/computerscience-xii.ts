@@ -675,11 +675,11 @@ const blueprints: Blueprint[] = [
     ],
     recall: [
       ['A recursive method with no base case will end with:', 'StackOverflowError', 'NullPointerException', 'correct output', 'an infinite while loop with no error'],
-      ['Which structure keeps track of recursive calls?', 'The stack', 'The heap', 'A queue', 'A tree'],
+      ['Which part of memory keeps track of recursive calls?', 'The call stack', 'The heap', 'The array', 'The class file'],
       ['Which is generally true of recursion compared with a loop?', 'It uses more memory', 'It uses less memory', 'It can’t solve the same problems', 'It never ends'],
     ],
     reason: [
-      ['Every recursive method needs a base case.', 'Without it, the calls never stop.', 'The stack then overflows.'],
+      ['Every recursive method needs a base case.', 'Without it, the calls never stop.', 'The call stack then overflows.'],
     ],
     compare: [
       ['recursion', 'iteration', ['A method calls itself.', 'A loop repeats a block.'], ['Uses the call stack, so it costs more memory.', 'Uses a fixed amount of memory.']],
@@ -976,7 +976,7 @@ const blueprints: Blueprint[] = [
       [`(b) The output is ${array.expected}.`, 3],
       ['(c) The condition that stops further calls.', 1],
       ['(c) Without one, calls never stop.', 1],
-      ['(c) The stack would overflow.', 1],
+      ['(c) The call stack would overflow.', 1],
     ]);
   }),
   custom('complete-bubble', [4, 'a', 3, 2], { type: 'complete', format: 'short' }, (g) => {

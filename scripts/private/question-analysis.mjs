@@ -549,6 +549,9 @@ function matcher(subject, level) {
 }
 
 const OUTSIDE_MATHS = /marginal|revenue|average cost|cost function|demand function|break.?even|profit function|regression|correlation|\bAC falls\b/i;
+/** Confirmed by the owner: in papers up to 2025, and not in the 2028 syllabus. A call stack is another thing. */
+const OUTSIDE_CS = /\bstacks?\b|\bqueues?\b|\bdequeue|\benqueue|\bdeque\b|linked list|viewQueue/i;
+const aboutDataStructure = (text) => OUTSIDE_CS.test(text.replace(/call stack|stack overflow|stackoverflow/gi, ' '));
 
 const singular = (s) => s.toLowerCase().replace(/\bapplications\b/g, 'application').replace(/&/g, 'and');
 
@@ -668,7 +671,8 @@ for (const paper of index) {
         }
       }
       // Older Mathematics papers set commerce and regression, which the 2028 syllabus doesn't have.
-      if (subject === 'mathematics' && OUTSIDE_MATHS.test(`${context} ${body}`)) where = { unit: null, concepts: [], score: 0 };
+      const outOfSyllabus = (subject === 'mathematics' && OUTSIDE_MATHS.test(`${context} ${body}`)) || (subject === 'computerscience' && aboutDataStructure(`${context} ${body}`));
+      if (outOfSyllabus) where = { unit: null, concepts: [], score: 0 };
       const garble = paper.readable === 'text' ? 0 : garbleOf(body);
       const { skill, tagged } = skillOf(`${body}`, type);
       const whole = `${context} ${body}`;
@@ -691,6 +695,7 @@ for (const paper of index) {
         type,
         style: paper.type === 'cfq' || paper.type === 'item-bank' || tagged || type === 'case' ? 'cbq' : 'paper',
         practical: practical || undefined,
+        outOfSyllabus: outOfSyllabus || undefined,
         unit: where.unit,
         unitName: where.unitName,
         topic: where.topic,
@@ -708,7 +713,8 @@ for (const paper of index) {
       records.push(record);
       count++;
       const reasons = [];
-      if (where.unit == null) reasons.push('no syllabus topic could be matched: it may be outside the 2028 syllabus');
+      if (outOfSyllabus) reasons.push('out of syllabus: on a topic the 2028 syllabus doesn\'t have');
+      else if (where.unit == null) reasons.push('no syllabus topic could be matched: it may be outside the 2028 syllabus');
       if (garble > 0.28) reasons.push('the OCR text is too garbled to trust');
       if (body.length < 12 && !context) reasons.push('almost no text survived');
       if (figure.figure && paper.readable !== 'text') reasons.push('it depends on a figure that OCR loses');
