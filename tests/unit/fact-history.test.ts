@@ -99,7 +99,7 @@ describe('in simulated sessions', () => {
     const everything = pool.flatMap((bp) => Array.from({ length: 150 }, (_, k) => historyKeys(pickOne(set, bp, k)))).flat();
     const bank = await loadBank('physics', 'XII');
     noteFactsShown([...everything, ...bank.defs.filter((d) => d.unit === 3 && d.topic === 'b').flatMap(defKeys)], Date.now() - DAY);
-    await startUnit('physics', 'XII', 3, undefined, { topic: 'b', share: 100 });
+    await startUnit('physics', 'XII', 2, undefined, { topic: 'b', share: 100 });
     const session = sessionStore.get()!;
     expect(session.items.length).toBe(10);
     expect(session.note).toContain('longest ago');
