@@ -242,6 +242,11 @@ function PaperSheet({ paper, onFinished }: { paper: Paper; onFinished: (result: 
       </div>
       <div className="page-pad max-w-[48rem]">
         <h1 className="text-step-3">{marking ? 'Mark your paper' : `${label}, ${paper.total} marks`}</h1>
+        {paper.repeatNote && !marking && (
+          <p className="notice mt-2" role="status" data-testid="repeat-note">
+            {paper.repeatNote}
+          </p>
+        )}
         {marking ? (
           <p className="mt-2 max-w-[65ch] text-ink-2">
             {paper.timedOut ? 'Time is up, so the paper was handed in. ' : ''}Multiple choice, numericals and program output are already marked. For each written answer, tick the points you earned, then finish below.

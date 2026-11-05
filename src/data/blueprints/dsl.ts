@@ -90,7 +90,25 @@ export interface Facts {
   cases?: { scene: string; parts: [ask: string, answer: string, marks: number][] }[];
   /** Diagram-based: what to draw, then what earns marks. */
   draw?: [question: string, ...points: string[]][];
+  /**
+   * How facts in this topic relate, which gives assertion and reason, and "distinguish between", more good pairs.
+   * "cause": truth a happens because of truth b. "same": truths a and b are about one concept, and neither explains the other.
+   * "contrast": define terms a and b are worth telling apart. Truths are named by the start of their words, terms in full.
+   */
+  links?: Link[];
 }
+
+export type Link = [relation: 'cause' | 'same' | 'contrast', a: string, b: string];
+
+/** Adds together several files of knowledge about one class. */
+export function mergeKnowledge(...sets: Record<string, Facts>[]): Record<string, Facts> {
+  const out: Record<string, Facts> = {};
+  for (const set of sets) for (const [key, facts] of Object.entries(set)) out[key] = out[key] ? mergeFacts(out[key], facts) : facts;
+  return out;
+}
+
+/** Every topic's merged knowledge, by "subject level unit+topic". Tests and the report read this. */
+export const FACT_BOOK = new Map<string, Facts>();
 
 const CODE: Record<SubjectId, string> = { physics: 'p', chemistry: 'c', mathematics: 'm', computerscience: 'k' };
 
@@ -176,6 +194,7 @@ export function blueprintsFor(subject: SubjectId, level: ClassLevel, knowledge: 
   const facts = (unit: number, topic: string, own: Facts): Blueprint[] => {
     used.add(`${unit}${topic}`);
     const f = mergeFacts(own, knowledge[`${unit}${topic}`]);
+    FACT_BOOK.set(`${subject} ${level} ${unit}${topic}`, f);
     const out: Blueprint[] = [];
     const at = (marks: number, difficulty: Difficulty): Place => [unit, topic, marks, difficulty];
     const add = (key: string, marks: number, difficulty: Difficulty, type: BankType, format: Format, style: Style, make: (g: Gen) => Body) => out.push({ ...base(key, at(marks, difficulty), type, format, style), make });
@@ -253,6 +272,29 @@ export function blueprintsFor(subject: SubjectId, level: ClassLevel, knowledge: 
         const reason = kind === 1 ? because : kind === 2 ? alsoTrue : kind === 3 ? falseBecause : g.pick([because, alsoTrue]);
         const why = [`Both are true, and the reason explains the assertion.`, `Both are true, but what explains the assertion is this: ${because}`, `The reason is false. In fact: ${because}`, `The assertion is false. In fact: ${statement}`][kind - 1];
         return { form: 'mcq', text: `Assertion: ${assertion}\nReason: ${reason}`, options: ASSERTION_OPTIONS.map((text) => ({ text })), answer: kind - 1, why, concept, facts: [fact(concept)] };
+      });
+    }
+    const truthFor = (start: string) => f.truths?.find((t) => t[0].startsWith(start));
+    const linkedTruths = (f.links ?? []).filter((l) => l[0] !== 'contrast' && truthFor(l[1]) && truthFor(l[2]));
+    if (linkedTruths.length) {
+      add('assertion-linked', 1, 2, 'assertion', 'assertion', 'cbq-style', (g) => {
+        const [relation, a, b] = g.pick(linkedTruths);
+        const [statement, falseStatement] = truthFor(a)!;
+        const [other, falseOther] = truthFor(b)!;
+        // A pair linked by "same" is the true pair where the reason doesn't explain. A "cause" pair is the true pair where it does.
+        const answer = g.pick([relation === 'cause' ? 0 : 1, 2, 3]);
+        const assertion = answer === 3 ? falseStatement : statement;
+        const reason = answer === 2 ? falseOther : other;
+        const why = [`Both are true, and the reason explains the assertion.`, `Both are true, but neither one explains the other.`, `The reason is false. In fact: ${other}`, `The assertion is false. In fact: ${statement}`][answer];
+        return { form: 'mcq', text: `Assertion: ${assertion}\nReason: ${reason}`, options: ASSERTION_OPTIONS.map((text) => ({ text })), answer, why, concept: statement, facts: [fact(statement), fact(other)] };
+      });
+    }
+    const termFor = (name: string) => f.define?.find((d) => d[0] === name);
+    const contrasts = (f.links ?? []).filter((l) => l[0] === 'contrast' && termFor(l[1]) && termFor(l[2]));
+    if (contrasts.length) {
+      add('compare-linked', 2, 2, 'distinguish', 'distinguish', 'paper-style', (g) => {
+        const [, a, b] = g.pick(contrasts);
+        return g.theory(fillIn(g.pick(ASK_COMPARE), { a, b }), [`${capital(a)}: ${termFor(a)![1]}`, `${capital(b)}: ${termFor(b)![1]}`], { facts: [fact(a), fact(b)] });
       });
     }
     if (f.explain?.length) {

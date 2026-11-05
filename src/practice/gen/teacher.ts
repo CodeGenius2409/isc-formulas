@@ -11,7 +11,7 @@ import { paperSpec } from '../bank/paper';
 import type { BankDef, BankQuestion, BankType, Difficulty, GeneratedTag } from '../bank/types';
 import { seededRng, type Rng } from '../questions';
 import { generatedQuestion } from './engine';
-import { factsOf, generatedCount, pickGenerated, PROBE_SEEDS, questionKey } from './mix';
+import { defKeys, factsOf, generatedCount, historyKeys, pickGenerated, PROBE_SEEDS, questionKey, usedFreshness, type Freshness } from './mix';
 
 export type FormatChoice = 'mcq' | 'assertion' | 'very-short' | 'short' | 'long' | 'numerical' | 'derivation' | 'reason' | 'distinguish' | 'diagram' | 'cbq' | 'output' | 'error' | 'program';
 
@@ -255,6 +255,8 @@ export interface TeacherPaper {
   shortfall?: string;
   /** Where any related questions came from. */
   relatedNote?: string;
+  /** Set when there weren't enough facts left that haven't been used lately. */
+  repeatNote?: string;
 }
 
 export const allItems = (paper: TeacherPaper): PaperItem[] => paper.sections.flatMap((s) => s.items);
@@ -289,6 +291,8 @@ interface DrawRequest {
   slot?: PaperItem['slot'];
   /** Leaves out questions that use up several facts at once. */
   singleFact?: boolean;
+  /** Prefers facts not used lately. */
+  fresh?: Freshness;
 }
 
 /**
@@ -310,14 +314,14 @@ async function drawQuestions(req: DrawRequest): Promise<{ items: PaperItem[]; sh
 }
 
 async function drawOnce(req: DrawRequest, usedBlueprints: Set<string>, seenText: Set<string>, seenFacts: Set<string>): Promise<{ items: PaperItem[]; short: number }> {
-  const { count, filters: f, rng, avoid, slot, singleFact } = req;
+  const { count, filters: f, rng, avoid, slot, singleFact, fresh } = req;
   const sources = await loadSources(f);
   const bankPool = sources.flatMap((s) => s.bank.defs.filter((d) => bankMatches(d, s.level, f) && !avoid.has(d.id)).map((def) => ({ def, bank: s.bank })));
-  const pools = sources.map((s) => ({ s, list: s.set.blueprints.filter((b) => blueprintMatches(b, f) && !(singleFact && b.id.endsWith('-match'))) }));
+  const pools = sources.map((s) => ({ s, list: s.set.blueprints.filter((b) => blueprintMatches(b, f) && !(singleFact && (b.id.endsWith('-match') || b.id.endsWith('-linked')))) }));
   const blueprintTotal = pools.reduce((n, p) => n + p.list.length, 0);
   const wantGen = blueprintTotal ? generatedCount(count, f.share) : 0;
-  const wantBank = f.share >= 100 ? 0 : Math.min(count - wantGen, bankPool.length);
-  const bankOrder = shuffled(bankPool, rng);
+  const bankOrder = shuffled(fresh ? bankPool.filter(({ def }) => !fresh.resting(defKeys(def))) : bankPool, rng);
+  const wantBank = f.share >= 100 ? 0 : Math.min(count - wantGen, bankOrder.length);
   const fromBank = bankOrder.slice(0, wantBank).map(({ def, bank }) => bankQuestion(def, bank, rng));
   for (const q of fromBank) {
     seenText.add(questionKey(q));
@@ -331,7 +335,7 @@ async function drawOnce(req: DrawRequest, usedBlueprints: Set<string>, seenText:
   for (let i = 0; i < order.length && made.length < needGen; i++) {
     const left = needGen - made.length;
     const portion = i === order.length - 1 ? left : Math.ceil(left / (order.length - i));
-    made.push(...pickGenerated(order[i].s.set, order[i].list, { count: portion, rng, used: usedBlueprints, seenText, seenFacts }));
+    made.push(...pickGenerated(order[i].s.set, order[i].list, { count: portion, rng, used: usedBlueprints, seenText, seenFacts, fresh, freshOnly: true }));
   }
   // The generated side ran short, so the bank makes up the rest if the slider allows it.
   const extra: BankQuestion[] = [];
@@ -344,6 +348,29 @@ async function drawOnce(req: DrawRequest, usedBlueprints: Set<string>, seenText:
       seenText.add(questionKey(q));
       for (const x of factsOf(q)) seenFacts.add(x);
     }
+  }
+  // Nothing unused is left for these choices, so what was used longest ago comes back, and the count still holds.
+  if (fresh) {
+    const fromOldBank = () => {
+      if (f.share >= 100) return;
+      const old = bankPool.filter(({ def }) => fresh.resting(defKeys(def))).sort((a, b) => fresh.lastSeen(defKeys(a.def)) - fresh.lastSeen(defKeys(b.def)));
+      for (const { def, bank } of old) {
+        if (fromBank.length + extra.length + made.length >= count) break;
+        if ((def.facts ?? []).some((x) => seenFacts.has(x))) continue;
+        const q = bankQuestion(def, bank, rng);
+        extra.push(q);
+        seenText.add(questionKey(q));
+        for (const x of factsOf(q)) seenFacts.add(x);
+      }
+    };
+    if (f.share < 50) fromOldBank();
+    if (f.share > 0) {
+      for (const { s, list } of order) {
+        const left = count - fromBank.length - extra.length - made.length;
+        if (left > 0) made.push(...pickGenerated(s.set, list, { count: left, rng, used: usedBlueprints, seenText, seenFacts, fresh }));
+      }
+    }
+    fromOldBank();
   }
   const all = shuffled([...fromBank, ...extra, ...made], rng).map((q) => toItem(q, slot));
   let short = count - all.length;
@@ -363,13 +390,19 @@ export function relatedSummary(items: PaperItem[]): string | undefined {
   return n ? `${n} ${n === 1 ? 'question comes' : 'questions come'} from related subtopics in the same chapter.` : undefined;
 }
 
+/** The short note when a choice has run out of facts that haven't been used in saved papers. */
+export function repeatSummary(items: PaperItem[], fresh: Freshness | undefined, where = 'your recent papers'): string | undefined {
+  const n = fresh ? items.filter((i) => fresh.resting(historyKeys(i.question))).length : 0;
+  return n ? `${n} ${n === 1 ? 'question uses a fact' : 'questions use facts'} from ${where}, as there weren’t enough others for these choices.` : undefined;
+}
+
 export interface SetRequest {
   mode: 'count' | 'marks';
   value: number;
 }
 
 /** A question set, for class practice, a worksheet or homework. */
-export async function buildQuestionSet(filters: Filters, request: SetRequest, subjectLabel: string, seed: number, avoid: Set<string> = new Set()): Promise<TeacherPaper> {
+export async function buildQuestionSet(filters: Filters, request: SetRequest, subjectLabel: string, seed: number, avoid: Set<string> = new Set(), fresh?: Freshness): Promise<TeacherPaper> {
   const rng = seededRng(seed);
   const used = new Set<string>();
   const seen = new Set<string>();
@@ -377,7 +410,7 @@ export async function buildQuestionSet(filters: Filters, request: SetRequest, su
   let items: PaperItem[];
   let shortfall: string | undefined;
   if (request.mode === 'count') {
-    const drawn = await drawQuestions({ count: request.value, filters, rng, avoid, usedBlueprints: used, seenText: seen, seenFacts });
+    const drawn = await drawQuestions({ count: request.value, filters, rng, avoid, usedBlueprints: used, seenText: seen, seenFacts, fresh });
     items = drawn.items;
     if (drawn.short) shortfall = `Only ${items.length} of the ${request.value} questions could be found for these choices.`;
   } else {
@@ -389,7 +422,7 @@ export async function buildQuestionSet(filters: Filters, request: SetRequest, su
       const fits = choices.filter((m) => m <= left);
       if (!fits.length) break;
       const marks = fits[Math.floor(rng() * fits.length)];
-      const drawn = await drawQuestions({ count: 1, filters: { ...filters, marks: [marks] }, rng, avoid, usedBlueprints: used, seenText: seen, seenFacts });
+      const drawn = await drawQuestions({ count: 1, filters: { ...filters, marks: [marks] }, rng, avoid, usedBlueprints: used, seenText: seen, seenFacts, fresh });
       const [item] = drawn.items;
       if (!item || items.some((i) => i.key === item.key)) {
         choices.splice(choices.indexOf(marks), 1);
@@ -413,6 +446,7 @@ export async function buildQuestionSet(filters: Filters, request: SetRequest, su
     createdAt: Date.now(),
     shortfall,
     relatedNote: relatedSummary(items),
+    repeatNote: repeatSummary(items, fresh),
   };
   paper.header.maxMarks = String(totalMarks(paper));
   return paper;
@@ -434,7 +468,7 @@ export function officialStructure(subject: SubjectId, level: ClassLevel): (Custo
 }
 
 /** A whole paper, from the official structure or a custom one. */
-export async function buildFullPaper(filters: Filters, level: ClassLevel, structure: (CustomSection & { units?: number[] })[], subjectLabel: string, seed: number, avoid: Set<string> = new Set()): Promise<TeacherPaper> {
+export async function buildFullPaper(filters: Filters, level: ClassLevel, structure: (CustomSection & { units?: number[] })[], subjectLabel: string, seed: number, avoid: Set<string> = new Set(), fresh?: Freshness): Promise<TeacherPaper> {
   const rng = seededRng(seed);
   const used = new Set<string>();
   const seen = new Set<string>();
@@ -446,10 +480,10 @@ export async function buildFullPaper(filters: Filters, level: ClassLevel, struct
   for (const part of structure) {
     const units = part.units?.map((u) => `${level} ${u}`);
     const f: Filters = { ...filters, levels: [level], marks: [part.marks], formats: part.formats, units: units ?? filters.units, topics: units ? [] : filters.topics };
-    const drawn = await drawQuestions({ count: part.count, filters: f, rng, avoid: taken, usedBlueprints: used, seenText: seen, seenFacts, slot: { marks: part.marks, units } });
+    const drawn = await drawQuestions({ count: part.count, filters: f, rng, avoid: taken, usedBlueprints: used, seenText: seen, seenFacts, slot: { marks: part.marks, units }, fresh });
     for (const i of drawn.items) taken.add(i.key);
     // A paper is never handed out short, so if generated questions run out, the bank fills the section, whatever the slider says.
-    const fill = drawn.short > 0 ? await drawQuestions({ count: drawn.short, filters: { ...f, share: 50 }, rng, avoid: taken, usedBlueprints: used, seenText: seen, seenFacts, slot: { marks: part.marks, units } }) : { items: [], short: 0 };
+    const fill = drawn.short > 0 ? await drawQuestions({ count: drawn.short, filters: { ...f, share: 50 }, rng, avoid: taken, usedBlueprints: used, seenText: seen, seenFacts, slot: { marks: part.marks, units }, fresh }) : { items: [], short: 0 };
     for (const i of fill.items) taken.add(i.key);
     filled += fill.items.length;
     short += fill.short;
@@ -467,13 +501,14 @@ export async function buildFullPaper(filters: Filters, level: ClassLevel, struct
     createdAt: Date.now(),
     shortfall: short ? `${short} ${short === 1 ? 'question' : 'questions'} couldn’t be found for these choices.` : undefined,
     relatedNote: [relatedSummary(sections.flatMap((s) => s.items)), filled ? `${filled} ${filled === 1 ? 'question comes' : 'questions come'} from the bank, as there weren’t enough new ones for that section.` : ''].filter(Boolean).join(' ') || undefined,
+    repeatNote: repeatSummary(sections.flatMap((s) => s.items), fresh),
   };
   paper.header.maxMarks = String(totalMarks(paper));
   return paper;
 }
 
 /** Replaces one question with a different one of the same marks and kind. A locked question stays. */
-export async function regenerateItem(paper: TeacherPaper, key: string, seed: number): Promise<TeacherPaper> {
+export async function regenerateItem(paper: TeacherPaper, key: string, seed: number, fresh?: Freshness): Promise<TeacherPaper> {
   const rng = seededRng(seed);
   const sections = await Promise.all(
     paper.sections.map(async (section) => ({
@@ -481,7 +516,7 @@ export async function regenerateItem(paper: TeacherPaper, key: string, seed: num
       items: await Promise.all(
         section.items.map(async (item) => {
           if (item.key !== key || item.locked) return item;
-          return (await replacementFor(paper, item, rng)) ?? item;
+          return (await replacementFor(paper, item, rng, fresh)) ?? item;
         }),
       ),
     })),
@@ -489,7 +524,7 @@ export async function regenerateItem(paper: TeacherPaper, key: string, seed: num
   return { ...paper, sections };
 }
 
-async function replacementFor(paper: TeacherPaper, item: PaperItem, rng: Rng): Promise<PaperItem | null> {
+async function replacementFor(paper: TeacherPaper, item: PaperItem, rng: Rng, fresh?: Freshness): Promise<PaperItem | null> {
   const taken = new Set(allItems(paper).map((i) => i.key));
   const seen = new Set(allItems(paper).map((i) => questionKey(i.question)));
   const seenFacts = new Set(allItems(paper).flatMap((i) => (i.key === item.key ? [] : factsOf(i.question))));
@@ -501,33 +536,40 @@ async function replacementFor(paper: TeacherPaper, item: PaperItem, rng: Rng): P
     if (bp) {
       for (let i = 0; i < 40; i++) {
         const q = generatedQuestion(bp, Math.floor(rng() * 2 ** 31), set.names(bp));
-        if (!seen.has(questionKey(q)) && !factsOf(q).some((x) => seenFacts.has(x))) return { ...item, key: q.item.id, question: q, editedText: undefined };
+        if (!seen.has(questionKey(q)) && !factsOf(q).some((x) => seenFacts.has(x)) && !fresh?.resting(historyKeys(q))) return { ...item, key: q.item.id, question: q, editedText: undefined };
       }
     }
   }
   const f: Filters = { ...paper.filters, levels: [old.level], marks: [old.marks], units: item.slot?.units ?? paper.filters.units, topics: item.slot?.units ? [] : paper.filters.topics };
-  const drawn = await drawQuestions({ count: 1, filters: f, rng, avoid: taken, seenText: seen, seenFacts });
+  const drawn = await drawQuestions({ count: 1, filters: f, rng, avoid: taken, seenText: seen, seenFacts, fresh });
   const next = drawn.items[0];
   return next ? { ...item, key: next.key, question: next.question, editedText: undefined } : null;
 }
 
 /** Regenerates everything that isn't locked. */
-export async function regenerateUnlocked(paper: TeacherPaper, seed: number): Promise<TeacherPaper> {
+export async function regenerateUnlocked(paper: TeacherPaper, seed: number, fresh?: Freshness): Promise<TeacherPaper> {
   let next = paper;
   let offset = 0;
   for (const item of allItems(paper)) {
-    if (!item.locked) next = await regenerateItem(next, item.key, seed + ++offset);
+    if (!item.locked) next = await regenerateItem(next, item.key, seed + ++offset, fresh);
   }
   return next;
 }
 
-/** Sets A, B, C: the same structure with different values or questions. Locked questions are kept in each. */
-export async function makeSets(paper: TeacherPaper, names: string[], baseSeed: number): Promise<TeacherPaper[]> {
+/** Sets A, B, C: the same structure with different facts wherever the material allows. Locked questions are kept in each. */
+export async function makeSets(paper: TeacherPaper, names: string[], baseSeed: number, fresh?: Freshness): Promise<TeacherPaper[]> {
   const out: TeacherPaper[] = [];
   let current = paper;
+  // What earlier sets used comes back only when nothing else is left, and when it does, the set says so.
+  const inEarlierSets = new Map<string, number>();
+  const earlier = usedFreshness(inEarlierSets, fresh);
+  const onlyEarlier = usedFreshness(inEarlierSets);
   for (let i = 0; i < names.length; i++) {
-    if (i > 0) current = await regenerateUnlocked(current, baseSeed + i * 1000);
-    out.push({ ...current, id: `${paper.id}-${names[i]}`, setName: names[i], seed: baseSeed + i * 1000, title: `${paper.title}, Set ${names[i]}` });
+    if (i > 0) current = await regenerateUnlocked(current, baseSeed + i * 1000, earlier);
+    const open = allItems(current).filter((item) => !item.locked);
+    const repeated = i > 0 ? repeatSummary(open, onlyEarlier, 'an earlier set') : undefined;
+    out.push({ ...current, id: `${paper.id}-${names[i]}`, setName: names[i], seed: baseSeed + i * 1000, title: `${paper.title}, Set ${names[i]}`, repeatNote: repeated ?? current.repeatNote });
+    for (const item of open) for (const key of historyKeys(item.question)) inEarlierSets.set(key, i + 1);
   }
   return out;
 }
@@ -612,8 +654,19 @@ export function deletePaper(id: string): void {
   teacherHistoryStore.set((list) => list.filter((p) => p.id !== id));
 }
 
-/** Every question id used in the papers kept here, so a new paper can leave them out. */
-export const usedInHistory = (): Set<string> => new Set(teacherHistoryStore.get().flatMap((p) => allItems(p).map((i) => i.key)));
+/** On by default. A teacher's saved papers are the history here, as a student's sittings aren't relevant to them. */
+export const avoidRecentStore = createStore<boolean>(readJson<boolean>('isc-teacher-avoid-recent', true), (v) => writeJson('isc-teacher-avoid-recent', v));
+
+/** The facts used in the papers kept here, with when, so a new paper can prefer others. */
+export function recentPaperFreshness(): Freshness {
+  const used = new Map<string, number>();
+  for (const paper of teacherHistoryStore.get()) {
+    for (const item of allItems(paper)) {
+      for (const key of historyKeys(item.question)) used.set(key, Math.max(used.get(key) ?? 0, paper.createdAt));
+    }
+  }
+  return usedFreshness(used);
+}
 
 export function paperToFile(paper: TeacherPaper): string {
   return JSON.stringify({ app: 'isc-formula-book', kind: 'teacher-paper', version: 1, paper }, null, 2);

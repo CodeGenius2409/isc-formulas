@@ -14,7 +14,7 @@ import { useStore } from '../lib/store';
 import type { BankItem, Difficulty } from '../practice/bank/types';
 import { answerLines, saveBlob, STUDENT_FOOTER } from '../practice/gen/docx';
 import { describePlan, generatedCount, planShare, teacherShareStore } from '../practice/gen/mix';
-import { allItems, answerSpace, arranged, bankForSections, buildFullPaper, capacityOf, buildQuestionSet, countAvailable, deleteItem, deletePaper, emptyFilters, FORMATS, makeSets, moveItem, moveItemTo, officialStructure, paperFromFile, paperToFile, presetsStore, regenerateItem, regenerateUnlocked, savePaper, savePreset, teacherHistoryStore, totalMarks, updateItem, usedInHistory, type CustomSection, type Filters, type FormatChoice, type PaperItem, type TeacherPaper } from '../practice/gen/teacher';
+import { allItems, answerSpace, arranged, bankForSections, buildFullPaper, capacityOf, buildQuestionSet, countAvailable, deleteItem, deletePaper, emptyFilters, FORMATS, makeSets, moveItem, moveItemTo, officialStructure, paperFromFile, paperToFile, presetsStore, regenerateItem, regenerateUnlocked, savePaper, savePreset, teacherHistoryStore, totalMarks, updateItem, avoidRecentStore, recentPaperFreshness, type CustomSection, type Filters, type FormatChoice, type PaperItem, type TeacherPaper } from '../practice/gen/teacher';
 
 const freshSeed = () => Math.floor(Math.random() * 2 ** 31);
 
@@ -356,6 +356,11 @@ function Review({ paper, onChange, onClose, sets, onSets }: { paper: TeacherPape
         <p className="mt-1 text-ink-2" data-testid="review-summary">
           {allItems(paper).length} questions, {totalMarks(paper)} marks. Seed {paper.seed}.
         </p>
+        {paper.repeatNote && (
+          <p className="notice" role="status" data-testid="repeat-note">
+            {paper.repeatNote}
+          </p>
+        )}
         {paper.relatedNote && (
           <p className="notice" role="status" data-testid="related-note">
             {paper.relatedNote}
@@ -435,7 +440,7 @@ function Review({ paper, onChange, onClose, sets, onSets }: { paper: TeacherPape
               disabled={busy}
               onClick={async () => {
                 setBusy(true);
-                const made = await makeSets(paper, ['A', 'B', 'C'], freshSeed());
+                const made = await makeSets(paper, ['A', 'B', 'C'], freshSeed(), avoidRecentStore.get() ? recentPaperFreshness() : undefined);
                 onSets(made);
                 onChange(made[0]);
                 setBusy(false);
@@ -528,7 +533,7 @@ export default function GeneratorView() {
   const [paperLevel, setPaperLevel] = useState<ClassLevel>('XII');
   const [structureKind, setStructureKind] = useState<'official' | 'custom'>('official');
   const [custom, setCustom] = useState<CustomSection[]>([{ name: 'Section A', count: 10, marks: 1, formats: [] }, { name: 'Section B', count: 5, marks: 3, formats: [] }]);
-  const [avoid, setAvoid] = useState(false);
+  const avoid = useStore(avoidRecentStore);
   const [presetName, setPresetName] = useState('');
   const [paper, setPaper] = useState<TeacherPaper | null>(null);
   const [sets, setSets] = useState<TeacherPaper[]>([]);
@@ -544,10 +549,10 @@ export default function GeneratorView() {
     document.title = 'Generate questions: ISC Formula Book';
   }, []);
 
-  const available = useAsync(() => countAvailable(effective, avoid ? usedInHistory() : new Set()), JSON.stringify([effective.subject, effective.levels, effective.units, effective.topics, effective.formats, effective.styles, effective.difficulties, effective.marks, avoid]));
+  const available = useAsync(() => countAvailable(effective), JSON.stringify([effective.subject, effective.levels, effective.units, effective.topics, effective.formats, effective.styles, effective.difficulties, effective.marks, avoid]));
 
   const structure = useMemo(() => (mode === 'paper' ? (structureKind === 'official' ? officialStructure(filters.subject, paperLevel) : custom) : []), [mode, structureKind, filters.subject, paperLevel, custom]);
-  const sectionBank = useAsync(() => bankForSections(effective, paperLevel, structure, avoid ? usedInHistory() : new Set()), JSON.stringify([effective.subject, effective.units, effective.topics, effective.formats, effective.styles, effective.difficulties, paperLevel, structure, avoid]));
+  const sectionBank = useAsync(() => bankForSections(effective, paperLevel, structure), JSON.stringify([effective.subject, effective.units, effective.topics, effective.formats, effective.styles, effective.difficulties, paperLevel, structure, avoid]));
   const plan = useMemo(() => {
     if (available.status !== 'ready') return null;
     if (mode === 'paper') {
@@ -565,7 +570,7 @@ export default function GeneratorView() {
 
   // What each option could give with the other choices as they are, and what the whole choice can give.
   const wantedCount = mode === 'set' && countMode === 'count' ? Math.max(1, Number(amount) || 1) : mode === 'set' ? 1 : 0;
-  const skipSeen = avoid ? usedInHistory() : EMPTY_SET;
+  const skipSeen = EMPTY_SET;
   const fitKey = JSON.stringify([effective, avoid, wantedCount, mode]);
   const capacity = useAsync(async () => {
     const base = effective;
@@ -601,8 +606,8 @@ export default function GeneratorView() {
     setSets([]);
     try {
       const seed = freshSeed();
-      const skip = avoid ? usedInHistory() : new Set<string>();
-      const made = mode === 'set' ? await buildQuestionSet(effective, { mode: countMode, value: Math.max(1, Number(amount) || 1) }, label, seed, skip) : await buildFullPaper(effective, paperLevel, structure, label, seed, skip);
+      const fresh = avoid ? recentPaperFreshness() : undefined;
+      const made = mode === 'set' ? await buildQuestionSet(effective, { mode: countMode, value: Math.max(1, Number(amount) || 1) }, label, seed, EMPTY_SET, fresh) : await buildFullPaper(effective, paperLevel, structure, label, seed, EMPTY_SET, fresh);
       if (!allItems(made).length) setProblem('Nothing matches these choices. Try fewer filters.');
       else setPaper(made);
     } catch (err) {
@@ -767,7 +772,7 @@ export default function GeneratorView() {
             </p>
           )}
           <label className="switch-row mt-1">
-            <input type="checkbox" checked={avoid} onChange={(e) => setAvoid(e.target.checked)} /> Don’t reuse questions from papers I’ve saved
+            <input type="checkbox" checked={avoid} onChange={(e) => avoidRecentStore.set(e.target.checked)} /> Avoid facts used in my recent papers
           </label>
         </section>
 

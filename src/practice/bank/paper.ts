@@ -4,10 +4,11 @@ import { loadSyllabus } from '../../data/syllabus';
 import type { ClassLevel, SubjectId } from '../../data/types';
 import { createStore } from '../../lib/store';
 import { readJson, writeJson } from '../../lib/storage';
-import { noteMissedSteps, papersImported, recordAnswer } from '../progress';
+import { noteMissedSteps, papersImported, recordAnswer, studentFreshness } from '../progress';
 import { seededRng, type Rng } from '../questions';
 import { loadBlueprints, type LoadedBlueprints } from '../../data/blueprints';
-import { CBQ_SHARE, generatedCount, pickGenerated, planShare, type SlotCount } from '../gen/mix';
+import { CBQ_SHARE, defKeys, generatedCount, historyKeys, pickGenerated, planShare, type Freshness, type SlotCount } from '../gen/mix';
+import { ensureFactHistory, factGapStore, noteFactsShown } from '../fact-history';
 import { bankQuestion, loadBank, type LoadedBank } from './index';
 import { answerSummary, isAttempted, isPassing, qualityOf, scoreOf, yourAnswerSummary } from './mark';
 import type { BankAnswer, BankDef, BankItem, BankQuestion } from './types';
@@ -98,6 +99,8 @@ export interface Paper {
   diagrams?: boolean;
   /** The share of generated questions asked for, from 0 to 100. */
   generatedShare?: number;
+  /** Set when this paper ran out of unseen facts. */
+  repeatNote?: string;
 }
 
 export interface TopicResult {
@@ -196,6 +199,15 @@ const isDerivationType = (type: string) => type === 'derivation' || type === 'pr
 export interface GeneratedOption {
   set: LoadedBlueprints;
   share: number;
+  /** What has been seen lately, so that unseen facts come first. */
+  fresh?: Freshness;
+}
+
+/** The short note when a choice has run out of unseen facts. Nothing is said when it hasn't. */
+export function repeatNoteFor(count: number, gapDays: number): string | undefined {
+  if (!count) return undefined;
+  const span = gapDays === 1 ? 'the last day' : `the last ${gapDays} days`;
+  return `You’ve seen nearly everything here in ${span}, so ${count} ${count === 1 ? 'question comes' : 'questions come'} from what you saw longest ago.`;
 }
 
 /** The slots of a paper, with what the bank can supply for each, so a share can be planned and explained. */
@@ -221,24 +233,39 @@ export function assemblePaper(subject: SubjectId, level: ClassLevel, bank: Loade
   const seenText = new Set<string>();
   const seenFacts = new Set<string>();
   const share = generated ? planShare(paperSlots(subject, level, bank), generated.share).share : 0;
+  const fresh = generated?.fresh;
   const sections = spec.sections.map((section) => {
     const questions = section.slots.flatMap((slot) => {
       const inSection = (unit: number) => !section.units || section.units.includes(unit);
-      const fresh = (d: BankDef) => !(d.facts ?? []).some((f) => seenFacts.has(f));
-      const bankFor = (wantDerivation: boolean | null) => bank.defs.filter((d) => d.marks === slot.marks && inSection(d.unit) && !used.has(d.id) && fresh(d) && (wantDerivation === null || isDerivationType(d.type) === wantDerivation));
+      const notAsked = (d: BankDef) => !(d.facts ?? []).some((f) => seenFacts.has(f));
+      const bankFor = (wantDerivation: boolean | null) => bank.defs.filter((d) => d.marks === slot.marks && inSection(d.unit) && !used.has(d.id) && notAsked(d) && (wantDerivation === null || isDerivationType(d.type) === wantDerivation));
       const blueprintsFor = (wantDerivation: boolean | null) => (generated?.set.blueprints ?? []).filter((b) => b.marks === slot.marks && inSection(b.unit) && (wantDerivation === null || isDerivationType(b.type) === wantDerivation));
-      const pickMade = (pool: ReturnType<typeof blueprintsFor>, count: number, cbqShare = 0) => (generated && count > 0 ? pickGenerated(generated.set, pool, { count, weights, rng, used: usedBlueprints, seenText, seenFacts, cbqShare }) : []);
-      const takeBank = (pool: BankDef[], count: number) => {
+      const pickMade = (pool: ReturnType<typeof blueprintsFor>, count: number, cbqShare = 0) => (generated && count > 0 ? pickGenerated(generated.set, pool, { count, weights, rng, used: usedBlueprints, seenText, seenFacts, cbqShare, fresh, freshOnly: true }) : []);
+      const takeBank = (all: BankDef[], count: number) => {
+        const pool = fresh ? all.filter((d) => !fresh.resting(defKeys(d))) : all;
         const defs = count > 0 && pool.length ? draw(pool, Math.min(count, pool.length), weights, used, rng) : [];
         for (const d of defs) for (const f of d.facts ?? []) seenFacts.add(f);
         return defs;
       };
+      // When the unseen ones have run out, the ones seen longest ago come back, bank or generated, as the slider leans.
+      const takeOldBank = (all: BankDef[], count: number) => {
+        if (!fresh || count <= 0) return [];
+        const defs = [...all].sort((a, b) => fresh.lastSeen(defKeys(a)) - fresh.lastSeen(defKeys(b))).slice(0, count);
+        for (const d of defs) {
+          used.add(d.id);
+          for (const f of d.facts ?? []) seenFacts.add(f);
+        }
+        return defs;
+      };
+      const pickOld = (pool: ReturnType<typeof blueprintsFor>, count: number) => (generated && fresh && count > 0 ? pickGenerated(generated.set, pool, { count, weights, rng, used: usedBlueprints, seenText, seenFacts, fresh }) : []);
       // Derivations first, in the share the real papers give them, from the bank or generated as the slider says.
       const wantDerivations = Math.round(slot.count * (DERIVATION_SHARE[subject][slot.marks] ?? 0));
       const genDerivations = pickMade(blueprintsFor(true), generatedCount(wantDerivations, share));
       const bankDerivations = takeBank(bankFor(true), wantDerivations - genDerivations.length);
       const lateDerivations = pickMade(blueprintsFor(true), wantDerivations - genDerivations.length - bankDerivations.length);
-      const derivationCount = genDerivations.length + bankDerivations.length + lateDerivations.length;
+      const oldBankDerivations = takeOldBank(bankFor(true), wantDerivations - genDerivations.length - bankDerivations.length - lateDerivations.length);
+      const oldDerivations = pickOld(blueprintsFor(true), wantDerivations - genDerivations.length - bankDerivations.length - lateDerivations.length - oldBankDerivations.length);
+      const derivationCount = genDerivations.length + bankDerivations.length + lateDerivations.length + oldBankDerivations.length + oldDerivations.length;
       // Then everything else.
       const others = slot.count - derivationCount;
       const pool = bankFor(false);
@@ -248,9 +275,17 @@ export function assemblePaper(subject: SubjectId, level: ClassLevel, bank: Loade
       let left = others - made.length - defs.length;
       const moreBank = takeBank(bankFor(null), left);
       left -= moreBank.length;
+      // At 0% the bank's older questions come before anything generated.
+      const oldFirst = share === 0 ? takeOldBank(bankFor(null), left) : [];
+      left -= oldFirst.length;
       const fill = pickMade(blueprintsFor(null), left);
-      if (fill.length < left) throw new Error(`There are too few ${slot.marks}-mark questions for this paper.`);
-      return shuffled([...[...bankDerivations, ...defs, ...moreBank].map((d) => bankQuestion(d, bank, rng)), ...genDerivations, ...lateDerivations, ...made, ...fill], rng);
+      left -= fill.length;
+      const oldMade = pickOld(blueprintsFor(null), left);
+      left -= oldMade.length;
+      const oldLast = takeOldBank(bankFor(null), left);
+      left -= oldLast.length;
+      if (left > 0) throw new Error(`There are too few ${slot.marks}-mark questions for this paper.`);
+      return shuffled([...[...bankDerivations, ...oldBankDerivations, ...defs, ...moreBank, ...oldFirst, ...oldLast].map((d) => bankQuestion(d, bank, rng)), ...genDerivations, ...lateDerivations, ...oldDerivations, ...made, ...fill, ...oldMade], rng);
     });
     return { name: section.name, note: section.note, choose: section.choose, questions };
   });
@@ -259,9 +294,15 @@ export function assemblePaper(subject: SubjectId, level: ClassLevel, bank: Loade
 
 export async function startPaper(subject: SubjectId, level: ClassLevel, options: { share?: number; seed?: number; diagrams?: boolean } = {}): Promise<Paper> {
   const share = options.share ?? 0;
-  const [bank, weights, set] = await Promise.all([loadBank(subject, level), unitWeights(subject, level), loadBlueprints(subject, level)]);
+  const [bank, weights, set] = await Promise.all([loadBank(subject, level), unitWeights(subject, level), loadBlueprints(subject, level), ensureFactHistory()]);
   const seed = options.seed ?? Math.floor(Math.random() * 2 ** 31);
-  const paper = { ...assemblePaper(subject, level, bank, weights, seededRng(seed), Date.now(), { set, share }), seed, diagrams: options.diagrams ?? true };
+  // A paper opened from a link has to come out the same, so history has no say in it.
+  const fresh = options.seed === undefined ? studentFreshness() : undefined;
+  const built = assemblePaper(subject, level, bank, weights, seededRng(seed), Date.now(), { set, share, fresh });
+  const shown = built.sections.flatMap((s) => s.questions.map(historyKeys));
+  const repeats = fresh ? shown.filter((keys) => fresh.resting(keys)).length : 0;
+  const paper = { ...built, seed, diagrams: options.diagrams ?? true, repeatNote: repeatNoteFor(repeats, factGapStore.get()) };
+  noteFactsShown(shown.flat());
   paperStore.set(paper);
   return paper;
 }

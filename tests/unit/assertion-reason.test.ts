@@ -43,7 +43,7 @@ describe('every node is sound as data', () => {
 for (const [subject, level, topics] of SETS) {
   describe(`${subject} ${level}`, async () => {
     const set = await loadBlueprints(subject, level);
-    const assertions = set.blueprints.filter((b) => b.type === 'assertion');
+    const assertions = set.blueprints.filter((b) => b.type === 'assertion' && !b.id.endsWith('-linked'));
     const nodes = new Map(Object.values(topics).flatMap((t) => (t.ar ?? []).map((n): [string, ArNode] => [n[0], n])));
 
     it('has a concept for each one, and enough of them across the class', () => {
