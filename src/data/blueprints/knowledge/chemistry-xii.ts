@@ -83,9 +83,8 @@ const knowledge: Record<string, Facts> = {
   },
   '6b': {
     ar: [
-      ['the C–X bond in aryl halides', 'Aryl halides are less reactive than alkyl halides to nucleophiles.', 'Aryl halides are more reactive than alkyl halides to nucleophiles.', 'Their C–X bond has partial double bond character from resonance.', 'Their C–X bond is much longer than in alkyl halides.', 'Their carbon is sp² hybridised.'],
+      ['the C–X bond in aryl halides', 'Aryl halides are less reactive than alkyl halides to nucleophiles.', 'Aryl halides are more reactive than alkyl halides to nucleophiles.', 'Their C–X bond has partial double bond character from resonance.', 'Their C–X bond is much longer than in alkyl halides.', 'Chlorobenzene has a smaller dipole moment than chloromethane.'],
       ['electron-withdrawing groups', 'A nitro group para to the chlorine makes chlorobenzene react faster with nucleophiles.', 'A nitro group para to the chlorine stops chlorobenzene from reacting with nucleophiles.', 'It stabilises the negative charge in the intermediate.', 'It adds electrons to the ring.', 'The nitro group is electron-withdrawing.'],
-      ['electrophilic substitution', 'Chlorobenzene is less reactive than benzene in electrophilic substitution.', 'Chlorobenzene is more reactive than benzene in electrophilic substitution.', 'Chlorine’s −I effect withdraws electrons from the ring.', 'Chlorine has no effect on the ring.', 'Chlorine still directs to the ortho and para positions.'],
     ],
   },
   '6c': {

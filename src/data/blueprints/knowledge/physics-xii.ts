@@ -60,16 +60,16 @@ const knowledge: Record<string, Facts> = {
       'Sketch a hysteresis loop': { kind: 'graph', x: 'H', y: 'B', lines: [{ points: [...curve((h) => 2 * Math.tanh(h + 1), -3, 3), ...curve((h) => 2 * Math.tanh(h - 1), 3, -3)] }], ticksY: [[1.52, 'Retentivity']], ticksX: [[-1, 'Coercivity']] },
     },
     ar: [
-      ['soft iron', 'Soft iron is used in electromagnets.', 'Steel is used in electromagnets, as it stays magnetised.', 'It magnetises and demagnetises easily, as it has low coercivity.', 'It has very high coercivity.', 'Permanent magnets are made of materials with high retentivity.'],
-      ['types of magnetic material', 'A diamagnetic material is pushed out of a strong field.', 'A diamagnetic material is pulled into a strong field.', 'Its induced moment opposes the applied field.', 'Its permanent moments line up with the field.', 'Its susceptibility is small and negative.'],
+      ['soft iron', 'Soft iron is used in electromagnets.', 'Steel is used in electromagnets, as it stays magnetised.', 'It magnetises and demagnetises easily, as it has low coercivity.', 'It has very high coercivity.', 'Soft iron is a ferromagnetic material.'],
+      ['the couple on a magnet', 'A magnet in a uniform field turns, but doesn’t move as a whole.', 'A magnet in a uniform field moves along the field as a whole.', 'Its poles feel equal and opposite forces, which form a couple.', 'Its north pole feels a larger force than its south pole.', 'A compass needle is a small magnet.'],
       ['the Curie point', 'A ferromagnet loses its strong magnetism on heating past a certain temperature.', 'A ferromagnet gets more strongly magnetised the more it is heated.', 'Heat destroys the alignment of its domains.', 'Heat creates new domains that are all aligned.', 'That temperature is called the Curie temperature.'],
     ],
   },
   '4a': {
     ar: [
       ['Lenz’s law', 'Lenz’s law agrees with the conservation of energy.', 'Lenz’s law goes against the conservation of energy.', 'If the induced current helped the change, energy would appear from nothing.', 'The induced current does no work.', 'An induced current opposes the change causing it.'],
-      ['eddy currents', 'A transformer’s core is made of thin laminated sheets.', 'A transformer’s core is made of one solid block, to carry eddy currents better.', 'Thin sheets cut down the eddy currents, which waste energy.', 'Thin sheets increase the flux through the coil greatly.', 'Induction cookers make use of eddy currents.'],
-      ['self-induction', 'A spark can appear when a switch in an inductive circuit is opened.', 'A spark can appear only when a switch in an inductive circuit is closed.', 'The rapid fall in current induces a large emf.', 'The current rises suddenly when the switch opens.', 'The energy stored in an inductor is ½LI².'],
+      ['the iron core', 'A soft iron core raises a coil’s self-inductance greatly.', 'A soft iron core lowers a coil’s self-inductance.', 'Its large permeability greatly raises the flux linked with the coil for each ampere.', 'Iron blocks magnetic flux.', 'Soft iron is ferromagnetic.'],
+      ['self-induction', 'A spark can appear when a switch in an inductive circuit is opened.', 'A spark can appear only when a switch in an inductive circuit is closed.', 'The rapid fall in current induces a large emf.', 'The current rises suddenly when the switch opens.', 'A choke coil has a large self-inductance.'],
     ],
   },
   '4b': {

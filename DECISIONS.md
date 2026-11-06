@@ -379,3 +379,5 @@ Work is on a `rebuild` branch. `master` still holds your original files.
   One-one proofs are Class XII syllabus, so the Class XI one is flagged, not removed. Repeats across a topic's recall, truths and AR were the main problem.
 - **Review batch 19** (Physics XII semiconductors, CS XI variables and expressions, Chemistry XII proteins; 43 blueprints, 15 fixed). Two topics had pairs of AR nodes asking the same thing. A recall with a 2024 board MCQ's exact options was reworded.
   Java expressions in prose now use the ASCII minus, as in code. The physics, chemistry and Java facts themselves were right.
+- **Review batch 20** (Physics XII magnetism and EMI, Chemistry XII haloarenes; 49 blueprints, 21 fixed). The most repetitive topics so far, so many pool entries were removed, not replaced. Haloarenes got two directive-influence facts to stay at its 42.
+  Wurtz–Fittig stays as a pool fact: the 2023 paper asked it, and the 2028 wording ("basic idea") doesn't clearly drop it.

@@ -543,12 +543,10 @@ const blueprints: Blueprint[] = [
     ],
     recall: [
       ['The susceptibility of a diamagnetic material is:', 'small and negative', 'small and positive', 'large and positive', 'zero'],
-      ['Which of these is ferromagnetic?', 'Iron', 'Aluminium', 'Copper', 'Bismuth'],
       ['Permanent magnets need a material with:', 'high retentivity and high coercivity', 'high retentivity and low coercivity', 'low retentivity and high coercivity', 'low retentivity and low coercivity'],
       ['A transformer core needs a material with:', 'a narrow hysteresis loop', 'a wide hysteresis loop', 'high coercivity', 'no magnetic properties'],
     ],
     reason: [
-      ['Soft iron is used for electromagnet cores.', 'It has low coercivity, so it loses its magnetism quickly when the current stops.'],
       ['Diamagnetic materials are weakly repelled by a magnet.', 'A field induces small magnetic moments opposing it.', 'So the material moves towards the weaker part of the field.'],
       ['Paramagnetism weakens as temperature rises.', 'Thermal motion disturbs the alignment of the atomic magnetic moments.'],
     ],
@@ -559,7 +557,7 @@ const blueprints: Blueprint[] = [
     truths: [
       ['Ferromagnetic materials have domains.', 'Diamagnetic materials have domains.'],
       ['The area of a hysteresis loop measures the energy lost per cycle.', 'The area of a hysteresis loop measures the energy gained per cycle.'],
-      ['A superconductor below its critical temperature expels magnetic fields.', 'A superconductor below its critical temperature concentrates magnetic fields.'],
+      ['A current loop’s moment points along the normal given by the right-hand rule.', 'A current loop’s moment points along the current in the wire.'],
     ],
     draw: [
       ['Sketch a hysteresis loop for a ferromagnetic material, and mark its retentivity and coercivity.', 'A closed loop of B against H, with retentivity marked where it crosses the B axis.', 'Coercivity marked where it crosses the H axis.'],
@@ -582,7 +580,7 @@ const blueprints: Blueprint[] = [
     diagram: (v) => ({ kind: 'rail', B: `${v.B} T`, l: `${v.L} cm`, v: `${v.V} m/s` }),
   }),
   num('rod-current', [4, 'a', 3, 2], {
-    text: 'A {L} cm rod slides at {V} m/s on rails in a {B} T field. The rails are joined by a {R} Ω resistor.',
+    text: 'A rod {L} cm long slides at {V} m/s on rails in a field of {B} T. The rails are joined by a resistor of {R} Ω.',
     vars: { L: [20, 80, 20], V: [2, 10, 2], B: [0.2, 1, 0.2], R: [2, 10, 2] },
     parts: [
       { ask: 'Induced emf', use: 'p-xii-4-2', find: 'E_m', given: { B: 'B T', l: 'L cm', v: 'V m/s' }, marks: 1, save: 'e' },
@@ -659,23 +657,20 @@ const blueprints: Blueprint[] = [
       ['eddy currents', 'Circulating currents induced in the body of a conductor when the flux through it changes.'],
     ],
     recall: [
-      ['Lenz’s law is a consequence of conservation of:', 'energy', 'charge', 'momentum', 'mass'],
+      ['When the north pole of a magnet is pushed towards a coil, the near face of the coil becomes:', 'a north pole', 'a south pole', 'neither pole', 'a south pole and then a north pole'],
       ['The SI unit of inductance is the:', 'henry', 'weber', 'tesla', 'farad'],
-      ['Induced emf depends on the:', 'rate of change of flux', 'size of the flux only', 'direction of the flux only', 'resistance of the coil'],
-      ['Transformer cores are laminated to reduce:', 'eddy currents', 'flux leakage', 'resistance of the windings', 'hysteresis'],
     ],
     reason: [
       ['A magnet falling through a copper tube falls slowly.', 'Eddy currents are induced in the tube.', 'Their field opposes the magnet’s motion, by Lenz’s law.'],
       ['Moving a magnet towards a coil takes more force when the circuit is closed.', 'The induced current opposes the motion.', 'So extra mechanical work is turned into electrical energy.'],
-      ['Transformer cores are made of thin sheets.', 'Thin insulated sheets break up the paths of eddy currents, so less energy is lost as heat.'],
     ],
     compare: [
       ['self-induction', 'mutual induction', ['A change of current in a coil induces an emf in the same coil.', 'A change of current in one coil induces an emf in a nearby coil.'], ['It opposes changes in that coil’s own current.', 'It lets energy pass between two separate circuits.']],
     ],
     truths: [
       ['An induced current opposes the change that causes it.', 'An induced current always helps the change that causes it.'],
-      ['Doubling the number of turns of a coil makes its self-inductance four times as large.', 'Doubling the number of turns of a coil makes its self-inductance twice as large.'],
-      ['Induced emf is zero if the flux through a coil is constant.', 'Induced emf is largest if the flux through a coil is constant.'],
+      ['The induced current in a closed loop is its induced emf divided by its resistance.', 'The induced current in a closed loop is its induced emf multiplied by its resistance.'],
+      ['The induced emf in a coil doesn’t depend on its resistance.', 'The induced emf in a coil is proportional to its resistance.'],
     ],
     explain: [
       ['State Faraday’s laws of electromagnetic induction.', 'An emf is induced whenever the flux through a circuit changes.', 'The size of the emf equals the rate of change of the flux.'],

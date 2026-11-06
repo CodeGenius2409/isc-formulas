@@ -804,21 +804,17 @@ const blueprints: Blueprint[] = [
       ['the Wurtz–Fittig reaction', 'Coupling an alkyl halide and an aryl halide with sodium in dry ether.'],
     ],
     recall: [
-      ['An aryl halide is less reactive than an alkyl halide to nucleophiles because:', 'its C–X bond has partial double bond character', 'it has a larger halogen', 'it is more polar', 'it is heavier'],
       ['A nitro group makes nucleophilic substitution on chlorobenzene easier when it is:', 'ortho or para to the chlorine', 'meta to the chlorine', 'anywhere at all', 'on a side chain'],
       ['With chlorine and FeCl₃, chlorobenzene gives mostly:', 'ortho and para dichlorobenzenes', 'meta dichlorobenzene', 'benzene', 'phenol'],
     ],
     reason: [
-      ['Chlorobenzene is less reactive towards nucleophiles than chloroethane.', 'Resonance gives the C–Cl bond partial double bond character.', 'So it is harder to break.'],
-      ['Chlorine directs ortho and para, even though it deactivates the ring.', 'Its lone pairs stabilise the ortho and para intermediates by resonance.', 'The inductive effect only slows the reaction overall.'],
     ],
     compare: [
       ['chlorobenzene', 'chloroethane', ['Reacts very slowly with nucleophiles.', 'Reacts readily with nucleophiles.'], ['Its C–Cl carbon is sp² hybridised.', 'Its C–Cl carbon is sp³ hybridised.']],
     ],
     truths: [
-      ['Haloarenes undergo electrophilic substitution more slowly than benzene.', 'Haloarenes undergo electrophilic substitution faster than benzene.'],
+      ['Chlorobenzene is denser than water.', 'Chlorobenzene floats on water.'],
       ['The para isomer of dichlorobenzene usually melts higher than its ortho and meta isomers.', 'The para isomer of dichlorobenzene usually melts lower than its ortho and meta isomers.'],
-      ['Silver nitrate gives no precipitate with chlorobenzene.', 'Silver nitrate gives an immediate white precipitate with chlorobenzene.'],
     ],
   }),
   ...facts(6, 'c', {
