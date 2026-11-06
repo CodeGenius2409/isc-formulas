@@ -369,3 +369,5 @@ Work is on a `rebuild` branch. `master` still holds your original files.
   Coefficients of 1 and terms of 0 are a recurring kind of slip, now fixed wherever a batch has met them.
 - **Review batch 14** (Chemistry XII aldehydes and ketones, CS XI statements and scope, Maths XII inverse trigonometry; 48 blueprints, 9 fixed). Chemistry keeps to the syllabus's named reactions, so Gattermann–Koch, Friedel–Crafts acylation and acetals went. A Java line had a Unicode minus that wouldn't compile; a scan found no others.
   The programs' outputs, every inverse-trig value, and the iodoform and aldol equations all check out.
+- **Review batch 15** (Chemistry XII phenols, Maths XII matrices and continuity; 41 blueprints, 7 fixed). Rolle's theorem and the mean value theorem aren't in the 2028 Calculus unit, so they left the shared pools, as with the other open questions in `reports/syllabus-review.md`. No blueprint was wholly about them.
+  Matrices and differentiation were right throughout; Phenols had facts said twice.

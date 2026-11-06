@@ -110,7 +110,7 @@ const knowledge: Record<string, Facts> = {
       ['The by-product of the cumene process is:', 'propanone', 'ethanol', 'benzoic acid', 'methane'],
       ['Phenol is soluble in:', 'aqueous NaOH', 'aqueous NaHCO₃', 'aqueous HCl', 'only cold water with an acid added'],
       ['The O–H bond of phenol is broken more easily than that of ethanol, as its oxygen is bonded to an:', 'sp² carbon', 'sp³ carbon', 'sp carbon', 'oxygen'],
-      ['Of these, which has the lowest pKa?', 'picric acid', 'phenol', 'ethanol', 'water'],
+      ['Phenol with sodium metal gives:', 'sodium phenoxide and hydrogen', 'sodium benzoate', 'benzene and sodium hydroxide', 'no reaction'],
       ['Which is the most acidic?', 'p-nitrophenol', 'phenol', 'p-cresol', 'ethanol'],
       ['Which is the least acidic?', 'p-cresol', 'phenol', 'p-nitrophenol', 'picric acid'],
       ['Phenol with bromine in CS₂ at low temperature gives mainly:', '4-bromophenol', '2,4,6-tribromophenol', 'bromobenzene', '3-bromophenol'],
@@ -120,7 +120,7 @@ const knowledge: Record<string, Facts> = {
       ['Phenol in the Reimer–Tiemann reaction gives:', 'salicylaldehyde', 'salicylic acid', 'benzaldehyde', 'benzoic acid'],
       ['Phenol is oxidised in air to a compound called:', 'benzoquinone', 'benzene', 'benzoic acid', 'catechol'],
       ['Aspirin is made from salicylic acid with:', 'ethanoic anhydride', 'bromine water', 'iron(III) chloride', 'sodium hydroxide alone'],
-      ['Phenol gives which colour with neutral FeCl₃?', 'violet', 'blue', 'white', 'yellow'],
+      ['The cumene process for phenol starts from:', 'benzene and propene', 'benzene and ethene', 'toluene and methane', 'phenol and propanone'],
     ],
     truths: [
       ['Phenol is a stronger acid than ethanol, but a weaker acid than carbonic acid.', 'Phenol is a stronger acid than carbonic acid.'],
@@ -139,7 +139,7 @@ const knowledge: Record<string, Facts> = {
     reason: [
       ['Phenol is a weaker acid than carboxylic acids.', 'A carboxylate’s charge sits on two oxygen atoms.', 'A phenoxide’s charge is spread over carbons, which hold it less well.'],
       ['Phenol is more reactive than benzene towards electrophiles.', 'The –OH group feeds electrons into the ring.'],
-      ['The ortho nitrophenol has a lower boiling point than the para form.', 'It has intramolecular hydrogen bonds, so its molecules don’t associate.'],
+      ['The –OH group of phenol directs new groups to the ortho and para positions.', 'A lone pair on its oxygen enters the ring by resonance.', 'This raises the electron density most at the ortho and para positions.'],
       ['Phenol has a higher boiling point than chlorobenzene.', 'Phenol has hydrogen bonding, while chlorobenzene doesn’t.'],
       ['Phenol is only slightly soluble in water, compared with lower alcohols.', 'Its large phenyl group is hydrophobic.'],
       ['Phenol turns pink in air on standing.', 'It is slowly oxidised to coloured products.'],
@@ -157,10 +157,9 @@ const knowledge: Record<string, Facts> = {
     ],
     ar: [
       ['phenol in bicarbonate', 'Phenol doesn’t give CO₂ with sodium bicarbonate.', 'Phenol gives CO₂ with sodium bicarbonate.', 'Phenol is a weaker acid than carbonic acid.', 'Phenol is a stronger acid than carbonic acid.', 'Phenol dissolves in sodium hydroxide.'],
-      ['the reactive ring of phenol', 'Phenol gives 2,4,6-tribromophenol with bromine water, at room temperature.', 'Phenol doesn’t react with bromine water at room temperature.', 'The –OH group strongly activates the ortho and para positions.', 'The –OH group strongly deactivates the whole ring.', 'Phenol’s oxygen has lone pairs.'],
+      ['Kolbe’s reaction', 'Sodium phenoxide reacts with CO₂ much more readily than phenol does.', 'Phenol reacts with CO₂ much more readily than sodium phenoxide does.', 'The phenoxide ion activates the ring far more strongly than the –OH group.', 'CO₂ reacts only with a neutral ring.', 'The product, after acidification, is salicylic acid.'],
     ],
     links: [
-      ['cause', 'Nitro groups make phenol', 'The phenoxide ion is stabilised'],
       ['same', 'Alkyl groups make phenol', 'Nitro groups make phenol'],
       ['cause', 'Reacting phenol with excess', 'The –OH group is an activating'],
       ['contrast', 'catechol', 'resorcinol'],

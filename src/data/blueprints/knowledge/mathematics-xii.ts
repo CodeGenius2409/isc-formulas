@@ -36,7 +36,7 @@ const knowledge: Record<string, Facts> = {
     ar: [
       ['continuity and differentiability', 'f(x) = |x| is continuous at x = 0, but not differentiable there.', 'f(x) = |x| is differentiable at x = 0, but not continuous there.', 'Its left and right slopes differ at the corner.', 'Its value jumps at x = 0.', 'Differentiability at a point implies continuity there.'],
       ['the chain rule', 'The derivative of sin(x²) is 2x cos(x²).', 'The derivative of sin(x²) is cos(2x).', 'The chain rule multiplies by the derivative of the inner function.', 'The chain rule replaces the inner function by its derivative.', 'The derivative of sin x is cos x.'],
-      ['Rolle’s theorem', 'x² on [−1, 1] satisfies Rolle’s theorem.', 'x² on [−1, 2] satisfies Rolle’s theorem.', 'Its values at both ends are equal, and it is continuous and differentiable.', 'Its values at both ends are different.', 'Rolle’s theorem is a special case of the mean value theorem.'],
+      ['implicit differentiation', 'For x² + y² = 25, dy/dx = −x/y.', 'For x² + y² = 25, dy/dx = x/y.', 'Differentiating each term with respect to x gives 2x + 2y dy/dx = 0.', 'y is a constant, so its term vanishes.', 'Implicit differentiation is used when y isn’t given on its own.'],
     ],
   },
   '3b': {

@@ -381,11 +381,9 @@ const blueprints: Blueprint[] = [
     truths: [
       ['The derivative of a constant is zero.', 'The derivative of a constant is one.'],
       ['A polynomial is continuous everywhere.', 'A polynomial is discontinuous at its roots.'],
-      ['Rolle’s theorem needs f(a) = f(b).', 'Rolle’s theorem needs f(a) ≠ f(b).'],
+      ['A function differentiable at a point has a tangent there.', 'A function differentiable at a point can still have a sharp corner there.'],
     ],
     explain: [
-      ['State Rolle’s theorem.', 'If f is continuous on [a, b], differentiable on (a, b), and f(a) = f(b), then f′(c) = 0 for some c in (a, b).'],
-      ['State Lagrange’s mean value theorem.', 'If f is continuous on [a, b] and differentiable on (a, b), then f′(c) = (f(b) − f(a))/(b − a) for some c in (a, b).'],
     ],
     reason: [
       ['A function can be continuous at a point without being differentiable there.', 'Continuity only needs the graph to be unbroken there.', 'Differentiability needs a single tangent, which a sharp corner doesn’t have.'],
