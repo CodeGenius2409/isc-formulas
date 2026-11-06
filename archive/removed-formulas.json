@@ -1558,6 +1558,45 @@
   "syllabusReference": "XII Unit 2(b)"
  },
  {
+  "id": "cs-xii-2-1",
+  "name": "Stack operations",
+  "latex": "\\text{push, pop, peek / top}",
+  "note": "LIFO",
+  "subject": "computerscience",
+  "classLevel": "XII",
+  "unit": "2. Data Structures",
+  "subtopic": "Stacks, Queues, Linked Lists",
+  "verdict": "out",
+  "reason": "Not in 2028 syllabus.",
+  "syllabusReference": "XII Unit 8"
+ },
+ {
+  "id": "cs-xii-2-2",
+  "name": "Queue operations",
+  "latex": "\\text{enqueue, dequeue}",
+  "note": "FIFO",
+  "subject": "computerscience",
+  "classLevel": "XII",
+  "unit": "2. Data Structures",
+  "subtopic": "Stacks, Queues, Linked Lists",
+  "verdict": "out",
+  "reason": "Not in 2028 syllabus.",
+  "syllabusReference": "XII Unit 8"
+ },
+ {
+  "id": "cs-xii-2-3",
+  "name": "Infix to postfix (example)",
+  "latex": "A+B*C\\ \\to\\ ABC*+",
+  "note": "Using stack",
+  "subject": "computerscience",
+  "classLevel": "XII",
+  "unit": "2. Data Structures",
+  "subtopic": "Stacks, Queues, Linked Lists",
+  "verdict": "out",
+  "reason": "Not in 2028 syllabus.",
+  "syllabusReference": "XII Unit 8"
+ },
+ {
   "id": "cs-xii-2-8b",
   "name": "Normalization",
   "latex": "\\text{Reduce redundancy and anomalies}",
@@ -1618,6 +1657,42 @@
   "subtopic": "Binary Trees",
   "verdict": "out",
   "reason": "Unit 8 is conceptual, and lists terminology and the three traversals.",
+  "syllabusReference": "XII Unit 8"
+ },
+ {
+  "id": "cs-xii-3-9",
+  "name": "Space complexity stack",
+  "latex": "O(n)\\text{ for n elements}",
+  "subject": "computerscience",
+  "classLevel": "XII",
+  "unit": "11. Algorithms & Complexity (supplementary)",
+  "subtopic": "Big-O",
+  "verdict": "out",
+  "reason": "Not in 2028 syllabus.",
+  "syllabusReference": "XII Unit 8"
+ },
+ {
+  "id": "cs-xii-3-14",
+  "name": "Queue operations",
+  "latex": "\\text{enqueue / dequeue — O(1)}",
+  "subject": "computerscience",
+  "classLevel": "XII",
+  "unit": "11. Algorithms & Complexity (supplementary)",
+  "subtopic": "Big-O",
+  "verdict": "out",
+  "reason": "Not in 2028 syllabus.",
+  "syllabusReference": "XII Unit 8"
+ },
+ {
+  "id": "cs-xii-3-15",
+  "name": "Stack operations",
+  "latex": "\\text{push / pop — O(1)}",
+  "subject": "computerscience",
+  "classLevel": "XII",
+  "unit": "11. Algorithms & Complexity (supplementary)",
+  "subtopic": "Big-O",
+  "verdict": "out",
+  "reason": "Not in 2028 syllabus.",
   "syllabusReference": "XII Unit 8"
  },
  {

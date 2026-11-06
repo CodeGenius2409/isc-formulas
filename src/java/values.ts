@@ -12,7 +12,7 @@ export type JValue =
   | { t: 'String'; v: string }
   | { t: 'null' }
   | { t: 'array'; elem: TypeRef; items: JValue[]; id: number }
-  | { t: 'object'; cls: string; fields: Map<string, Slot>; id: number }
+  | { t: 'object'; cls: string; /** Every type it can be held in, from its runtime class upwards. */ types: Set<string>; fields: Map<string, Slot>; id: number }
   | { t: 'native'; kind: string; id: number; state: { text?: string; tokens?: string[]; next?: number } }
   | { t: 'void' };
 
@@ -20,6 +20,8 @@ export type JValue =
 export interface Slot {
   type: TypeRef;
   value: JValue;
+  /** For a field: the class that declares it. A subclass can declare its own field of the same name. */
+  owner?: string;
 }
 
 export const VOID: JValue = { t: 'void' };
@@ -297,11 +299,11 @@ export function javaEquals(a: JValue, b: JValue, line: number): boolean {
 export function castTo(v: JValue, type: TypeRef, line: number): JValue {
   if (type.dims > 0 || !isPrimitiveName(type.name)) {
     if (v.t === 'null') return v;
-    if (type.dims === 0 && v.t === 'object' && v.cls === type.name) return v;
+    if (type.dims === 0 && v.t === 'object' && v.types.has(type.name)) return v;
     if (type.dims === 0 && v.t === 'String' && type.name === 'String') return v;
     if (type.dims > 0 && v.t === 'array') return v;
     if (type.name === 'Object') return v;
-    throw runtimeError(`java.lang.ClassCastException: ${describeType(v)} cannot be cast to ${typeName(type)}.`, line);
+    throw runtimeError(`java.lang.ClassCastException: this object is really a ${describeType(v)}, so it cannot be cast to ${typeName(type)}.`, line);
   }
   if (type.name === 'boolean') {
     if (v.t === 'boolean') return v;
@@ -382,7 +384,7 @@ export function assignConvert(v: JValue, type: TypeRef, line: number): JValue {
     if (v.t === 'String') return v;
     throw runtimeError(`Incompatible types: ${describeType(v)} cannot be converted to String.`, line);
   }
-  if (v.t === 'object' && v.cls === type.name) return v;
+  if (v.t === 'object' && v.types.has(type.name)) return v;
   if (v.t === 'native' && (v.kind === type.name || type.name === 'Reader' || type.name === 'InputStream')) return v;
   throw runtimeError(`Incompatible types: ${describeType(v)} cannot be converted to ${type.name}.`, line);
 }

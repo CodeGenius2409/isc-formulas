@@ -94,7 +94,9 @@ export function toTex(e: Expr, texOf: (n: string) => string = symbolTex): string
     case 'div':
       return `\\frac{${toTex(e.a, texOf)}}{${toTex(e.b, texOf)}}`;
     case 'pow': {
-      const base = e.a.k === 'fn' && e.a.f !== 'sqrt' && e.a.f !== 'abs' ? parens(toTex(e.a, texOf)) : wrap(e.a, PRECEDENCE.pow, texOf, true);
+      let base = e.a.k === 'fn' && e.a.f !== 'sqrt' && e.a.f !== 'abs' ? parens(toTex(e.a, texOf)) : wrap(e.a, PRECEDENCE.pow, texOf, true);
+      // A value such as 8×10⁻⁵, or a negative one, needs brackets before its own power.
+      if (/\^|\\times|^-/.test(base) && !base.startsWith('\\left(')) base = parens(base);
       return `${base}^{${toTex(e.b, texOf)}}`;
     }
     case 'fn': {

@@ -1,10 +1,12 @@
 // Mathematics, Class XI. Built backwards from clean answers, in exact arithmetic where it can be.
 import { evalPoly, factorial, frac, nCr, polyTex, signed } from '../../practice/gen/exact';
 import type { Step } from '../../solver/solve';
+import { derivationBlueprints } from '../derivations';
+import KNOWLEDGE from './knowledge/mathematics-xi';
 import { blueprintsFor } from './dsl';
 import type { Blueprint } from './types';
 
-const { custom, facts } = blueprintsFor('mathematics', 'XI');
+const { custom, facts, rest } = blueprintsFor('mathematics', 'XI', KNOWLEDGE);
 
 const step = (label: string, ...math: string[]): Step => ({ label, math });
 const $ = (tex: string) => `$${tex}$`;
@@ -91,17 +93,15 @@ const blueprints: Blueprint[] = [
       ['the complement of a set', 'The elements of the universal set that aren’t in the set.'],
     ],
     recall: [
-      ['By De Morgan’s law, (A ∪ B)′ equals:', 'A′ ∩ B′', 'A′ ∪ B′', 'A ∩ B', 'A ∪ B'],
-      ['The empty set is a subset of:', 'every set', 'no set', 'only itself', 'only infinite sets'],
       ['A ∩ A′ is:', 'the empty set', 'the universal set', 'A', 'A′'],
     ],
     truths: [
       ['Every set is a subset of itself.', 'No set is a subset of itself.'],
       ['A ∪ B = B ∪ A.', 'A ∪ B = A only when B is empty, and otherwise never.'],
-      ['A set with n elements has 2ⁿ subsets.', 'A set with n elements has n² subsets.'],
+      ['Two sets with the same number of elements needn’t be equal.', 'Two sets with the same number of elements are always equal.'],
     ],
     compare: [
-      ['a union of sets', 'an intersection of sets', ['Elements in at least one of them.', 'Elements in all of them.'], ['Written with ∪.', 'Written with ∩.']],
+      ['the union of two sets', 'the intersection of two sets', ['Elements in at least one of them.', 'Elements in all of them.'], ['Written with ∪.', 'Written with ∩.']],
     ],
     reason: [
       ['n(A ∪ B) subtracts n(A ∩ B).', 'Elements in both sets are counted twice when the two sets’ sizes are added.'],
@@ -120,8 +120,8 @@ const blueprints: Blueprint[] = [
     ],
     truths: [
       ['Every function is a relation.', 'Every relation is a function.'],
-      ['In a function, each input has exactly one output.', 'In a function, each input has many outputs.'],
-      ['The modulus function never gives a negative value.', 'The modulus function always gives a negative value.'],
+      ['Two functions are equal only if they have the same domain and the same rule.', 'Two functions are equal whenever they have the same rule, whatever their domains.'],
+      ['[x] = x exactly when x is an integer.', '[x] = x for every real number x.'],
     ],
     reason: [
       ['A circle isn’t the graph of a function of x.', 'Most values of x match two values of y.'],
@@ -178,7 +178,7 @@ const blueprints: Blueprint[] = [
     const p = g.int(-6, 6);
     const q = g.int(-6, 6);
     if (p === q || !p || !q) g.retry();
-    return { form: 'numeric', text: `The equation ${$(`x^2 ${signed(-(p + q))}x ${signed(p * q)} = 0`)} has roots α and β. Find the sum and the product of the roots.`, parts: [g.answerPart('α + β', p + q, 1, [step('Use −b/a', `\\alpha + \\beta = ${p + q}`)]), g.answerPart('αβ', p * q, 1, [step('Use c/a', `\\alpha\\beta = ${p * q}`)])] };
+    return { form: 'numeric', text: `The equation ${$(`${polyTex([[1, 2], [-(p + q), 1], [p * q, 0]])} = 0`)} has roots α and β. Find the sum and the product of the roots.`, parts: [g.answerPart('α + β', p + q, 1, [step('Use −b/a', `\\alpha + \\beta = ${p + q}`)]), g.answerPart('αβ', p * q, 1, [step('Use c/a', `\\alpha\\beta = ${p * q}`)])] };
   }),
   custom('discriminant', [2, 'b', 1, 2], { type: 'mcq', format: 'mcq' }, (g) => {
     const a = g.int(1, 3);
@@ -187,7 +187,7 @@ const blueprints: Blueprint[] = [
     if (!b || !c) g.retry();
     const d = b * b - 4 * a * c;
     const right = d > 0 ? 'real and different' : d === 0 ? 'real and equal' : 'not real';
-    return g.mcq(`The roots of ${$(`${polyTex([[a, 2], [b, 1], [c, 0]])} = 0`)} are:`, right, ['real and different', 'real and equal', 'not real', 'all zero'].filter((o) => o !== right), { why: `The discriminant is ${d}.` });
+    return g.mcq(`The roots of ${$(`${polyTex([[a, 2], [b, 1], [c, 0]])} = 0`)} are:`, right, ['real and different', 'real and equal', 'not real', 'all zero'].filter((o) => o !== right), { why: `The discriminant is ${d < 0 ? `−${-d}` : d}.` });
   }),
   custom('nCr', [2, 'c', 2, 1], { type: 'numerical', format: 'numerical' }, (g) => {
     const n = g.int(5, 12);
@@ -277,14 +277,15 @@ const blueprints: Blueprint[] = [
   }),
   ...facts(2, 'b', {
     recall: [
-      ['The sum of the roots of ax² + bx + c = 0 is:', '−b/a', 'b/a', 'c/a', '−c/a'],
-      ['The product of the roots of ax² + bx + c = 0 is:', 'c/a', '−c/a', 'b/a', '−b/a'],
+      ['If one root of x² − 5x + k = 0 is 2, then k is:', '6', '3', '10', '−6'],
+      ['The roots of x² − 5x + 6 = 0 are:', '2 and 3', '−2 and −3', '1 and 6', '−1 and 6'],
       ['Roots are real and equal when the discriminant is:', '0', 'positive', 'negative', '1'],
     ],
     truths: [
-      ['A negative discriminant gives roots that aren’t real.', 'A negative discriminant gives real, equal roots.'],
+      ['A quadratic with real coefficients has complex roots in conjugate pairs.', 'A quadratic with real coefficients can have just one complex root.'],
       ['A quadratic has exactly two roots, counted with repetition.', 'A quadratic can have five roots.'],
       ['If 1 is a root, then a + b + c = 0.', 'If 1 is a root, then a + b + c = 1.'],
+      ['The roots of ax² + bx + c = 0 are (−b ± √(b² − 4ac))/(2a).', 'The roots of ax² + bx + c = 0 are (b ± √(b² − 4ac))/(2a).'],
     ],
     explain: [
       ['Write the quadratic equation with roots 3 and 5.', 'x² − (3 + 5)x + 3 × 5 = 0, which is x² − 8x + 15 = 0.'],
@@ -295,19 +296,19 @@ const blueprints: Blueprint[] = [
       ['a permutation', 'An arrangement of objects, in which order matters.'],
       ['a combination', 'A selection of objects, in which order doesn’t matter.'],
       ['the fundamental principle of counting', 'If one event can happen in m ways and another in n ways, both can happen in mn ways.'],
+      ['n factorial', 'n!, the product of all the whole numbers from 1 to n.'],
     ],
     recall: [
-      ['0! equals:', '1', '0', 'not defined', '−1'],
-      ['ⁿCᵣ equals:', 'ⁿCₙ₋ᵣ', 'ⁿPᵣ', 'n!', 'r!'],
       ['The number of ways to arrange n different objects in a circle is:', '(n − 1)!', 'n!', 'n', '2n'],
     ],
     compare: [
       ['permutations', 'combinations', ['Order matters.', 'Order doesn’t matter.'], ['Example: arranging runners on a podium.', 'Example: choosing members of a team.']],
     ],
     truths: [
-      ['ⁿPᵣ is r! times ⁿCᵣ.', 'ⁿCᵣ is r! times ⁿPᵣ.'],
+      ['The number of diagonals of a polygon with n sides is ⁿC₂ − n.', 'The number of diagonals of a polygon with n sides is ⁿC₂.'],
       ['ⁿC₀ equals 1.', 'ⁿC₀ equals 0.'],
       ['ⁿCᵣ + ⁿCᵣ₋₁ equals ⁿ⁺¹Cᵣ.', 'ⁿCᵣ + ⁿCᵣ₋₁ equals ⁿCᵣ₊₁.'],
+      ['There are 504 three-digit numbers with different digits from 1 to 9.', 'There are 729 three-digit numbers with different digits from 1 to 9.'],
     ],
   }),
   ...facts(2, 'd', {
@@ -329,6 +330,8 @@ const blueprints: Blueprint[] = [
     define: [
       ['an arithmetic progression', 'A sequence in which each term differs from the one before by a fixed amount.'],
       ['a geometric progression', 'A sequence in which each term is a fixed multiple of the one before.'],
+      ['the common ratio of a GP', 'The fixed number by which each term is multiplied to give the next.'],
+      ['a series', 'The sum of the terms of a sequence.'],
     ],
     recall: [
       ['The sum of an infinite GP with |r| < 1 is:', 'a/(1 − r)', 'a/(1 + r)', 'a r', 'infinite'],
@@ -336,9 +339,10 @@ const blueprints: Blueprint[] = [
       ['The geometric mean of a and b is:', '√(ab)', '(a + b)/2', 'ab', 'a/b'],
     ],
     truths: [
-      ['For positive numbers, the arithmetic mean is at least the geometric mean.', 'For positive numbers, the arithmetic mean is always less than the geometric mean.'],
+      ['Inserting n arithmetic means between a and b gives an AP of n + 2 terms.', 'Inserting n arithmetic means between a and b gives an AP of n terms.'],
       ['The nth term of a GP is ar^(n−1).', 'The nth term of a GP is ar^n.'],
       ['An AP’s common difference can be negative.', 'An AP’s common difference can never be negative.'],
+      ['The sum of n terms of an AP is n/2 times the sum of its first and last terms.', 'The sum of n terms of an AP is n times the sum of its first and last terms.'],
     ],
     compare: [
       ['an AP', 'a GP', ['A fixed difference.', 'A fixed ratio.'], ['Grows steadily.', 'Can grow very quickly.']],
@@ -360,14 +364,14 @@ const blueprints: Blueprint[] = [
     const [x1, y1, dx, dy] = [g.int(-4, 4), g.int(-4, 4), g.int(1, 6), g.int(1, 6)];
     const s = frac(dy, dx);
     const others = [frac(dx, dy), frac(-dy, dx), frac(dy + dx, dx), frac(dy, dx + 1)].filter((f) => f.text() !== s.text());
-    return g.mcq(`The slope of the line through (${x1}, ${y1}) and (${x1 + dx}, ${y1 + dy}) is:`, $(s.tex()), [...new Set(others.map((f) => $(f.tex())))].slice(0, 3));
+    return g.mcq(`The slope of the line through ${$(`(${x1}, ${y1})`)} and ${$(`(${x1 + dx}, ${y1 + dy})`)} is:`, $(s.tex()), [...new Set(others.map((f) => $(f.tex())))].slice(0, 3));
   }),
   custom('line-eq', [3, 'a', 2, 1], { type: 'short', format: 'short' }, (g) => {
     const m = g.int(-4, 4);
     const x = g.int(-3, 4);
     const y = g.int(-3, 4);
     if (!m) g.retry();
-    return g.theory(`Find the equation of the line through (${x}, ${y}) with a slope of ${m}.`, [`Use ${$('y - y_1 = m(x - x_1)')}.`, `So ${$(`y = ${polyTex([[m, 1], [y - m * x, 0]])}`)}.`]);
+    return g.theory(`Find the equation of the line through ${$(`(${x}, ${y})`)} with a slope of ${$(String(m))}.`, [`Use ${$('y - y_1 = m(x - x_1)')}.`, `So ${$(`y = ${polyTex([[m, 1], [y - m * x, 0]])}`)}.`]);
   }),
   custom('point-line', [3, 'a', 2, 2], { type: 'numerical', format: 'numerical' }, (g) => {
     const [a, b, r] = g.pick([[3, 4, 5], [5, 12, 13], [6, 8, 10], [8, 15, 17]]);
@@ -383,7 +387,7 @@ const blueprints: Blueprint[] = [
     const r = g.int(1, 7);
     const c = h * h + k * k - r * r;
     if (!h || !k) g.retry();
-    return g.theory(`Find the centre and the radius of the circle ${$(`x^2 + y^2 ${signed(-2 * h)}x ${signed(-2 * k)}y ${signed(c)} = 0`)}.`, [`Completing the squares, the centre is (${h}, ${k}).`, `The radius is ${r}.`]);
+    return g.theory(`Find the centre and the radius of the circle ${$(`x^2 + y^2 ${signed(-2 * h)}x ${signed(-2 * k)}y ${signed(c)} = 0`)}.`, [`Completing the squares, the centre is ${$(`(${h}, ${k})`)}.`, `The radius is ${r}.`]);
   }),
   custom('parabola', [3, 'c', 2, 2], { type: 'short', format: 'short' }, (g) => {
     const a = g.int(1, 6);
@@ -416,9 +420,7 @@ const blueprints: Blueprint[] = [
       ['the slope of a line', 'The tangent of the angle it makes with the positive x-axis.'],
     ],
     recall: [
-      ['Two lines are perpendicular if the product of their slopes is:', '−1', '1', '0', '2'],
       ['Two lines are parallel if their slopes are:', 'equal', 'negative reciprocals', 'both zero', 'both one'],
-      ['The slope of a vertical line is:', 'not defined', '0', '1', '−1'],
     ],
     truths: [
       ['The intercept form of a line is x/a + y/b = 1.', 'The intercept form of a line is ax + by = 1.'],
@@ -435,7 +437,7 @@ const blueprints: Blueprint[] = [
       ['The centre of (x − 2)² + (y + 3)² = 25 is:', '(2, −3)', '(−2, 3)', '(2, 3)', '(−2, −3)'],
     ],
     truths: [
-      ['A tangent is at right angles to the radius at the point of contact.', 'A tangent is parallel to the radius at the point of contact.'],
+      ['The longest chord of a circle is a diameter.', 'The longest chord of a circle is a radius.'],
       ['A circle can be drawn through any three points not on one line.', 'A circle can be drawn through any four points.'],
       ['Every circle’s equation has equal coefficients of x² and y².', 'A circle’s equation has different coefficients of x² and y².'],
     ],
@@ -447,8 +449,6 @@ const blueprints: Blueprint[] = [
     ],
     recall: [
       ['The eccentricity of a parabola is:', '1', '0', 'greater than 1', 'less than 1'],
-      ['The eccentricity of an ellipse is:', 'less than 1', '1', 'greater than 1', 'negative'],
-      ['The eccentricity of a hyperbola is:', 'greater than 1', '1', 'less than 1', '0'],
       ['The focus of y² = 4ax is:', '(a, 0)', '(0, a)', '(−a, 0)', '(0, 0)'],
     ],
     compare: [
@@ -456,8 +456,8 @@ const blueprints: Blueprint[] = [
     ],
     truths: [
       ['A circle is an ellipse with an eccentricity of zero.', 'A circle is a hyperbola with an eccentricity of zero.'],
-      ['The sum of a point’s distances from an ellipse’s foci is constant.', 'The product of a point’s distances from an ellipse’s foci is constant.'],
-      ['Parabolic reflectors send light from their focus out in a parallel beam.', 'Parabolic reflectors scatter light from their focus in all directions.'],
+      ['The foci of an ellipse lie on its major axis.', 'The foci of an ellipse lie on its minor axis.'],
+      ['The vertex of y² = 4ax is at the origin.', 'The vertex of y² = 4ax is at (a, 0).'],
     ],
     cases: [
       {
@@ -522,18 +522,19 @@ const blueprints: Blueprint[] = [
     define: [
       ['the limit of a function', 'The value the function approaches, as its variable approaches a given value.'],
       ['the derivative at a point', 'The limit of the rate of change of a function, as the interval shrinks to zero.'],
+      ['the left-hand limit', 'The value a function approaches as x comes towards a point from below.'],
     ],
     recall: [
-      ['The limit of sin x / x, as x tends to 0, is:', '1', '0', 'not defined', 'infinite'],
-      ['The derivative of a constant is:', '0', '1', 'the constant', 'x'],
+      ['The derivative of x² + 3x is:', '2x + 3', 'x² + 3', '2x', '2x + 3x'],
       ['The derivative of sin x is:', 'cos x', '−cos x', 'tan x', 'sin x'],
       ['The derivative of cos x is:', '−sin x', 'sin x', 'tan x', '−cos x'],
       ['The product rule says that (uv)′ is:', 'u′v + uv′', 'u′v′', 'u′v − uv′', 'uv′'],
     ],
     truths: [
       ['The derivative gives the slope of the tangent to a curve.', 'The derivative gives the area under a curve.'],
-      ['A limit can exist where the function isn’t defined.', 'A limit can exist only where the function is defined.'],
+      ['The derivative of x² at x = 3 is 6.', 'The derivative of x² at x = 3 is 9.'],
       ['The left-hand and right-hand limits must agree for the limit to exist.', 'The left-hand and right-hand limits are always different.'],
+      ['The quotient rule gives (u/v)′ = (u′v − uv′)/v².', 'The quotient rule gives (u/v)′ = (u′v + uv′)/v².'],
     ],
     reason: [
       ['The limit of (x² − 1)/(x − 1) as x tends to 1 exists, though the function isn’t defined at 1.', 'A limit looks at values near the point, not at the point.', 'Near 1, the function equals x + 1, which approaches 2.'],
@@ -619,8 +620,8 @@ const blueprints: Blueprint[] = [
       ['If P(A) = 0.3, then P(not A) is:', '0.7', '0.3', '1.3', '0'],
     ],
     truths: [
-      ['For mutually exclusive events, P(A ∪ B) = P(A) + P(B).', 'For mutually exclusive events, P(A ∪ B) = P(A)P(B).'],
-      ['A probability is between 0 and 1.', 'A probability can be greater than 1.'],
+      ['Two events can be exhaustive without being mutually exclusive.', 'Exhaustive events are always mutually exclusive.'],
+      ['Each of n equally likely outcomes has a probability of 1/n.', 'Each of n equally likely outcomes has a probability of n.'],
       ['The probabilities of all the outcomes add up to 1.', 'The probabilities of all the outcomes add up to 100.'],
     ],
   }),
@@ -695,17 +696,17 @@ const blueprints: Blueprint[] = [
   }),
   // ---- Real-life and data-based questions.
   custom('cbq-savings', [2, 'e', 3, 1], { type: 'numerical', format: 'cbq', style: 'cbq-style' }, (g) => {
-    const first = g.pick([100, 200, 300, 500]);
-    const rise = g.pick([50, 100, 150]);
-    const months = g.pick([6, 8, 10, 12]);
+    const first = g.pick([12, 15, 20, 24]);
+    const rise = g.pick([2, 3, 4]);
+    const months = g.pick([8, 10, 12, 15]);
     const last = first + (months - 1) * rise;
     const total = (months * (first + last)) / 2;
     return {
       form: 'numeric',
-      text: `A student saves ₹${first} in the first month, and ₹${rise} more each month after that.`,
+      text: `A hall has ${first} seats in its front row, and ${rise} more in each row behind it.`,
       parts: [
-        g.answerPart(`Savings in month ${months}, in rupees`, last, 1, [step('Use $a_n = a + (n - 1)d$', `${first} + ${months - 1} \\times ${rise} = ${last}`)]),
-        g.answerPart(`Total saved over ${months} months, in rupees`, total, 2, [step('Use $S_n = \\dfrac{n}{2}(a + l)$', `\\dfrac{${months}}{2}(${first} + ${last}) = ${total}`)]),
+        g.answerPart(`Seats in row ${months}`, last, 1, [step('Use $a_n = a + (n - 1)d$', `${first} + ${months - 1} \\times ${rise} = ${last}`)]),
+        g.answerPart(`Seats in the first ${months} rows`, total, 2, [step('Use $S_n = \\dfrac{n}{2}(a + l)$', `\\dfrac{${months}}{2}(${first} + ${last}) = ${total}`)]),
       ],
     };
   }),
@@ -719,7 +720,7 @@ const blueprints: Blueprint[] = [
       text: `A locker code has ${letters} capital letters followed by ${digits} digits.`,
       parts: [
         g.answerPart('Number of codes if letters and digits may repeat', repeat, 1, [step('Multiply the choices', `26^{${letters}} \\times 10^{${digits}} = ${repeat}`)], '', String(repeat)),
-        g.answerPart('Number of codes if nothing may repeat', noRepeat, 2, [step('Each choice removes one', `= ${noRepeat}`)], '', String(noRepeat)),
+        g.answerPart('Number of codes if nothing may repeat', noRepeat, 2, [step('Each choice removes one', `26 \\times 25${letters === 3 ? ' \\times 24' : ''} \\times 10 \\times 9${digits === 3 ? ' \\times 8' : ''} = ${noRepeat}`)], '', String(noRepeat)),
       ],
     };
   }),
@@ -790,7 +791,7 @@ const blueprints: Blueprint[] = [
     return {
       form: 'numeric',
       text: `At a school fair, a player draws one card from a well-shuffled pack of 52, and wins by drawing ${what}.`,
-      parts: [g.answerPart('The probability of winning', p.value, 2, [step('Favourable over total', `\\dfrac{${count}}{52} = ${p.tex()}`)], '', p.text())],
+      parts: [g.answerPart('The probability of winning', p.value, 2, [step('Favourable over total', p.d === 52 ? `\\dfrac{${count}}{52}` : `\\dfrac{${count}}{52} = ${p.tex()}`)], '', p.text())],
     };
   }),
   custom('cbq-limit-speed', [4, 'a', 2, 2], { type: 'numerical', format: 'cbq', style: 'cbq-style' }, (g) => {
@@ -804,6 +805,8 @@ const blueprints: Blueprint[] = [
       parts: [g.answerPart(`Its speed at t = ${t} s, in m/s, found by differentiating`, v, 2, [step('Differentiate', `\\dfrac{ds}{dt} = ${2 * a}t + ${b}`, `= ${v}`)])],
     };
   }),
+  ...rest(),
+  ...derivationBlueprints('mathematics', 'XI', { custom } as never),
 ];
 
 export default blueprints;

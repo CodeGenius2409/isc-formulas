@@ -30,6 +30,8 @@ export interface GeneratedTag {
   seed: number;
   style: 'paper-style' | 'cbq-style';
   format: 'mcq' | 'assertion' | 'very-short' | 'short' | 'long' | 'numerical' | 'derivation' | 'reason' | 'distinguish' | 'diagram' | 'cbq' | 'output' | 'error' | 'program';
+  /** Its blueprint hasn't been read as a teacher would yet. */
+  unreviewed?: true;
 }
 
 /** One marking point. */
@@ -58,6 +60,9 @@ interface Tags {
   /** Code in the question is Python, not Java. */
   python?: 1;
   structure?: EntryStructure;
+  facts?: string[];
+  stepBlueprint?: string;
+  answerDiagram?: DiagramSpec;
   diagram?: DiagramSpec;
   /** Structures with lone pairs shown once the question is marked, by id in src/data/lewis/figures.ts. */
   answerLewis?: string[];
@@ -102,6 +107,10 @@ export interface NumericPartDef {
   marks: number;
   /** Lets later parts use this result. */
   save?: string;
+  /** Keep only positive roots, as for a speed found from v² = u² + 2as. */
+  positive?: boolean;
+  /** Show the answer exactly, as for a count such as a formal charge. */
+  exact?: boolean;
 }
 
 export interface NumericDef extends Tags {
@@ -132,6 +141,8 @@ interface InstanceTags extends Omit<Tags, 'structure' | 'diagram'> {
 }
 
 export interface McqItem extends InstanceTags {
+  /** For an assertion and reason question: the one concept both statements are about. */
+  concept?: string;
   form: 'mcq';
   text: string;
   options: BankOption[];

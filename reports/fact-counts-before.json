@@ -1,0 +1,914 @@
+[
+ {
+  "key": "physics XI 1a",
+  "name": "Units and Measurements",
+  "facts": 16,
+  "asked": 2
+ },
+ {
+  "key": "physics XI 1b",
+  "name": "Dimensions",
+  "facts": 14,
+  "asked": 2
+ },
+ {
+  "key": "physics XI 1p",
+  "name": "Paper II: measuring instruments",
+  "facts": 0,
+  "asked": 0
+ },
+ {
+  "key": "physics XI 2a",
+  "name": "Motion in a Straight Line",
+  "facts": 19,
+  "asked": 6
+ },
+ {
+  "key": "physics XI 2b",
+  "name": "Motion in a Plane",
+  "facts": 18,
+  "asked": 3
+ },
+ {
+  "key": "physics XI 3a",
+  "name": "Newton's laws and momentum",
+  "facts": 21,
+  "asked": 5
+ },
+ {
+  "key": "physics XI 3b",
+  "name": "Equilibrium and friction",
+  "facts": 18,
+  "asked": 0
+ },
+ {
+  "key": "physics XI 3c",
+  "name": "Circular motion",
+  "facts": 14,
+  "asked": 0
+ },
+ {
+  "key": "physics XI 4a",
+  "name": "Work, energy and power",
+  "facts": 18,
+  "asked": 8
+ },
+ {
+  "key": "physics XI 4b",
+  "name": "Collisions",
+  "facts": 14,
+  "asked": 0
+ },
+ {
+  "key": "physics XI 5a",
+  "name": "Centre of mass",
+  "facts": 11,
+  "asked": 2
+ },
+ {
+  "key": "physics XI 5b",
+  "name": "Torque and angular momentum",
+  "facts": 15,
+  "asked": 0
+ },
+ {
+  "key": "physics XI 5c",
+  "name": "Moment of inertia",
+  "facts": 13,
+  "asked": 1
+ },
+ {
+  "key": "physics XI 6a",
+  "name": "Gravity and its variation",
+  "facts": 16,
+  "asked": 2
+ },
+ {
+  "key": "physics XI 6b",
+  "name": "Potential, escape velocity and satellites",
+  "facts": 18,
+  "asked": 1
+ },
+ {
+  "key": "physics XI 7a",
+  "name": "Mechanical Properties of Solids",
+  "facts": 16,
+  "asked": 3
+ },
+ {
+  "key": "physics XI 7b",
+  "name": "Mechanical Properties of Fluids",
+  "facts": 20,
+  "asked": 1
+ },
+ {
+  "key": "physics XI 7c",
+  "name": "Surface tension",
+  "facts": 15,
+  "asked": 3
+ },
+ {
+  "key": "physics XI 8a",
+  "name": "Thermal Properties of Matter",
+  "facts": 19,
+  "asked": 1
+ },
+ {
+  "key": "physics XI 8b",
+  "name": "Thermodynamics",
+  "facts": 20,
+  "asked": 3
+ },
+ {
+  "key": "physics XI 9a",
+  "name": "Kinetic Theory",
+  "facts": 17,
+  "asked": 1
+ },
+ {
+  "key": "physics XI 10a",
+  "name": "Oscillations",
+  "facts": 18,
+  "asked": 1
+ },
+ {
+  "key": "physics XI 10b",
+  "name": "Waves",
+  "facts": 22,
+  "asked": 12
+ },
+ {
+  "key": "physics XII 1a",
+  "name": "Electric Charges and Fields",
+  "facts": 32,
+  "asked": 66
+ },
+ {
+  "key": "physics XII 1b",
+  "name": "Electrostatic Potential, Potential Energy and Capacitance",
+  "facts": 27,
+  "asked": 74
+ },
+ {
+  "key": "physics XII 2a",
+  "name": "Conduction, Ohm's law and power",
+  "facts": 27,
+  "asked": 74
+ },
+ {
+  "key": "physics XII 2b",
+  "name": "Cells, Kirchhoff's laws and bridges",
+  "facts": 25,
+  "asked": 97
+ },
+ {
+  "key": "physics XII 3a",
+  "name": "Moving charges and magnetism",
+  "facts": 30,
+  "asked": 144
+ },
+ {
+  "key": "physics XII 3b",
+  "name": "Magnetism and Matter",
+  "facts": 20,
+  "asked": 22
+ },
+ {
+  "key": "physics XII 4a",
+  "name": "Electromagnetic Induction",
+  "facts": 23,
+  "asked": 24
+ },
+ {
+  "key": "physics XII 4b",
+  "name": "Alternating Current",
+  "facts": 30,
+  "asked": 121
+ },
+ {
+  "key": "physics XII 5a",
+  "name": "Electromagnetic Waves",
+  "facts": 20,
+  "asked": 37
+ },
+ {
+  "key": "physics XII 6a",
+  "name": "Ray Optics",
+  "facts": 37,
+  "asked": 117
+ },
+ {
+  "key": "physics XII 6b",
+  "name": "Optical instruments",
+  "facts": 20,
+  "asked": 39
+ },
+ {
+  "key": "physics XII 6c",
+  "name": "Wave Optics",
+  "facts": 28,
+  "asked": 67
+ },
+ {
+  "key": "physics XII 6p",
+  "name": "Paper II: ray optics experiments",
+  "facts": 0,
+  "asked": 0
+ },
+ {
+  "key": "physics XII 7a",
+  "name": "Dual Nature of Radiation and Matter",
+  "facts": 24,
+  "asked": 68
+ },
+ {
+  "key": "physics XII 8a",
+  "name": "Atoms",
+  "facts": 22,
+  "asked": 52
+ },
+ {
+  "key": "physics XII 8b",
+  "name": "Nuclei",
+  "facts": 28,
+  "asked": 61
+ },
+ {
+  "key": "physics XII 9a",
+  "name": "Semiconductor Electronics",
+  "facts": 19,
+  "asked": 27
+ },
+ {
+  "key": "physics XII 9b",
+  "name": "Semiconductor diode",
+  "facts": 26,
+  "asked": 70
+ },
+ {
+  "key": "chemistry XI 1a",
+  "name": "Matter, laws and measurement",
+  "facts": 14,
+  "asked": 2
+ },
+ {
+  "key": "chemistry XI 1b",
+  "name": "Mole concept and stoichiometry",
+  "facts": 15,
+  "asked": 8
+ },
+ {
+  "key": "chemistry XI 1c",
+  "name": "Chemical equivalents and volumetric calculations",
+  "facts": 13,
+  "asked": 11
+ },
+ {
+  "key": "chemistry XI 2a",
+  "name": "Particles and atomic models",
+  "facts": 14,
+  "asked": 3
+ },
+ {
+  "key": "chemistry XI 2b",
+  "name": "Quantum numbers and electronic configuration",
+  "facts": 18,
+  "asked": 7
+ },
+ {
+  "key": "chemistry XI 3a",
+  "name": "Periodic law and periodic trends",
+  "facts": 20,
+  "asked": 3
+ },
+ {
+  "key": "chemistry XI 4a",
+  "name": "Ionic and covalent bonding",
+  "facts": 19,
+  "asked": 5
+ },
+ {
+  "key": "chemistry XI 4b",
+  "name": "VSEPR, hybridisation and molecular orbitals",
+  "facts": 17,
+  "asked": 6
+ },
+ {
+  "key": "chemistry XI 5a",
+  "name": "Systems and the First Law",
+  "facts": 16,
+  "asked": 0
+ },
+ {
+  "key": "chemistry XI 5b",
+  "name": "Second and Third Laws",
+  "facts": 14,
+  "asked": 5
+ },
+ {
+  "key": "chemistry XI 6a",
+  "name": "Chemical Equilibrium",
+  "facts": 16,
+  "asked": 2
+ },
+ {
+  "key": "chemistry XI 6b",
+  "name": "Ionic equilibrium",
+  "facts": 19,
+  "asked": 19
+ },
+ {
+  "key": "chemistry XI 7a",
+  "name": "Redox Reactions",
+  "facts": 17,
+  "asked": 4
+ },
+ {
+  "key": "chemistry XI 8a",
+  "name": "Classification, nomenclature and isomerism",
+  "facts": 16,
+  "asked": 11
+ },
+ {
+  "key": "chemistry XI 8b",
+  "name": "Purification and analysis",
+  "facts": 13,
+  "asked": 1
+ },
+ {
+  "key": "chemistry XI 8c",
+  "name": "Electronic effects and reaction types",
+  "facts": 18,
+  "asked": 1
+ },
+ {
+  "key": "chemistry XI 9a",
+  "name": "Alkanes",
+  "facts": 13,
+  "asked": 1
+ },
+ {
+  "key": "chemistry XI 9b",
+  "name": "Alkenes",
+  "facts": 14,
+  "asked": 6
+ },
+ {
+  "key": "chemistry XI 9c",
+  "name": "Alkynes",
+  "facts": 12,
+  "asked": 0
+ },
+ {
+  "key": "chemistry XI 9d",
+  "name": "Aromatic Hydrocarbons",
+  "facts": 15,
+  "asked": 0
+ },
+ {
+  "key": "chemistry XI 10a",
+  "name": "Titration",
+  "facts": 10,
+  "asked": 1
+ },
+ {
+  "key": "chemistry XI 10b",
+  "name": "Qualitative analysis",
+  "facts": 0,
+  "asked": 0
+ },
+ {
+  "key": "chemistry XI 10c",
+  "name": "Preparation of inorganic compounds",
+  "facts": 0,
+  "asked": 0
+ },
+ {
+  "key": "chemistry XI 10d",
+  "name": "Paper Chromatography",
+  "facts": 0,
+  "asked": 0
+ },
+ {
+  "key": "chemistry XII 1a",
+  "name": "Solutions and colligative properties",
+  "facts": 40,
+  "asked": 165
+ },
+ {
+  "key": "chemistry XII 2a",
+  "name": "Cells and potentials",
+  "facts": 21,
+  "asked": 49
+ },
+ {
+  "key": "chemistry XII 2b",
+  "name": "Conductance and electrolysis",
+  "facts": 19,
+  "asked": 54
+ },
+ {
+  "key": "chemistry XII 2c",
+  "name": "Batteries and corrosion",
+  "facts": 17,
+  "asked": 8
+ },
+ {
+  "key": "chemistry XII 3a",
+  "name": "Rate, order and integrated rate equations",
+  "facts": 26,
+  "asked": 118
+ },
+ {
+  "key": "chemistry XII 3b",
+  "name": "Collision theory and activation energy",
+  "facts": 18,
+  "asked": 9
+ },
+ {
+  "key": "chemistry XII 4a",
+  "name": "Transition elements, lanthanoids and actinoids",
+  "facts": 22,
+  "asked": 66
+ },
+ {
+  "key": "chemistry XII 4b",
+  "name": "K2Cr2O7 and KMnO4",
+  "facts": 21,
+  "asked": 30
+ },
+ {
+  "key": "chemistry XII 5a",
+  "name": "Coordination Compounds",
+  "facts": 32,
+  "asked": 79
+ },
+ {
+  "key": "chemistry XII 6a",
+  "name": "Haloalkanes",
+  "facts": 23,
+  "asked": 80
+ },
+ {
+  "key": "chemistry XII 6b",
+  "name": "Haloarenes",
+  "facts": 14,
+  "asked": 21
+ },
+ {
+  "key": "chemistry XII 6c",
+  "name": "Polyhalogen compounds",
+  "facts": 14,
+  "asked": 1
+ },
+ {
+  "key": "chemistry XII 7a",
+  "name": "Alcohols",
+  "facts": 21,
+  "asked": 82
+ },
+ {
+  "key": "chemistry XII 7b",
+  "name": "Phenols",
+  "facts": 18,
+  "asked": 39
+ },
+ {
+  "key": "chemistry XII 7c",
+  "name": "Ethers",
+  "facts": 13,
+  "asked": 15
+ },
+ {
+  "key": "chemistry XII 8a",
+  "name": "Aldehydes and Ketones",
+  "facts": 26,
+  "asked": 48
+ },
+ {
+  "key": "chemistry XII 8b",
+  "name": "Carboxylic Acids",
+  "facts": 19,
+  "asked": 11
+ },
+ {
+  "key": "chemistry XII 9a",
+  "name": "Aliphatic Amines and Aniline",
+  "facts": 23,
+  "asked": 32
+ },
+ {
+  "key": "chemistry XII 9b",
+  "name": "Cyanides and Isocyanides",
+  "facts": 14,
+  "asked": 9
+ },
+ {
+  "key": "chemistry XII 9c",
+  "name": "Diazonium salts",
+  "facts": 13,
+  "asked": 19
+ },
+ {
+  "key": "chemistry XII 10a",
+  "name": "Carbohydrates",
+  "facts": 23,
+  "asked": 15
+ },
+ {
+  "key": "chemistry XII 10b",
+  "name": "Proteins",
+  "facts": 22,
+  "asked": 24
+ },
+ {
+  "key": "chemistry XII 10c",
+  "name": "Vitamins",
+  "facts": 16,
+  "asked": 10
+ },
+ {
+  "key": "chemistry XII 10d",
+  "name": "Nucleic Acids",
+  "facts": 18,
+  "asked": 17
+ },
+ {
+  "key": "chemistry XII 11a",
+  "name": "Titrations",
+  "facts": 0,
+  "asked": 3
+ },
+ {
+  "key": "chemistry XII 11b",
+  "name": "Rate of reaction, pH and cells",
+  "facts": 0,
+  "asked": 0
+ },
+ {
+  "key": "chemistry XII 11c",
+  "name": "Identifying compounds and functional groups",
+  "facts": 0,
+  "asked": 5
+ },
+ {
+  "key": "chemistry XII 11d",
+  "name": "Qualitative analysis",
+  "facts": 0,
+  "asked": 0
+ },
+ {
+  "key": "mathematics XI 1a",
+  "name": "Sets",
+  "facts": 14,
+  "asked": 14
+ },
+ {
+  "key": "mathematics XI 1b",
+  "name": "Relations & Functions",
+  "facts": 13,
+  "asked": 30
+ },
+ {
+  "key": "mathematics XI 1c",
+  "name": "Trigonometry",
+  "facts": 14,
+  "asked": 114
+ },
+ {
+  "key": "mathematics XI 2a",
+  "name": "Complex Numbers",
+  "facts": 12,
+  "asked": 4
+ },
+ {
+  "key": "mathematics XI 2b",
+  "name": "Quadratic Equations",
+  "facts": 10,
+  "asked": 6
+ },
+ {
+  "key": "mathematics XI 2c",
+  "name": "Permutations and Combinations",
+  "facts": 13,
+  "asked": 8
+ },
+ {
+  "key": "mathematics XI 2d",
+  "name": "Binomial Theorem",
+  "facts": 10,
+  "asked": 3
+ },
+ {
+  "key": "mathematics XI 2e",
+  "name": "Sequence and Series",
+  "facts": 13,
+  "asked": 8
+ },
+ {
+  "key": "mathematics XI 3a",
+  "name": "Straight Lines",
+  "facts": 10,
+  "asked": 9
+ },
+ {
+  "key": "mathematics XI 3b",
+  "name": "Circles",
+  "facts": 9,
+  "asked": 9
+ },
+ {
+  "key": "mathematics XI 3c",
+  "name": "Conic Section",
+  "facts": 14,
+  "asked": 14
+ },
+ {
+  "key": "mathematics XI 3d",
+  "name": "Introduction to three-dimensional Geometry",
+  "facts": 9,
+  "asked": 4
+ },
+ {
+  "key": "mathematics XI 4a",
+  "name": "Limits and Derivatives",
+  "facts": 14,
+  "asked": 6
+ },
+ {
+  "key": "mathematics XI 5a",
+  "name": "Statistics",
+  "facts": 14,
+  "asked": 4
+ },
+ {
+  "key": "mathematics XI 5b",
+  "name": "Probability",
+  "facts": 12,
+  "asked": 10
+ },
+ {
+  "key": "mathematics XII 1a",
+  "name": "Types of relations and functions",
+  "facts": 17,
+  "asked": 53
+ },
+ {
+  "key": "mathematics XII 1b",
+  "name": "Inverse Trigonometric Functions",
+  "facts": 13,
+  "asked": 45
+ },
+ {
+  "key": "mathematics XII 2a",
+  "name": "Matrices",
+  "facts": 13,
+  "asked": 44
+ },
+ {
+  "key": "mathematics XII 2b",
+  "name": "Determinants",
+  "facts": 14,
+  "asked": 51
+ },
+ {
+  "key": "mathematics XII 3a",
+  "name": "Continuity, Differentiability and Differentiation",
+  "facts": 14,
+  "asked": 44
+ },
+ {
+  "key": "mathematics XII 3b",
+  "name": "Applications of Derivatives",
+  "facts": 13,
+  "asked": 146
+ },
+ {
+  "key": "mathematics XII 3c",
+  "name": "Integrals",
+  "facts": 12,
+  "asked": 104
+ },
+ {
+  "key": "mathematics XII 3d",
+  "name": "Application of Integrals",
+  "facts": 9,
+  "asked": 28
+ },
+ {
+  "key": "mathematics XII 3e",
+  "name": "Differential Equations",
+  "facts": 13,
+  "asked": 51
+ },
+ {
+  "key": "mathematics XII 4a",
+  "name": "Vector Algebra",
+  "facts": 15,
+  "asked": 77
+ },
+ {
+  "key": "mathematics XII 5a",
+  "name": "Three-dimensional Geometry",
+  "facts": 13,
+  "asked": 56
+ },
+ {
+  "key": "mathematics XII 6a",
+  "name": "Linear Programming",
+  "facts": 14,
+  "asked": 28
+ },
+ {
+  "key": "mathematics XII 7a",
+  "name": "Probability",
+  "facts": 19,
+  "asked": 137
+ },
+ {
+  "key": "computerscience XI 1a",
+  "name": "System of Numeration",
+  "facts": 15,
+  "asked": 19
+ },
+ {
+  "key": "computerscience XI 2a",
+  "name": "Encodings",
+  "facts": 15,
+  "asked": 8
+ },
+ {
+  "key": "computerscience XI 3a",
+  "name": "Propositional logic",
+  "facts": 12,
+  "asked": 12
+ },
+ {
+  "key": "computerscience XI 3b",
+  "name": "Logic and hardware",
+  "facts": 12,
+  "asked": 7
+ },
+ {
+  "key": "computerscience XI 4a",
+  "name": "Introduction",
+  "facts": 15,
+  "asked": 0
+ },
+ {
+  "key": "computerscience XI 5a",
+  "name": "Objects and the JVM",
+  "facts": 11,
+  "asked": 19
+ },
+ {
+  "key": "computerscience XI 5b",
+  "name": "Errors and exceptions",
+  "facts": 15,
+  "asked": 6
+ },
+ {
+  "key": "computerscience XI 6a",
+  "name": "Primitive values, Wrapper classes, Types and casting",
+  "facts": 17,
+  "asked": 15
+ },
+ {
+  "key": "computerscience XI 7a",
+  "name": "Variables, Expressions",
+  "facts": 16,
+  "asked": 26
+ },
+ {
+  "key": "computerscience XI 8a",
+  "name": "Statements, Scope",
+  "facts": 16,
+  "asked": 46
+ },
+ {
+  "key": "computerscience XI 9a",
+  "name": "Methods and Constructors",
+  "facts": 16,
+  "asked": 19
+ },
+ {
+  "key": "computerscience XI 10a",
+  "name": "Arrays, Strings",
+  "facts": 14,
+  "asked": 4
+ },
+ {
+  "key": "computerscience XI 11a",
+  "name": "Basic input/output using Scanner class",
+  "facts": 10,
+  "asked": 2
+ },
+ {
+  "key": "computerscience XI 11b",
+  "name": "Data File Handling",
+  "facts": 13,
+  "asked": 7
+ },
+ {
+  "key": "computerscience XI 12a",
+  "name": "Introduction to Python",
+  "facts": 16,
+  "asked": 5
+ },
+ {
+  "key": "computerscience XI 13a",
+  "name": "Trends in computing and ethical issues",
+  "facts": 19,
+  "asked": 5
+ },
+ {
+  "key": "computerscience XII 1a",
+  "name": "Propositional logic",
+  "facts": 14,
+  "asked": 30
+ },
+ {
+  "key": "computerscience XII 1b",
+  "name": "Boolean algebra and Karnaugh maps",
+  "facts": 20,
+  "asked": 216
+ },
+ {
+  "key": "computerscience XII 2a",
+  "name": "Logic gates",
+  "facts": 15,
+  "asked": 38
+ },
+ {
+  "key": "computerscience XII 2b",
+  "name": "Applications",
+  "facts": 21,
+  "asked": 20
+ },
+ {
+  "key": "computerscience XII 3a",
+  "name": "Methods",
+  "facts": 21,
+  "asked": 121
+ },
+ {
+  "key": "computerscience XII 4a",
+  "name": "Arrays",
+  "facts": 16,
+  "asked": 37
+ },
+ {
+  "key": "computerscience XII 4b",
+  "name": "String handling",
+  "facts": 14,
+  "asked": 13
+ },
+ {
+  "key": "computerscience XII 5a",
+  "name": "Recursion",
+  "facts": 13,
+  "asked": 13
+ },
+ {
+  "key": "computerscience XII 6a",
+  "name": "Inheritance",
+  "facts": 18,
+  "asked": 14
+ },
+ {
+  "key": "computerscience XII 6b",
+  "name": "Interfaces in Java (Only Conceptual)",
+  "facts": 16,
+  "asked": 13
+ },
+ {
+  "key": "computerscience XII 7a",
+  "name": "Strings",
+  "facts": 11,
+  "asked": 1
+ },
+ {
+  "key": "computerscience XII 7b",
+  "name": "Lists",
+  "facts": 12,
+  "asked": 0
+ },
+ {
+  "key": "computerscience XII 7c",
+  "name": "Tuples",
+  "facts": 11,
+  "asked": 0
+ },
+ {
+  "key": "computerscience XII 8a",
+  "name": "Binary trees [Conceptual]",
+  "facts": 17,
+  "asked": 55
+ },
+ {
+  "key": "computerscience XII 9a",
+  "name": "Complexity and Big O notation",
+  "facts": 16,
+  "asked": 20
+ }
+]

@@ -1,6 +1,6 @@
 # Syllabus items for you to decide
 
-These 69 entries are **still in the app**. Nothing here has been removed.
+These 63 entries are **still in the app**. Nothing here has been removed.
 
 To remove a group, change its rule from `review` to `out` in `scripts/syllabus/<subject>.mjs` and run `npm run data`. To keep one, make it `supporting`.
 
@@ -62,18 +62,7 @@ To remove a group, change its rule from `review` to `out` in `scripts/syllabus/<
 - `cs-xi-7-56` Odd/even test with bits (Computer Science XI, 7. Variables and Expressions)
 - `cs-xi-7-57` XOR identities for swapping (Computer Science XI, 7. Variables and Expressions)
 
-## 4. The 2028 syllabus has only "Data structures - Binary trees [Conceptual]", but stacks, queues and linked lists were in papers up to 2025. Remove them?
-
-6 entries.
-
-- `cs-xii-2-1` Stack operations (Computer Science XII, 2. Data Structures)
-- `cs-xii-2-2` Queue operations (Computer Science XII, 2. Data Structures)
-- `cs-xii-2-3` Infix to postfix (example) (Computer Science XII, 2. Data Structures)
-- `cs-xii-3-9` Space complexity stack (Computer Science XII, 11. Algorithms & Complexity (supplementary))
-- `cs-xii-3-14` Queue operations (Computer Science XII, 11. Algorithms & Complexity (supplementary))
-- `cs-xii-3-15` Stack operations (Computer Science XII, 11. Algorithms & Complexity (supplementary))
-
-## 5. Polarisation is mentioned only in passing in Unit 7 ("exhibited in interference, diffraction and polarisation") and has not appeared since 2020. Remove it?
+## 4. Polarisation is mentioned only in passing in Unit 7 ("exhibited in interference, diffraction and polarisation") and has not appeared since 2020. Remove it?
 
 5 entries.
 
@@ -83,7 +72,7 @@ To remove a group, change its rule from `review` to `out` in `scripts/syllabus/<
 - `p-xii-6-125` Two polarisers at angle θ (Physics XII, 6. Optics)
 - `p-xii-6-126` Reflected and refracted rays at the Brewster angle (Physics XII, 6. Optics)
 
-## 6. Radiation terms like these are not named, but "qualitative ideas of Blackbody radiation" could include them. Keep them?
+## 5. Radiation terms like these are not named, but "qualitative ideas of Blackbody radiation" could include them. Keep them?
 
 4 entries.
 
@@ -92,52 +81,52 @@ To remove a group, change its rule from `review` to `out` in `scripts/syllabus/<
 - `p-xi-8-79` Reflection, absorption, transmission (Physics XI, 8. Thermodynamics)
 - `p-xi-8-82` Kirchhoff’s law (Physics XI, 8. Thermodynamics)
 
-## 7. Lists of equivalent masses: the method is in the syllabus, but are ready-made values useful?
+## 6. Lists of equivalent masses: the method is in the syllabus, but are ready-made values useful?
 
 2 entries.
 
 - `c-xi-1-98` Equivalent mass: standard values (Chemistry XI, 1. Some Basic Concepts of Chemistry)
 - `c-xi-1-100` Equivalent masses of common substances (Chemistry XI, 1. Some Basic Concepts of Chemistry)
 
-## 8. Solid State is not a unit in the 2028 syllabus. But its name appears only in papers before 2023. Remove it, or keep it?
+## 7. Solid State is not a unit in the 2028 syllabus. But its name appears only in papers before 2023. Remove it, or keep it?
 
 2 entries. Syllabus reference: XII units 1 to 10.
 
 - `c-xii-1-2` Packing efficiency (fcc) (Chemistry XII, 1. Solid State)
 - `c-xii-1-3` Packing efficiency (bcc) (Chemistry XII, 1. Solid State)
 
-## 9. Mean value theorems are not in the 2028 Calculus unit, though they appeared in papers before it. But its name appears only in papers before 2023. Remove it, or keep it?
+## 8. Mean value theorems are not in the 2028 Calculus unit, though they appeared in papers before it. But its name appears only in papers before 2023. Remove it, or keep it?
 
 2 entries. Syllabus reference: XII Unit 3.
 
 - `m-xii-3-7` Lagrange's mean value theorem (Mathematics XII, 3. Calculus)
 - `m-xii-3-7b` Rolle's theorem (Mathematics XII, 3. Calculus)
 
-## 10. Physics covers the second law through the Kelvin and Clausius statements and Carnot's cycle. Entropy and polytropic processes are not listed. But its name appears only in papers before 2023. Remove it, or keep it?
+## 9. Physics covers the second law through the Kelvin and Clausius statements and Carnot's cycle. Entropy and polytropic processes are not listed. But its name appears only in papers before 2023. Remove it, or keep it?
 
 1 entry. Syllabus reference: XI Unit 8(ii)(e).
 
 - `p-xi-8-155` Second law (entropy statement) (Physics XI, 8. Thermodynamics)
 
-## 11. Earth's magnetism and the tangent galvanometer are not in Unit 3. But its name appears only in papers before 2023. Remove it, or keep it?
+## 10. Earth's magnetism and the tangent galvanometer are not in Unit 3. But its name appears only in papers before 2023. Remove it, or keep it?
 
 1 entry. Syllabus reference: XII Unit 3.
 
 - `p-xii-3-93` Angle of dip (Physics XII, 3. Magnetic Effects of Current & Magnetism)
 
-## 12. Surface Chemistry is not a unit in the 2028 syllabus. But its name appears only in papers before 2023. Remove it, or keep it?
+## 11. Surface Chemistry is not a unit in the 2028 syllabus. But its name appears only in papers before 2023. Remove it, or keep it?
 
 1 entry. Syllabus reference: XII units 1 to 10.
 
 - `c-xii-5-1` Freundlich isotherm (Chemistry XII, 5. Surface Chemistry)
 
-## 13. The 2028 syllabus stops at a random variable, its distribution and its mean. The binomial distribution is not listed. But its name appears in papers from 2023 onward. Remove it, or keep it?
+## 12. The 2028 syllabus stops at a random variable, its distribution and its mean. The binomial distribution is not listed. But its name appears in papers from 2023 onward. Remove it, or keep it?
 
 1 entry. Syllabus reference: XII Unit 7.
 
 - `m-xi-2-16` Binomial expansion (Mathematics XI, 2. Algebra)
 
-## 14. Unit 7 says "mean of random variable". Variance is not listed for random variables. But its name appears in papers from 2023 onward. Remove it, or keep it?
+## 13. Unit 7 says "mean of random variable". Variance is not listed for random variables. But its name appears in papers from 2023 onward. Remove it, or keep it?
 
 1 entry. Syllabus reference: XII Unit 7.
 

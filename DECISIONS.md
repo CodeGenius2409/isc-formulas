@@ -314,3 +314,92 @@ Work is on a `rebuild` branch. `master` still holds your original files.
 - **The GitHub Pages workflow.** It can only run on GitHub. I tested what it does, from
   a fresh clone on this machine: install, test, build, and serving that build from a
   sub-path. The workflow file itself hasn't run.
+
+## v5 fixes
+
+- **Task 1, stacks and queues:** confirmed not in the 2028 syllabus. The 6 formulas left in the book moved to `archive/removed-formulas.json`, with the reason. Papers' questions on them now count as out of syllabus, not as uncovered.
+  A test scans the formula book, bank, blueprints, samples and syllabus map for them. A call stack is fine, as that's how a program runs.
+
+- **Task 4, the tracer now does inheritance and interfaces:** `extends`, `super`, `this(...)`, overriding, abstract classes, `interface`, `instanceof` and class casts. `src/java/classes.ts` holds the class relations, and the checks javac makes.
+  It follows Java on the subtle points: overloads and fields go by the type as written, overrides by the runtime class, field initializers run after `super()`. The test programs give identical output on a real JDK, and 27 of the 29 refused programs are refused by javac too: one is a run-time ClassCastException, and javac 26 has relaxed the rule on code before `super()`, which the tracer keeps, as ISC teaches it.
+
+- **Task 3, assertion and reason:** a pair is now built from one concept node: a statement and its false version, why it's true and a false explanation, and something else true of it that doesn't explain it. So all four outcomes stay correct, and a true reason that doesn't explain is still about the same thing.
+  452 nodes were written fresh, replacing random pairs of facts. The old way could pair a statement about double bonds with one about water's dipole. A test generates 1,000 per blueprint.
+
+- **Task 5, figures in papers:** an "Include diagrams" switch on both screens, on by default and remembered apart. Figures are numbered across the paper, and the question refers to its number. With the switch off, a question that points at its figure keeps it, with a note: it would make no sense without it.
+  Answer keys can have their own figure, such as a completed ray diagram, which never appears in the question. Word files get them as PNGs at three times their size, with alt text. In a paper, a simulator's button only appears after marking.
+
+- **Task 7, fewer questions than asked: the cause.** A test of 11,358 narrow filter choices found 8,421 fell short. Three reasons: every "Which of these statements is correct?" counted as the same question, as only the words were compared, so one was allowed per paper. A subtopic with few facts simply ran out, and nothing looked further. And nothing said so until after generating.
+  Now the order is: more instances, then the other source if the slider allows, then related subtopics in the chosen chapters, labelled. What can't be met is said before generating, and an option that gives nothing is greyed out with the reason. A mock paper and a practice session are never short.
+- **"Never the same fact twice" wins over "the same fact in another format".** Task 7's second step and Task 6's rule pull against each other. A repeated fact is worse than a question from a related subtopic, so facts stay unique, and each question knows which facts it tests. A count that truly can't be met is refused before generating.
+
+- **Task 8, derivations:** a library in `src/data/derivations/`, written from the syllabus's "derive" lines. Each has its assumptions, steps with marks, a result, and where it helps, a figure, a mistake to find, and fresh values for "hence calculate". A bank question asks each one, so they're there at 0%, and blueprints ask it the other ways.
+  Most results are checked by mathjs at random values, and with units. What can't be is listed in `reports/derivations.md`. Mock papers give derivations the share they have in the real papers at each mark value. A step left unticked comes back alone in review, as "write the missing step".
+
+- **Task 6, fresher facts:** 2,453 facts became 6,724, written from the syllabus wording, not the papers, with links (same, cause, contrast) that make linked assertion–reason and "distinguish" questions. A history in IndexedDB keeps each fact away for 7 days (a setting), unless spaced repetition has it due; numericals without facts are remembered by blueprint.
+  When everything's resting, the least recently seen come back, with a note, so a paper is never short. Linked teacher papers stay reproducible, so they ignore the history. The history isn't in the progress backup: it's per device. New facts count as reviewed only once Task 2 checks their blueprint.
+
+- **Task 2, labelling:** each class has a review file, `src/data/blueprints/reviews/`, with each blueprint's date and note, applied when the class loads. A flagged one counts as not reviewed and stays in use. A generated question from an unreviewed blueprint says "Not yet reviewed" beside "Generated", on screen, in print and in Word.
+  "Only reviewed questions" is off by default on both screens. A mock paper is never short, so if nothing reviewed fits a place, an unreviewed one fills it, marked, and the paper says so. For a teacher, it narrows the counts shown before generating, as any filter does. There are 2,211 blueprints now, not 1,484.
+- **Review batch 1** (CS XII Boolean algebra, Chemistry XII solutions; 41 blueprints, 11 fixed): every fact, and two samples of each blueprint, read. Arithmetic, K-maps and truth tables were right; the problems were repeats, "also true" reasons that in fact explained the assertion, and an unrealistic drip.
+  Kept as is: azeotropes, though not named in the syllabus, as non-ideal solutions are, and they're what a teacher would teach with them.
+- **Review batch 2** (Maths XII applications of derivatives, Physics XII moving charges; 46 blueprints, 14 fixed). The main find was general: 38 of the 51 "long answer" facts repeat a derivation in the library, as a different fact, so a paper could ask the same derivation twice. They now share the library's fact, matched by the derivation's own pattern, in the same topic.
+  Kept: the solenoid derivation by Ampère's law. The syllabus summary says "only qualitative", but its detailed list says to apply the law to a solenoid, and the papers ask it.
+- **Review batch 3** (Maths XII probability, CS XII methods, Physics XII a.c.; 58 blueprints, 13 fixed). Binomial distribution isn't in the 2028 Maths syllabus, which stops at a random variable's mean, so its recall and assertion–reason items went; "exactly r successes" stays, worked from independent trials and counting. Q factor, Curie temperature and the B–H loop are in the detailed Physics syllabus, though not its summary, so they stay.
+  General: a "distinguish" pair made from two definitions now shares the fact of a written comparison of the same pair, matched by name, so a paper doesn't ask it twice.
+- **Review batch 4** (Chemistry XII kinetics, Physics XII ray optics; 49 blueprints, 14 fixed). Scattering of light isn't in the 2028 Physics syllabus, so the blue sky and red sunset went. Two general bugs: a choice of three numbers, like `T: [30, 45, 60]`, is read as a range with a step, so eight blueprints always used one value, and the DSL now refuses such a range; and answers were rounded from binary floating point, so 0.001155 showed as 0.00115. Rounding is now half up, from the decimal digits.
+  The lens magnification used the mirror's m = −v/u, so the solver has the book's m = v/u for lenses.
+- **Review batch 5** (Maths XI trigonometry, Maths XII integrals, Physics XII cells and bridges; 47 blueprints, 6 fixed). These topics were sound: every standard integral, identity and value checks out. Kept: heights and distances in one Class XI CBQ, as it applies the definition of tan, which is in the syllabus.
+  Fixed: near-repeats, an 8 V car battery, and working printed as "+ 0x² + 1x".
+- **Review batch 6** (Chemistry XII coordination compounds, haloalkanes, alcohols; 58 blueprints, 12 fixed). All three are in the syllabus as written, including Swarts, Finkelstein and Wurtz. The alcohols' chemistry is "of primary alcohols only", but telling primary, secondary and tertiary apart is listed, so oxidation and the Lucas test stay as tests.
+  The naming MCQ's distractors are now built from slips a student makes, not other complexes' names.
+- **Review batch 7** (Maths XII vectors, Physics XII potential and capacitance; 42 blueprints, 11 fixed). A wrong formula: the dielectric numerical used the n-plate capacitor formula with n = K, so its answers were too small. The solver now has C = Kε₀A/d from the book.
+  The syllabus says the parallel plate capacitance and energy stored are "No derivation, formulae only", though its detailed list says "obtain". The explicit note wins, as in Task 8, so those two derivations were replaced.
+- **Review batch 8** (Physics XII conduction, semiconductor diodes; 42 blueprints, 12 fixed, 1 flagged). Logic gates aren't in the 2028 Physics syllabus, so their facts went, and `p12-9b-gates` is flagged for you rather than deleted: it stays in use, marked "Not yet reviewed". Flags have their own table in the report.
+  Also: no bridge rectifier, which the syllabus leaves out; mains supplies of 220 to 240 V.
+- **Review batch 9** (Physics XII wave optics, dual nature; 44 blueprints, 14 fixed, 1 flagged). Polarisation isn't in the 2028 Wave Optics syllabus, only named under Dual Nature as evidence of waves, so its facts went, and `p12-6c-malus` is flagged.
+  The fringe width in water was worked by applying λ/n to a width; it now gives the slits and screen and uses β = λD/d with the wavelength in water.
+- **Review batch 10** (Chemistry XII transition elements, Physics XII charges and fields; 42 blueprints, 7 fixed). A wrong answer: "two equal charges" was worked with a second charge the question didn't give. It now states that charge. The transition elements were sound throughout.
+  Repeats were the rest: the same fact twice in a topic, which a paper could ask twice.
+- **Review batch 11** (Physics XII nuclei, Maths XII 3-D geometry, CS XII binary trees; 46 blueprints, 18 fixed, 9 flagged). Radioactivity isn't in the 2028 syllabus, and an earlier version already asked you whether to keep it (`reports/syllabus-review.md`, item 1). So nothing is deleted: its facts left the shared pools, and its 9 blueprints are flagged, including 7 that Task 8 counted as reviewed.
+  CS binary trees: the syllabus lists the terms and three traversals only, so search trees and full and complete trees went.
+- **Review batch 12** (Chemistry XII conductance, Maths XII relations and functions, Physics XII atoms; 51 blueprints, 12 fixed). One question was wrong as worded: a single hydrogen atom gives at most n − 1 lines; the n(n − 1)/2 answer is for a sample. Electroplating now pairs each metal with its real ion.
+  Open syllabus questions in `reports/syllabus-review.md` (radioactivity, polarisation, binomial): questions follow the 2028 syllabus, and blueprints wholly on such topics are flagged, not deleted. The formula book is left for you.
+- **Review batch 13** (Chemistry XII cells, Maths XII determinants and differential equations; 50 blueprints, 11 fixed). No errors of fact; every worked answer checks by hand. The fixes were presentation ("1x²", "(dy/dx)¹"), a repeated CBQ, and repeated or arguable facts.
+  Coefficients of 1 and terms of 0 are a recurring kind of slip, now fixed wherever a batch has met them.
+- **Review batch 14** (Chemistry XII aldehydes and ketones, CS XI statements and scope, Maths XII inverse trigonometry; 48 blueprints, 9 fixed). Chemistry keeps to the syllabus's named reactions, so Gattermann–Koch, Friedel–Crafts acylation and acetals went. A Java line had a Unicode minus that wouldn't compile; a scan found no others.
+  The programs' outputs, every inverse-trig value, and the iodoform and aldol equations all check out.
+- **Review batch 15** (Chemistry XII phenols, Maths XII matrices and continuity; 41 blueprints, 7 fixed). Rolle's theorem and the mean value theorem aren't in the 2028 Calculus unit, so they left the shared pools, as with the other open questions in `reports/syllabus-review.md`. No blueprint was wholly about them.
+  Matrices and differentiation were right throughout; Phenols had facts said twice.
+- **Review batch 16** (Physics XII optical instruments, CS XII logic gates and arrays; 43 blueprints, 10 fixed). The eye's accommodation isn't in the Optical Instruments syllabus. Repeats were the main problem in Physics.
+  CS was sound: every gate count, address and program output checks. "A AND gate" now reads "an AND gate", in Class XI too.
+- **Review batch 17** (Physics XII EM waves, Chemistry XII K₂Cr₂O₇/KMnO₄ and amines; 46 blueprints, 10 fixed). Name-it answers now say "Kolbe's reaction", "esterification" and "the Sandmeyer reaction", and keep the capital in N-phenylethanamide.
+  Most problems were facts said twice across a topic's blueprints; the chemistry itself was right.
+- **Review batch 18** (CS XII propositional logic, Maths XI relations and functions, Maths XII areas and linear programming; 43 blueprints, 21 fixed, 1 flagged). LP corner sets are now always convex, and the word problem has realistic profits.
+  One-one proofs are Class XII syllabus, so the Class XI one is flagged, not removed. Repeats across a topic's recall, truths and AR were the main problem.
+- **Review batch 19** (Physics XII semiconductors, CS XI variables and expressions, Chemistry XII proteins; 43 blueprints, 15 fixed). Two topics had pairs of AR nodes asking the same thing. A recall with a 2024 board MCQ's exact options was reworded.
+  Java expressions in prose now use the ASCII minus, as in code. The physics, chemistry and Java facts themselves were right.
+- **Review batch 20** (Physics XII magnetism and EMI, Chemistry XII haloarenes; 49 blueprints, 21 fixed). The most repetitive topics so far, so many pool entries were removed, not replaced. Haloarenes got two directive-influence facts to stay at its 42.
+  Wurtz–Fittig stays as a pool fact: the 2023 paper asked it, and the 2028 wording ("basic idea") doesn't clearly drop it.
+- **Review batch 21** (CS XII adders and complexity, Chemistry XI ionic equilibrium, Chemistry XII diazonium salts; 48 blueprints, 19 fixed). Generated values are now cleaned to 12 figures before the solver reads them, so float noise no longer sets an answer's precision. The solver also brackets a value in standard form before a power.
+  Both fixes are shared code, so they apply to every numerical, the solver screen included; tests/unit/solver-display.test.ts covers them.
+- **Review batch 22** (CS XI numbers, objects and methods, Chemistry XII nucleic acids; 46 blueprints, 19 fixed). 2's complement stays in CS XI 1a: the 2028 wording names subtraction in other bases, and complements are how it is taught.
+  Bisection stays in Methods, which names "finding roots of algebraic equations". The CS answers themselves (conversions, sums, outputs) all checked.
+- **Review batch 23** (Chemistry XII ethers and carbohydrates, CS XI types and casting; 40 blueprints, 18 fixed). The casting MCQ now uses a negative value, so truncation and Math.floor give different answers.
+  Duplicate AR nodes were again the main problem, with three pairs removed.
+- **Review batch 24** (Maths XI sets and conics, CS XII inheritance; 46 blueprints, 13 fixed). AR statements were repeated word for word as truths in all three topics. Every conic, set and Java answer checked.
+  Interfaces aren't in the Inheritance syllabus, so an "also true" line about them was replaced.
+- **Review batch 25** (CS XII strings, recursion and interfaces, CS XI propositional logic; 47 blueprints, 21 fixed). The Class XI lift question asked about gates, which are 3b, so it now asks which connective; its id is unchanged.
+  Interfaces' new facts follow the syllabus's one stated emphasis: the construct interface against a class's interface in the wider sense.
+- **Review batch 26** (Physics XI waves, Chemistry XI volumetric analysis and isomerism, Chemistry XII carboxylic acids; 45 blueprints, 17 fixed). The Doppler effect left the Waves pool: the 2028 unit ends at beats, and no blueprint was wholly about it.
+  The dilution numerical now asks for the volume to dilute to, which is what its answer gives.
+- **Review batch 27** (Chemistry XII kinetics, cyanides and vitamins, Maths XI lines and probability; 40 blueprints, 20 fixed). Small topics often had AR nodes that repeated their only reasons. Several had just three truths, giving three-option MCQs, so facts were added.
+  Coordinates in Maths questions are now in maths mode, so negative values show a proper minus sign.
+- **Review batch 28** (Chemistry corrosion and moles, Maths XI P&C and circles, CS XI encodings; 43 blueprints, 17 fixed, 1 flagged). This corrects batch 22: the 2028 XI Encodings wording dropped integer encodings, so 2's complement is probably out. The complements question is flagged, and section A now subtracts in binary.
+  The complement facts in the 2a pool stay until the user decides. The moles numerical now rounds its derived amount to 3 figures before use.
+- **Review batch 29** (Physics XI work and energy, Chemistry XI quantum numbers, Maths XI sequences, CS XI files; 42 blueprints, 11 fixed). The second savings question became seats in a hall, so two of the same story can't share a paper.
+  Thin topics got the definitions and truths they lacked.
+- **Review batch 30** (six small Class XI topics; 47 blueprints, 21 fixed). The Class XI gate MCQ had only the options 0 and 1. It now asks for a whole output column, with four options.
+  In small topics, AR nodes were again often a reason word for word, so new facts were written in their place.
+- **Review batch 31** (Physics XI motion, Chemistry XI bonding and thermodynamics, Chemistry XII tests; 40 blueprints, 15 fixed). Four shared generator fixes: a carried value is rounded to 3 figures, a part can keep only its positive root, a count can be shown exactly, and question numbers use a true minus (not in CS, where values are what Java prints).
+  A conics pair removed in batch 24 left a ten-question paper short, which check.sh didn't run; it now runs the paper-size test too. Covered in tests/unit/solver-display.test.ts.

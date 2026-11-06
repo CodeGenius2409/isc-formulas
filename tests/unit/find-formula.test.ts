@@ -20,7 +20,7 @@ describe('findFormula', () => {
         }
       }
     }
-    expect(ids.size).toBe(7828);
+    expect(ids.size).toBe(7822);
     const missing: string[] = [];
     for (const id of ids) if (!(await findFormula(id))) missing.push(id);
     expect(missing).toEqual([]);

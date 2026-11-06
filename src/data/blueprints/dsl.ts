@@ -8,6 +8,7 @@ import { unitLabel } from '../../solver/unit-label';
 import { fillIn, tidy, type Gen, type Mistake } from '../../practice/gen/gen';
 import type { ClassLevel, SubjectId } from '../types';
 import type { Blueprint, Body, Format, Style } from './types';
+import { DERIVATIONS, derivationFact } from '../derivations';
 
 export type Place = [unit: number, topic: string, marks: number, difficulty: Difficulty];
 type Range = [number, number, number] | number[];
@@ -35,6 +36,7 @@ export interface NumSpec {
   style?: Style;
   format?: Format;
   diagram?: (v: Values) => DiagramSpec;
+  answerDiagram?: (v: Values) => DiagramSpec;
   sim?: (v: Values) => SimulatorRef;
 }
 
@@ -56,8 +58,17 @@ export interface McqNumSpec {
   digits?: number;
 }
 
+/**
+ * One concept, set out so that all four assertion and reason outcomes are correct, and always about the same thing.
+ * The statement and its false version, why it's true and a false explanation, and something else true of the same
+ * concept that doesn't explain the statement.
+ */
+export type ArNode = [concept: string, statement: string, falseStatement: string, because: string, falseBecause: string, alsoTrue: string];
+
 /** A topic's knowledge, written in the app's own words. */
 export interface Facts {
+  /** Assertion and reason questions. A pair is only ever made from one concept. */
+  ar?: ArNode[];
   /** Term, then what it means. Extra sentences make it worth two marks. */
   define?: [term: string, ...meaning: string[]][];
   /** A one-mark concept question: question, right answer, then three wrong ones. */
@@ -74,17 +85,39 @@ export interface Facts {
   long?: [question: string, ...points: (string | [string, number])[]][];
   /** Figures for long answers, by the words of the question. These have symbols only, so they never change. */
   figures?: Record<string, DiagramSpec>;
+  /** Figures for answers, by the start of the question's words. A question that asks you to draw something gets it in the key. */
+  answerFigures?: Record<string, DiagramSpec>;
   /** A real-life case: the situation, then asks with their answers and marks. */
   cases?: { scene: string; parts: [ask: string, answer: string, marks: number][] }[];
   /** Diagram-based: what to draw, then what earns marks. */
   draw?: [question: string, ...points: string[]][];
+  /**
+   * How facts in this topic relate, which gives assertion and reason, and "distinguish between", more good pairs.
+   * "cause": truth a happens because of truth b. "same": truths a and b are about one concept, and neither explains the other.
+   * "contrast": define terms a and b are worth telling apart. Truths are named by the start of their words, terms in full.
+   */
+  links?: Link[];
 }
+
+export type Link = [relation: 'cause' | 'same' | 'contrast', a: string, b: string];
+
+/** Adds together several files of knowledge about one class. */
+export function mergeKnowledge(...sets: Record<string, Facts>[]): Record<string, Facts> {
+  const out: Record<string, Facts> = {};
+  for (const set of sets) for (const [key, facts] of Object.entries(set)) out[key] = out[key] ? mergeFacts(out[key], facts) : facts;
+  return out;
+}
+
+/** Every topic's merged knowledge, by "subject level unit+topic". Tests and the report read this. */
+export const FACT_BOOK = new Map<string, Facts>();
 
 const CODE: Record<SubjectId, string> = { physics: 'p', chemistry: 'c', mathematics: 'm', computerscience: 'k' };
 
 function drawValues(g: Gen, vars: Record<string, Range>): Values {
   const out: Values = {};
   for (const [name, spec] of Object.entries(vars)) {
+    // Three numbers are a range: low, high and step. A choice of three needs writing as a range, or as a longer list.
+    if (spec.length === 3 && (spec[2] <= 0 || spec[1] < spec[0] || (spec[1] > spec[0] && spec[2] > spec[1] - spec[0]))) throw new Error(`${name}: [${spec.join(', ')}] isn't a range`);
     out[name] = spec.length === 3 ? g.step(spec[0], spec[1], spec[2]) : g.pick(spec);
   }
   return out;
@@ -97,8 +130,22 @@ const ASK_COMPARE = ['Distinguish between {a} and {b}.', 'State the differences 
 
 const capital = (text: string) => text.charAt(0).toUpperCase() + text.slice(1);
 
-export function blueprintsFor(subject: SubjectId, level: ClassLevel) {
+/** Adds a topic's extra knowledge to what its file already says. */
+function mergeFacts(a: Facts, b: Facts | undefined): Facts {
+  if (!b) return a;
+  const out: Record<string, unknown> = { ...a };
+  for (const [key, value] of Object.entries(b)) {
+    const had = out[key];
+    if (Array.isArray(had) && Array.isArray(value)) out[key] = [...had, ...value];
+    else if (had && value && typeof had === 'object' && typeof value === 'object') out[key] = { ...had, ...value };
+    else out[key] = value;
+  }
+  return out as Facts;
+}
+
+export function blueprintsFor(subject: SubjectId, level: ClassLevel, knowledge: Record<string, Facts> = {}) {
   const prefix = `${CODE[subject]}${level === 'XII' ? '12' : '11'}`;
+  const used = new Set<string>();
   const base = (key: string, [unit, topic, marks, difficulty]: Place, type: BankType, format: Format, style: Style) => ({
     id: `${prefix}-${unit}${topic}-${key}`,
     subject,
@@ -127,7 +174,7 @@ export function blueprintsFor(subject: SubjectId, level: ClassLevel) {
       const variant: NumVariant = spec.variants ? g.pick(spec.variants) : { text: spec.text!, parts: spec.parts! };
       const scene = spec.scenes ? g.pick(spec.scenes) : '';
       const text = fillIn(fillIn(variant.text, { scene }), values);
-      return { ...g.numeric(text, variant.parts, values), diagram: (variant.diagram ?? spec.diagram)?.(values), simulator: spec.sim?.(values) };
+      return { ...g.numeric(text, variant.parts, values), diagram: (variant.diagram ?? spec.diagram)?.(values), answerDiagram: spec.answerDiagram?.(values), simulator: spec.sim?.(values) };
     },
   });
 
@@ -147,10 +194,15 @@ export function blueprintsFor(subject: SubjectId, level: ClassLevel) {
   });
 
   /** Everything a topic's facts can make. */
-  const facts = (unit: number, topic: string, f: Facts): Blueprint[] => {
+  const facts = (unit: number, topic: string, own: Facts): Blueprint[] => {
+    used.add(`${unit}${topic}`);
+    const f = mergeFacts(own, knowledge[`${unit}${topic}`]);
+    FACT_BOOK.set(`${subject} ${level} ${unit}${topic}`, f);
     const out: Blueprint[] = [];
     const at = (marks: number, difficulty: Difficulty): Place => [unit, topic, marks, difficulty];
     const add = (key: string, marks: number, difficulty: Difficulty, type: BankType, format: Format, style: Style, make: (g: Gen) => Body) => out.push({ ...base(key, at(marks, difficulty), type, format, style), make });
+    /** A fact's name, the same in every format that asks it. */
+    const fact = (text: string) => `${prefix}-${unit}${topic}:${text.slice(0, 80)}`;
 
     if (f.define && f.define.length >= 3 && (subject === 'chemistry' || subject === 'physics')) {
       const list = f.define;
@@ -162,20 +214,20 @@ export function blueprintsFor(subject: SubjectId, level: ClassLevel) {
         const letters = 'abcd';
         const columnA = pairs.map(([term], i) => `(${i + 1}) ${term}`).join('\n');
         const columnB = order.map((j, i) => `(${letters[i]}) ${pairs[j][1]}`).join('\n');
-        return g.theory(`Match each item in Column A with its description in Column B.\nColumn A\n${columnA}\nColumn B\n${columnB}`, pairs.map(([term], i): [string, number] => [`(${i + 1}) ${term} goes with (${letters[order.indexOf(i)]}).`, 1]));
+        return g.theory(`Match each item in Column A with its description in Column B.\nColumn A\n${columnA}\nColumn B\n${columnB}`, pairs.map(([term], i): [string, number] => [`(${i + 1}) ${term} goes with (${letters[order.indexOf(i)]}).`, 1]), { facts: pairs.map(([term]) => fact(term)) });
       });
     }
     if (f.define?.length) {
       const list = f.define;
       add('define', 1, 1, 'definition', 'very-short', 'paper-style', (g) => {
         const [term, meaning] = g.pick(list);
-        return g.theory(fillIn(g.pick(ASK_DEFINE), { x: term }), [meaning]);
+        return g.theory(fillIn(g.pick(ASK_DEFINE), { x: term }), [meaning], { facts: [fact(term)] });
       });
       const longer = list.filter((d) => d.length >= 3);
       if (longer.length) {
         add('define2', 2, 1, 'definition', 'short', 'paper-style', (g) => {
           const [term, a, b] = g.pick(longer);
-          return g.theory(fillIn(g.pick(ASK_DEFINE), { x: term }), [a, b]);
+          return g.theory(fillIn(g.pick(ASK_DEFINE), { x: term }), [a, b], { facts: [fact(term)] });
         });
       }
     }
@@ -183,7 +235,7 @@ export function blueprintsFor(subject: SubjectId, level: ClassLevel) {
       const list = f.recall;
       add('recall', 1, 1, 'mcq', 'mcq', 'paper-style', (g) => {
         const [q, right, a, b, c] = g.pick(list);
-        return g.mcq(q, right, [a, b, c]);
+        return { ...g.mcq(q, right, [a, b, c]), facts: [fact(q)] };
       });
     }
     if (f.reason?.length) {
@@ -192,7 +244,7 @@ export function blueprintsFor(subject: SubjectId, level: ClassLevel) {
         if (!list.length) continue;
         add(`reason${marks}`, marks, marks > 1 ? 2 : 1, 'reason', 'reason', 'paper-style', (g) => {
           const [claim, ...because] = g.pick(list);
-          return g.theory(fillIn(g.pick(ASK_REASON), { x: claim }), because);
+          return g.theory(fillIn(g.pick(ASK_REASON), { x: claim }), because, { facts: [fact(claim)] });
         });
       }
     }
@@ -203,7 +255,7 @@ export function blueprintsFor(subject: SubjectId, level: ClassLevel) {
         add(`compare${marks}`, marks, 2, 'distinguish', 'distinguish', 'paper-style', (g) => {
           const [a, b, ...rows] = g.pick(list);
           const chosen = g.sample(rows as [string, string][], marks);
-          return g.theory(fillIn(g.pick(ASK_COMPARE), { a, b }), chosen.map(([x, y]) => `${capital(a)}: ${x} ${capital(b)}: ${y}`));
+          return g.theory(fillIn(g.pick(ASK_COMPARE), { a, b }), chosen.map(([x, y]) => `${capital(a)}: ${x} ${capital(b)}: ${y}`), { facts: [fact(`${a} | ${b}`)] });
         });
       }
     }
@@ -211,32 +263,45 @@ export function blueprintsFor(subject: SubjectId, level: ClassLevel) {
       const list = f.truths!;
       add('truth', 1, 2, 'mcq', 'mcq', 'paper-style', (g) => {
         const [picked, ...rest] = g.shuffle(list);
-        return g.mcq('Which of these statements is correct?', picked[0], g.sample(rest, 3 > rest.length ? rest.length : 3).map((t) => t[1]));
+        return { ...g.mcq('Which of these statements is correct?', picked[0], g.sample(rest, 3 > rest.length ? rest.length : 3).map((t) => t[1])), facts: [fact(picked[0])] };
       });
     }
-    const reasons = (f.reason ?? []).filter((r) => r.length >= 2);
-    const truths = f.truths ?? [];
-    if (reasons.length && truths.length >= 2) {
+    if (f.ar?.length) {
+      const nodes = f.ar;
       add('assertion', 1, 2, 'assertion', 'assertion', 'cbq-style', (g) => {
+        const [concept, statement, falseStatement, because, falseBecause, alsoTrue] = g.pick(nodes);
         const kind = g.int(1, 4);
-        let assertion: string;
-        let reason: string;
-        const fact = g.pick(reasons);
-        const [t1, t2] = g.sample(truths, 2);
-        if (kind === 1) {
-          assertion = fact[0];
-          reason = fact[1] as string;
-        } else if (kind === 2) {
-          assertion = t1[0];
-          reason = t2[0];
-        } else if (kind === 3) {
-          assertion = t1[0];
-          reason = t2[1];
-        } else {
-          assertion = t1[1];
-          reason = t2[0];
-        }
-        return { form: 'mcq', text: `Assertion: ${assertion}\nReason: ${reason}`, options: ASSERTION_OPTIONS.map((text) => ({ text })), answer: kind - 1 };
+        const assertion = kind === 4 ? falseStatement : statement;
+        const reason = kind === 1 ? because : kind === 2 ? alsoTrue : kind === 3 ? falseBecause : g.pick([because, alsoTrue]);
+        const why = [`Both are true, and the reason explains the assertion.`, `Both are true, but what explains the assertion is this: ${because}`, `The reason is false. In fact: ${because}`, `The assertion is false. In fact: ${statement}`][kind - 1];
+        return { form: 'mcq', text: `Assertion: ${assertion}\nReason: ${reason}`, options: ASSERTION_OPTIONS.map((text) => ({ text })), answer: kind - 1, why, concept, facts: [fact(concept)] };
+      });
+    }
+    const truthFor = (start: string) => f.truths?.find((t) => t[0].startsWith(start));
+    const linkedTruths = (f.links ?? []).filter((l) => l[0] !== 'contrast' && truthFor(l[1]) && truthFor(l[2]));
+    if (linkedTruths.length) {
+      add('assertion-linked', 1, 2, 'assertion', 'assertion', 'cbq-style', (g) => {
+        const [relation, a, b] = g.pick(linkedTruths);
+        const [statement, falseStatement] = truthFor(a)!;
+        const [other, falseOther] = truthFor(b)!;
+        // A pair linked by "same" is the true pair where the reason doesn't explain. A "cause" pair is the true pair where it does.
+        const answer = g.pick([relation === 'cause' ? 0 : 1, 2, 3]);
+        const assertion = answer === 3 ? falseStatement : statement;
+        const reason = answer === 2 ? falseOther : other;
+        const why = [`Both are true, and the reason explains the assertion.`, `Both are true, but neither one explains the other.`, `The reason is false. In fact: ${other}`, `The assertion is false. In fact: ${statement}`][answer];
+        return { form: 'mcq', text: `Assertion: ${assertion}\nReason: ${reason}`, options: ASSERTION_OPTIONS.map((text) => ({ text })), answer, why, concept: statement, facts: [fact(statement), fact(other)] };
+      });
+    }
+    const termFor = (name: string) => f.define?.find((d) => d[0] === name);
+    const plain = (s: string) => s.toLowerCase().replace(/\b(a|an|the)\b/g, '').replace(/s\b/g, '').replace(/\s+/g, ' ').trim();
+    const alike = (x: string, y: string) => plain(x).includes(plain(y)) || plain(y).includes(plain(x));
+    /** The facts of written comparisons of the same two things, so that a paper doesn't ask the pair twice. */
+    const comparedAs = (a: string, b: string) => (f.compare ?? []).filter(([x, y]) => (alike(a, x) && alike(b, y)) || (alike(a, y) && alike(b, x))).map(([x, y]) => fact(`${x} | ${y}`));
+    const contrasts = (f.links ?? []).filter((l) => l[0] === 'contrast' && termFor(l[1]) && termFor(l[2]));
+    if (contrasts.length) {
+      add('compare-linked', 2, 2, 'distinguish', 'distinguish', 'paper-style', (g) => {
+        const [, a, b] = g.pick(contrasts);
+        return g.theory(fillIn(g.pick(ASK_COMPARE), { a, b }), [`${capital(a)}: ${termFor(a)![1]}`, `${capital(b)}: ${termFor(b)![1]}`], { facts: [fact(a), fact(b), ...comparedAs(a, b)] });
       });
     }
     if (f.explain?.length) {
@@ -245,7 +310,7 @@ export function blueprintsFor(subject: SubjectId, level: ClassLevel) {
         if (!list.length) continue;
         add(`explain${marks}`, marks, marks > 2 ? 2 : 1, 'short', marks === 1 ? 'very-short' : 'short', 'paper-style', (g) => {
           const [q, ...points] = g.pick(list);
-          return g.theory(q, points);
+          return g.theory(q, points, { facts: [fact(q)] });
         });
       }
     }
@@ -259,7 +324,9 @@ export function blueprintsFor(subject: SubjectId, level: ClassLevel) {
         add(`long${marks}`, marks, marks >= 5 ? 3 : 2, 'derivation', marks >= 5 ? 'long' : 'derivation', 'paper-style', (g) => {
           const [q, ...points] = g.pick(list);
           const diagram = f.figures?.[q];
-          return g.theory(q, points as (string | [string, number])[], diagram ? { diagram } : undefined);
+          // A long answer that is one of the library's derivations shares its fact, so a paper doesn't ask it twice.
+          const same = DERIVATIONS.filter((d) => d.subject === subject && d.level === level && d.unit === unit && d.topic === topic && d.seen.test(q)).map(derivationFact);
+          return g.theory(q, points as (string | [string, number])[], { facts: [fact(q), ...same], ...(diagram ? { diagram } : {}) });
         });
       }
     }
@@ -269,7 +336,8 @@ export function blueprintsFor(subject: SubjectId, level: ClassLevel) {
         if (!list.length) continue;
         add(`draw${marks}`, marks, 2, 'short', 'diagram', 'paper-style', (g) => {
           const [q, ...points] = g.pick(list);
-          return g.theory(q, points);
+          const key = Object.keys(f.answerFigures ?? {}).find((start) => q.startsWith(start));
+          return g.theory(q, points, { facts: [fact(q)], ...(key ? { answerDiagram: f.answerFigures![key] } : {}) });
         });
       }
     }
@@ -283,14 +351,20 @@ export function blueprintsFor(subject: SubjectId, level: ClassLevel) {
         add(`case${marks}`, marks, 2, 'short', 'cbq', 'cbq-style', (g) => {
           const c = g.pick(list);
           const asks = c.parts.map((p, i) => `(${['i', 'ii', 'iii', 'iv', 'v'][i]}) ${p[0]} [${p[2]}]`).join('\n');
-          return g.theory(`${c.scene}\n${asks}`, c.parts.map((p, i) => [`(${['i', 'ii', 'iii', 'iv', 'v'][i]}) ${p[1]}`, p[2]]));
+          return g.theory(`${c.scene}\n${asks}`, c.parts.map((p, i) => [`(${['i', 'ii', 'iii', 'iv', 'v'][i]}) ${p[1]}`, p[2]]), { facts: [fact(c.scene)] });
         });
       }
     }
     return out;
   };
 
-  return { custom, num, mcqNum, facts, base };
+  /** Topics whose knowledge has no block in the class's own file. Put last, so that it knows which ones were used. */
+  const rest = (): Blueprint[] =>
+    Object.keys(knowledge)
+      .filter((key) => !used.has(key))
+      .flatMap((key) => facts(Number(key.slice(0, -1)), key.slice(-1), {}));
+
+  return { custom, num, mcqNum, facts, base, rest };
 }
 
 /** A number for question text, in words a student would read. */

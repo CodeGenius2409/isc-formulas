@@ -2,10 +2,12 @@
 import { det2, det3, evalPoly, frac, Frac, matrixTex, nCr, polyTex, signed, vecTex } from '../../practice/gen/exact';
 import type { Gen } from '../../practice/gen/gen';
 import type { Step } from '../../solver/solve';
+import { derivationBlueprints } from '../derivations';
+import KNOWLEDGE from './knowledge/mathematics-xii';
 import { blueprintsFor } from './dsl';
 import type { Blueprint, Body } from './types';
 
-const { custom, facts } = blueprintsFor('mathematics', 'XII');
+const { custom, facts, rest } = blueprintsFor('mathematics', 'XII', KNOWLEDGE);
 
 const step = (label: string, ...math: string[]): Step => ({ label, math });
 
@@ -20,6 +22,12 @@ function planeTex(a: number, b: number, c: number, d: number): string {
 const $ = (tex: string) => `$${tex}$`;
 
 /** A one-mark question on an exact value. The wrong options are realistic slips, kept distinct. */
+/** One term of a polynomial in TeX, with no coefficient of 1 and nothing for 0. */
+const term = (k: Frac, power: string) => (k.n === 0 ? '' : `${k.n === k.d ? '' : k.tex()}${power}`);
+
+/** ax + by + cz, as a teacher would write it: no 0 terms and no coefficients of 1. All are positive here. */
+const linear = (k: number[]) => k.map((c, i) => [c, 'xyz'[i]] as const).filter(([c]) => c).map(([c, v]) => `${c === 1 ? '' : c}${v}`).join(' + ');
+
 function mcqFrac(g: Gen, text: string, right: Frac, slips: Frac[], why?: string): Body {
   const seen = new Set([right.text()]);
   const wrong: string[] = [];
@@ -80,7 +88,7 @@ const blueprints: Blueprint[] = [
     return g.mcqNumber(`How many ${ask === 'all' ? '' : 'reflexive '}relations are there on a set with ${n} elements?`, ask === 'all' ? total : reflexive, '', [
       { slip: 'used 2ⁿ rather than 2 to the power n²', value: 2 ** n },
       { slip: 'used n² on its own', value: n * n },
-      { slip: 'left out the diagonal pairs', value: ask === 'all' ? reflexive : total },
+      ask === 'all' ? { slip: 'left out the diagonal pairs', value: reflexive } : { slip: 'counted every relation, not only the reflexive ones', value: total },
       { slip: 'used 2 to the power 2n', value: 2 ** (2 * n) },
     ], { digits: 6 });
   }),
@@ -109,7 +117,8 @@ const blueprints: Blueprint[] = [
     const [a, b] = g.sample(PRINCIPAL, 2);
     const worth: Record<string, number> = { pi6: 1 / 6, '-pi6': -1 / 6, pi3: 1 / 3, pi2: 1 / 2, '2pi3': 2 / 3, pi: 1, pi4: 1 / 4, '-pi4': -1 / 4 };
     const total = frac(Math.round(worth[a.value] * 12), 12).add(frac(Math.round(worth[b.value] * 12), 12));
-    const tex = total.n === 0 ? '0' : `${total.n < 0 ? '-' : ''}\\dfrac{${Math.abs(total.n) === 1 ? '' : Math.abs(total.n)}\\pi}{${total.d}}`;
+    const top = `${Math.abs(total.n) === 1 ? '' : Math.abs(total.n)}\\pi`;
+    const tex = total.n === 0 ? '0' : `${total.n < 0 ? '-' : ''}${total.d === 1 ? top : `\\dfrac{${top}}{${total.d}}`}`;
     return g.theory(`Evaluate ${$(`${a.fn}\\left(${a.arg}\\right) + ${b.fn}\\left(${b.arg}\\right)`)}.`, [
       [`The principal values are ${$(a.tex)} and ${$(b.tex)}.`, 1],
       [`Their sum is ${$(tex)}.`, 1],
@@ -225,7 +234,7 @@ const blueprints: Blueprint[] = [
       { slip: 'multiplied by k only once', value: k * d },
       { slip: 'used k² whatever the order', value: k * k * d },
       { slip: 'added k', value: k + d },
-      { slip: 'raised d to the power', value: k * d ** n },
+      { slip: 'raised |A| to the power n, not k', value: k * d ** n },
     ] : [
       { slip: 'used |A|ⁿ', value: d ** n },
       { slip: 'took it to equal |A|', value: d },
@@ -372,11 +381,9 @@ const blueprints: Blueprint[] = [
     truths: [
       ['The derivative of a constant is zero.', 'The derivative of a constant is one.'],
       ['A polynomial is continuous everywhere.', 'A polynomial is discontinuous at its roots.'],
-      ['Rolle’s theorem needs f(a) = f(b).', 'Rolle’s theorem needs f(a) ≠ f(b).'],
+      ['A function differentiable at a point has a tangent there.', 'A function differentiable at a point can still have a sharp corner there.'],
     ],
     explain: [
-      ['State Rolle’s theorem.', 'If f is continuous on [a, b], differentiable on (a, b), and f(a) = f(b), then f′(c) = 0 for some c in (a, b).'],
-      ['State Lagrange’s mean value theorem.', 'If f is continuous on [a, b] and differentiable on (a, b), then f′(c) = (f(b) − f(a))/(b − a) for some c in (a, b).'],
     ],
     reason: [
       ['A function can be continuous at a point without being differentiable there.', 'Continuity only needs the graph to be unbroken there.', 'Differentiability needs a single tangent, which a sharp corner doesn’t have.'],
@@ -386,10 +393,11 @@ const blueprints: Blueprint[] = [
     const a = g.int(1, 4);
     const b = g.int(-4, 4);
     const x = g.int(1, 4);
+    const c = g.int(1, 5);
     const slope = 2 * a * x + b;
-    return g.mcqNumber(`The slope of the tangent to ${$(`y = ${polyTex([[a, 2], [b, 1], [g.int(1, 5), 0]])}`)} at ${$(`x = ${x}`)} is:`, slope === 0 ? g.retry() : slope, '', [
+    return g.mcqNumber(`The slope of the tangent to ${$(`y = ${polyTex([[a, 2], [b, 1], [c, 0]])}`)} at ${$(`x = ${x}`)} is:`, slope === 0 ? g.retry() : slope, '', [
       { slip: 'forgot to multiply by the power', value: a * x + b },
-      { slip: 'worked out y instead of its slope', value: a * x * x + b * x },
+      { slip: 'worked out y instead of its slope', value: a * x * x + b * x + c },
       { slip: 'left out the linear term', value: 2 * a * x },
       { slip: 'found the slope of the normal', value: -1 / slope },
     ], { digits: 3 });
@@ -408,7 +416,6 @@ const blueprints: Blueprint[] = [
   custom('rate-change', [3, 'b', 2, 1], { type: 'numerical', format: 'numerical', style: 'cbq-style' }, (g) => {
     const [shape, formula, ask, factor] = g.pick([
       ['A circular ripple spreads across a pond. Its radius grows at', 'A = \\pi r^2', 'area', (r: number, v: number) => 2 * Math.PI * r * v],
-      ['A spherical balloon is being inflated. Its radius grows at', 'V = \\tfrac43\\pi r^3', 'volume', (r: number, v: number) => 4 * Math.PI * r * r * v],
     ] as const);
     const v = g.int(1, 5);
     const r = g.int(2, 12);
@@ -423,7 +430,7 @@ const blueprints: Blueprint[] = [
     const f: [number, number][] = [[2 * k, 3], [-3 * k * (p + q), 2], [6 * k * p * q, 1], [c, 0]];
     return {
       form: 'numeric',
-      text: `For ${$(`f(x) = ${polyTex(f)}`)}, find the stationary points, and which is a local maximum.`,
+      text: `For ${$(`f(x) = ${polyTex(f)}`)}, find the stationary points, which of them is a local maximum, and the local maximum value.`,
       parts: [
         g.answerPart('x-coordinate of the local maximum', p, 2, [step('Differentiate and set to zero', `f'(x) = ${6 * k}(x - ${p})(x - ${q}) = 0`), step('Second derivative', `f''(${p}) < 0`, 'x = ' + p)]),
         g.answerPart('x-coordinate of the local minimum', q, 1, [step('Second derivative', `f''(${q}) > 0`)]),
@@ -434,16 +441,17 @@ const blueprints: Blueprint[] = [
   custom('hill-van', [3, 'b', 5, 3], { type: 'numerical', format: 'cbq', style: 'cbq-style' }, (g) => {
     const p = g.int(1, 2);
     const q = p + g.int(2, 3);
-    const c = g.int(2, 6);
+    // The lower turning point, h(q) = 3pq² − q³ + c, stays above the ground.
+    const c = Math.max(0, q ** 3 - 3 * p * q * q) + g.int(2, 6);
     const f: [number, number][] = [[2, 3], [-3 * (p + q), 2], [6 * p * q, 1], [c, 0]];
     const [setting, unit] = g.pick([
       ['A cycling route over the hills follows the height profile', 'hundred metres'],
-      ['A delivery drone rises and falls along a path given by', 'tens of metres'],
-      ['A roller coaster’s track near its first drop has height', 'tens of metres'],
+      ['A delivery drone rises and falls along a path given by', 'metres'],
+      ['A roller coaster’s track near its first drop has height', 'metres'],
     ] as const);
     return {
       form: 'numeric',
-      text: `${setting} ${$(`h(x) = ${polyTex(f)}`)}, ${$('x \\ge 0')}, with h in ${unit}. Rest stops are planned at the turning points.`,
+      text: `${setting} ${$(`h(x) = ${polyTex(f)}`)}, ${$('x \\ge 0')}, with h in ${unit}, measured from the ground.`,
       parts: [
         g.answerPart('Height at the start, when x = 0', c, 1, [step('Put x = 0', `h(0) = ${c}`)]),
         g.answerPart('x at the first turning point', p, 1, [step('Set the derivative to zero', `h'(x) = 6(x - ${p})(x - ${q}) = 0`)]),
@@ -480,10 +488,10 @@ const blueprints: Blueprint[] = [
       ['If f′(x) > 0 on an interval, then f on that interval is:', 'increasing', 'decreasing', 'constant', 'zero'],
       ['If f′(c) = 0 and f″(c) > 0, then c is a point of:', 'local minimum', 'local maximum', 'inflection only', 'discontinuity'],
       ['The product of the slopes of a tangent and a normal at a point is:', '−1', '1', '0', 'never defined'],
-      ['The largest value of a continuous function on a closed interval can occur:', 'at a stationary point, or at an end point', 'only at a stationary point', 'only at an end point', 'nowhere'],
+      ['The largest value of a continuous function on a closed interval can occur:', 'at a critical point, or at an end point', 'only at a stationary point', 'only at an end point', 'nowhere'],
     ],
     truths: [
-      ['A function must have a maximum on a closed interval if it is continuous there.', 'A continuous function never has a maximum on a closed interval.'],
+      ['If f′(x) < 0 on an interval, f is strictly decreasing there.', 'If f′(x) < 0 on an interval, f is strictly increasing there.'],
       ['At a local maximum, a differentiable function’s derivative is zero.', 'At a local maximum, a differentiable function’s derivative is positive.'],
       ['The function eˣ is increasing for all real x.', 'The function eˣ is decreasing for all real x.'],
     ],
@@ -513,7 +521,7 @@ const blueprints: Blueprint[] = [
     const high = low + g.int(1, 3);
     const anti = (x: number) => frac(a, 3).mul(x ** 3).add(frac(b, 2).mul(x ** 2)).add(c * x);
     const ans = anti(high).sub(anti(low));
-    return { form: 'numeric', text: `Evaluate ${$(`\\int_{${low}}^{${high}} (${polyTex([[a, 2], [b, 1], [c, 0]])})\\,dx`)}.`, parts: [g.answerPart('The value', ans.value, 2, [step('Find an antiderivative', `F(x) = ${frac(a, 3).tex()}x^3 + ${frac(b, 2).tex()}x^2 + ${c}x`), step('Subtract at the limits', `F(${high}) - F(${low}) = ${ans.tex()}`)], '', ans.text())] };
+    return { form: 'numeric', text: `Evaluate ${$(`\\int_{${low}}^{${high}} (${polyTex([[a, 2], [b, 1], [c, 0]])})\\,dx`)}.`, parts: [g.answerPart('The value', ans.value, 2, [step('Find an antiderivative', `F(x) = ${[term(frac(a, 3), 'x^3'), term(frac(b, 2), 'x^2'), term(frac(c), 'x')].filter(Boolean).join(' + ')}`), step('Subtract at the limits', `F(${high}) - F(${low}) = ${ans.tex()}`)], '', ans.text())] };
   }),
   custom('definite-odd', [3, 'c', 1, 2], { type: 'mcq', format: 'mcq' }, (g) => {
     const a = g.int(1, 4);
@@ -582,29 +590,30 @@ const blueprints: Blueprint[] = [
     const a = g.int(1, 3);
     const h = g.int(1, 4);
     const area = frac(a * h ** 3, 3);
-    return { form: 'numeric', text: `Find the area bounded by ${$(`y = ${polyTex([[a, 2]])}`)}, the x-axis, and the lines ${$('x = 0')} and ${$(`x = ${h}`)}.`, parts: [g.answerPart('The area', area.value, 2, [step('Integrate', `\\int_0^{${h}} ${polyTex([[a, 2]])}\\,dx = \\left[${frac(a, 3).tex()}x^3\\right]_0^{${h}} = ${area.tex()}`)], 'sq. units', area.text())] };
+    return { form: 'numeric', text: `Find the area bounded by ${$(`y = ${polyTex([[a, 2]])}`)}, the x-axis, and the lines ${$('x = 0')} and ${$(`x = ${h}`)}.`, parts: [g.answerPart('The area', area.value, 2, [step('Integrate', `\\int_0^{${h}} ${polyTex([[a, 2]])}\\,dx = \\left[${term(frac(a, 3), 'x^3')}\\right]_0^{${h}} = ${area.tex()}`)], 'sq. units', area.text())] };
   }),
   custom('area-line-parabola', [3, 'd', 5, 3], { type: 'numerical', format: 'long' }, (g) => {
     const k = g.int(1, 4);
     const area = frac(k ** 3, 6);
+    const kx = k === 1 ? 'x' : `${k}x`;
     return {
       form: 'numeric',
-      text: `A region is bounded by the parabola ${$('y = x^2')} and the line ${$(`y = ${k}x`)}.`,
+      text: `A region is bounded by the parabola ${$('y = x^2')} and the line ${$(`y = ${kx}`)}.`,
       diagram: { kind: 'graph', x: 'x', y: 'y', lines: [{ label: 'y = x²', points: Array.from({ length: 21 }, (_, i) => { const t = (-0.2 + (i / 20) * (k + 0.4)); return [t, t * t] as [number, number]; }), smooth: 1 }, { label: `y = ${k === 1 ? '' : k}x`, points: [[-0.2, -0.2 * k], [k + 0.2, (k + 0.2) * k]] }] },
       parts: [
-        g.answerPart('x-coordinate where the two curves meet, other than the origin', k, 2, [step('Set them equal', `x^2 = ${k}x`, `x = 0 \\text{ or } x = ${k}`)]),
-        g.answerPart('Area of the region', area.value, 3, [step('Integrate the difference', `\\int_0^{${k}} (${k}x - x^2)\\,dx = ${area.tex()}`)], 'sq. units', area.text()),
+        g.answerPart('x-coordinate where the two curves meet, other than the origin', k, 2, [step('Set them equal', `x^2 = ${kx}`, `x = 0 \\text{ or } x = ${k}`)]),
+        g.answerPart('Area of the region', area.value, 3, [step('Integrate the difference', `\\int_0^{${k}} (${kx} - x^2)\\,dx = ${area.tex()}`)], 'sq. units', area.text()),
       ],
     };
   }),
   ...facts(3, 'd', {
     recall: [
       ['The area under a curve from x = a to x = b is found by:', 'integrating y with respect to x from a to b', 'differentiating y', 'multiplying y and x', 'finding the mean of y'],
-      ['When a curve lies below the x-axis, the integral of y over that stretch is:', 'negative', 'positive', 'zero', 'not defined'],
+      ['The area under y = x³ from 0 to 2 is:', '4', '8', '2', '16'],
     ],
     truths: [
       ['The area between two curves is the integral of the upper one minus the lower one.', 'The area between two curves is the integral of the lower one minus the upper one.'],
-      ['Area is always taken as a positive quantity.', 'Area can be reported as a negative quantity.'],
+      ['Integration gives a triangle’s area as half its base times its height.', 'Integration gives a triangle’s area as its base times its height.'],
       ['The area of a circle of radius r can be found by integration.', 'Integration can’t find the area of a circle.'],
     ],
     long: [
@@ -616,17 +625,19 @@ const blueprints: Blueprint[] = [
     const degree = g.int(1, 3);
     const d = order === 1 ? '\\dfrac{dy}{dx}' : `\\dfrac{d^{${order}}y}{dx^{${order}}}`;
     const low = order === 1 ? 'y' : '\\dfrac{dy}{dx}';
-    return g.mcq(`The order and degree of ${$(`\\left(${d}\\right)^{${degree}} + ${low} = 0`)} are:`, `order ${order}, degree ${degree}`, [
+    const lhs = degree === 1 ? d : `\\left(${d}\\right)^{${degree}}`;
+    return g.mcq(`The order and degree of ${$(`${lhs} + ${low} = 0`)} are:`, `order ${order}, degree ${degree}`, [
       `order ${degree}, degree ${order}`,
       `order ${order + 1}, degree ${degree}`,
       `order ${order}, degree ${degree + 1}`,
-    ].filter((o) => o !== `order ${order}, degree ${degree}`));
+      `order ${order + 1}, degree ${degree + 1}`,
+    ].filter((o) => o !== `order ${order}, degree ${degree}`).slice(0, 3));
   }),
   custom('de-separable', [3, 'e', 3, 2], { type: 'numerical', format: 'numerical' }, (g) => {
     const k = g.int(1, 3);
     const y0 = g.int(1, 5);
     const x1 = g.int(1, 2);
-    return { form: 'numeric', text: `Solve ${$(`\\dfrac{dy}{dx} = ${k === 1 ? '' : k}y`)}, given ${$(`y = ${y0}`)} at ${$('x = 0')}, and find y at ${$(`x = ${x1}`)}, correct to two decimal places.`, parts: [g.answerPart('Value of y', y0 * Math.exp(k * x1), 3, [step('Separate the variables', `\\dfrac{dy}{y} = ${k}\\,dx`), step('Integrate', `\\log y = ${k}x + C`), step('Use the condition', `y = ${y0}e^{${k}x}`)])] };
+    return { form: 'numeric', text: `Solve ${$(`\\dfrac{dy}{dx} = ${k === 1 ? '' : k}y`)}, given ${$(`y = ${y0}`)} at ${$('x = 0')}, and find y at ${$(`x = ${x1}`)}, correct to two decimal places.`, parts: [g.answerPart('Value of y', y0 * Math.exp(k * x1), 3, [step('Separate the variables', `\\dfrac{dy}{y} = ${k}\\,dx`), step('Integrate', `\\log y = ${k === 1 ? '' : k}x + C`), step('Use the condition', `y = ${y0 === 1 ? '' : y0}e^{${k === 1 ? '' : k}x}`)])] };
   }),
   custom('de-linear', [3, 'e', 5, 3], { type: 'numerical', format: 'long' }, (g) => {
     const p = g.int(1, 3);
@@ -641,10 +652,10 @@ const blueprints: Blueprint[] = [
     const y2 = coef.mul(x2 ** (m + 1)).add(big.div(x2 ** p));
     return {
       form: 'numeric',
-      text: `Solve the linear differential equation ${$(`\\dfrac{dy}{dx} + \\dfrac{${p}}{x}y = ${c}${m === 0 ? '' : m === 1 ? 'x' : `x^{${m}}`}`)}, given ${$(`y = ${y1}`)} when ${$(`x = ${x1}`)}.`,
+      text: `Solve the linear differential equation ${$(`\\dfrac{dy}{dx} + \\dfrac{${p}}{x}y = ${c === 1 && m > 0 ? '' : c}${m === 0 ? '' : m === 1 ? 'x' : `x^{${m}}`}`)}, given ${$(`y = ${y1}`)} when ${$(`x = ${x1}`)}.`,
       parts: [
-        g.answerPart(`The power of x in the integrating factor`, p, 2, [step('Find the integrating factor', `e^{\\int \\frac{${p}}{x}dx} = x^{${p}}`)]),
-        g.answerPart(`Value of y when x = ${x2}`, y2.value, 3, [step('Multiply through and integrate', `x^{${p}}y = ${coef.tex()}x^{${m + p + 1}} + C`), step('Use the given condition', `C = ${big.tex()}`), step('Find y at the new x', `y(${x2}) = ${y2.tex()}`)], '', y2.text()),
+        g.answerPart(`The power of x in the integrating factor`, p, 2, [step('Find the integrating factor', `e^{\\int \\frac{${p}}{x}dx} = ${p === 1 ? 'x' : `x^{${p}}`}`)]),
+        g.answerPart(`Value of y when x = ${x2}`, y2.value, 3, [step('Multiply through and integrate', `${p === 1 ? 'x' : `x^{${p}}`}y = ${coef.tex()}x^{${m + p + 1}} + C`), step('Use the given condition', `C = ${big.tex()}`), step('Find y at the new x', `y(${x2}) = ${y2.tex()}`)], '', y2.text()),
       ],
     };
   }),
@@ -652,8 +663,9 @@ const blueprints: Blueprint[] = [
     const n0 = g.pick([100, 200, 500, 1000]);
     const hours = g.pick([2, 3, 4]);
     const ask = hours * g.pick([2, 3]);
-    const scene = g.pick(['A colony of bacteria in a lab dish', 'A patch of algae in a pond', 'A yeast culture in a fermenter']);
-    return { form: 'numeric', text: `${scene} grows at a rate proportional to its size. It starts at ${n0} and doubles every ${hours} hours. How large is it after ${ask} hours?`, parts: [g.answerPart('Size at that time', n0 * 2 ** (ask / hours), 3, [step('Set up and solve', `\\dfrac{dN}{dt} = kN \\Rightarrow N = N_0 e^{kt}`), step('Use the doubling time', `N = ${n0}\\cdot 2^{t/${hours}}`), step('Put in the time', `N(${ask}) = ${n0 * 2 ** (ask / hours)}`)])] };
+    const scene = g.pick(['A medicine in a patient’s blood', 'A pollutant in a lake that is being cleaned']);
+    const left = n0 / 2 ** (ask / hours);
+    return { form: 'numeric', text: `${scene} is removed at a rate proportional to the amount left. It starts at ${n0} mg and halves every ${hours} hours. How much is left after ${ask} hours?`, parts: [g.answerPart('Amount left, in mg', left, 3, [step('Set up and solve', `\\dfrac{dN}{dt} = -kN \\Rightarrow N = N_0 e^{-kt}`), step('Use the halving time', `N = ${n0}\\left(\\tfrac12\\right)^{t/${hours}}`), step('Put in the time', `N(${ask}) = ${left}`)])] };
   }),
   ...facts(3, 'e', {
     define: [
@@ -685,7 +697,7 @@ const blueprints: Blueprint[] = [
       { slip: 'added instead of multiplying', value: a[0] + b[0] + a[1] + b[1] + a[2] + b[2] },
       { slip: 'forgot a term', value: a[0] * b[0] + a[1] * b[1] },
       { slip: 'ignored a sign', value: Math.abs(a[0] * b[0]) + Math.abs(a[1] * b[1]) + Math.abs(a[2] * b[2]) },
-      { slip: 'found the first two products only', value: a[1] * b[1] + a[2] * b[2] },
+      { slip: 'left out the first product', value: a[1] * b[1] + a[2] * b[2] },
     ], { digits: 4 });
   }),
   custom('magnitude', [4, 'a', 2, 1], { type: 'numerical', format: 'numerical' }, (g) => {
@@ -699,8 +711,8 @@ const blueprints: Blueprint[] = [
     const b0 = g.int(1, 4);
     const c = g.pick([1, 2]);
     const b1 = -(a[0] * b0 + a[1] * k * c) / a[2];
-    if (!Number.isInteger(b1)) g.retry();
-    return { form: 'numeric', text: `The vectors ${$(`${vecTex(a)}`)} and ${$(`${b0}\\hat{i} + ${c === 1 ? '' : c}\\lambda\\hat{j} ${signed(b1)}\\hat{k}`)} are perpendicular. Find ${$('\\lambda')}.`, parts: [g.answerPart('Value of λ', k, 2, [step('Set the dot product to zero', `${a[0] * b0} + ${a[1] * c}\\lambda ${signed(a[2] * b1)} = 0`, `\\lambda = ${k}`)])] };
+    if (!Number.isInteger(b1) || b1 === 0) g.retry();
+    return { form: 'numeric', text: `The vectors ${$(`${vecTex(a)}`)} and ${$(`${b0 === 1 ? '' : b0}\\hat{i} + ${c === 1 ? '' : c}\\lambda\\hat{j} ${b1 < 0 ? '-' : '+'} ${Math.abs(b1) === 1 ? '' : Math.abs(b1)}\\hat{k}`)} are perpendicular. Find ${$('\\lambda')}.`, parts: [g.answerPart('Value of λ', k, 2, [step('Set the dot product to zero', `${a[0] * b0} + ${a[1] * c}\\lambda ${signed(a[2] * b1)} = 0`, `\\lambda = ${k}`)])] };
   }),
   custom('cross-area', [4, 'a', 3, 2], { type: 'numerical', format: 'numerical' }, (g) => {
     const a = [g.int(1, 3), g.int(0, 3), g.int(0, 2)];
@@ -826,16 +838,19 @@ const blueprints: Blueprint[] = [
     const q = g.int(2, 6);
     const A = 2 * g.int(2, 6);
     const B = 2 * g.int(2, 6);
-    const corners = [[0, 0], [A, 0], [0, B], [g.int(1, A - 1), g.int(1, B - 1)]];
+    const corner = [g.int(1, A - 1), g.int(1, B - 1)];
+    // The fourth corner must lie beyond the line joining (A, 0) and (0, B), or the region isn’t convex.
+    if (corner[0] / A + corner[1] / B <= 1) g.retry('a region that isn’t convex');
+    const corners = [[0, 0], [A, 0], corner, [0, B]];
     const values = corners.map(([x, y]) => p * x + q * y);
     const best = Math.max(...values);
     return { form: 'numeric', text: `The feasible region of a linear programming problem has corner points ${corners.map((c) => `(${c})`).join(', ')}. Find the maximum of ${$(`Z = ${p}x + ${q}y`)}.`, parts: [g.answerPart('Maximum value of Z', best, 3, [step('Evaluate Z at each corner', ...corners.map((c, i) => `Z(${c}) = ${values[i]}`)), step('Take the largest', `Z_{\\max} = ${best}`)])] };
   }),
   custom('lp-word', [6, 'a', 5, 3], { type: 'numerical', format: 'cbq', style: 'cbq-style' }, (g) => {
-    const [thing, a, b] = g.pick([
-      ['A small workshop makes tables (T) and chairs (C)', 'tables', 'chairs'],
-      ['A bakery makes cakes (T) and loaves (C)', 'cakes', 'loaves'],
-      ['A farmer grows wheat (T) and maize (C), in hectares,', 'wheat', 'maize'],
+    const [intro, a, b, room, work, profit, scale] = g.pick([
+      ['A small workshop makes x tables and y chairs a week.', 'tables', 'chairs', (S: number) => `Each table or chair takes one unit of storage, and there are ${S} units.`, (L: number) => `A table takes 2 hours of labour and a chair takes 1, and there are ${L} hours.`, (P: string, Q: string) => `The profit is ₹${P} on a table and ₹${Q} on a chair.`, 100],
+      ['A bakery makes x cakes and y loaves for a fair.', 'cakes', 'loaves', (S: number) => `Each cake or loaf needs one tray, and there are ${S} trays.`, (L: number) => `A cake takes 2 hours of oven time and a loaf takes 1, and there are ${L} hours.`, (P: string, Q: string) => `The profit is ₹${P} on a cake and ₹${Q} on a loaf.`, 10],
+      ['A farmer plants x hectares of wheat and y hectares of maize.', 'hectares of wheat', 'hectares of maize', (S: number) => `There are ${S} hectares of land.`, (L: number) => `A hectare of wheat needs 2 days of labour and a hectare of maize needs 1, and there are ${L} days.`, (P: string, Q: string) => `The profit is ₹${P} on a hectare of wheat and ₹${Q} on a hectare of maize.`, 5000],
     ] as const);
     // x + y ≤ S, 2x + y ≤ L, x, y ≥ 0. Corners (0,0), (L/2,0), (L−S, 2S−L), (0,S).
     const S = g.int(6, 14);
@@ -851,11 +866,11 @@ const blueprints: Blueprint[] = [
     if (values.filter((v) => v === best).length > 1) g.retry('a tie for the best corner');
     return {
       form: 'numeric',
-      text: `${thing}. Each unit of either uses one unit of storage, and there are ${S} units of it. Each of ${a} takes 2 hours of labour, each of ${b} takes 1, and there are ${L} hours. Profit is ₹${P * 100} on each of ${a} and ₹${Q * 100} on each of ${b}. How many of each give the most profit?`,
+      text: `${intro} ${room(S)} ${work(L)} ${profit((P * scale).toLocaleString('en-IN'), (Q * scale).toLocaleString('en-IN'))} How many of each give the most profit?`,
       parts: [
         g.answerPart(`Number of ${a}`, at[0], 2, [step('Write the constraints', 'x + y \\le ' + S, '2x + y \\le ' + L, 'x, y \\ge 0'), step('Find the corners', ...corners.map((c) => `(${c})`))]),
-        g.answerPart(`Number of ${b}`, at[1], 1, [step('Compare Z at each corner', ...corners.map((c, i) => `Z(${c}) = ${values[i]}`))]),
-        g.answerPart('Largest profit, in rupees', best * 100, 2, [step('Multiply by the scale', `${best}\\times 100 = ${best * 100}`)]),
+        g.answerPart(`Number of ${b}`, at[1], 1, [step(`Compare Z = ${P}x + ${Q}y, in units of ₹${scale}, at each corner`, ...corners.map((c, i) => `Z(${c}) = ${values[i]}`))]),
+        g.answerPart('Largest profit, in rupees', best * scale, 2, [step('Multiply by the scale', `${best}\\times ${scale} = ${best * scale}`)]),
       ],
     };
   }),
@@ -863,6 +878,9 @@ const blueprints: Blueprint[] = [
     const p = g.int(2, 6);
     const q = g.int(2, 6);
     const corners = [[g.int(1, 3), g.int(5, 8)], [g.int(4, 6), g.int(3, 4)], [g.int(7, 9), g.int(1, 2)], [g.int(0, 1), g.int(1, 2)]];
+    // Every corner must turn the same way, going round, or one of them is inside the region.
+    const turns = corners.map((c, i) => { const [b, a] = [corners[(i + 1) % 4], corners[(i + 2) % 4]]; return (b[0] - c[0]) * (a[1] - b[1]) - (b[1] - c[1]) * (a[0] - b[0]); });
+    if (!turns.every((t) => t < 0)) g.retry('a region that isn’t convex');
     const values = corners.map(([x, y]) => p * x + q * y);
     const best = Math.max(...values);
     if (values.filter((v) => v === best).length > 1) g.retry('a tie for the best corner');
@@ -960,7 +978,7 @@ const blueprints: Blueprint[] = [
     const p = frac(1, g.pick([2, 3, 4, 5, 6]));
     const q = frac(1).sub(p);
     const ans = frac(nCr(n, r)).mul(new Frac(p.n ** r, p.d ** r)).mul(new Frac(q.n ** (n - r), q.d ** (n - r)));
-    return { form: 'numeric', text: `A trial succeeds with probability ${$(p.tex())}. It is repeated ${n} times independently. Find the probability of exactly ${r} ${r === 1 ? 'success' : 'successes'}.`, parts: [g.answerPart('The probability', ans.value, 3, [step('Use the binomial formula', `P(X = ${r}) = \\binom{${n}}{${r}}\\left(${p.tex()}\\right)^{${r}}\\left(${q.tex()}\\right)^{${n - r}} = ${ans.tex()}`)], '', ans.text())] };
+    return { form: 'numeric', text: `A trial succeeds with probability ${$(p.tex())}. It is repeated ${n} times independently. Find the probability of exactly ${r} ${r === 1 ? 'success' : 'successes'}.`, parts: [g.answerPart('The probability', ans.value, 3, [step('Choose which trials succeed, and multiply, as the trials are independent', `P = \\binom{${n}}{${r}}\\left(${p.tex()}\\right)^{${r}}\\left(${q.tex()}\\right)^{${n - r}} = ${ans.tex()}`)], '', ans.text())] };
   }),
   custom('distribution-mean', [7, 'a', 3, 2], { type: 'numerical', format: 'numerical' }, (g) => {
     const xs = [0, 1, 2, 3];
@@ -999,8 +1017,6 @@ const blueprints: Blueprint[] = [
     recall: [
       ['If A and B are independent, then P(A|B) equals:', 'P(A)', 'P(B)', 'P(A)P(B)', '1'],
       ['The sum of probabilities in a probability distribution is:', '1', '0', 'n', 'the mean'],
-      ['The mean of a binomial distribution is:', 'np', 'npq', 'n/p', 'pq'],
-      ['The variance of a binomial distribution is:', 'npq', 'np', 'n²p', '√(np)'],
       ['Mutually exclusive events with non-zero probabilities are:', 'not independent', 'always independent', 'certain', 'impossible'],
     ],
     truths: [
@@ -1140,15 +1156,15 @@ const blueprints: Blueprint[] = [
     };
   }),
   custom('cbq-open-box', [3, 'b', 4, 2], { type: 'numerical', format: 'cbq', style: 'cbq-style' }, (g) => {
-    const side = 6 * g.int(2, 8);
-    const x = side / 6;
-    const volume = (side - 2 * x) ** 2 * x;
+    // A rectangular sheet, so as not to repeat the square one. Each pair has a whole-number best cut.
+    const [l, w, x] = g.pick([[16, 10, 2], [24, 9, 2], [45, 24, 5], [21, 16, 3], [30, 14, 3]] as const);
+    const volume = x * (l - 2 * x) * (w - 2 * x);
     return {
       form: 'numeric',
-      text: `A workshop makes an open box from a square sheet of tin of side ${side} cm, by cutting a square of side x cm from each corner and folding up the sides. It wants the largest possible volume.`,
+      text: `A workshop makes an open box from a rectangular sheet of tin ${l} cm by ${w} cm, by cutting a square of side x cm from each corner and folding up the sides. It wants the largest possible volume.`,
       parts: [
-        g.answerPart('The value of x, in cm, that gives the largest volume', x, 3, [step('Write the volume and differentiate', `V = x(${side} - 2x)^2`, `\\dfrac{dV}{dx} = (${side} - 2x)(${side} - 6x) = 0`, `x = ${x}\\text{ (the other root gives no box)}`)]),
-        g.answerPart('That largest volume, in cm³', volume, 1, [step('Substitute', `V = ${x} \\times ${side - 2 * x}^2 = ${volume}`)]),
+        g.answerPart('The value of x, in cm, that gives the largest volume', x, 3, [step('Write the volume and differentiate', `V = x(${l} - 2x)(${w} - 2x)`, `\\dfrac{dV}{dx} = 12x^2 - ${4 * (l + w)}x + ${l * w} = 0`, `x = ${x}\\text{ (the other root is too large for a box)}`)]),
+        g.answerPart('That largest volume, in cm³', volume, 1, [step('Substitute', `V = ${x} \\times ${l - 2 * x} \\times ${w - 2 * x} = ${volume}`)]),
       ],
     };
   }),
@@ -1191,8 +1207,8 @@ const blueprints: Blueprint[] = [
     const work = F[0] * d[0] + F[1] * d[1] + F[2] * d[2];
     return {
       form: 'numeric',
-      text: `A crane pulls a load with a force ${$(`\\vec F = ${vecTex(F)}`)} newtons, and moves it through ${$(`\\vec d = ${vecTex(d)}`)} metres.`,
-      parts: [g.answerPart('The work done, in joules', work, 2, [step('Take the dot product', `\\vec F \\cdot \\vec d = ${F[0]} \\times ${d[0]} + ${F[1]} \\times ${d[1]} + ${F[2]} \\times ${d[2]} = ${work}`)])],
+      text: `A crane pulls a load with a force ${$(`\\vec F = ${vecTex(F)}`)} kilonewtons, and moves it through ${$(`\\vec d = ${vecTex(d)}`)} metres.`,
+      parts: [g.answerPart('The work done, in kilojoules', work, 2, [step('Take the dot product', `\\vec F \\cdot \\vec d = ${F[0]} \\times ${d[0]} + ${F[1]} \\times ${d[1]} + ${F[2]} \\times ${d[2]} = ${work}`)])],
     };
   }),
   custom('cbq-drone-plane', [5, 'a', 3, 2], { type: 'numerical', format: 'cbq', style: 'cbq-style' }, (g) => {
@@ -1202,7 +1218,7 @@ const blueprints: Blueprint[] = [
     const d = a * x + b * y + c * z - s * h;
     return {
       form: 'numeric',
-      text: `A drone is at the point ${$(`(${x}, ${y}, ${z})`)}, in metres. A sloping roof lies in the plane ${$(`${a}x + ${b}y + ${c}z = ${d}`)}.`,
+      text: `A drone is at the point ${$(`(${x}, ${y}, ${z})`)}, in metres. A sloping roof lies in the plane ${$(`${linear([a, b, c])} = ${d}`)}.`,
       parts: [g.answerPart('The shortest distance from the drone to the plane of the roof, in metres', h, 3, [step('Use the distance formula', `\\dfrac{|${a} \\times ${x} + ${b} \\times ${y} + ${c} \\times ${z} - (${d})|}{\\sqrt{${a * a} + ${b * b} + ${c * c}}} = \\dfrac{${s * h}}{${s}} = ${h}`)])],
     };
   }),
@@ -1255,6 +1271,8 @@ const blueprints: Blueprint[] = [
       [`(ii) Yes, as every seat can have someone in it.`, 1],
     ]);
   }),
+  ...rest(),
+  ...derivationBlueprints('mathematics', 'XII', { custom } as never),
 ];
 
 export default blueprints;

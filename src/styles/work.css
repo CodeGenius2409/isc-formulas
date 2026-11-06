@@ -342,6 +342,33 @@ mark {
   margin-top: 0.75rem;
 }
 
+/* The result of a derivation stands out from its steps, by weight and a rule, in both themes and in print. */
+.bank-result {
+  margin-top: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--rule-2);
+  font-weight: 600;
+}
+
+/* A numbered figure in a paper: under its question, and never parted from it. */
+.bank-figure {
+  margin: 0.5rem 0;
+  break-inside: avoid;
+  text-align: center;
+}
+
+.bank-figure figcaption {
+  color: var(--ink-2);
+  font-size: var(--step--1);
+}
+
+.bank-figure-note {
+  margin-top: 0.125rem;
+  color: var(--ink-2);
+  font-size: var(--step--1);
+  font-style: italic;
+}
+
 .bank-part-ask {
   display: flex;
   justify-content: space-between;
@@ -432,6 +459,12 @@ mark {
   white-space: nowrap;
 }
 
+.gen-unreviewed {
+  display: inline-flex;
+  gap: 0.25rem;
+  color: var(--ink-2);
+}
+
 .bank-body[data-generated],
 .paper-question[data-generated] {
   border-left: 2px dotted var(--ink-2);
@@ -513,6 +546,22 @@ mark {
 }
 
 /* The teacher's generator. */
+.gen-check[data-none] {
+  color: var(--ink-3);
+}
+
+.gen-none {
+  display: block;
+  color: var(--ink-3);
+  font-size: var(--step--1);
+}
+
+.gen-related {
+  color: var(--ink-2);
+  font-size: var(--step--1);
+  font-style: italic;
+}
+
 .gen-check {
   display: flex;
   align-items: center;

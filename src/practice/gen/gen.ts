@@ -4,6 +4,7 @@ import type { Body, McqBody, NumericBody, TheoryBody } from '../../data/blueprin
 import { getEntry } from '../../solver/registry';
 import { solve, type SolveInput, type Step } from '../../solver/solve';
 import { unitLabel } from '../../solver/unit-label';
+import { plainNumber, roundSig } from '../../solver/units';
 import { buildParts } from '../bank/index';
 import type { BankOption, MarkPoint, NumericPart, NumericPartDef } from '../bank/types';
 import type { Rng } from '../questions';
@@ -17,6 +18,7 @@ const SUPER: Record<string, string> = { '-': '⁻', 0: '⁰', 1: '¹', 2: '²', 
 export function tidy(value: number, digits = 3): string {
   if (!Number.isFinite(value)) throw new Retry('not a finite number');
   if (value === 0) return '0';
+  value = roundSig(value, digits);
   const size = Math.abs(value);
   if (size >= 1e5 || size < 1e-3) {
     const [mantissa, power] = value.toExponential(digits - 1).split('e');
@@ -40,6 +42,8 @@ export interface Mistake {
 }
 
 export class Gen {
+  /** The question's seed. Most blueprints leave choices to the dice, and a few need it. */
+  seed = 0;
   constructor(
     readonly rng: Rng,
     readonly subject: string,
@@ -100,9 +104,9 @@ export class Gen {
         if (fixed === undefined) throw new Error(`${this.id}: ${use} needs ${v.symbol}`);
         inputs[v.symbol] = { raw: String(fixed), unit: v.unit };
       } else if (typeof spec === 'number') {
-        inputs[v.symbol] = { raw: String(spec), unit: v.unit };
+        inputs[v.symbol] = { raw: plainNumber(spec), unit: v.unit };
       } else {
-        inputs[v.symbol] = { raw: String(spec[0]), unit: spec[1] };
+        inputs[v.symbol] = { raw: plainNumber(spec[0]), unit: spec[1] };
       }
     }
     const outcome = solve(entry, find, inputs, { resultUnit: unit, exact: this.subject === 'mathematics' });
@@ -166,7 +170,9 @@ export class Gen {
    */
   mcqNumber(text: string, value: number, unit: string, mistakes: Mistake[], extras: Partial<McqBody> & { digits?: number; working?: string } = {}): McqBody {
     const { digits = 3, working, ...rest } = extras;
-    const show = (v: number) => `${tidy(v, digits)}${unit ? `${unit === '°' ? '' : ' '}${unit}` : ''}`;
+    // A true minus sign in options, except in Computer Science, where a value is what Java prints.
+    const sign = (s: string) => (this.subject === 'computerscience' ? s : s.replace(/^-/, '−'));
+    const show = (v: number) => `${sign(tidy(v, digits))}${unit ? `${unit === '°' ? '' : ' '}${unit}` : ''}`;
     const right = show(value);
     const seen = new Set([right]);
     const usable: Mistake[] = [];
@@ -194,7 +200,9 @@ export function toPoints(list: (string | [string, number])[]): MarkPoint[] {
 }
 
 export function fillIn(text: string, values: Record<string, number | string>): string {
-  return text.replace(/\{([A-Za-z]\w*)\}/g, (whole, name: string) => (name in values ? String(values[name]) : whole));
+  // A negative number reads with a true minus sign, −60, not -60.
+  const shown = (v: number | string) => (typeof v === 'number' ? String(v).replace(/^-/, '−') : v);
+  return text.replace(/\{([A-Za-z]\w*)\}/g, (whole, name: string) => (name in values ? shown(values[name]) : whole));
 }
 
 /** The whole question and answer as text, for checks and for a question with parts. */

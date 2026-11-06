@@ -4,13 +4,16 @@ import { findFormula, loadAllFormulas, loadUnits } from '../data/book';
 import type { ClassLevel, Formula, SubjectId } from '../data/types';
 import { createStore } from '../lib/store';
 import { getEntry } from '../solver/registry';
-import { mistakesStore, srsStore, today } from './progress';
+import { mistakesStore, srsStore, studentFreshness, today } from './progress';
+import { ensureFactHistory, factGapStore } from './fact-history';
+import { repeatNoteFor } from './bank/paper';
 import { customInPracticeStore } from '../custom/store';
 import { loadStructures } from '../data/structures';
 import { generatedQuestionForId, loadBlueprints } from '../data/blueprints';
 import { bankQuestion, loadBank, questionForId } from './bank';
 import { isBankId } from './bank/define';
-import { generatedCount, pickGenerated, practiceShareStore } from './gen/mix';
+import type { BankDef } from './bank/types';
+import { defKeys, generatedCount, historyKeys, pickGenerated, questionKey, practiceShareStore } from './gen/mix';
 import { isGeneratedId } from './gen/engine';
 import { conceptQuestion, numericQuestion, seededRng, type Question, type Rng, structureQuestion } from './questions';
 import { reviewOrder } from './srs';
@@ -29,6 +32,8 @@ export interface Session {
   index: number;
   correct: number;
   answered: number;
+  /** Set when this choice ran out of unseen facts. */
+  note?: string;
 }
 
 export const sessionStore = createStore<Session | null>(null);
@@ -91,12 +96,12 @@ function shuffled<T>(list: T[], rng: Rng): T[] {
   return out;
 }
 
-function begin(title: string, items: SessionItem[]): Session | null {
+function begin(title: string, items: SessionItem[], note?: string): Session | null {
   if (!items.length) {
     sessionStore.set(null);
     return null;
   }
-  const session = { title, items, index: 0, correct: 0, answered: 0 };
+  const session = { title, items, index: 0, correct: 0, answered: 0, note };
   sessionStore.set(session);
   return session;
 }
@@ -134,25 +139,62 @@ export async function startUnit(subject: SubjectId, level: ClassLevel, unitIndex
   const rng = freshRng();
   // A whole unit is exam-style questions first. A section has no questions of its own, so it stays with formulas.
   const exam: SessionItem[] = [];
+  let note: string | undefined;
+  await ensureFactHistory();
   if (subtopicIndex == null) {
     const [bank, set] = await Promise.all([loadBank(subject, level), loadBlueprints(subject, level)]);
     const seen = srsStore.get();
+    const fresh = studentFreshness();
+    const seenFacts = new Set<string>();
+    const seenText = new Set<string>();
+    const used = new Set<string>();
+    /** In order, skipping any that asks a fact this session has already asked. */
+    const takeDefs = (list: BankDef[], count: number): BankDef[] => {
+      const out: BankDef[] = [];
+      for (const d of list) {
+        if (out.length >= count) break;
+        if ((d.facts ?? []).some((f) => seenFacts.has(f))) continue;
+        for (const f of d.facts ?? []) seenFacts.add(f);
+        out.push(d);
+      }
+      return out;
+    };
     const number = Number(unit.number);
     const fits = (d: { unit: number; topic: string; difficulty: number }) => d.unit === number && (!options.topic || d.topic === options.topic) && (!options.difficulty || d.difficulty === options.difficulty);
     const here = bank.defs.filter(fits);
-    const unseen = shuffled(here.filter((d) => !seen[d.id]), rng);
+    const unseen = shuffled(here.filter((d) => !seen[d.id] && !fresh.resting(defKeys(d))), rng);
     const pool = set.blueprints.filter(fits);
     const share = options.share ?? practiceShareStore.get();
     // More are generated when the bank has run out of unseen questions for this choice.
     const wanted = pool.length ? Math.max(generatedCount(EXAM_SHARE, share), share > 0 ? EXAM_SHARE - unseen.length : 0) : 0;
-    const made = pickGenerated(set, pool, { count: Math.min(EXAM_SHARE, wanted), rng });
-    const ordered = [...unseen, ...shuffled(here.filter((d) => seen[d.id]), rng)];
-    const fromBank = ordered.slice(0, EXAM_SHARE - made.length).map((d) => ({ question: bankQuestion(d, bank, rng) }));
-    exam.push(...shuffled([...fromBank, ...made.map((question) => ({ question }))], rng));
+    const made = pickGenerated(set, pool, { count: Math.min(EXAM_SHARE, wanted), rng, used, seenText, seenFacts, fresh, freshOnly: true });
+    // What's left: never seen, then answered before but rested, and then whatever was seen longest ago.
+    const rested = shuffled(here.filter((d) => seen[d.id] && !fresh.resting(defKeys(d))), rng);
+    const fromRested = takeDefs([...unseen, ...rested], EXAM_SHARE - made.length);
+    const old = share > 0 && pool.length ? pickGenerated(set, pool, { count: EXAM_SHARE - made.length - fromRested.length, rng, used, seenText, seenFacts, fresh }) : [];
+    const tired = shuffled(here.filter((d) => fresh.resting(defKeys(d))), rng).sort((a, b) => fresh.lastSeen(defKeys(a)) - fresh.lastSeen(defKeys(b)));
+    const fromTired = takeDefs(tired, EXAM_SHARE - made.length - fromRested.length - old.length);
+    made.push(...old);
+    const fromBank = [...fromRested, ...fromTired].map((d) => ({ question: bankQuestion(d, bank, rng) }));
+    // A narrow choice may not have enough, so the rest come from the same unit, generated if the slider allows, and then from the bank.
+    const short = EXAM_SHARE - made.length - fromBank.length;
+    for (const q of made) seenText.add(questionKey(q));
+    const wider = short > 0 && share > 0 ? pickGenerated(set, set.blueprints.filter((b) => b.unit === number), { count: short, rng, used, seenText, seenFacts, fresh }) : [];
+    const widerDefs = takeDefs(shuffled(bank.defs.filter((d) => d.unit === number && !fits(d)), rng).sort((a, b) => fresh.lastSeen(defKeys(a)) - fresh.lastSeen(defKeys(b))), short - wider.length);
+    const widerBank = widerDefs.map((d) => ({ question: bankQuestion(d, bank, rng) }));
+    exam.push(...shuffled([...fromBank, ...widerBank, ...[...made, ...wider].map((question) => ({ question }))], rng));
+    const repeats = exam.filter((i) => fresh.resting(historyKeys(i.question))).length;
+    note = repeatNoteFor(repeats, factGapStore.get());
   }
-  const chosen = shuffled(list, rng).slice(0, SESSION_SIZE - exam.length);
+  // A section with few formulas borrows from the rest of its unit, so a session is always full.
+  const wanted = SESSION_SIZE - exam.length;
+  const others = forPractice(unit.subtopics.flatMap((s) => s.formulas)).filter((f) => !list.includes(f));
+  // Formulas are put in the same order: not seen lately first, then the one seen longest ago.
+  const history = studentFreshness();
+  const byAge = (fs: Formula[]) => shuffled(fs, rng).sort((a, b) => history.lastSeen([`formula:${a.id}`]) - history.lastSeen([`formula:${b.id}`]));
+  const chosen = [...byAge(list), ...byAge(others)].slice(0, wanted);
   const items = await Promise.all(chosen.map(async (f) => ({ question: await questionFor(f, rng) })));
-  return begin(subtopicIndex != null ? unit.subtopics[subtopicIndex].name : unit.name.replace(/^\d+\.\s*/, ''), [...exam, ...items]);
+  return begin(subtopicIndex != null ? unit.subtopics[subtopicIndex].name : unit.name.replace(/^\d+\.\s*/, ''), [...exam, ...items], note);
 }
 
 export async function startFormula(rawId: string): Promise<Session | null> {

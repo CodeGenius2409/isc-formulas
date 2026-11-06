@@ -55,6 +55,12 @@ export function designClass(g: Gen, spec: string, model: string, points: [string
   return g.theory(spec, points, { model: fence(model) });
 }
 
+/** The same, where the question leaves out main(): the model answer is run with a main of its own, and shown without it. */
+export function designChecked(g: Gen, spec: string, model: string, main: string, points: [string, number][]): TheoryBody {
+  run(g, `${model}\n${main}`);
+  return g.theory(spec, points, { model: fence(model) });
+}
+
 /** Python's slice, for a string or a list, with its rules on negative numbers and limits. */
 export function pySlice<T extends string | unknown[]>(value: T, start?: number, stop?: number, step = 1): T {
   const items = (typeof value === 'string' ? [...value] : [...value]) as unknown[];

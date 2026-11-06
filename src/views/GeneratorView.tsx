@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type DragEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type DragEvent, Suspense } from 'react';
 import { ArrowDown, ArrowUp, Dices, Download, FileText, FileUp, GripVertical, Lock, LockOpen, PenLine, Plus, Printer, RefreshCw, Save, Trash2, Wand2 } from 'lucide-react';
 import { BankPrompt } from '../components/bank/BankParts';
 import { GeneratedMark, GENERATED_NOTICE, PAPER_NOTICE, ReportProblem } from '../components/bank/GeneratedMark';
@@ -8,11 +8,13 @@ import { getSubject, manifest } from '../data/book';
 import { loadSyllabus } from '../data/syllabus';
 import type { ClassLevel, Syllabus, SubjectId } from '../data/types';
 import { useAsync } from '../lib/hooks';
+import { markFigures, teacherDiagramsStore, type FigureMark } from '../practice/gen/figures';
+import { lazyRetry } from '../lib/retry-import';
 import { useStore } from '../lib/store';
 import type { BankItem, Difficulty } from '../practice/bank/types';
 import { answerLines, saveBlob, STUDENT_FOOTER } from '../practice/gen/docx';
 import { describePlan, generatedCount, planShare, teacherShareStore } from '../practice/gen/mix';
-import { allItems, arranged, bankForSections, buildFullPaper, buildQuestionSet, countAvailable, deleteItem, deletePaper, emptyFilters, FORMATS, makeSets, moveItem, moveItemTo, officialStructure, paperFromFile, paperToFile, presetsStore, regenerateItem, regenerateUnlocked, savePaper, savePreset, teacherHistoryStore, totalMarks, updateItem, usedInHistory, type CustomSection, type Filters, type FormatChoice, type PaperItem, type TeacherPaper } from '../practice/gen/teacher';
+import { allItems, answerSpace, arranged, bankForSections, buildFullPaper, capacityOf, buildQuestionSet, countAvailable, deleteItem, deletePaper, emptyFilters, FORMATS, makeSets, moveItem, moveItemTo, officialStructure, paperFromFile, paperToFile, presetsStore, regenerateItem, regenerateUnlocked, savePaper, savePreset, teacherHistoryStore, totalMarks, updateItem, avoidRecentStore, recentPaperFreshness, teacherReviewedOnlyStore, type CustomSection, type Filters, type FormatChoice, type PaperItem, type TeacherPaper } from '../practice/gen/teacher';
 
 const freshSeed = () => Math.floor(Math.random() * 2 ** 31);
 
@@ -20,10 +22,17 @@ function toggle<T>(list: T[], value: T): T[] {
   return list.includes(value) ? list.filter((v) => v !== value) : [...list, value];
 }
 
-function Check({ label, checked, onChange, testId }: { label: string; checked: boolean; onChange: () => void; testId?: string }) {
+const EMPTY_SET = new Set<string>();
+
+const BankDiagram = lazyRetry(() => import('../components/bank/BankDiagram'));
+
+/** A choice that can't give any questions is greyed out, with the reason, rather than failing after generating. */
+function Check({ label, checked, onChange, testId, none }: { label: string; checked: boolean; onChange: () => void; testId?: string; none?: boolean }) {
+  const off = Boolean(none) && !checked;
   return (
-    <label className="gen-check" data-testid={testId}>
-      <input type="checkbox" checked={checked} onChange={onChange} /> {label}
+    <label className="gen-check" data-testid={testId} data-none={off || undefined}>
+      <input type="checkbox" checked={checked} disabled={off} onChange={onChange} /> {label}
+      {off && <span className="gen-none">none for these choices</span>}
     </label>
   );
 }
@@ -112,7 +121,7 @@ function CustomStructureEditor({ parts, onChange }: { parts: CustomSection[]; on
 
 const withEdit = (entry: PaperItem): BankItem => (entry.editedText !== undefined ? { ...entry.question.item, text: entry.editedText } : entry.question.item);
 
-function ReviewItem({ entry, number, canMove, onChange, onMove, onDrop, onRegenerate, busy }: { entry: PaperItem; number: number; canMove: [boolean, boolean]; onChange: (change: Partial<PaperItem> | null) => void; onMove: (by: number) => void; onDrop: (from: string) => void; onRegenerate: () => void; busy: boolean }) {
+function ReviewItem({ entry, number, figure, canMove, onChange, onMove, onDrop, onRegenerate, busy }: { entry: PaperItem; number: number; figure: FigureMark | undefined; canMove: [boolean, boolean]; onChange: (change: Partial<PaperItem> | null) => void; onMove: (by: number) => void; onDrop: (from: string) => void; onRegenerate: () => void; busy: boolean }) {
   const [editing, setEditing] = useState(false);
   const [over, setOver] = useState(false);
   const item = withEdit(entry);
@@ -123,6 +132,7 @@ function ReviewItem({ entry, number, canMove, onChange, onMove, onDrop, onRegene
       data-locked={entry.locked || undefined}
       data-over={over || undefined}
       data-testid="review-item"
+      data-key={entry.key}
       onDragOver={(e: DragEvent) => {
         e.preventDefault();
         setOver(true);
@@ -149,6 +159,7 @@ function ReviewItem({ entry, number, canMove, onChange, onMove, onDrop, onRegene
         </span>
         <span className="font-semibold">Question {number}</span>
         <GeneratedMark item={item} />
+        {entry.related && <span className="gen-related" data-testid="related-mark">Related subtopic: {item.topicName}</span>}
         <span className="bank-marks">[{item.marks}]</span>
       </div>
       {editing ? (
@@ -162,7 +173,7 @@ function ReviewItem({ entry, number, canMove, onChange, onMove, onDrop, onRegene
           </button>
         </div>
       ) : (
-        <BankPrompt item={item} />
+        <BankPrompt item={item} figure={figure ?? 'none'} />
       )}
       {!editing && item.form === 'mcq' && (
         <ol className="gen-options">
@@ -212,6 +223,7 @@ function PrintSheet({ paper, kind }: { paper: TeacherPaper; kind: 'paper' | 'key
   const shown = useMemo(() => arranged(paper), [paper]);
   const { header, options } = shown;
   const anyGenerated = allItems(shown).some((i) => i.question.item.generated);
+  const figures = markFigures(allItems(shown).map((i) => i.question.item), options.diagrams);
   let number = 0;
   return (
     <div className="gen-print" style={{ fontSize: `${options.fontSize}pt` }} data-testid="print-sheet" data-kind={kind}>
@@ -252,6 +264,13 @@ function PrintSheet({ paper, kind }: { paper: TeacherPaper; kind: 'paper' | 'key
                       </li>
                     ))}
                   </ul>
+                  {item.answerDiagram && (
+                    <figure className="bank-figure" data-testid="key-figure">
+                      <Suspense fallback={<div className="bank-diagram-wait" aria-hidden />}>
+                        <BankDiagram spec={item.answerDiagram} plain />
+                      </Suspense>
+                    </figure>
+                  )}
                 </div>
               );
             }
@@ -259,9 +278,10 @@ function PrintSheet({ paper, kind }: { paper: TeacherPaper; kind: 'paper' | 'key
               <div key={entry.key} className="gen-print-q" data-generated={item.generated ? true : undefined} data-testid="print-question">
                 <p className="gen-print-num">
                   <span className="font-semibold">{number}.</span> <GeneratedMark item={item} />
+                  {entry.related && <span className="gen-related">Related subtopic</span>}
                   {options.showMarks && <span className="bank-marks">[{item.marks}]</span>}
                 </p>
-                {options.diagrams ? <BankPrompt item={item} /> : <BankPrompt item={{ ...item, diagram: undefined }} />}
+                <BankPrompt item={item} figure={figures.get(item.id) ?? 'none'} />
                 {item.form === 'mcq' && (
                   <ol className="gen-options">
                     {item.options.map((o, i) => (
@@ -280,7 +300,7 @@ function PrintSheet({ paper, kind }: { paper: TeacherPaper; kind: 'paper' | 'key
                     ))}
                   </ol>
                 )}
-                {Array.from({ length: options.answerLines }, (_, i) => (
+                {Array.from({ length: answerSpace(item, options.answerLines) }, (_, i) => (
                   <div key={i} className="gen-answer-line" />
                 ))}
               </div>
@@ -298,7 +318,11 @@ function Review({ paper, onChange, onClose, sets, onSets }: { paper: TeacherPape
   const [printKind, setPrintKind] = useState<'paper' | 'key'>('paper');
   const [saved, setSaved] = useState('');
   const set = (field: keyof TeacherPaper['header'], value: string) => onChange({ ...paper, header: { ...paper.header, [field]: value } });
-  const setOption = (change: Partial<TeacherPaper['options']>) => onChange({ ...paper, options: { ...paper.options, ...change } });
+  const setOption = (change: Partial<TeacherPaper['options']>) => {
+    if (change.diagrams !== undefined) teacherDiagramsStore.set(change.diagrams);
+    onChange({ ...paper, options: { ...paper.options, ...change } });
+  };
+  const reviewFigures = useMemo(() => markFigures(allItems(paper).map((i) => withEdit(i)), paper.options.diagrams), [paper]);
   const anyGenerated = allItems(paper).some((i) => i.question.item.generated);
 
   const print = (kind: 'paper' | 'key') => {
@@ -332,6 +356,16 @@ function Review({ paper, onChange, onClose, sets, onSets }: { paper: TeacherPape
         <p className="mt-1 text-ink-2" data-testid="review-summary">
           {allItems(paper).length} questions, {totalMarks(paper)} marks. Seed {paper.seed}.
         </p>
+        {paper.repeatNote && (
+          <p className="notice" role="status" data-testid="repeat-note">
+            {paper.repeatNote}
+          </p>
+        )}
+        {paper.relatedNote && (
+          <p className="notice" role="status" data-testid="related-note">
+            {paper.relatedNote}
+          </p>
+        )}
         {paper.shortfall && (
           <p className="notice" data-tone="bad" role="alert" data-testid="shortfall">
             {paper.shortfall}
@@ -406,7 +440,7 @@ function Review({ paper, onChange, onClose, sets, onSets }: { paper: TeacherPape
               disabled={busy}
               onClick={async () => {
                 setBusy(true);
-                const made = await makeSets(paper, ['A', 'B', 'C'], freshSeed());
+                const made = await makeSets(paper, ['A', 'B', 'C'], freshSeed(), avoidRecentStore.get() ? recentPaperFreshness() : undefined);
                 onSets(made);
                 onChange(made[0]);
                 setBusy(false);
@@ -428,7 +462,7 @@ function Review({ paper, onChange, onClose, sets, onSets }: { paper: TeacherPape
                       entry={entry}
                       number={number}
                       busy={busy}
-                      canMove={[i > 0, i < section.items.length - 1]}
+                      figure={reviewFigures.get(withEdit(entry).id)} canMove={[i > 0, i < section.items.length - 1]}
                       onChange={(change) => onChange(change === null ? deleteItem(paper, entry.key) : updateItem(paper, entry.key, change))}
                       onMove={(by) => onChange(moveItem(paper, entry.key, by))}
                       onDrop={(from) => onChange(moveItemTo(paper, from, entry.key))}
@@ -489,6 +523,7 @@ function Review({ paper, onChange, onClose, sets, onSets }: { paper: TeacherPape
 
 export default function GeneratorView() {
   const presets = useStore(presetsStore);
+  const diagrams = useStore(teacherDiagramsStore);
   const history = useStore(teacherHistoryStore);
   const share = useStore(teacherShareStore);
   const [filters, setFilters] = useState<Filters>(() => emptyFilters());
@@ -498,14 +533,15 @@ export default function GeneratorView() {
   const [paperLevel, setPaperLevel] = useState<ClassLevel>('XII');
   const [structureKind, setStructureKind] = useState<'official' | 'custom'>('official');
   const [custom, setCustom] = useState<CustomSection[]>([{ name: 'Section A', count: 10, marks: 1, formats: [] }, { name: 'Section B', count: 5, marks: 3, formats: [] }]);
-  const [avoid, setAvoid] = useState(false);
+  const avoid = useStore(avoidRecentStore);
+  const reviewedOnly = useStore(teacherReviewedOnlyStore);
   const [presetName, setPresetName] = useState('');
   const [paper, setPaper] = useState<TeacherPaper | null>(null);
   const [sets, setSets] = useState<TeacherPaper[]>([]);
   const [busy, setBusy] = useState(false);
   const [problem, setProblem] = useState('');
   const fileRef = useRef<HTMLInputElement>(null);
-  const effective = useMemo(() => ({ ...filters, share }), [filters, share]);
+  const effective = useMemo(() => ({ ...filters, share, reviewedOnly }), [filters, share, reviewedOnly]);
   const syllabus = useAsync(() => loadSyllabus(filters.subject), filters.subject);
   const label = getSubject(filters.subject).label;
   const isCs = filters.subject === 'computerscience';
@@ -514,10 +550,10 @@ export default function GeneratorView() {
     document.title = 'Generate questions: ISC Formula Book';
   }, []);
 
-  const available = useAsync(() => countAvailable(effective, avoid ? usedInHistory() : new Set()), JSON.stringify([effective.subject, effective.levels, effective.units, effective.topics, effective.formats, effective.styles, effective.difficulties, effective.marks, avoid]));
+  const available = useAsync(() => countAvailable(effective), JSON.stringify([effective.subject, effective.levels, effective.units, effective.topics, effective.formats, effective.styles, effective.difficulties, effective.marks, effective.reviewedOnly, avoid]));
 
   const structure = useMemo(() => (mode === 'paper' ? (structureKind === 'official' ? officialStructure(filters.subject, paperLevel) : custom) : []), [mode, structureKind, filters.subject, paperLevel, custom]);
-  const sectionBank = useAsync(() => bankForSections(effective, paperLevel, structure, avoid ? usedInHistory() : new Set()), JSON.stringify([effective.subject, effective.units, effective.topics, effective.formats, effective.styles, effective.difficulties, paperLevel, structure, avoid]));
+  const sectionBank = useAsync(() => bankForSections(effective, paperLevel, structure), JSON.stringify([effective.subject, effective.units, effective.topics, effective.formats, effective.styles, effective.difficulties, paperLevel, structure, avoid]));
   const plan = useMemo(() => {
     if (available.status !== 'ready') return null;
     if (mode === 'paper') {
@@ -533,14 +569,46 @@ export default function GeneratorView() {
     return planShare([{ marks: 2, count, bankHas: available.value.bank }], share);
   }, [available, sectionBank, mode, structure, share, amount, countMode]);
 
+  // What each option could give with the other choices as they are, and what the whole choice can give.
+  const wantedCount = mode === 'set' && countMode === 'count' ? Math.max(1, Number(amount) || 1) : mode === 'set' ? 1 : 0;
+  const skipSeen = EMPTY_SET;
+  const fitKey = JSON.stringify([effective, avoid, wantedCount, mode]);
+  const capacity = useAsync(async () => {
+    const base = effective;
+    const test = async (f: Filters) => (await capacityOf(f, skipSeen, 1)).withRelated === 0;
+    const [formats, styles, difficulties, marks] = await Promise.all([
+      Promise.all(FORMATS.map((f) => test({ ...base, formats: [f.key] }))),
+      Promise.all((['paper-style', 'cbq-style'] as const).map((s) => test({ ...base, styles: [s] }))),
+      Promise.all(([1, 2, 3] as Difficulty[]).map((d) => test({ ...base, difficulties: [d] }))),
+      Promise.all([1, 2, 3, 5, 10].map((m) => test({ ...base, marks: [m] }))),
+    ]);
+    return {
+      none: { formats: new Set(FORMATS.filter((_, i) => formats[i]).map((f) => f.key)), styles: new Set((['paper-style', 'cbq-style'] as const).filter((_, i) => styles[i])), difficulties: new Set(([1, 2, 3] as Difficulty[]).filter((_, i) => difficulties[i])), marks: new Set([1, 2, 3, 5, 10].filter((_, i) => marks[i])) },
+      total: wantedCount ? await capacityOf(base, skipSeen, Math.max(wantedCount, 60)) : null,
+    };
+  }, fitKey);
+  const none = capacity.status === 'ready' ? capacity.value.none : null;
+  const total = capacity.status === 'ready' ? capacity.value.total : null;
+  // Said before generating, never after.
+  const cantFill = mode === 'set' && countMode === 'count' && total && total.withRelated < wantedCount;
+  const cantFillMessage = !cantFill
+    ? ''
+    : share === 0
+      ? total!.withRelated === 0
+        ? 'The bank has no questions for these choices. Raise the generated-share slider, or choose differently.'
+        : `The bank has only ${total!.withRelated} ${total!.withRelated === 1 ? 'question' : 'questions'} for these choices. Raise the generated-share slider, or ask for ${total!.withRelated} or fewer.`
+      : total!.withRelated === 0
+        ? 'Nothing can be made for these choices. Try fewer filters.'
+        : `These choices can make ${total!.withRelated} different ${total!.withRelated === 1 ? 'question' : 'questions'} at most, with no fact asked twice. Ask for ${total!.withRelated} or fewer, or choose more chapters or formats.`;
+
   const generate = async () => {
     setBusy(true);
     setProblem('');
     setSets([]);
     try {
       const seed = freshSeed();
-      const skip = avoid ? usedInHistory() : new Set<string>();
-      const made = mode === 'set' ? await buildQuestionSet(effective, { mode: countMode, value: Math.max(1, Number(amount) || 1) }, label, seed, skip) : await buildFullPaper(effective, paperLevel, structure, label, seed, skip);
+      const fresh = avoid ? recentPaperFreshness() : undefined;
+      const made = mode === 'set' ? await buildQuestionSet(effective, { mode: countMode, value: Math.max(1, Number(amount) || 1) }, label, seed, EMPTY_SET, fresh) : await buildFullPaper(effective, paperLevel, structure, label, seed, EMPTY_SET, fresh);
       if (!allItems(made).length) setProblem('Nothing matches these choices. Try fewer filters.');
       else setPaper(made);
     } catch (err) {
@@ -625,27 +693,27 @@ export default function GeneratorView() {
             <legend className="lbl">Format</legend>
             <div className="gen-checks">
               {FORMATS.filter((f) => !f.cs || isCs).map((f) => (
-                <Check key={f.key} label={f.label} checked={filters.formats.includes(f.key)} onChange={() => setFilters({ ...filters, formats: toggle(filters.formats, f.key) })} />
+                <Check key={f.key} label={f.label} none={none?.formats.has(f.key)} checked={filters.formats.includes(f.key)} onChange={() => setFilters({ ...filters, formats: toggle(filters.formats, f.key) })} />
               ))}
             </div>
           </fieldset>
           <div className="mt-2 grid gap-2 sm:grid-cols-3">
             <fieldset className="gen-group">
               <legend className="lbl">Style</legend>
-              <Check label="Paper-style" checked={filters.styles.includes('paper-style')} onChange={() => setFilters({ ...filters, styles: toggle(filters.styles, 'paper-style') })} />
-              <Check label="CBQ-style" checked={filters.styles.includes('cbq-style')} onChange={() => setFilters({ ...filters, styles: toggle(filters.styles, 'cbq-style') })} />
+              <Check label="Paper-style" none={none?.styles.has('paper-style')} checked={filters.styles.includes('paper-style')} onChange={() => setFilters({ ...filters, styles: toggle(filters.styles, 'paper-style') })} />
+              <Check label="CBQ-style" none={none?.styles.has('cbq-style')} checked={filters.styles.includes('cbq-style')} onChange={() => setFilters({ ...filters, styles: toggle(filters.styles, 'cbq-style') })} />
             </fieldset>
             <fieldset className="gen-group">
               <legend className="lbl">Difficulty</legend>
               {([[1, 'Easy'], [2, 'Medium'], [3, 'Hard']] as [Difficulty, string][]).map(([d, name]) => (
-                <Check key={d} label={name} checked={filters.difficulties.includes(d)} onChange={() => setFilters({ ...filters, difficulties: toggle(filters.difficulties, d) })} />
+                <Check key={d} label={name} none={none?.difficulties.has(d)} checked={filters.difficulties.includes(d)} onChange={() => setFilters({ ...filters, difficulties: toggle(filters.difficulties, d) })} />
               ))}
             </fieldset>
             <fieldset className="gen-group">
               <legend className="lbl">Marks per question</legend>
               <div className="gen-checks">
                 {[1, 2, 3, 5, 10].map((m) => (
-                  <Check key={m} label={String(m)} checked={filters.marks.includes(m)} onChange={() => setFilters({ ...filters, marks: toggle(filters.marks, m) })} />
+                  <Check key={m} label={String(m)} none={none?.marks.has(m)} checked={filters.marks.includes(m)} onChange={() => setFilters({ ...filters, marks: toggle(filters.marks, m) })} />
                 ))}
               </div>
             </fieldset>
@@ -696,18 +764,24 @@ export default function GeneratorView() {
         <section className="today-section" aria-labelledby="source-h">
           <h2 id="source-h">Source</h2>
           {plan && <ShareSlider value={share} onChange={(v) => teacherShareStore.set(v)} message={describePlan(plan)} warning={plan.raised} />}
+          <label className="switch-row mt-2">
+            <input type="checkbox" checked={diagrams} onChange={(e) => teacherDiagramsStore.set(e.target.checked)} /> Include diagrams
+          </label>
           {available.status === 'ready' && (
             <p className="mt-1 text-step--1 text-ink-2" data-testid="available">
               For these choices, the bank has {available.value.bank} questions, and there are {available.value.blueprints} blueprints that can make new ones.
             </p>
           )}
           <label className="switch-row mt-1">
-            <input type="checkbox" checked={avoid} onChange={(e) => setAvoid(e.target.checked)} /> Don’t reuse questions from papers I’ve saved
+            <input type="checkbox" checked={avoid} onChange={(e) => avoidRecentStore.set(e.target.checked)} /> Avoid facts used in my recent papers
+          </label>
+          <label className="switch-row mt-1">
+            <input type="checkbox" checked={reviewedOnly} onChange={(e) => teacherReviewedOnlyStore.set(e.target.checked)} /> Only reviewed questions
           </label>
         </section>
 
         <div className="mt-4 flex flex-wrap gap-2">
-          <button type="button" className="btn btn-solid" disabled={busy} onClick={() => void generate()}>
+          <button type="button" className="btn btn-solid" disabled={busy || Boolean(cantFill)} onClick={() => void generate()}>
             <Wand2 size={15} aria-hidden /> {busy ? 'Generating' : mode === 'set' ? 'Generate the questions' : 'Generate the paper'}
           </button>
           <button type="button" className="btn btn-line" onClick={() => fileRef.current?.click()}>
@@ -719,6 +793,11 @@ export default function GeneratorView() {
             e.target.value = '';
           }} />
         </div>
+        {cantFill && (
+          <p className="notice" data-tone="bad" role="status" data-testid="cant-fill">
+            {cantFillMessage}
+          </p>
+        )}
         {problem && (
           <p className="notice" data-tone="bad" role="alert">
             {problem}

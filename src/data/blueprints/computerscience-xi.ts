@@ -2,10 +2,12 @@
 import { classify, truthColumn } from '../../practice/gen/boolean';
 import type { Gen } from '../../practice/gen/gen';
 import { complete, designClass, findError, inMain, outputOf, pyList, pySlice, SHORT_WORDS, withMethods } from './cs-common';
+import { derivationBlueprints } from '../derivations';
+import KNOWLEDGE from './knowledge/computerscience-xi';
 import { blueprintsFor } from './dsl';
 import type { Blueprint, Body, OutputBody } from './types';
 
-const { custom, facts } = blueprintsFor('computerscience', 'XI');
+const { custom, facts, rest } = blueprintsFor('computerscience', 'XI', KNOWLEDGE);
 
 const fence = (code: string) => `\`\`\`\n${code}\n\`\`\``;
 
@@ -22,7 +24,7 @@ function convertQuestion(g: Gen, marks: 1 | 2): Body {
     const slips: [string, string][] = direction
       ? [
           [reversed, 'read the remainders from the top down'],
-          [Math.floor(value / base).toString(base).toUpperCase(), 'left out the last remainder'],
+          [Math.floor(value / base).toString(base).toUpperCase(), 'left out the first remainder'],
           [(value % base ** (shown.length - 1)).toString(base).toUpperCase(), 'left out the final quotient'],
           [(value + base).toString(base).toUpperCase(), 'carried one too many'],
         ]
@@ -116,8 +118,6 @@ const blueprints: Blueprint[] = [
     recall: [
       ['The base of the hexadecimal system is:', '16', '8', '10', '2'],
       ['The hexadecimal digit F stands for:', '15', '16', '14', '10'],
-      ['How many bits are used for each octal digit?', '3', '4', '2', '8'],
-      ['How many bits are used for each hexadecimal digit?', '4', '3', '8', '2'],
     ],
     reason: [
       ['Hexadecimal is often used instead of binary for writing addresses.', 'Each hexadecimal digit stands for four bits.', 'So long binary numbers become short and easy to read.'],
@@ -125,7 +125,6 @@ const blueprints: Blueprint[] = [
     truths: [
       ['Binary uses only the digits 0 and 1.', 'Binary uses the digits 0 to 2.'],
       ['Moving one place left in binary doubles the place value.', 'Moving one place left in binary triples the place value.'],
-      ['Eight bits can represent 256 values.', 'Eight bits can represent 128 values.'],
     ],
     compare: [
       ['binary', 'decimal', ['Base 2.', 'Base 10.'], ['Used inside computers.', 'Used by people every day.']],
@@ -152,7 +151,7 @@ const blueprints: Blueprint[] = [
     ],
     truths: [
       ['2’s complement has one form for zero.', '2’s complement has two forms for zero.'],
-      ['Upper case letters come before lower case letters in ASCII.', 'Lower case letters come before upper case letters in ASCII.'],
+      ['UTF-8 needs more than one byte for a Devanagari letter.', 'UTF-8 stores every Devanagari letter in a single byte.'],
       ['A parity bit helps detect single-bit errors.', 'A parity bit corrects any number of errors.'],
     ],
   }),
@@ -169,24 +168,24 @@ const blueprints: Blueprint[] = [
     ];
     const p = g.pick(list);
     const col = truthColumn(2, p.f);
-    return g.theory(`Draw a truth table for ${p.text}, and say whether it is a tautology, a contradiction or a contingency.`, [`The final column reads ${col.map((b) => (b ? 1 : 0)).join(', ')}, top to bottom.`, `It is a ${classify(col)}.`]);
+    return g.theory(`Draw a truth table for ${p.text}, and say whether it is a tautology, a contradiction or a contingency.`, [`With the rows in order from all 0s to all 1s, the final column reads ${col.map((b) => (b ? 1 : 0)).join(', ')}.`, `It is a ${classify(col)}.`]);
   }),
   custom('gate-xi', [3, 'b', 1, 1], { type: 'mcq', format: 'mcq' }, (g) => {
     const gates: [string, (a: number, b: number) => number][] = [['AND', (a, b) => a & b], ['OR', (a, b) => a | b], ['NAND', (a, b) => 1 - (a & b)], ['NOR', (a, b) => 1 - (a | b)], ['XOR', (a, b) => a ^ b]];
     const [name, f] = g.pick(gates);
-    const a = g.int(0, 1);
-    const b = g.int(0, 1);
-    return g.mcq(`A ${name} gate has inputs ${a} and ${b}. Its output is:`, String(f(a, b)), [String(1 - f(a, b))]);
+    // Four options: the gate’s output column, against the columns of other gates.
+    const column = (h: (x: number, y: number) => number) => [h(0, 0), h(0, 1), h(1, 0), h(1, 1)].join(', ');
+    return g.mcq(`For inputs 00, 01, 10 and 11, in that order, ${/^[AEIOUX]/.test(name) ? 'an' : 'a'} ${name} gate gives:`, column(f), g.sample(gates.filter(([n]) => n !== name).map(([, h]) => column(h)), 3));
   }),
   custom('section-a-xi', [1, 'a', 10, 3], { type: 'short', format: 'long' }, (g) => {
     const value = g.int(50, 200);
-    const neg = g.int(5, 100);
+    const neg = g.int(5, 49);
     const a = g.int(0, 1);
     const b = g.int(0, 1);
-    return g.theory(`(a) Convert the decimal number ${value} to binary, octal and hexadecimal. [3]\n(b) Find the 8-bit 2’s complement form of −${neg}. [3]\n(c) Find the output of an XOR gate with inputs ${a} and ${b}, and write its truth table. [2]\n(d) State De Morgan’s two laws. [2]`, [
+    return g.theory(`(a) Convert the decimal number ${value} to binary, octal and hexadecimal. [3]\n(b) Subtract ${neg} from ${value} in binary, and check your answer in decimal. [3]\n(c) Find the output of an XOR gate with inputs ${a} and ${b}, and write its truth table. [2]\n(d) State De Morgan’s two laws. [2]`, [
       [`(a) ${value} is ${value.toString(2)} in binary, ${value.toString(8)} in octal, and ${value.toString(16).toUpperCase()} in hexadecimal.`, 3],
-      [`(b) ${neg} is ${neg.toString(2).padStart(8, '0')}, whose 1’s complement is ${(255 - neg).toString(2).padStart(8, '0')}.`, 2],
-      [`(b) Adding 1 gives ${(256 - neg).toString(2).padStart(8, '0')}.`, 1],
+      [`(b) ${value.toString(2)} − ${neg.toString(2)} = ${(value - neg).toString(2)}.`, 2],
+      [`(b) In decimal, ${value} − ${neg} = ${value - neg}.`, 1],
       [`(c) The output is ${a ^ b}.`, 1],
       ['(c) 00 → 0, 01 → 1, 10 → 1, 11 → 0.', 1],
       ['(d) (A + B)′ = A′B′.', 1],
@@ -199,13 +198,11 @@ const blueprints: Blueprint[] = [
       ['a truth table', 'A table of a logical expression’s value, for every combination of its inputs.'],
     ],
     recall: [
-      ['p ∧ q is true when:', 'both are true', 'either is true', 'neither is true', 'p is false'],
-      ['p ∨ q is false when:', 'both are false', 'both are true', 'p is true', 'q is true'],
       ['~(~p) is equivalent to:', 'p', '~p', 'a contradiction', 'a tautology'],
     ],
     truths: [
       ['A tautology is always true.', 'A tautology is always false.'],
-      ['A conditional is false only if a true statement implies a false one.', 'A conditional is false only if a false statement implies a true one.'],
+      ['A biconditional is true when both its parts are false.', 'A biconditional is false when both its parts are false.'],
       ['Two variables need a truth table of four rows.', 'Two variables need a truth table of eight rows.'],
     ],
     reason: [
@@ -216,16 +213,17 @@ const blueprints: Blueprint[] = [
     define: [
       ['a half adder', 'A circuit adding two bits, giving a sum and a carry.'],
       ['a logic gate', 'A circuit whose output follows a logical rule from its inputs.'],
+      ['a universal gate', 'A gate from which any other gate can be built, such as NAND or NOR.'],
     ],
     recall: [
       ['Which gate gives 1 only when all its inputs are 1?', 'AND', 'OR', 'NOR', 'XOR'],
       ['Which gate gives the opposite of its one input?', 'NOT', 'AND', 'OR', 'XOR'],
-      ['A half adder’s carry is:', 'A AND B', 'A OR B', 'A XOR B', 'NOT A'],
+      ['A truth table for a 3-input AND gate has this many rows:', '8', '3', '6', '9'],
     ],
     truths: [
       ['A NAND gate is an AND gate followed by a NOT gate.', 'A NAND gate is an OR gate followed by a NOT gate.'],
-      ['XOR gives 1 when its two inputs differ.', 'XOR gives 1 when its two inputs are the same.'],
-      ['A half adder has two outputs.', 'A half adder has three outputs.'],
+      ['An OR gate gives 0 only when all its inputs are 0.', 'An OR gate gives 0 when any input is 0.'],
+      ['A full adder can be made from two half adders and an OR gate.', 'A full adder can be made from one half adder alone.'],
     ],
     draw: [
       ['Draw the truth table and the circuit for a half adder.', 'A table: 00 → 0 0, 01 → 1 0, 10 → 1 0, 11 → 0 1, as sum then carry.', 'An XOR gate for the sum, and an AND gate for the carry.'],
@@ -272,7 +270,6 @@ const blueprints: Blueprint[] = [
       ['Without new, a declared object variable refers to no object.', 'Without new, a declared object variable refers to a default object.'],
     ],
     reason: [
-      ['Two reference variables can refer to one object.', 'Assigning a reference copies the address, not the object.'],
     ],
   }),
   ...facts(5, 'b', {
@@ -283,7 +280,7 @@ const blueprints: Blueprint[] = [
       ['an exception', 'An event that stops the normal flow of a program while it runs.'],
     ],
     recall: [
-      ['Dividing an int by zero throws:', 'ArithmeticException', 'NullPointerException', 'IOException', 'ClassCastException'],
+      ['Which block always runs, whether or not an exception occurs?', 'finally', 'catch', 'try', 'throw'],
       ['A missing semicolon is a:', 'syntax error', 'runtime error', 'logical error', 'warning only'],
       ['Which keyword handles an exception?', 'catch', 'if', 'switch', 'static'],
     ],
@@ -292,8 +289,9 @@ const blueprints: Blueprint[] = [
     ],
     truths: [
       ['try must be followed by catch or finally.', 'try can stand on its own.'],
-      ['A logical error isn’t reported by the compiler.', 'A logical error is always reported by the compiler.'],
+      ['Using an array index past its end throws ArrayIndexOutOfBoundsException.', 'Using an array index past its end throws ArithmeticException.'],
       ['Using a null reference throws NullPointerException.', 'Using a null reference throws ArithmeticException.'],
+      ['throw is used to raise an exception.', 'throw is used to catch an exception.'],
     ],
     reason: [
       ['Logical errors are the hardest to find.', 'The program runs without any message.', 'Only wrong answers show that something’s wrong.'],
@@ -303,13 +301,13 @@ const blueprints: Blueprint[] = [
   // ---- Unit 6: Types
   custom('output-types', [6, 'a', 2, 1], { type: 'output', format: 'output' }, (g) => g.pick(OPERATORS)(g)),
   custom('casting', [6, 'a', 1, 2], { type: 'mcq', format: 'mcq' }, (g) => {
-    const d = g.int(2, 9) + g.pick([0.5, 0.75, 0.25]);
-    return g.mcqNumber(`What does (int) ${d} give in Java?`, Math.floor(d), '', [
-      { slip: 'rounded up', value: Math.ceil(d) },
+    // A negative value tells truncation apart from rounding down; a positive one is in the recall pool.
+    const d = -(g.int(2, 9) + g.pick([0.5, 0.75, 0.25]));
+    return g.mcqNumber(`What does (int) (${d}) give in Java?`, Math.trunc(d), '', [
+      { slip: 'rounded down, as Math.floor does', value: Math.floor(d) },
       { slip: 'kept the fraction', value: d },
-      { slip: 'added 1', value: Math.floor(d) + 2 },
-      { slip: 'took 1 away', value: Math.floor(d) - 1 },
-    ], { digits: 3 });
+      { slip: 'dropped the minus sign', value: -Math.trunc(d) },
+    ], { digits: 3, working: `A cast to int cuts off the fraction, towards zero, so (int) (${d}) is ${Math.trunc(d)}. Math.floor(${d}) would give ${Math.floor(d)}.` });
   }),
   custom('find-error-type', [6, 'a', 2, 2], { type: 'error', format: 'error' }, (g) => {
     const v = g.int(2, 9);
@@ -324,12 +322,11 @@ const blueprints: Blueprint[] = [
     ],
     recall: [
       ['How many bits does an int use in Java?', '32', '16', '8', '64'],
-      ['How many bits does a char use in Java?', '16', '8', '32', '4'],
       ['Which method changes the text "25" into an int?', 'Integer.parseInt', 'Integer.toString', 'String.valueOf', 'Double.parseDouble'],
       ['Which is the default value of an int data member?', '0', 'null', '1', 'a random value'],
     ],
     compare: [
-      ['implicit casting', 'explicit casting', ['Done automatically, to a larger type.', 'Written by the programmer, to a smaller type.'], ['Loses no information.', 'May lose information.']],
+      ['implicit type conversion', 'explicit type conversion', ['Done automatically, to a larger type.', 'Written by the programmer, to a smaller type.'], ['Loses no information.', 'May lose information.']],
       ['int', 'Integer', ['A primitive type.', 'A wrapper class.'], ['Holds just a value.', 'Holds a value, and has methods.']],
     ],
     truths: [
@@ -366,14 +363,14 @@ const blueprints: Blueprint[] = [
       ['Which is a valid identifier?', '_count', '2count', 'class', 'my-count'],
     ],
     compare: [
-      ['= ', '==', ['Assigns a value.', 'Compares two values.'], ['Changes the variable.', 'Gives true or false.']],
+      ['the = operator', 'the == operator', ['Assigns a value.', 'Compares two values.'], ['Changes the variable.', 'Gives true or false.']],
       ['x++', '++x', ['Uses the old value, then raises it.', 'Raises it, then uses the new value.'], ['Called postfix.', 'Called prefix.']],
-      ['&&', '&', ['Stops early if its first operand decides.', 'Always evaluates both operands.'], ['Used for logic.', 'Also used for bit operations.']],
+      ['the && operator', 'the & operator', ['Stops early if its first operand decides.', 'Always evaluates both operands.'], ['Used for logic.', 'Also used for bit operations.']],
     ],
     truths: [
       ['Integer division in Java drops the fractional part.', 'Integer division in Java rounds to the nearest whole number.'],
       ['Java is case-sensitive.', 'Java ignores the case of identifiers.'],
-      ['A constant is declared using final.', 'A constant is declared using static alone.'],
+      ['A long can hold larger whole numbers than an int.', 'An int can hold larger whole numbers than a long.'],
     ],
     reason: [
       ['10 / 4 gives 2 in Java.', 'Both operands are ints.', 'So the result is an int, with the fraction dropped.'],
@@ -468,16 +465,15 @@ const blueprints: Blueprint[] = [
     recall: [
       ['A method that returns nothing has the return type:', 'void', 'null', 'int', 'empty'],
       ['Which statement sends a value back from a method?', 'return', 'send', 'break', 'give'],
-      ['The name of a constructor must match the:', 'class', 'first method', 'file only', 'package'],
     ],
     compare: [
       ['a constructor', 'a method', ['Has the same name as the class.', 'Can have any valid name.'], ['Has no return type.', 'Must have a return type, or void.']],
       ['call by value', 'call by reference', ['A copy of the value is passed.', 'A reference to the object is passed.'], ['Changes don’t reach the caller.', 'Changes to the object are seen by the caller.']],
     ],
     truths: [
-      ['Overloaded methods differ in their parameter lists.', 'Overloaded methods differ only in return type.'],
+      ['System.out.println is an overloaded method.', 'System.out.println can print only String values.'],
       ['Java supplies a default constructor if none is written.', 'Java never supplies a default constructor.'],
-      ['Primitive parameters in Java are passed by value.', 'Primitive parameters in Java are passed by reference.'],
+      ['A method can return an object.', 'A method can return only a primitive value.'],
     ],
     reason: [
       ['A method can’t change a caller’s int variable through its parameter.', 'Java passes a copy of a primitive value.', 'So changes stay inside the method.'],
@@ -574,6 +570,8 @@ const blueprints: Blueprint[] = [
     define: [
       ['a text file', 'A file that stores characters that can be read by people.'],
       ['a binary file', 'A file that stores data in the same form as it’s held in memory.'],
+      ['a stream', 'A flow of data between a program and a source or destination, such as a file.'],
+      ['a buffer', 'A block of memory that holds data for a while, so it can be read or written in larger pieces.'],
     ],
     recall: [
       ['Which class writes characters to a file?', 'FileWriter', 'FileReader', 'Scanner', 'String'],
@@ -584,9 +582,9 @@ const blueprints: Blueprint[] = [
       ['a text file', 'a binary file', ['Readable by people.', 'Not readable by people.'], ['Often larger for numbers.', 'Often smaller for numbers.']],
     ],
     truths: [
-      ['A file must be closed to make sure its data is saved.', 'A file doesn’t need closing for its data to be saved.'],
+      ['A character stream reads or writes text one character at a time.', 'A character stream works only on whole files at once.'],
       ['IOException is raised for many file errors.', 'ArithmeticException is raised for most file errors.'],
-      ['readLine() returns null at the end of a file.', 'readLine() returns 0 at the end of a file.'],
+      ['A file’s name, and its path if needed, are given when it is opened.', 'A file can be opened without any name.'],
     ],
     reason: [
       ['A program should close a file when it has finished.', 'Buffered data might not be written otherwise.', 'It also frees the resource for others.'],
@@ -704,12 +702,12 @@ const blueprints: Blueprint[] = [
   // ---- Real-life questions.
   custom('cbq-door-logic', [3, 'a', 2, 2], { type: 'short', format: 'cbq', style: 'cbq-style' }, (g) => {
     const [name, on, why] = g.pick([
-      ['AND', 'both A and B are 1', 'Only when both inputs are 1 does an AND gate give 1.'],
-      ['OR', 'at least one of A and B is 1', 'An OR gate gives 1 when any input is 1.'],
-      ['NAND', 'A and B aren’t both 1', 'A NAND gate gives 0 only when both inputs are 1.'],
-      ['XOR', 'A and B differ', 'An XOR gate gives 1 only when its inputs differ.'],
+      ['∧, the conjunction A ∧ B', 'both A and B are true', 'A ∧ B is true only when both A and B are true.'],
+      ['∨, the disjunction A ∨ B', 'at least one of A and B is true', 'A ∨ B is false only when both A and B are false.'],
+      ['⇔, the biconditional A ⇔ B', 'A and B are both true or both false', 'A ⇔ B is true exactly when A and B have the same truth value.'],
+      ['⇒, the conditional A ⇒ B', 'it isn’t the case that A is true and B is false', 'A ⇒ B is false only when A is true and B is false.'],
     ]);
-    return g.theory(`A lift’s motor should run when ${on}, where A and B are two sensors. (i) Which gate does this? (ii) Give a reason.`, [[`(i) ${name}.`, 1], [`(ii) ${why}`, 1]]);
+    return g.theory(`A lift’s motor should run when ${on}, where A and B are statements read from two sensors. (i) Which connective joins A and B to give this? (ii) Give a reason.`, [[`(i) ${name}.`, 1], [`(ii) ${why}`, 1]]);
   }),
   custom('cbq-fee-loop', [8, 'a', 2, 2], { type: 'output', format: 'cbq', style: 'cbq-style' }, (g) => {
     const fee = g.pick([100, 200, 500]);
@@ -734,6 +732,8 @@ const blueprints: Blueprint[] = [
     const code = inMain(`int mark = ${mark};\nchar grade;\nif (mark >= 80) grade = 'A';\nelse if (mark >= 60) grade = 'B';\nelse if (mark >= 40) grade = 'C';\nelse grade = 'D';\nSystem.out.println(grade);`);
     return outputOf(g, code, undefined, 'A report card program gives a grade from a mark. Write what it prints.');
   }),
+  ...rest(),
+  ...derivationBlueprints('computerscience', 'XI', { custom } as never),
 ];
 
 export default blueprints;

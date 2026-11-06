@@ -90,6 +90,7 @@ export const QUANTITIES: Record<string, QuantityDef> = {
   objectDistance: { dim: 'L', unit: 'm', alt: ['cm', 'mm'], gen: [0.1, 1] },
   lensPower: { dim: 'L^-1', unit: 'm^-1', gen: [0.5, 10] },
   refractive: { dim: '', unit: '', gen: [1.1, 2.4], min: 1 },
+  dielectric: { dim: '', unit: '', gen: [2, 10], min: 1 },
   decay: { dim: 'T^-1', unit: 's^-1', alt: ['min^-1', 'hour^-1'], gen: [0.001, 1], min: 0, exclusiveMin: true },
   planck: { dim: 'M L^2 T^-1', unit: 'J*s', gen: [6e-34, 7e-34] },
 

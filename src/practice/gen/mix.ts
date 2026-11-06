@@ -4,7 +4,7 @@ import type { LoadedBlueprints } from '../../data/blueprints';
 import { createStore } from '../../lib/store';
 import { readJson, writeJson } from '../../lib/storage';
 import type { Rng } from '../questions';
-import type { BankQuestion } from '../bank/types';
+import type { BankDef, BankQuestion } from '../bank/types';
 import { generatedQuestion } from './engine';
 
 const shareStore = (key: string, start: number) => createStore<number>(readJson<number>(key, start), (value) => writeJson(key, value));
@@ -79,6 +79,34 @@ export function describePlan(plan: SharePlan): string {
   return `About ${plan.generated} of ${plan.questions} questions (${plan.generatedMarks} of ${plan.marks} marks) will be generated.`;
 }
 
+/** Seeds tried for each blueprint when looking for every question it can give. */
+export const PROBE_SEEDS = 150;
+
+/** What has been used lately, so that a picker can choose fresh facts first. It only ever orders: it never leaves a paper short. */
+export interface Freshness {
+  /** Used too recently to come back yet. */
+  resting: (keys: string[]) => boolean;
+  /** When any of these was last used, or 0 if never. */
+  lastSeen: (keys: string[]) => number;
+}
+
+/** A Freshness from a list of when each key was used, where anything on the list is resting. */
+export function usedFreshness(used: Map<string, number>, also?: Freshness): Freshness {
+  return {
+    resting: (keys) => keys.some((k) => used.has(k)) || Boolean(also?.resting(keys)),
+    lastSeen: (keys) => Math.max(0, also?.lastSeen(keys) ?? 0, ...keys.map((k) => used.get(k) ?? 0)),
+  };
+}
+
+/** What a history keeps a question under: its facts, or for a numerical its blueprint, or else its own id. */
+export function historyKeys(q: { formulaId: string; kind: string; item?: { facts?: string[]; generated?: { blueprint: string } } }): string[] {
+  if (q.kind !== 'bank') return [`formula:${q.formulaId}`];
+  if (q.item?.facts?.length) return q.item.facts;
+  return [q.item?.generated ? `bp:${q.item.generated.blueprint}` : q.formulaId];
+}
+
+export const defKeys = (d: BankDef): string[] => (d.facts?.length ? d.facts : [d.id]);
+
 export interface PickOptions {
   count: number;
   /** Relative marks for each unit. Units not listed count as one. */
@@ -88,8 +116,14 @@ export interface PickOptions {
   used?: Set<string>;
   /** Questions already taken, so none appears twice. */
   seenText?: Set<string>;
+  /** Facts already asked, so none is asked twice, even in another format. */
+  seenFacts?: Set<string>;
   /** Roughly this share should be CBQ-style, where some are on offer. */
   cbqShare?: number;
+  /** Chooses unseen facts first, then the least recently seen. */
+  fresh?: Freshness;
+  /** Stop when the unseen ones run out, so that the caller can try other sources first. */
+  freshOnly?: boolean;
 }
 
 function shuffled<T>(list: readonly T[], rng: Rng): T[] {
@@ -101,18 +135,27 @@ function shuffled<T>(list: readonly T[], rng: Rng): T[] {
   return out;
 }
 
-const textOf = (q: BankQuestion) => q.item.text + (q.item.form === 'output' ? q.item.code : '');
+/** What makes two questions the same: not just the words, as "Which of these is correct?" has many different questions. */
+export function questionKey(q: BankQuestion): string {
+  const { item } = q;
+  if (item.form === 'output') return item.text + item.code;
+  if (item.form === 'mcq') return `${item.text}|${item.options.map((o) => o.text).sort().join('|')}`;
+  if (item.form === 'numeric') return `${item.text}|${item.parts.map((p) => p.ask).join('|')}`;
+  return item.text;
+}
+
+export const factsOf = (q: BankQuestion): string[] => q.item.facts ?? [];
 
 /** Draws questions from a pool of blueprints, spreading them across units by weight. Fewer come back if the pool is empty. */
 export function pickGenerated(set: LoadedBlueprints, pool: Blueprint[], options: PickOptions): BankQuestion[] {
-  const { count, weights, rng, used = new Set<string>(), seenText = new Set<string>(), cbqShare = 0 } = options;
+  const { count, weights, rng, used = new Set<string>(), seenText = new Set<string>(), seenFacts = new Set<string>(), cbqShare = 0, fresh, freshOnly } = options;
   const out: BankQuestion[] = [];
   if (!pool.length) return out;
   const given = new Map<number, number>();
   const wantCbq = Math.round(count * cbqShare);
   let cbqTaken = 0;
   let tries = 0;
-  while (out.length < count && tries < count * 40) {
+  while (out.length < count && tries < count * 40 + pool.length * 6 + 100) {
     tries++;
     // A CBQ-style one first while the share isn't met, if any are here.
     const wantStyle = cbqTaken < wantCbq && pool.some((b) => b.style === 'cbq-style');
@@ -131,13 +174,50 @@ export function pickGenerated(set: LoadedBlueprints, pool: Blueprint[], options:
     const bp = inUnit.find((b) => !used.has(b.id)) ?? inUnit[0];
     const seed = Math.floor(rng() * 2 ** 31);
     const question = generatedQuestion(bp, seed, set.names(bp));
-    const text = textOf(question);
-    if (seenText.has(text)) continue;
+    const text = questionKey(question);
+    if (seenText.has(text) || factsOf(question).some((f) => seenFacts.has(f)) || fresh?.resting(historyKeys(question))) continue;
     seenText.add(text);
+    for (const f of factsOf(question)) seenFacts.add(f);
     used.add(bp.id);
     given.set(unit, (given.get(unit) ?? 0) + 1);
     if (bp.style === 'cbq-style') cbqTaken++;
     out.push(question);
+  }
+  // Chance alone rarely finds the last few, so this goes through every blueprint in turn, with the seeds that capacity counts.
+  if (out.length < count) {
+    for (const bp of shuffled(pool, rng)) {
+      for (let k = 1; k <= PROBE_SEEDS && out.length < count; k++) {
+        const question = generatedQuestion(bp, k * 7919, set.names(bp));
+        const text = questionKey(question);
+        if (seenText.has(text) || factsOf(question).some((f) => seenFacts.has(f)) || fresh?.resting(historyKeys(question))) continue;
+        seenText.add(text);
+        for (const f of factsOf(question)) seenFacts.add(f);
+        used.add(bp.id);
+        out.push(question);
+      }
+      if (out.length >= count) break;
+    }
+  }
+  // Every fresh fact has gone, so the ones seen longest ago come back. There is never a shorter paper for it.
+  if (out.length < count && fresh && !freshOnly) {
+    const seeds = Math.min(PROBE_SEEDS, Math.max(12, Math.ceil(4000 / pool.length)));
+    const candidates: { question: BankQuestion; at: number; bp: Blueprint }[] = [];
+    for (const bp of shuffled(pool, rng)) {
+      for (let k = 1; k <= seeds; k++) {
+        const question = generatedQuestion(bp, k * 7919, set.names(bp));
+        candidates.push({ question, at: fresh.lastSeen(historyKeys(question)), bp });
+      }
+    }
+    candidates.sort((a, b) => a.at - b.at);
+    for (const { question, bp } of candidates) {
+      if (out.length >= count) break;
+      const text = questionKey(question);
+      if (seenText.has(text) || factsOf(question).some((f) => seenFacts.has(f))) continue;
+      seenText.add(text);
+      for (const f of factsOf(question)) seenFacts.add(f);
+      used.add(bp.id);
+      out.push(question);
+    }
   }
   return out;
 }

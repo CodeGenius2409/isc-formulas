@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { questionKey } from '../../src/practice/gen/mix';
 import { allItems, blueprintMatches, buildFullPaper, buildQuestionSet, deleteItem, emptyFilters, makeSets, moveItem, officialStructure, paperFromFile, paperToFile, regenerateItem, regenerateUnlocked, totalMarks, updateItem, type Filters } from '../../src/practice/gen/teacher';
 import { loadBlueprints } from '../../src/data/blueprints';
 import { describePlan, planShare } from '../../src/practice/gen/mix';
@@ -77,7 +78,8 @@ describe('question sets', () => {
   it('have no repeated question', async () => {
     const paper = await buildQuestionSet(filters({ share: 50 }), { mode: 'count', value: 40 }, 'Physics', 5);
     const keys = allItems(paper).map((i) => i.key);
-    const texts = allItems(paper).map((i) => i.question.item.text);
+    // "Which of these statements is correct?" can head two different questions, so the options count too.
+    const texts = allItems(paper).map((i) => questionKey(i.question));
     expect(new Set(keys).size).toBe(keys.length);
     expect(new Set(texts).size).toBe(texts.length);
   });

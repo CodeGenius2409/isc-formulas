@@ -2,10 +2,12 @@
 // structures in src/data/lewis.
 import { LEWIS } from '../lewis/figures';
 import { formulaText } from '../lewis/check';
+import { derivationBlueprints } from '../derivations';
+import KNOWLEDGE from './knowledge/chemistry-xi';
 import { blueprintsFor } from './dsl';
 import type { Blueprint } from './types';
 
-const { num, mcqNum, facts, custom } = blueprintsFor('chemistry', 'XI');
+const { num, mcqNum, facts, custom, rest } = blueprintsFor('chemistry', 'XI', KNOWLEDGE);
 
 const SHAPE_IDS = ['water', 'ammonia', 'methane', 'co2', 'becl2', 'bf3', 'pcl5', 'sf4', 'clf3', 'sf6', 'brf5', 'so2'];
 const SHAPES = ['linear', 'trigonal planar', 'bent', 'tetrahedral', 'trigonal pyramidal', 'trigonal bipyramidal', 'see-saw', 'T-shaped', 'octahedral', 'square pyramidal'];
@@ -34,7 +36,7 @@ const blueprints: Blueprint[] = [
   num('moles', [1, 'b', 2, 1], {
     text: '{G} g of a substance of molar mass {M} g/mol is taken. Find the number of molecules.',
     vars: { G: [5, 90, 5], M: [18, 44, 46, 58, 180] },
-    derive: (v) => ({ N: v.G / v.M }),
+    derive: (v) => ({ N: Number((v.G / v.M).toPrecision(3)) }),
     parts: [{ ask: 'Number of molecules', use: 'c-xi-1-2', find: 'N', given: { n: 'N mol' }, marks: 2 }],
   }),
   num('molarity-xi', [1, 'c', 2, 1], {
@@ -43,7 +45,7 @@ const blueprints: Blueprint[] = [
     parts: [{ ask: 'Molarity', use: 'c-xii-2-6', find: 'M', given: { n: 'N mol', V: 'V L' }, marks: 2 }],
   }),
   num('dilution', [1, 'c', 2, 1], {
-    text: 'How much water must be added to {V} mL of a {A} M solution to make it {B} M?',
+    text: 'To what volume must {V} mL of a {A} M solution be diluted to make it {B} M?',
     vars: { V: [50, 200, 50], A: [1, 4, 1], B: [0.2, 0.8, 0.2] },
     parts: [{ ask: 'Final volume needed', use: 'c-xi-1-51', find: 'V_2', given: { M_1: 'A mol/L', V_1: 'V mL', M_2: 'B mol/L' }, marks: 2 }],
   }),
@@ -106,6 +108,7 @@ const blueprints: Blueprint[] = [
       ['The number of atoms in 1 mol of O₂ is:', '2 × 6.022 × 10²³', '6.022 × 10²³', '3 × 6.022 × 10²³', '16 × 6.022 × 10²³'],
       ['A compound with the empirical formula CH₂O and a molar mass of 180 g/mol has the molecular formula:', 'C₆H₁₂O₆', 'CH₂O', 'C₂H₄O₂', 'C₃H₆O₃'],
       ['The mass of 1 mol of water is:', '18 g', '16 g', '2 g', '20 g'],
+      ['The number of moles in 22 g of CO₂ is:', '0.5', '1', '2', '0.25'],
     ],
     reason: [
       ['Stoichiometry needs moles rather than mass.', 'Reactions go by numbers of particles.', 'Moles count particles, while masses vary with the substance.'],
@@ -114,6 +117,7 @@ const blueprints: Blueprint[] = [
       ['Empirical formula can equal the molecular formula.', 'Empirical formula can never equal the molecular formula.'],
       ['A balanced equation gives the mole ratio of reactants and products.', 'A balanced equation gives their ratio by mass directly.'],
       ['Percentage yield can’t be more than 100 for a pure product.', 'Percentage yield is usually more than 100 for a pure product.'],
+      ['One mole of any gas at STP takes up about 22.4 L.', 'One mole of any gas at STP takes up about 2.24 L.'],
     ],
     cases: [
       {
@@ -134,7 +138,6 @@ const blueprints: Blueprint[] = [
     ],
     recall: [
       ['Phenolphthalein is suitable for titrating:', 'a strong acid with a strong base', 'a weak acid with a weak base', 'a strong acid with a weak base', 'no acid at all'],
-      ['Normality is related to molarity by:', 'normality = molarity × n-factor', 'normality = molarity / n-factor', 'normality = molarity²', 'they’re always equal'],
       ['Which indicator suits a strong acid with a weak base?', 'Methyl orange', 'Phenolphthalein', 'Litmus paper only', 'Starch'],
     ],
     reason: [
@@ -143,7 +146,7 @@ const blueprints: Blueprint[] = [
     truths: [
       ['M₁V₁ = M₂V₂ applies to a dilution.', 'M₁V₁ = M₂V₂ never applies to a dilution.'],
       ['The end point of a titration comes close to the equivalence point.', 'The end point of a titration is far from the equivalence point.'],
-      ['Sodium hydroxide is not a primary standard, as it absorbs moisture.', 'Sodium hydroxide is a good primary standard.'],
+      ['A secondary standard is standardised against a primary standard.', 'A secondary standard needs no standardising.'],
     ],
   }),
 
@@ -212,7 +215,6 @@ const blueprints: Blueprint[] = [
       ['The shape of a p orbital is:', 'dumb-bell', 'spherical', 'double dumb-bell', 'ring'],
       ['Which orbital is filled first?', '4s', '3d', '4p', '4d'],
       ['The value of l for a p orbital is:', '1', '0', '2', '3'],
-      ['Chromium’s configuration ends in 3d⁵ 4s¹ because:', 'half-filled subshells are especially stable', 'the 4s orbital is full', 'it has no 3d electrons', 'it is a noble gas'],
     ],
     reason: [
       ['Copper’s configuration ends in 3d¹⁰ 4s¹.', 'A completely filled d subshell is especially stable.'],
@@ -220,8 +222,9 @@ const blueprints: Blueprint[] = [
     ],
     truths: [
       ['The s orbital is spherical.', 'The s orbital is dumb-bell shaped.'],
-      ['Each orbital holds at most two electrons.', 'Each orbital holds at most four electrons.'],
+      ['The principal quantum number fixes an orbital’s size and energy.', 'The principal quantum number fixes an orbital’s orientation.'],
       ['The magnetic quantum number shows the orientation of an orbital.', 'The magnetic quantum number shows the size of an orbital.'],
+      ['A p subshell has three orbitals.', 'A p subshell has five orbitals.'],
     ],
     compare: [
       ['an orbit', 'an orbital', ['A definite circular path in Bohr’s model.', 'A region of probability.'], ['Can hold 2n² electrons.', 'Can hold at most two electrons.']],
@@ -287,13 +290,13 @@ const blueprints: Blueprint[] = [
     text: 'A molecule has {B} electrons in bonding orbitals, and {A} in antibonding orbitals. Find its bond order.',
     vars: { B: [4, 10, 2], A: [0, 4, 2] },
     when: (v) => v.B > v.A,
-    parts: [{ ask: 'Bond order', use: 'c-xi-4-2', find: 'BO', given: { N_b: 'B', N_a: 'A' }, marks: 2 }],
+    parts: [{ ask: 'Bond order', use: 'c-xi-4-2', find: 'BO', given: { N_b: 'B', N_a: 'A' }, marks: 2, exact: true }],
   }),
   num('formal-charge', [4, 'a', 2, 2], {
     text: 'An atom with {V} valence electrons has {L} non-bonding electrons, and {S} bonding electrons, in a Lewis structure. Find its formal charge.',
     vars: { V: [4, 5, 6, 7], L: [0, 2, 4, 6], S: [2, 4, 6, 8] },
     when: (v) => v.V - v.L - v.S / 2 !== 0 && Math.abs(v.V - v.L - v.S / 2) <= 2,
-    parts: [{ ask: 'Formal charge', use: 'c-xi-4-1', find: 'FC', given: { V_e: 'V', N_e: 'L', B_e: 'S' }, marks: 2 }],
+    parts: [{ ask: 'Formal charge', use: 'c-xi-4-1', find: 'FC', given: { V_e: 'V', N_e: 'L', B_e: 'S' }, marks: 2, exact: true }],
   }),
   ...facts(4, 'a', {
     define: [
@@ -318,8 +321,9 @@ const blueprints: Blueprint[] = [
     ],
     truths: [
       ['A double bond has one sigma and one pi bond.', 'A double bond has two pi bonds.'],
-      ['Dipole moment of CO₂ is zero.', 'Dipole moment of H₂O is zero.'],
-      ['Hydrogen bonding raises the boiling point of water.', 'Hydrogen bonding lowers the boiling point of water.'],
+      ['BF₃ has no dipole moment.', 'BF₃ has a large dipole moment.'],
+      ['A triple bond has one sigma and two pi bonds.', 'A triple bond has three sigma bonds.'],
+      ['Lattice enthalpy is larger for ions with higher charges.', 'Lattice enthalpy is smaller for ions with higher charges.'],
     ],
     draw: [
       ['Draw the Lewis dot structure of ammonia.', 'Three N–H shared pairs.', 'One lone pair on nitrogen.'],
@@ -333,8 +337,8 @@ const blueprints: Blueprint[] = [
     ],
     recall: [
       ['The bond angle in methane is about:', '109.5°', '120°', '180°', '90°'],
-      ['Water’s bond angle is less than methane’s because of:', 'repulsion by lone pairs', 'its larger size', 'its ionic bond', 'its double bond'],
-      ['Which of these is paramagnetic?', 'O₂', 'N₂', 'F₂', 'H₂'],
+      ['The shape of NH₃ is:', 'trigonal pyramidal', 'trigonal planar', 'tetrahedral', 'T-shaped'],
+      ['The bond order of H₂ is:', '1', '2', '0', '½'],
       ['The carbon atoms in ethyne are:', 'sp hybridised', 'sp² hybridised', 'sp³ hybridised', 'unhybridised'],
     ],
     reason: [
@@ -347,8 +351,9 @@ const blueprints: Blueprint[] = [
     ],
     truths: [
       ['A higher bond order usually means a shorter bond.', 'A higher bond order usually means a longer bond.'],
-      ['Bond order zero means no molecule forms.', 'Bond order zero means a very stable molecule.'],
+      ['N₂ has a higher bond order than O₂.', 'O₂ has a higher bond order than N₂.'],
       ['sp³d² hybridisation gives an octahedral arrangement.', 'sp³d² hybridisation gives a linear arrangement.'],
+      ['sp² hybridisation gives bond angles of 120°.', 'sp² hybridisation gives bond angles of 109.5°.'],
     ],
   }),
 
@@ -409,10 +414,11 @@ const blueprints: Blueprint[] = [
     define: [
       ['entropy', 'A measure of how many ways a system’s energy can be spread out, often seen as its disorder.'],
       ['Gibbs free energy', 'The quantity G = H − TS, whose decrease shows that a change is spontaneous at constant T and P.'],
+      ['a spontaneous process', 'A process that goes on by itself, without outside help, once started.'],
     ],
     recall: [
       ['A reaction is spontaneous at constant temperature and pressure if:', 'ΔG is negative', 'ΔG is positive', 'ΔH is positive', 'ΔS is negative'],
-      ['Entropy is highest in the:', 'gaseous state', 'solid state', 'liquid state', 'crystal state'],
+      ['A reaction with ΔH > 0 and ΔS < 0 is:', 'never spontaneous', 'always spontaneous', 'spontaneous only at high temperature', 'spontaneous only at low temperature'],
       ['At equilibrium, ΔG is:', 'zero', 'positive', 'negative', 'infinite'],
       ['If ΔH is negative and ΔS is positive, a reaction is:', 'spontaneous at every temperature', 'never spontaneous', 'spontaneous only at low temperature', 'spontaneous only at high temperature'],
     ],
@@ -421,7 +427,7 @@ const blueprints: Blueprint[] = [
     ],
     truths: [
       ['Entropy rises when a solid melts.', 'Entropy falls when a solid melts.'],
-      ['The third law says a perfect crystal has zero entropy at absolute zero.', 'The third law says every substance has zero entropy at 0 °C.'],
+      ['By the second law, heat can’t flow by itself from a cold body to a hot one.', 'By the second law, heat can’t flow by itself from a hot body to a cold one.'],
       ['ΔG° = −RT ln K.', 'ΔG° = RT ln K.'],
     ],
     cases: [
@@ -518,8 +524,7 @@ const blueprints: Blueprint[] = [
       ['At 298 K, the pH of pure water is:', '7', '0', '1', '14'],
       ['Which is a Lewis acid?', 'BF₃', 'NH₃', 'OH⁻', 'H₂O'],
       ['An acid and base that differ by one proton are called:', 'a conjugate pair', 'a buffer', 'isomers', 'a salt'],
-      ['A solution of NH₄Cl in water is:', 'acidic', 'basic', 'neutral', 'a buffer'],
-      ['A solution of sodium ethanoate in water is:', 'basic', 'acidic', 'neutral', 'a strong acid'],
+      ['The pOH of a solution of pH 4 at 298 K is:', '10', '4', '−4', '14'],
     ],
     reason: [
       ['A solution of sodium ethanoate is basic.', 'Ethanoate ions react with water.', 'That gives ethanoic acid and hydroxide ions.'],
@@ -609,6 +614,7 @@ const blueprints: Blueprint[] = [
       ['Each member of a homologous series differs by CH₂.', 'Each member of a homologous series differs by CH₃.'],
       ['Geometrical isomerism needs restricted rotation about a bond.', 'Geometrical isomerism needs free rotation about a bond.'],
       ['Optical isomers need a chiral centre, or another source of asymmetry.', 'Optical isomers need a double bond.'],
+      ['Propanal and propanone are functional isomers.', 'Propanal and propanone are chain isomers.'],
     ],
   }),
   ...facts(8, 'b', {
@@ -693,10 +699,12 @@ const blueprints: Blueprint[] = [
     define: [
       ['Markovnikov’s rule', 'When HX adds to an unsymmetrical alkene, the hydrogen goes to the carbon that already has more hydrogens.'],
       ['ozonolysis', 'Breaking a double bond using ozone, followed by zinc and water, to give carbonyl compounds.'],
+      ['geometrical isomerism', 'Isomerism from different arrangements of groups about a double bond, which can’t rotate.'],
+      ['a carbocation', 'An ion with a positive charge on a carbon atom.'],
     ],
     recall: [
       ['Alkenes mainly undergo:', 'electrophilic addition', 'nucleophilic substitution', 'free radical addition only', 'elimination'],
-      ['Bromine water turning colourless shows the presence of:', 'a C=C or C≡C bond', 'a C–C bond', 'an –OH group', 'an aldehyde group'],
+      ['Ethene with hydrogen over nickel gives:', 'ethane', 'ethyne', 'ethanol', 'methane'],
       ['The carbon atoms in ethene are:', 'sp² hybridised', 'sp³ hybridised', 'sp hybridised', 'unhybridised'],
     ],
     reason: [
@@ -772,6 +780,8 @@ const blueprints: Blueprint[] = [
       ['A burette is rinsed with the solution it will hold.', 'Any water left inside would dilute that solution.'],
     ],
   }),
+  ...rest(),
+  ...derivationBlueprints('chemistry', 'XI', { custom } as never),
 ];
 
 export default blueprints;

@@ -1,10 +1,17 @@
 // A recursive-descent parser for the ISC subset of Java. Anything outside the subset
 // stops with a message naming the construct, rather than failing in a confusing way.
-import type { ClassDecl, Expr, FieldDecl, MethodDecl, Param, Program, Stmt, TypeRef } from './ast';
+import type { Access, ClassDecl, Expr, FieldDecl, MethodDecl, Param, Program, Stmt, TypeRef } from './ast';
 import { JavaError } from './lexer';
 import { ExpressionParser, PRIMITIVES, unsupported } from './parser-expr';
 
-const MODIFIERS = new Set(['public', 'private', 'protected', 'static', 'final']);
+const MODIFIERS = new Set(['public', 'private', 'protected', 'static', 'final', 'abstract']);
+
+interface Modifiers {
+  isStatic: boolean;
+  isAbstract: boolean;
+  isFinal: boolean;
+  access: Access;
+}
 
 class Parser extends ExpressionParser {
   parseProgram(): Program {
@@ -20,28 +27,52 @@ class Parser extends ExpressionParser {
     return { classes };
   }
 
-  protected skipModifiers(): { isStatic: boolean } {
-    let isStatic = false;
+  protected skipModifiers(): Modifiers {
+    const found: Modifiers = { isStatic: false, isAbstract: false, isFinal: false, access: 'package' };
     for (;;) {
       this.checkUnsupported();
       if (this.tok.type === 'keyword' && MODIFIERS.has(this.tok.text)) {
-        if (this.tok.text === 'static') isStatic = true;
+        const word = this.tok.text;
+        if (word === 'static') found.isStatic = true;
+        else if (word === 'abstract') found.isAbstract = true;
+        else if (word === 'final') found.isFinal = true;
+        else found.access = word as Access;
         this.pos++;
-      } else return { isStatic };
+      } else return found;
     }
   }
 
   protected parseClass(): ClassDecl {
-    this.skipModifiers();
-    if (!this.acceptKw('class')) {
+    const mods = this.skipModifiers();
+    const isInterface = this.acceptKw('interface');
+    if (!isInterface && !this.acceptKw('class')) {
       this.checkUnsupported();
       throw new JavaError(`Expected a class here, but found "${this.tok.text}".`, this.tok.line);
     }
-    const nameTok = this.expectIdent('a class name');
+    const nameTok = this.expectIdent(isInterface ? 'an interface name' : 'a class name');
     if (this.isOp('<')) throw unsupported('Generic classes', this.tok.line);
+    const names = () => {
+      const list: string[] = [];
+      do {
+        list.push(this.expectIdent('a class or interface name').text);
+        if (this.isOp('<')) throw unsupported('Generic types', this.tok.line);
+      } while (this.acceptOp(','));
+      return list;
+    };
+    const cls: ClassDecl = { name: nameTok.text, line: nameTok.line, interfaces: [], isInterface, isAbstract: mods.isAbstract || isInterface, isFinal: mods.isFinal, fields: [], methods: [], ctors: [] };
+    if (this.acceptKw('extends')) {
+      if (isInterface) cls.interfaces = names();
+      else {
+        cls.superName = this.expectIdent('the class to extend').text;
+        if (this.isOp(',')) throw new JavaError(`A class can extend only one class. ${cls.name} can implement several interfaces instead.`, this.tok.line);
+      }
+    }
+    if (this.acceptKw('implements')) {
+      if (isInterface) throw new JavaError('An interface uses extends, not implements.', this.tok.line);
+      cls.interfaces = names();
+    }
     this.checkUnsupported();
     this.expectOp('{', 'to start the class');
-    const cls: ClassDecl = { name: nameTok.text, line: nameTok.line, fields: [], methods: [], ctors: [] };
     while (!this.isOp('}')) {
       if (this.tok.type === 'eof') throw new JavaError(`Class ${cls.name} is missing its closing }.`, this.tok.line);
       this.parseMember(cls);
@@ -53,20 +84,24 @@ class Parser extends ExpressionParser {
   protected parseMember(cls: ClassDecl): void {
     if (this.isOp('{')) throw unsupported('Initializer blocks', this.tok.line);
     if (this.isKw('static') && this.peek().text === '{') throw unsupported('Static initializer blocks', this.tok.line);
-    const { isStatic } = this.skipModifiers();
-    if (this.isKw('class')) throw unsupported('Nested classes', this.tok.line);
+    if (this.isKw('default')) throw unsupported('Default methods in interfaces', this.tok.line);
+    const mods = this.skipModifiers();
+    if (this.isKw('class') || this.isKw('interface')) throw unsupported('Nested classes and interfaces', this.tok.line);
+    if (this.isKw('default')) throw unsupported('Default methods in interfaces', this.tok.line);
+    const { isStatic } = mods;
     const line = this.tok.line;
 
     // A constructor is the class name directly followed by "(".
     if (this.tok.type === 'ident' && this.tok.text === cls.name && this.peek().text === '(') {
+      if (cls.isInterface) throw new JavaError('An interface cannot have a constructor.', line);
       this.next();
-      cls.ctors.push(this.parseMethodRest(cls.name, '<init>', { name: 'void', dims: 0 }, false, line));
+      cls.ctors.push(this.parseMethodRest(cls, '<init>', { name: 'void', dims: 0 }, { ...mods, isStatic: false }, line));
       return;
     }
     const type = this.parseType(true);
     const nameTok = this.expectIdent('a name');
     if (this.isOp('(')) {
-      cls.methods.push(this.parseMethodRest(cls.name, nameTok.text, type, isStatic, line));
+      cls.methods.push(this.parseMethodRest(cls, nameTok.text, type, mods, line));
       return;
     }
     // Fields, possibly several on one line.
@@ -78,7 +113,9 @@ class Parser extends ExpressionParser {
         dims++;
       }
       const init = this.acceptOp('=') ? this.parseVarInit() : null;
-      const field: FieldDecl = { name, type: { name: type.name, dims }, isStatic, init, line };
+      // A field in an interface is a constant, whatever it says.
+      if (cls.isInterface && !init) throw new JavaError(`The constant ${name} in an interface needs a value.`, line);
+      const field: FieldDecl = { name, type: { name: type.name, dims }, isStatic: isStatic || Boolean(cls.isInterface), access: cls.isInterface ? 'public' : mods.access, init, line };
       cls.fields.push(field);
       if (!this.acceptOp(',')) break;
       name = this.expectIdent('a field name').text;
@@ -86,7 +123,7 @@ class Parser extends ExpressionParser {
     this.expectOp(';', 'after the field');
   }
 
-  protected parseMethodRest(className: string, name: string, ret: TypeRef, isStatic: boolean, line: number): MethodDecl {
+  protected parseMethodRest(cls: ClassDecl, name: string, ret: TypeRef, mods: Modifiers, line: number): MethodDecl {
     this.expectOp('(');
     const params: Param[] = [];
     if (!this.isOp(')')) {
@@ -110,8 +147,18 @@ class Parser extends ExpressionParser {
         this.expectIdent('an exception name');
       } while (this.acceptOp(','));
     }
-    if (this.isOp(';')) throw unsupported('Methods without a body', this.tok.line);
-    return { name, className, ret, params, isStatic, body: this.parseBlockBody(), line };
+    // A method in an interface is public, and has no body unless it is static.
+    const access: Access = cls.isInterface ? 'public' : mods.access;
+    const base = { name, className: cls.name, ret, params, isStatic: mods.isStatic, access, isFinal: mods.isFinal, line };
+    if (this.isOp(';')) {
+      if (!mods.isAbstract && !cls.isInterface) throw new JavaError(`${name} has no body. Give it one, or declare it abstract.`, this.tok.line);
+      if (mods.isStatic) throw new JavaError(`The static method ${name} needs a body.`, this.tok.line);
+      this.next();
+      return { ...base, isAbstract: true, body: [] };
+    }
+    if (mods.isAbstract) throw new JavaError(`The abstract method ${name} cannot have a body.`, this.tok.line);
+    if (cls.isInterface && !mods.isStatic) throw unsupported('Default methods in interfaces', this.tok.line);
+    return { ...base, body: this.parseBlockBody() };
   }
 
   protected parseBlockBody(): Stmt[] {
@@ -228,7 +275,7 @@ class Parser extends ExpressionParser {
     }
     if (t.type === 'ident' && this.peek().text === ':') throw unsupported('Statement labels', line);
     const expr = this.parseExpr();
-    if (!['assign', 'incdec', 'call', 'new'].includes(expr.k)) throw new JavaError('This is not a statement. It calculates a value but does nothing with it.', line);
+    if (!['assign', 'incdec', 'call', 'new', 'ctorcall'].includes(expr.k)) throw new JavaError('This is not a statement. It calculates a value but does nothing with it.', line);
     this.expectOp(';', 'at the end of the statement');
     return { k: 'expr', line, expr };
   }

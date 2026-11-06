@@ -1,11 +1,13 @@
 // Loads a class's questions on first need, and turns a definition into one attempt at it. Numerical
 // answers always come from the solver registry, so they can't drift from what the solver says.
+import { derivationDefs } from '../../data/derivations';
 import { loadSyllabus } from '../../data/syllabus';
 import { retryImport } from '../../lib/retry-import';
 import type { ClassLevel, SubjectId } from '../../data/types';
 import { getEntry } from '../../solver/registry';
 import { solve, varTex, type SolveInput, type Step } from '../../solver/solve';
 import { unitLabel } from '../../solver/unit-label';
+import { plainNumber } from '../../solver/units';
 import { pickUnitChoices, seededRng, type Rng } from '../questions';
 import { bankOfId } from './define';
 import type { BankDef, BankItem, BankQuestion, NumericDef, NumericItem, NumericPart } from './types';
@@ -41,7 +43,7 @@ export function loadBank(subject: SubjectId, level: ClassLevel): Promise<LoadedB
         names.set(String(unit.number), unit.name);
         for (const topic of unit.topics) names.set(`${unit.number} ${topic.key}`, topic.name);
       }
-      return { defs: module.default, names };
+      return { defs: [...module.default, ...derivationDefs(subject, level)], names };
     });
     cache.set(key, loading);
     // A failed load isn't kept, so the next try starts again.
@@ -73,7 +75,8 @@ function drawVars(def: NumericDef, rng: Rng): Record<string, number> {
 }
 
 function fill(text: string, values: Record<string, number>): string {
-  return text.replace(/\{([A-Za-z]\w*)\}/g, (whole, name: string) => (name in values ? String(values[name]) : whole));
+  // A negative value in a question reads with a true minus sign, −60, not -60.
+  return text.replace(/\{([A-Za-z]\w*)\}/g, (whole, name: string) => (name in values ? String(values[name]).replace(/^-/, '−') : whole));
 }
 
 function fillDeep<T>(spec: T, values: Record<string, number>): T {
@@ -106,14 +109,15 @@ export function buildParts(def: Pick<NumericDef, 'id' | 'subject' | 'parts'>, va
       const [, minus, name, factor] = /^(-?)([^*]+)(?:\*(.+))?$/.exec(written)!;
       const size = (name in values ? values[name] : Number(name)) * Number(factor ?? 1);
       if (!Number.isFinite(size)) throw new Error(`${def.id}: can't read "${spec}"`);
-      inputs[v.symbol] = { raw: String(minus ? -size : size), unit: unit ?? v.unit };
+      inputs[v.symbol] = { raw: plainNumber(minus ? -size : size), unit: unit ?? v.unit };
     }
-    const outcome = solve(entry, part.find, inputs, { resultUnit: part.unit, exact: def.subject === 'mathematics' });
+    const outcome = solve(entry, part.find, inputs, { resultUnit: part.unit, exact: part.exact ?? def.subject === 'mathematics' });
     if (!outcome.ok) return null;
-    const roots = outcome.roots.filter((r) => !r.rejected);
+    const roots = outcome.roots.filter((r) => !r.rejected && (!part.positive || r.value > 0));
     if (!roots.length || roots.some((r) => !Number.isFinite(r.shown) || Math.abs(r.shown) < 1e-40)) return null;
     const target = entry.vars.find((v) => v.symbol === part.find)!;
-    if (part.save) saved[part.save] = { raw: String(roots[0].value), unit: target.unit };
+    // A later part uses this value as a student would, rounded to 3 figures, so its own answer has 3 figures too.
+    if (part.save) saved[part.save] = { raw: plainNumber(Number(roots[0].value.toPrecision(3))), unit: target.unit };
     const unit = roots[0].unit;
     const steps: Step[] = outcome.steps;
     parts.push({

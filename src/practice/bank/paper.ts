@@ -4,10 +4,11 @@ import { loadSyllabus } from '../../data/syllabus';
 import type { ClassLevel, SubjectId } from '../../data/types';
 import { createStore } from '../../lib/store';
 import { readJson, writeJson } from '../../lib/storage';
-import { papersImported, recordAnswer } from '../progress';
+import { noteMissedSteps, papersImported, recordAnswer, studentFreshness } from '../progress';
 import { seededRng, type Rng } from '../questions';
 import { loadBlueprints, type LoadedBlueprints } from '../../data/blueprints';
-import { CBQ_SHARE, generatedCount, pickGenerated, planShare, type SlotCount } from '../gen/mix';
+import { CBQ_SHARE, defKeys, generatedCount, historyKeys, pickGenerated, planShare, type Freshness, type SlotCount } from '../gen/mix';
+import { ensureFactHistory, factGapStore, noteFactsShown } from '../fact-history';
 import { bankQuestion, loadBank, type LoadedBank } from './index';
 import { answerSummary, isAttempted, isPassing, qualityOf, scoreOf, yourAnswerSummary } from './mark';
 import type { BankAnswer, BankDef, BankItem, BankQuestion } from './types';
@@ -94,8 +95,16 @@ export interface Paper {
   timedOut?: boolean;
   /** With the subject, class and share, this rebuilds the same paper. */
   seed?: number;
+  /** Whether figures are shown. Those a question can't do without stay either way. */
+  diagrams?: boolean;
   /** The share of generated questions asked for, from 0 to 100. */
   generatedShare?: number;
+  /** Set when this paper ran out of unseen facts. */
+  repeatNote?: string;
+  /** Generated questions only from reviewed blueprints. */
+  reviewedOnly?: boolean;
+  /** Set when there weren't enough reviewed blueprints, so some unreviewed ones filled the paper. */
+  reviewNote?: string;
 }
 
 export interface TopicResult {
@@ -117,7 +126,11 @@ export interface PaperResult {
   topics: TopicResult[];
   seed?: number;
   generatedShare?: number;
+  reviewedOnly?: boolean;
 }
+
+/** Off by default: unreviewed blueprints stay in use, with their note. */
+export const paperReviewedOnlyStore = createStore<boolean>(readJson<boolean>('isc-paper-reviewed-only', false), (v) => writeJson('isc-paper-reviewed-only', v));
 
 export const paperStore = createStore<Paper | null>(readJson<Paper | null>(CURRENT_KEY, null), (v) => writeJson(CURRENT_KEY, v));
 export const paperHistoryStore = createStore<PaperResult[]>(readJson<PaperResult[]>(HISTORY_KEY, []), (v) => writeJson(HISTORY_KEY, v));
@@ -166,6 +179,10 @@ function draw(pool: BankDef[], count: number, weights: Map<number, number>, used
   return out;
 }
 
+export async function unitWeightsForTest(subject: SubjectId, level: ClassLevel): Promise<Map<number, number>> {
+  return unitWeights(subject, level);
+}
+
 async function unitWeights(subject: SubjectId, level: ClassLevel): Promise<Map<number, number>> {
   const syllabus = await loadSyllabus(subject);
   const groups = syllabus.classes.find((c) => c.level === level)?.markGroups ?? [];
@@ -174,9 +191,39 @@ async function unitWeights(subject: SubjectId, level: ClassLevel): Promise<Map<n
   return weights;
 }
 
+/**
+ * The share of each mark value that is a derivation or proof, from the board and specimen papers in the analysis.
+ * Computer Science has none. See reports/derivations.md.
+ */
+export const DERIVATION_SHARE: Record<SubjectId, Record<number, number>> = {
+  physics: { 2: 0.03, 3: 0.58, 5: 0.33 },
+  chemistry: { 2: 0.04, 3: 0.04 },
+  mathematics: { 2: 0.08, 3: 0.08, 4: 0.3, 5: 0.18, 6: 0.09 },
+  computerscience: {},
+};
+
+const isDerivationType = (type: string) => type === 'derivation' || type === 'proof';
+
 export interface GeneratedOption {
   set: LoadedBlueprints;
   share: number;
+  /** What has been seen lately, so that unseen facts come first. */
+  fresh?: Freshness;
+  /** Only reviewed blueprints, unless there aren't enough of them. */
+  reviewedOnly?: boolean;
+}
+
+/** The short note when a choice has run out of unseen facts. Nothing is said when it hasn't. */
+export function repeatNoteFor(count: number, gapDays: number): string | undefined {
+  if (!count) return undefined;
+  const span = gapDays === 1 ? 'the last day' : `the last ${gapDays} days`;
+  return `You’ve seen nearly everything here in ${span}, so ${count} ${count === 1 ? 'question comes' : 'questions come'} from what you saw longest ago.`;
+}
+
+/** The short note when "Only reviewed questions" couldn't be kept to. */
+export function reviewNoteFor(count: number): string | undefined {
+  if (!count) return undefined;
+  return `There weren’t enough reviewed questions for every place, so ${count} ${count === 1 ? 'question comes' : 'questions come'} from patterns not yet reviewed, and ${count === 1 ? 'is' : 'are'} marked.`;
 }
 
 /** The slots of a paper, with what the bank can supply for each, so a share can be planned and explained. */
@@ -200,26 +247,84 @@ export function assemblePaper(subject: SubjectId, level: ClassLevel, bank: Loade
   const used = new Set<string>();
   const usedBlueprints = new Set<string>();
   const seenText = new Set<string>();
+  const seenFacts = new Set<string>();
   const share = generated ? planShare(paperSlots(subject, level, bank), generated.share).share : 0;
+  const fresh = generated?.fresh;
+  let unreviewedFill = 0;
   const sections = spec.sections.map((section) => {
     const questions = section.slots.flatMap((slot) => {
       const inSection = (unit: number) => !section.units || section.units.includes(unit);
-      const pool = bank.defs.filter((d) => d.marks === slot.marks && inSection(d.unit) && !used.has(d.id));
-      const made = generated ? pickGenerated(generated.set, generated.set.blueprints.filter((b) => b.marks === slot.marks && inSection(b.unit)), { count: Math.max(generatedCount(slot.count, share), slot.count - pool.length), weights, rng, used: usedBlueprints, seenText, cbqShare: CBQ_SHARE }) : [];
-      const fromBank = slot.count - made.length;
-      const defs = fromBank > 0 ? draw(bank.defs.filter((d) => d.marks === slot.marks && inSection(d.unit)), fromBank, weights, used, rng) : [];
-      return shuffled([...defs.map((d) => bankQuestion(d, bank, rng)), ...made], rng);
+      const notAsked = (d: BankDef) => !(d.facts ?? []).some((f) => seenFacts.has(f));
+      const bankFor = (wantDerivation: boolean | null) => bank.defs.filter((d) => d.marks === slot.marks && inSection(d.unit) && !used.has(d.id) && notAsked(d) && (wantDerivation === null || isDerivationType(d.type) === wantDerivation));
+      const anyBlueprintFor = (wantDerivation: boolean | null) => (generated?.set.blueprints ?? []).filter((b) => b.marks === slot.marks && inSection(b.unit) && (wantDerivation === null || isDerivationType(b.type) === wantDerivation));
+      const blueprintsFor = (wantDerivation: boolean | null) => anyBlueprintFor(wantDerivation).filter((b) => !generated?.reviewedOnly || b.reviewed === true);
+      const pickMade = (pool: ReturnType<typeof blueprintsFor>, count: number, cbqShare = 0) => (generated && count > 0 ? pickGenerated(generated.set, pool, { count, weights, rng, used: usedBlueprints, seenText, seenFacts, cbqShare, fresh, freshOnly: true }) : []);
+      const takeBank = (all: BankDef[], count: number) => {
+        const pool = fresh ? all.filter((d) => !fresh.resting(defKeys(d))) : all;
+        const defs = count > 0 && pool.length ? draw(pool, Math.min(count, pool.length), weights, used, rng) : [];
+        for (const d of defs) for (const f of d.facts ?? []) seenFacts.add(f);
+        return defs;
+      };
+      // When the unseen ones have run out, the ones seen longest ago come back, bank or generated, as the slider leans.
+      const takeOldBank = (all: BankDef[], count: number) => {
+        if (!fresh || count <= 0) return [];
+        const defs = [...all].sort((a, b) => fresh.lastSeen(defKeys(a)) - fresh.lastSeen(defKeys(b))).slice(0, count);
+        for (const d of defs) {
+          used.add(d.id);
+          for (const f of d.facts ?? []) seenFacts.add(f);
+        }
+        return defs;
+      };
+      const pickOld = (pool: ReturnType<typeof blueprintsFor>, count: number) => (generated && fresh && count > 0 ? pickGenerated(generated.set, pool, { count, weights, rng, used: usedBlueprints, seenText, seenFacts, fresh }) : []);
+      // Derivations first, in the share the real papers give them, from the bank or generated as the slider says.
+      const wantDerivations = Math.round(slot.count * (DERIVATION_SHARE[subject][slot.marks] ?? 0));
+      const genDerivations = pickMade(blueprintsFor(true), generatedCount(wantDerivations, share));
+      const bankDerivations = takeBank(bankFor(true), wantDerivations - genDerivations.length);
+      const lateDerivations = pickMade(blueprintsFor(true), wantDerivations - genDerivations.length - bankDerivations.length);
+      const oldBankDerivations = takeOldBank(bankFor(true), wantDerivations - genDerivations.length - bankDerivations.length - lateDerivations.length);
+      const oldDerivations = pickOld(blueprintsFor(true), wantDerivations - genDerivations.length - bankDerivations.length - lateDerivations.length - oldBankDerivations.length);
+      const derivationCount = genDerivations.length + bankDerivations.length + lateDerivations.length + oldBankDerivations.length + oldDerivations.length;
+      // Then everything else.
+      const others = slot.count - derivationCount;
+      const pool = bankFor(false);
+      const made = pickMade(blueprintsFor(false), generatedCount(others, share), CBQ_SHARE);
+      const defs = takeBank(pool, others - made.length);
+      // A paper is never handed out short: if one kind runs out, anything of the right marks fills the rest, whatever the slider says.
+      let left = others - made.length - defs.length;
+      const moreBank = takeBank(bankFor(null), left);
+      left -= moreBank.length;
+      // At 0% the bank's older questions come before anything generated.
+      const oldFirst = share === 0 ? takeOldBank(bankFor(null), left) : [];
+      left -= oldFirst.length;
+      const fill = pickMade(blueprintsFor(null), left);
+      left -= fill.length;
+      const oldMade = pickOld(blueprintsFor(null), left);
+      left -= oldMade.length;
+      const oldLast = takeOldBank(bankFor(null), left);
+      left -= oldLast.length;
+      // Only when nothing reviewed is left does an unreviewed one fill a gap, and the paper says so.
+      const unreviewed = generated?.reviewedOnly && left > 0 ? pickGenerated(generated.set, anyBlueprintFor(null), { count: left, weights, rng, used: usedBlueprints, seenText, seenFacts, fresh }) : [];
+      left -= unreviewed.length;
+      unreviewedFill += unreviewed.length;
+      if (left > 0) throw new Error(`There are too few ${slot.marks}-mark questions for this paper.`);
+      return shuffled([...[...bankDerivations, ...oldBankDerivations, ...defs, ...moreBank, ...oldFirst, ...oldLast].map((d) => bankQuestion(d, bank, rng)), ...genDerivations, ...lateDerivations, ...oldDerivations, ...made, ...fill, ...oldMade, ...unreviewed], rng);
     });
     return { name: section.name, note: section.note, choose: section.choose, questions };
   });
-  return { subject, level, total: spec.total, startedAt: now, endsAt: now + PAPER_MINUTES * 60_000, sections, answers: {}, generatedShare: generated ? share : 0 };
+  return { subject, level, total: spec.total, startedAt: now, endsAt: now + PAPER_MINUTES * 60_000, sections, answers: {}, generatedShare: generated ? share : 0, ...(generated?.reviewedOnly ? { reviewedOnly: true, reviewNote: reviewNoteFor(unreviewedFill) } : {}) };
 }
 
-export async function startPaper(subject: SubjectId, level: ClassLevel, options: { share?: number; seed?: number } = {}): Promise<Paper> {
+export async function startPaper(subject: SubjectId, level: ClassLevel, options: { share?: number; seed?: number; diagrams?: boolean; reviewedOnly?: boolean } = {}): Promise<Paper> {
   const share = options.share ?? 0;
-  const [bank, weights, set] = await Promise.all([loadBank(subject, level), unitWeights(subject, level), share > 0 ? loadBlueprints(subject, level) : null]);
+  const [bank, weights, set] = await Promise.all([loadBank(subject, level), unitWeights(subject, level), loadBlueprints(subject, level), ensureFactHistory()]);
   const seed = options.seed ?? Math.floor(Math.random() * 2 ** 31);
-  const paper = { ...assemblePaper(subject, level, bank, weights, seededRng(seed), Date.now(), set ? { set, share } : undefined), seed };
+  // A paper opened from a link has to come out the same, so history has no say in it.
+  const fresh = options.seed === undefined ? studentFreshness() : undefined;
+  const built = assemblePaper(subject, level, bank, weights, seededRng(seed), Date.now(), { set, share, fresh, reviewedOnly: options.reviewedOnly });
+  const shown = built.sections.flatMap((s) => s.questions.map(historyKeys));
+  const repeats = fresh ? shown.filter((keys) => fresh.resting(keys)).length : 0;
+  const paper = { ...built, seed, diagrams: options.diagrams ?? true, repeatNote: repeatNoteFor(repeats, factGapStore.get()) };
+  noteFactsShown(shown.flat());
   paperStore.set(paper);
   return paper;
 }
@@ -271,6 +376,7 @@ export function paperResult(paper: Paper): PaperResult {
     topics: [...topics.values()].sort((a, b) => a.got / a.outOf - b.got / b.outOf || b.outOf - a.outOf),
     seed: paper.seed,
     generatedShare: paper.generatedShare,
+    ...(paper.reviewedOnly ? { reviewedOnly: true } : {}),
   };
 }
 
@@ -287,6 +393,7 @@ export function finishMarking(): PaperResult | null {
       // In an "any two" section, a question left alone isn't a mistake. Choosing not to answer is allowed.
       if (section.choose && (!counted.has(item.id) || !isAttempted(item, answer))) continue;
       const score = scoreOf(item, answer);
+      if (item.form === 'theory') noteMissedSteps(item.stepBlueprint, item.points, answer?.ticks);
       recordAnswer({
         question,
         correct: isPassing(item, score),

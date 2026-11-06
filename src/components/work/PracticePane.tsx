@@ -1,4 +1,6 @@
 import { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState, type FormEvent } from 'react';
+import { noteFactsShown } from '../../practice/fact-history';
+import { historyKeys } from '../../practice/gen/mix';
 import { CircleCheck, CircleX, FileText, ListChecks, Lightbulb, RotateCcw, Sparkles, Wand2 } from 'lucide-react';
 import { loadSyllabus } from '../../data/syllabus';
 import type { ClassLevel, SubjectId } from '../../data/types';
@@ -39,6 +41,7 @@ export default function PracticePane() {
   const item = session.items[session.index];
   return (
     <div>
+      <NoteShown keys={historyKeys(item.question)} />
       <div className="mb-2 flex items-center justify-between gap-2 text-step--1 text-ink-2">
         <span>
           {session.title}: <span className="num">{session.index + 1}</span> of <span className="num">{session.items.length}</span>
@@ -47,6 +50,11 @@ export default function PracticePane() {
           End session
         </button>
       </div>
+      {session.note && session.index === 0 && (
+        <p className="notice mb-2" role="status" data-testid="repeat-note">
+          {session.note}
+        </p>
+      )}
       {item.question.kind === 'bank' ? (
         <BankCard key={`${session.index}-${item.question.formulaId}`} question={item.question} mistakeId={item.mistakeId} />
       ) : (
@@ -54,6 +62,13 @@ export default function PracticePane() {
       )}
     </div>
   );
+}
+
+/** Counts a fact as shown once it's on screen, not when the session was put together. */
+function NoteShown({ keys }: { keys: string[] }) {
+  const id = keys.join('|');
+  useEffect(() => noteFactsShown(id.split('|')), [id]);
+  return null;
 }
 
 function PracticeHome() {

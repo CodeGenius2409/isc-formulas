@@ -5,8 +5,8 @@ import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { setTheme, waitForServiceWorker, watchProblems } from './helpers';
 
-/** A question's own words, with its marks and buttons left out. */
-const promptOf = async (item: Locator): Promise<string> => (await item.locator('.bank-prompt').first().innerText()).replace(/\s+/g, ' ').trim();
+/** Which question this is. Its id, as the words can change while a formula is still being typeset. */
+const promptOf = async (item: Locator): Promise<string> => (await item.getAttribute('data-key')) ?? '';
 
 /** The names of the files in a .docx, which is a zip. */
 function zipNames(buffer: Buffer): string[] {

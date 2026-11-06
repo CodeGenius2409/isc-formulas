@@ -1,8 +1,10 @@
 // Physics, Class XI. Numericals are answered by the solver registry. The facts are written for this app.
+import { derivationBlueprints } from '../derivations';
+import KNOWLEDGE from './knowledge/physics-xi';
 import { blueprintsFor } from './dsl';
 import type { Blueprint } from './types';
 
-const { num, mcqNum, facts } = blueprintsFor('physics', 'XI');
+const { num, mcqNum, facts, rest, custom } = blueprintsFor('physics', 'XI', KNOWLEDGE);
 
 const blueprints: Blueprint[] = [
   // ---- Unit 1: Measurement
@@ -70,7 +72,7 @@ const blueprints: Blueprint[] = [
   num('uniform', [2, 'a', 2, 1], {
     variants: [
       { text: '{scene} starts from rest and accelerates uniformly at {A} m/s² for {T} s. How far does it travel?', parts: [{ ask: 'Distance', use: 'p-xi-2-5', find: 's', given: { u: '0 m/s', a: 'A m/s^2', t: 'T s' }, marks: 2 }] },
-      { text: '{scene} starts at {U} m/s and accelerates uniformly at {A} m/s² over {S} m. Find its final speed.', parts: [{ ask: 'Final speed', use: 'p-xi-2-6', find: 'v', given: { u: 'U m/s', a: 'A m/s^2', s: 'S m' }, marks: 2 }] },
+      { text: '{scene} starts at {U} m/s and accelerates uniformly at {A} m/s² over {S} m. Find its final speed.', parts: [{ ask: 'Final speed', use: 'p-xi-2-6', find: 'v', given: { u: 'U m/s', a: 'A m/s^2', s: 'S m' }, positive: true, marks: 2 }] },
     ],
     scenes: ['A scooter', 'A train leaving a station', 'A cyclist'],
     vars: { A: [1, 4, 1], T: [2, 10, 2], U: [2, 12, 2], S: [10, 60, 10] },
@@ -96,7 +98,7 @@ const blueprints: Blueprint[] = [
   }),
   mcqNum('projectile-range', [2, 'b', 1, 1], {
     text: 'A ball is thrown at {U} m/s, at {T}° to the ground. Its range is about:',
-    vars: { U: [10, 40, 5], T: [30, 45, 60] },
+    vars: { U: [10, 40, 5], T: [30, 60, 15] },
     use: 'p-xi-2-10',
     find: 'R_h',
     given: { u: 'U m/s', theta: 'T deg' },
@@ -111,7 +113,7 @@ const blueprints: Blueprint[] = [
   }),
   num('projectile', [2, 'b', 3, 2], {
     text: 'A cricket ball is hit at {U} m/s at {T}° to the horizontal. Take g = 9.8 m/s².',
-    vars: { U: [10, 40, 5], T: [30, 45, 60] },
+    vars: { U: [10, 40, 5], T: [30, 60, 15] },
     parts: [
       { ask: 'Time of flight', use: 'p-xi-2-8', find: 'T', given: { u: 'U m/s', theta: 'T deg' }, marks: 1 },
       { ask: 'Greatest height', use: 'p-xi-2-9', find: 'H', given: { u: 'U m/s', theta: 'T deg' }, marks: 1 },
@@ -133,7 +135,7 @@ const blueprints: Blueprint[] = [
   num('vectors-resultant', [2, 'b', 2, 2], {
     diagram: (v) => ({ kind: 'vectors', a: `${v.A} m/s`, b: `${v.B} m/s`, angle: `${v.T}°`, deg: v.T }),
     text: 'A body has two velocities of {A} m/s and {B} m/s at the same time, at {T}° to each other. Find the size of the resultant velocity.',
-    vars: { A: [3, 12, 1], B: [4, 12, 1], T: [60, 90, 120] },
+    vars: { A: [3, 12, 1], B: [4, 12, 1], T: [60, 120, 30] },
     parts: [{ ask: 'Size of the resultant', use: 'p-xi-2-113', find: 'R_v', given: { A: 'A m/s', B: 'B m/s', theta: 'T deg' }, unit: 'm/s', marks: 2 }],
   }),
   ...facts(2, 'a', {
@@ -144,8 +146,6 @@ const blueprints: Blueprint[] = [
     ],
     recall: [
       ['The slope of a velocity–time graph gives:', 'acceleration', 'displacement', 'speed', 'distance'],
-      ['The area under a velocity–time graph gives:', 'displacement', 'acceleration', 'force', 'time'],
-      ['An object thrown straight up, at its highest point, has:', 'zero velocity and acceleration g', 'zero velocity and zero acceleration', 'zero acceleration only', 'its greatest speed'],
       ['In free fall, ignoring air, all bodies have the same:', 'acceleration', 'mass', 'momentum', 'weight'],
     ],
     reason: [
@@ -246,7 +246,7 @@ const blueprints: Blueprint[] = [
   }),
   num('incline', [3, 'b', 2, 2], {
     text: 'A block slides down a {T}° slope with a coefficient of kinetic friction of {U}. Find its acceleration.',
-    vars: { T: [30, 45, 60], U: [0.1, 0.3, 0.1] },
+    vars: { T: [30, 60, 15], U: [0.1, 0.3, 0.1] },
     parts: [{ ask: 'Acceleration down the slope', use: 'p-xi-3-9', find: 'a', given: { theta: 'T deg', mu: 'U' }, marks: 2 }],
     diagram: (v) => ({ kind: 'incline', angle: `${v.T}°`, m: 'm', mu: `μ = ${v.U}` }),
     sim: (v) => ({ id: 'inclined', preset: { deg: v.T, mu: v.U } }),
@@ -1068,26 +1068,22 @@ const blueprints: Blueprint[] = [
       ['a progressive wave', 'A wave that carries energy from one place to another.'],
       ['a stationary wave', 'A wave pattern from two equal waves moving in opposite directions, with fixed nodes and antinodes.'],
       ['beats', 'Regular rises and falls in loudness, from two sounds of slightly different frequencies.'],
-      ['the Doppler effect', 'The apparent change in frequency caused by relative motion of the source and the observer.'],
     ],
     recall: [
       ['Sound waves in air are:', 'longitudinal', 'transverse', 'electromagnetic', 'stationary always'],
-      ['A closed pipe’s harmonics are:', 'odd only', 'even only', 'all of them', 'none of them'],
       ['The beat frequency of 256 Hz and 260 Hz is:', '4 Hz', '258 Hz', '516 Hz', '2 Hz'],
       ['The distance between two adjacent nodes in a stationary wave is:', 'half a wavelength', 'one wavelength', 'a quarter of a wavelength', 'two wavelengths'],
-      ['The speed of sound in air, as temperature rises:', 'increases', 'decreases', 'stays the same', 'goes to zero'],
     ],
     reason: [
       ['Sound travels faster in steel than in air.', 'Steel has a very high elasticity, which more than makes up for its high density.'],
       ['Sound can’t travel in a vacuum.', 'It needs a medium to carry its vibrations.'],
-      ['The pitch of a passing ambulance’s siren falls as it passes.', 'Waves are bunched up as it approaches.', 'Then they’re stretched out as it moves away.'],
     ],
     compare: [
       ['transverse waves', 'longitudinal waves', ['Particles vibrate at right angles to the wave.', 'Particles vibrate along the wave.'], ['Form crests and troughs.', 'Form compressions and rarefactions.']],
       ['progressive waves', 'stationary waves', ['Carry energy along.', 'Don’t carry energy along.'], ['All particles have the same amplitude.', 'Amplitude varies from zero at nodes to a maximum at antinodes.']],
     ],
     truths: [
-      ['An open pipe has all harmonics.', 'An open pipe has only odd harmonics.'],
+      ['The first overtone of an open pipe is its second harmonic.', 'The first overtone of an open pipe is its third harmonic.'],
       ['Frequency doesn’t change when sound enters another medium.', 'Frequency always changes when sound enters another medium.'],
       ['Speed of a wave on a string depends on its tension.', 'Speed of a wave on a string doesn’t depend on its tension.'],
     ],
@@ -1105,6 +1101,8 @@ const blueprints: Blueprint[] = [
       },
     ],
   }),
+  ...rest(),
+  ...derivationBlueprints('physics', 'XI', { custom } as never),
 ];
 
 export default blueprints;

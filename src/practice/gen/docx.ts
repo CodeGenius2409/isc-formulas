@@ -1,9 +1,11 @@
 // An editable Word file of a paper or its answer key. The library loads only when someone asks for one.
 import { createElement } from 'react';
-import { BankDiagram } from '../../components/bank/BankDiagram';
+import { BankDiagram, describe } from '../../components/bank/BankDiagram';
+import type { DiagramSpec } from '../bank/diagram';
+import { markFigures, withFigureNote } from './figures';
 import { loadStructures } from '../../data/structures';
 import type { BankItem } from '../bank/types';
-import { allItems, type PaperItem, type TeacherPaper } from './teacher';
+import { allItems, answerSpace, type PaperItem, type TeacherPaper } from './teacher';
 
 /** LaTeX as text a person can read and edit in Word. */
 export function plainMaths(text: string): string {
@@ -68,11 +70,15 @@ interface Png {
   data: Uint8Array;
   width: number;
   height: number;
+  alt?: string;
 }
 
-/** Turns a drawing into a PNG on a white page, at twice its size so that it stays sharp. */
+/** Sharp in print: three times the size it's shown at. */
+const PNG_SCALE = 3;
+
+/** Turns a drawing into a PNG on a white page, at three times its size so that it stays sharp. */
 async function svgToPng(svg: string, width: number, height: number): Promise<Png | null> {
-  const sized = svg.replace('<svg', `<svg width="${width * 2}" height="${height * 2}"`);
+  const sized = svg.replace('<svg', `<svg width="${width * PNG_SCALE}" height="${height * PNG_SCALE}"`);
   const url = URL.createObjectURL(new Blob([sized], { type: 'image/svg+xml' }));
   try {
     const image = new Image();
@@ -82,8 +88,8 @@ async function svgToPng(svg: string, width: number, height: number): Promise<Png
       image.src = url;
     });
     const canvas = document.createElement('canvas');
-    canvas.width = width * 2;
-    canvas.height = height * 2;
+    canvas.width = width * PNG_SCALE;
+    canvas.height = height * PNG_SCALE;
     const context = canvas.getContext('2d');
     if (!context) return null;
     context.fillStyle = '#ffffff';
@@ -104,19 +110,24 @@ export function compoundsIn(item: BankItem): string[] {
   return [...(structure.list ?? []), ...inRows];
 }
 
+/** A figure drawn as a PNG, for the paper or the key. */
+async function figurePng(spec: DiagramSpec): Promise<Png | null> {
+  const { renderToStaticMarkup } = await import('react-dom/server');
+  const svg = renderToStaticMarkup(createElement(BankDiagram, { spec, plain: true }))
+    .replace('<svg', '<svg xmlns="http://www.w3.org/2000/svg" style="color:#000000;font-family:sans-serif"')
+    .replace(/<button[\s\S]*?>|<\/button>/g, '')
+    .replace(/var\(--paper-3\)/g, '#e8e8e8')
+    .replace(/var\(--paper\)/g, '#ffffff');
+  const viewBox = /viewBox="0 0 (\d+) (\d+)"/.exec(svg);
+  return viewBox ? svgToPng(svg, Number(viewBox[1]), Number(viewBox[2])) : null;
+}
+
 /** Everything drawn for a question. A compound the question asks about is drawn even with figures switched off. */
 async function figuresOf(item: BankItem, withFigures: boolean): Promise<Png[]> {
   const out: Png[] = [];
   if (withFigures && item.diagram) {
-    const { renderToStaticMarkup } = await import('react-dom/server');
-    const svg = renderToStaticMarkup(createElement(BankDiagram, { spec: item.diagram, plain: true }))
-      .replace('<svg', '<svg xmlns="http://www.w3.org/2000/svg" style="color:#000000;font-family:sans-serif"')
-      .replace(/<button[\s\S]*?>|<\/button>/g, '');
-    const viewBox = /viewBox="0 0 (\d+) (\d+)"/.exec(svg);
-    if (viewBox) {
-      const png = await svgToPng(svg, Number(viewBox[1]), Number(viewBox[2]));
-      if (png) out.push(png);
-    }
+    const png = await figurePng(item.diagram);
+    if (png) out.push({ ...png, alt: describe(item.diagram) });
   }
   if (withFigures || item.structure?.unnamed) {
     const names = compoundsIn(item);
@@ -127,7 +138,7 @@ async function figuresOf(item: BankItem, withFigures: boolean): Promise<Png[]> {
         if (!c) continue;
         const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${c.w} ${c.h}"><path d="${c.l}" fill="none" stroke="#000000" stroke-width="1.6"/><path d="${c.f}" fill="#000000"/></svg>`;
         const png = await svgToPng(svg, Math.ceil(c.w), Math.ceil(c.h));
-        if (png) out.push(png);
+        if (png) out.push({ ...png, alt: `The structure of ${c.n}.` });
       }
     }
   }
@@ -166,6 +177,9 @@ export async function buildDocx(paper: TeacherPaper, kind: DocKind): Promise<Blo
     for (const line of header.instructions.split('\n').filter(Boolean)) body.push(new Paragraph({ bullet: { level: 0 }, children: [run(line)] }));
   }
   const anyGenerated = allItems(paper).some((i) => i.question.item.generated);
+  const figureMarks = markFigures(allItems(paper).map((i) => i.question.item), paper.options.diagrams);
+  const picture = (png: Png, title: string) =>
+    new Paragraph({ keepNext: true, children: [new ImageRun({ type: 'png', data: png.data, transformation: { width: png.width, height: png.height }, altText: { name: title, title, description: png.alt ?? title } })] });
   let number = 0;
   for (const section of paper.sections) {
     if (paper.sections.length > 1) body.push(new Paragraph({ heading: HeadingLevel.HEADING_2, children: [run(section.name, { bold: true })] }));
@@ -179,14 +193,19 @@ export async function buildDocx(paper: TeacherPaper, kind: DocKind): Promise<Blo
   async function addQuestion(entry: PaperItem, n: number) {
     const q = entry.question.item;
     const text = entry.editedText ?? q.text;
-    const tag = q.generated ? ' (Generated)' : '';
+    const tag = q.generated ? (q.generated.unreviewed ? ' (Generated, not yet reviewed)' : ' (Generated)') : '';
     const marks = paper.options.showMarks ? ` [${q.marks}]` : '';
     if (kind === 'key') {
       body.push(new Paragraph({ spacing: { before: 200 }, children: [run(`Question ${n}${tag}`, { bold: true })] }));
       for (const line of answerLines(q)) body.push(new Paragraph({ children: [run(line)] }));
+      if (q.answerDiagram) {
+        const png = await figurePng(q.answerDiagram).catch(() => null);
+        if (png) body.push(picture({ ...png, alt: describe(q.answerDiagram) }, `The diagram for question ${n}`));
+      }
       return;
     }
-    const parts = pieces(text);
+    const mark = figureMarks.get(q.id);
+    const parts = pieces(withFigureNote(text, mark));
     parts.forEach((part, i) => {
       if (part.code) {
         for (const line of part.text.split('\n')) body.push(new Paragraph({ children: [run(line, { font: 'Consolas' })] }));
@@ -196,13 +215,14 @@ export async function buildDocx(paper: TeacherPaper, kind: DocKind): Promise<Blo
         }
       }
     });
-    for (const png of await figuresOf(q, paper.options.diagrams).catch(() => [] as Png[])) {
-      body.push(new Paragraph({ children: [new ImageRun({ type: 'png', data: png.data, transformation: { width: png.width, height: png.height } })] }));
+    for (const png of await figuresOf(q, paper.options.diagrams || Boolean(mark)).catch(() => [] as Png[])) {
+      body.push(picture(png, mark ? `Fig. ${mark.number}` : 'Structure'));
     }
+    if (mark) body.push(new Paragraph({ alignment: AlignmentType.CENTER, children: [run(`Fig. ${mark.number}`, { italics: true })] }));
     if (q.form === 'output') for (const line of q.code.split('\n')) body.push(new Paragraph({ children: [run(line, { font: 'Consolas' })] }));
     if (q.form === 'mcq') q.options.forEach((option, i) => body.push(new Paragraph({ indent: { left: 360 }, children: [run(`(${'abcdef'[i]}) ${plainMaths(option.text)}`)] })));
     if (q.form === 'numeric' && q.parts.length > 1) q.parts.forEach((p, i) => body.push(new Paragraph({ indent: { left: 360 }, children: [run(`(${i + 1}) ${plainMaths(p.ask)} [${p.marks}]`)] })));
-    for (let i = 0; i < paper.options.answerLines; i++) body.push(new Paragraph({ border: { bottom: { color: '888888', size: 4, style: 'single', space: 12 } }, children: [run('')] }));
+    for (let i = 0; i < answerSpace(q, paper.options.answerLines); i++) body.push(new Paragraph({ border: { bottom: { color: '888888', size: 4, style: 'single', space: 12 } }, children: [run('')] }));
   }
 
   const footerText = anyGenerated ? (kind === 'key' ? 'Generated, not official ISC. Check the answers before use.' : STUDENT_FOOTER) : '';

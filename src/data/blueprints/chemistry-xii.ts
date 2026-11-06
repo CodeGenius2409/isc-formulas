@@ -1,15 +1,17 @@
 // Chemistry, Class XII. Numericals come from the solver registry. Named compounds and their drawings come from the
 // structures checked against PubChem and RDKit, and reactions only join compounds from that same list.
+import { derivationBlueprints } from '../derivations';
+import KNOWLEDGE from './knowledge/chemistry-xii';
 import { blueprintsFor, n } from './dsl';
 import type { Blueprint } from './types';
 import type { Gen } from '../../practice/gen/gen';
 
-const { num, mcqNum, facts, custom } = blueprintsFor('chemistry', 'XII');
+const { num, mcqNum, facts, custom, rest } = blueprintsFor('chemistry', 'XII', KNOWLEDGE);
 
 /** Compound key and name, by family. Keys match src/data/generated/structures.json, which a test confirms. */
 const FAMILIES: Record<string, [string, string][]> = {
   haloalkanes: [['chloromethane', 'Chloromethane'], ['bromoethane', 'Bromoethane'], ['iodoethane', 'Iodoethane'], ['1-bromopropane', '1-Bromopropane'], ['2-bromopropane', '2-Bromopropane'], ['2-bromobutane', '2-Bromobutane'], ['tert-butyl-bromide', '2-Bromo-2-methylpropane'], ['chloroform', 'Trichloromethane']],
-  alcohols: [['methanol', 'Methanol'], ['ethanol', 'Ethanol'], ['propan-1-ol', 'Propan-1-ol'], ['propan-2-ol', 'Propan-2-ol'], ['tert-butanol', '2-Methylpropan-2-ol'], ['glycol', 'Ethane-1,2-diol'], ['benzyl-alcohol', 'Benzyl alcohol'], ['phenol', 'Phenol']],
+  alcohols: [['methanol', 'Methanol'], ['ethanol', 'Ethanol'], ['propan-1-ol', 'Propan-1-ol'], ['propan-2-ol', 'Propan-2-ol'], ['tert-butanol', '2-Methylpropan-2-ol'], ['glycol', 'Ethane-1,2-diol'], ['benzyl-alcohol', 'Benzyl alcohol']],
   ethers: [['diethyl-ether', 'Ethoxyethane'], ['anisole', 'Methoxybenzene'], ['mtbe', '2-Methoxy-2-methylpropane'], ['2-methylanisole', '2-Methylanisole'], ['4-nitroanisole', '4-Nitroanisole']],
   carbonyls: [['ethanal', 'Ethanal'], ['propanal', 'Propanal'], ['propanone', 'Propanone'], ['benzaldehyde', 'Benzaldehyde'], ['acetophenone', 'Acetophenone'], ['crotonaldehyde', 'But-2-enal'], ['3-nitrobenzaldehyde', '3-Nitrobenzaldehyde']],
   acids: [['formic-acid', 'Methanoic acid'], ['acetic-acid', 'Ethanoic acid'], ['propanoic-acid', 'Propanoic acid'], ['oxalic-acid', 'Ethanedioic acid'], ['benzoic-acid', 'Benzoic acid'], ['chloroacetic-acid', 'Chloroethanoic acid']],
@@ -33,7 +35,7 @@ interface Reaction {
   topic: string;
 }
 const NAME: Record<string, string> = Object.fromEntries(Object.values(FAMILIES).flat());
-Object.assign(NAME, { ethene: 'Ethene', propene: 'Propene', acetonitrile: 'Ethanenitrile', 'sodium-acetate': 'Sodium ethanoate', 'ethyl-acetate': 'Ethyl ethanoate', 'sodium-phenoxide': 'Sodium phenoxide', 'salicylic-acid': '2-Hydroxybenzoic acid', salicylaldehyde: '2-Hydroxybenzaldehyde', 'picric-acid': '2,4,6-Trinitrophenol', tribromophenol: '2,4,6-Tribromophenol', chlorobenzene: 'Chlorobenzene', iodobenzene: 'Iodobenzene', benzene: 'Benzene', nitrobenzene: 'Nitrobenzene', 'phenyl-isocyanide': 'Phenyl isocyanide', 'ethyl-isocyanide': 'Ethyl isocyanide', iodoform: 'Triiodomethane', methane: 'Methane', ethane: 'Ethane', toluene: 'Toluene', acetamide: 'Ethanamide', benzamide: 'Benzamide', propanenitrile: 'Propanenitrile', benzonitrile: 'Benzonitrile', diazonium: 'Benzenediazonium chloride', 'acetyl-chloride': 'Ethanoyl chloride', hydroxyazobenzene: '4-Hydroxyazobenzene', aminoazobenzene: '4-Aminoazobenzene', aldol: '3-Hydroxybutanal', 'sodium-benzoate': 'Sodium benzoate', 'sodium-formate': 'Sodium methanoate', methanal: 'Methanal', 'phthalic-anhydride': 'Phthalic anhydride', 'acetic-anhydride': 'Ethanoic anhydride', bromobenzene: 'Bromobenzene', 'cumene-hydroperoxide': 'Cumene hydroperoxide', cumene: 'Cumene', 'sodium-ethoxide': 'Sodium ethoxide' });
+Object.assign(NAME, { phenol: 'Phenol', ethene: 'Ethene', propene: 'Propene', acetonitrile: 'Ethanenitrile', 'sodium-acetate': 'Sodium ethanoate', 'ethyl-acetate': 'Ethyl ethanoate', 'sodium-phenoxide': 'Sodium phenoxide', 'salicylic-acid': '2-Hydroxybenzoic acid', salicylaldehyde: '2-Hydroxybenzaldehyde', 'picric-acid': '2,4,6-Trinitrophenol', tribromophenol: '2,4,6-Tribromophenol', chlorobenzene: 'Chlorobenzene', iodobenzene: 'Iodobenzene', benzene: 'Benzene', nitrobenzene: 'Nitrobenzene', 'phenyl-isocyanide': 'Phenyl isocyanide', 'ethyl-isocyanide': 'Ethyl isocyanide', iodoform: 'Triiodomethane', methane: 'Methane', ethane: 'Ethane', toluene: 'Toluene', acetamide: 'Ethanamide', benzamide: 'Benzamide', propanenitrile: 'Propanenitrile', benzonitrile: 'Benzonitrile', diazonium: 'Benzenediazonium chloride', 'acetyl-chloride': 'Ethanoyl chloride', hydroxyazobenzene: '4-Hydroxyazobenzene', aminoazobenzene: '4-Aminoazobenzene', aldol: '3-Hydroxybutanal', 'sodium-benzoate': 'Sodium benzoate', 'sodium-formate': 'Sodium methanoate', methanal: 'Methanal', 'phthalic-anhydride': 'Phthalic anhydride', 'acetic-anhydride': 'Ethanoic anhydride', bromobenzene: 'Bromobenzene', 'cumene-hydroperoxide': 'Cumene hydroperoxide', cumene: 'Cumene', 'sodium-ethoxide': 'Sodium ethoxide' });
 
 const REACTIONS: Reaction[] = [
   { from: 'bromoethane', reagent: 'aqueous KOH', to: 'ethanol', wrong: ['ethene', 'diethyl-ether', 'ethanal'], because: 'Aqueous hydroxide substitutes for the halogen, by nucleophilic substitution.', unit: 6, topic: 'a' },
@@ -91,6 +93,12 @@ function predict(r: Reaction, g: Gen) {
   return g.mcq(`${nameOf(r.from)} is treated with ${r.reagent}. Which is the main organic product?`, nameOf(r.to), r.wrong.map(nameOf), { why: `${r.name ? `${r.name}. ` : ''}${r.because}`, structure: { list: [r.from] } });
 }
 
+/** A compound's name inside a sentence: lower case, keeping a leading N- or N,N-. */
+const inSentence = (name: string) => name.toLowerCase().replace(/^n(,n)?-/, (m) => m.toUpperCase());
+/** A reaction's name after "This is": "the Sandmeyer reaction", "Kolbe’s reaction", "esterification". */
+const PROCESS = new Set(['Esterification', 'Diazotisation', 'Decarboxylation', 'Acylation', 'Aldol condensation']);
+const reactionName = (name: string) => (name.includes('’s ') ? name : PROCESS.has(name) ? name.toLowerCase() : `the ${/^(Coupling reaction|Carbylamine test)$/.test(name) ? name.toLowerCase() : name}`);
+
 function reactionsOf(unit: number, topic: string) {
   return REACTIONS.filter((r) => r.unit === unit && r.topic === topic);
 }
@@ -103,7 +111,7 @@ function reactionBlueprints(unit: number, topic: string): Blueprint[] {
     custom(`predict-${topic}`, [unit, topic, 1, 2], { type: 'mcq', format: 'mcq' }, (g) => predict(g.pick(list), g)),
     custom(`name-it-${topic}`, [unit, topic, 2, 2], { type: 'reaction', format: 'short' }, (g) => {
       const r = g.pick(list);
-      return g.theory(`What happens when ${nameOf(r.from).toLowerCase()} is treated with ${r.reagent}? Name the product${r.name ? ', and name the reaction' : ''}.`, [`The product is ${nameOf(r.to).toLowerCase()}.`, r.name ? `This is the ${r.name}. ${r.because}` : r.because]);
+      return g.theory(`What happens when ${inSentence(nameOf(r.from))} is treated with ${r.reagent}? Name the product${r.name ? ', and name the reaction' : ''}.`, [`The product is ${inSentence(nameOf(r.to))}.`, r.name ? `This is ${reactionName(r.name)}. ${r.because}` : r.because]);
     }),
   ];
 }
@@ -122,6 +130,19 @@ const COMPLEXES: { f: string; name: string; ox: string; cn: number; hyb: string;
   { f: '[Cr(H₂O)₆]³⁺', name: 'hexaaquachromium(III) ion', ox: '+3', cn: 6, hyb: 'd²sp³', shape: 'octahedral', mag: 'paramagnetic', unp: 3, ligand: 'H₂O' },
   { f: '[Pt(NH₃)₂Cl₂]', name: 'diamminedichloridoplatinum(II)', ox: '+2', cn: 4, hyb: 'dsp²', shape: 'square planar', mag: 'diamagnetic', unp: 0, ligand: 'NH₃ and Cl⁻' },
 ];
+
+/** Wrong names a student might write: the wrong oxidation state, -ate in a cation or missing from an anion, and the wrong count of the first ligand. */
+const ATE: [string, string][] = [['ferrate', 'iron'], ['cobaltate', 'cobalt'], ['nickelate', 'nickel'], ['cuprate', 'copper'], ['zincate', 'zinc'], ['argentate', 'silver'], ['chromate', 'chromium'], ['platinate', 'platinum']];
+function nameSlips(name: string): string[] {
+  const roman = name.match(/\(([IV]+)\)/)![1];
+  const otherState = ({ I: 'II', II: 'III', III: 'II', IV: 'II' } as Record<string, string>)[roman] ?? 'II';
+  const state = name.replace(`(${roman})`, `(${otherState})`);
+  const anion = ATE.find(([ate]) => name.includes(`${ate}(`));
+  const cation = ATE.find(([, metal]) => name.includes(`${metal}(`));
+  const ate = anion ? name.replace(`${anion[0]}(`, `${anion[1]}(`) : cation ? name.replace(`${cation[1]}(`, `${cation[0]}(`) : name;
+  const count = name.replace(/^(di|tetra|hexa)/, (p) => ({ di: 'tetra', tetra: 'hexa', hexa: 'tetra' } as Record<string, string>)[p]);
+  return [state, ate, count];
+}
 
 const blueprints: Blueprint[] = [
   // ---- Unit 1: Solutions
@@ -150,6 +171,8 @@ const blueprints: Blueprint[] = [
     text: '{G} g of a non-volatile solute of molar mass {M} g/mol is dissolved in {W} g of water. K_b for water is 0.52 K kg/mol.',
     vars: { G: [5, 30, 5], M: [60, 180, 20], W: [100, 500, 100] },
     derive: (v) => ({ N: v.G / v.M, MOL: v.G / v.M / (v.W / 1000) }),
+    // A dilute solution, as the formula assumes.
+    when: (v) => v.MOL <= 1,
     parts: [
       { ask: 'Molality', use: 'c-xii-2-15', find: 'm', given: { n: 'N mol', W: 'W g' }, marks: 1 },
       { ask: 'Elevation in boiling point', use: 'c-xii-2-3', find: 'DeltaT_b', given: { K_b: '0.52 K*kg/mol', m: 'MOL mol/kg' }, marks: 2 },
@@ -164,8 +187,8 @@ const blueprints: Blueprint[] = [
   }),
   num('osmotic', [1, 'a', 3, 2], {
     style: 'cbq-style',
-    text: 'A hospital’s saline drip uses a solution of {G} g of a non-electrolyte (molar mass {M} g/mol) per litre, at {T} K. Find the osmotic pressure of the solution, which must match that of blood.',
-    vars: { G: [20, 60, 10], M: [100, 300, 50], T: [298, 310, 2] },
+    text: 'A drip for a hospital patient contains {G} g of glucose (molar mass {M} g/mol) per litre of solution, at {T} K. Find the osmotic pressure of the solution.',
+    vars: { G: [40, 60, 5], M: [180], T: [300, 310, 2] },
     derive: (v) => ({ C: (v.G / v.M) * 1000 }),
     parts: [{ ask: 'Osmotic pressure', use: 'c-xii-2-5', find: 'pi_o', given: { C: 'C mol/m^3', T: 'T K' }, unit: 'atm', marks: 3 }],
   }),
@@ -256,7 +279,7 @@ const blueprints: Blueprint[] = [
   // ---- Unit 2: Electrochemistry
   mcqNum('nernst-mcq', [2, 'a', 1, 2], {
     text: 'A cell has E° = {E} V, with n = {N} and a reaction quotient of {Q}, at 298 K. Its emf is closest to:',
-    vars: { E: [0.5, 1.5, 0.1], N: [1, 2], Q: [10, 100, 1000] },
+    vars: { E: [0.5, 1.5, 0.1], N: [1, 2], Q: [0.1, 10, 100, 1000] },
     use: 'c-xii-3-55',
     find: 'E',
     given: { E0: 'E V', N_v: '0.0591 V', n: 'N', Q: 'Q' },
@@ -277,8 +300,10 @@ const blueprints: Blueprint[] = [
     ],
   }),
   num('equilibrium-constant', [2, 'a', 2, 2], {
-    text: 'A cell reaction involves {N} electrons and has a standard emf of {E} V at 298 K. Find log K for the reaction.',
-    vars: { N: [1, 2, 3], E: [0.1, 1.1, 0.1] },
+    text: 'A cell reaction involves {N} electrons and has a standard emf of {E} V at 298 K. Find its equilibrium constant K.',
+    vars: { N: [1, 3, 1], E: [0.1, 1.1, 0.1] },
+    // log K = nE°/0.0591 stays below about 37, as for a Daniell cell.
+    when: (v) => v.N * v.E <= 2.2,
     parts: [{ ask: 'Value of K', use: 'c-xii-3-4', find: 'K', given: { n: 'N', E0: 'E V', N_v: '0.0591 V' }, marks: 2 }],
   }),
   num('gibbs', [2, 'a', 2, 1], {
@@ -288,10 +313,12 @@ const blueprints: Blueprint[] = [
   }),
   num('electrolysis-mass', [2, 'b', 3, 2], {
     variants: [
-      { text: 'A current of {I} A passes through a solution of a metal salt for {T} minutes. The metal has a molar mass of {M} g/mol, and its ions gain {N} electrons each. Find the mass deposited.', parts: [{ ask: 'Mass deposited', use: 'c-xii-3-7', find: 'm', given: { M: 'M g/mol', I: 'I A', t: 'T min', n: 'N' }, marks: 3 }] },
-      { text: 'In electroplating, how long must a current of {I} A run to deposit {W} g of a metal of molar mass {M} g/mol, whose ions gain {N} electrons each?', parts: [{ ask: 'Time needed', use: 'c-xii-3-7', find: 't', given: { m: 'W g', M: 'M g/mol', I: 'I A', n: 'N' }, unit: 'min', marks: 3 }] },
+      { text: 'A current of {I} A passes through a solution of a metal salt for {T} minutes. The metal has a molar mass of {M} g/mol, and its ions each carry a charge of +{N}. Find the mass deposited.', parts: [{ ask: 'Mass deposited', use: 'c-xii-3-7', find: 'm', given: { M: 'M g/mol', I: 'I A', t: 'T min', n: 'N' }, marks: 3 }] },
+      { text: 'In electroplating, how long must a current of {I} A run to deposit {W} g of a metal of molar mass {M} g/mol, whose ions each carry a charge of +{N}?', parts: [{ ask: 'Time needed', use: 'c-xii-3-7', find: 't', given: { m: 'W g', M: 'M g/mol', I: 'I A', n: 'N' }, unit: 'min', marks: 3 }] },
     ],
-    vars: { I: [1, 10, 1], T: [10, 60, 10], M: [27, 56, 59, 64, 108], N: [1, 2, 3], W: [1, 5, 1] },
+    // Each metal with its usual ion: Al³⁺, Fe²⁺, Ni²⁺, Cu²⁺ and Ag⁺.
+    vars: { I: [1, 10, 1], T: [10, 60, 10], K: [0, 4, 1], W: [1, 5, 1] },
+    derive: (v) => ({ M: [27, 56, 59, 64, 108][v.K], N: [3, 2, 2, 2, 1][v.K] }),
   }),
   num('conductivity', [2, 'b', 3, 2], {
     text: 'The conductivity of a {C} mol/L solution of a weak acid is {K} × 10⁻³ S/m. Its limiting molar conductivity is {L} × 10⁻⁴ S m²/mol.',
@@ -383,7 +410,7 @@ const blueprints: Blueprint[] = [
       ['Which is a secondary, rechargeable cell?', 'Lead storage battery', 'Dry cell', 'Mercury cell', 'Daniell cell'],
       ['Rusting of iron is speeded up by:', 'dissolved salts', 'oil', 'paint', 'alkali'],
       ['Galvanising protects iron by coating it with:', 'zinc', 'tin', 'copper', 'lead'],
-      ['The density of the acid in a lead storage battery on discharge:', 'falls', 'rises', 'is unchanged', 'first rises and then falls'],
+      ['In a lead storage battery, the anode is made of:', 'lead', 'lead dioxide', 'zinc', 'graphite'],
     ],
     reason: [
       ['Density of the acid in a lead storage battery falls as it discharges.', 'Sulphuric acid is used up, forming lead sulphate and water.'],
@@ -397,6 +424,7 @@ const blueprints: Blueprint[] = [
       ['A hydrogen–oxygen fuel cell produces water as its product.', 'A hydrogen–oxygen fuel cell produces carbon dioxide as its product.'],
       ['Rusting needs both oxygen and water.', 'Rusting needs only oxygen.'],
       ['Tin protects iron only while its coating is unbroken.', 'Tin protects iron even when its coating is broken.'],
+      ['Rusting is an electrochemical process.', 'Rusting is a purely physical process.'],
     ],
     cases: [
       {
@@ -426,7 +454,7 @@ const blueprints: Blueprint[] = [
   }),
   num('first-order-time', [3, 'a', 3, 2], {
     text: 'A first-order reaction has a half-life of {H} minutes. A sample starts at {A} mol/L.',
-    vars: { H: [10, 60, 10], A: [0.2, 1, 0.2], P: [50, 75, 87.5] },
+    vars: { H: [10, 60, 10], A: [0.2, 1, 0.2], P: [75, 87.5, 90, 99] },
     derive: (v) => ({ LEFT: v.A * (1 - v.P / 100) }),
     parts: [
       { ask: 'Rate constant', use: 'c-xii-4-40', find: 'k', given: { t_half: 'H min' }, unit: 's^-1', marks: 1, save: 'k' },
@@ -526,7 +554,7 @@ const blueprints: Blueprint[] = [
     ],
     recall: [
       ['A rise of 10 °C often makes a reaction go about:', 'twice as fast', 'ten times as fast', 'the same speed', 'half as fast'],
-      ['A catalyst works by:', 'lowering the activation energy', 'raising the temperature', 'raising the activation energy', 'changing the equilibrium constant'],
+      ['For a first-order reaction, the Arrhenius factor A has the unit:', 's⁻¹', 'mol L⁻¹', 'J mol⁻¹', 'no unit'],
       ['A catalyst does not change:', 'ΔG of the reaction', 'the activation energy', 'the rate constant', 'the mechanism'],
       ['A graph of ln k against 1/T has a slope of:', '−Ea/R', 'Ea/R', '−R/Ea', 'A'],
     ],
@@ -541,6 +569,7 @@ const blueprints: Blueprint[] = [
       ['A catalyst affects forward and backward reactions equally.', 'A catalyst speeds up only the forward reaction.'],
       ['The Arrhenius factor A relates to the collision frequency.', 'The Arrhenius factor A relates to the activation energy.'],
       ['Reactions with low activation energy are usually faster.', 'Reactions with low activation energy are usually slower.'],
+      ['A catalyst doesn’t change the position of an equilibrium.', 'A catalyst shifts an equilibrium towards the products.'],
     ],
     draw: [
       ['Sketch an energy profile for a reaction with and without a catalyst.', 'Reactants, a peak for the activated complex, and products, for one curve.', 'A second, lower peak for the catalysed path, with the same reactants and products.'],
@@ -643,7 +672,7 @@ const blueprints: Blueprint[] = [
   // ---- Unit 5: Coordination
   custom('complex-name', [5, 'a', 1, 1], { type: 'mcq', format: 'mcq' }, (g) => {
     const c = g.pick(COMPLEXES);
-    return g.mcq(`What is the IUPAC name of ${c.f}?`, c.name, g.sample(COMPLEXES.filter((x) => x !== c), 3).map((x) => x.name));
+    return g.mcq(`What is the IUPAC name of ${c.f}?`, c.name, nameSlips(c.name), { why: 'Ligands come first, in alphabetical order, then the metal, with -ate only in an anion, then its oxidation state.' });
   }),
   custom('complex-ox', [5, 'a', 1, 1], { type: 'mcq', format: 'mcq' }, (g) => {
     const c = g.pick(COMPLEXES);
@@ -698,7 +727,7 @@ const blueprints: Blueprint[] = [
     ],
     truths: [
       ['An octahedral complex has its t₂g set lower in energy than its e_g set.', 'An octahedral complex has its e_g set lower in energy than its t₂g set.'],
-      ['Square planar complexes can show geometrical isomerism.', 'Tetrahedral complexes commonly show geometrical isomerism.'],
+      ['Square planar complexes can show geometrical isomerism.', 'Square planar complexes can never show geometrical isomerism.'],
       ['EDTA is a hexadentate ligand.', 'EDTA is a monodentate ligand.'],
       ['Stability of a complex rises as the charge on the metal ion rises.', 'Stability of a complex falls as the charge on the metal ion rises.'],
     ],
@@ -777,21 +806,17 @@ const blueprints: Blueprint[] = [
       ['the Wurtz–Fittig reaction', 'Coupling an alkyl halide and an aryl halide with sodium in dry ether.'],
     ],
     recall: [
-      ['An aryl halide is less reactive than an alkyl halide to nucleophiles because:', 'its C–X bond has partial double bond character', 'it has a larger halogen', 'it is more polar', 'it is heavier'],
       ['A nitro group makes nucleophilic substitution on chlorobenzene easier when it is:', 'ortho or para to the chlorine', 'meta to the chlorine', 'anywhere at all', 'on a side chain'],
       ['With chlorine and FeCl₃, chlorobenzene gives mostly:', 'ortho and para dichlorobenzenes', 'meta dichlorobenzene', 'benzene', 'phenol'],
     ],
     reason: [
-      ['Chlorobenzene is less reactive towards nucleophiles than chloroethane.', 'Resonance gives the C–Cl bond partial double bond character.', 'So it is harder to break.'],
-      ['Chlorine directs ortho and para, even though it deactivates the ring.', 'Its lone pairs stabilise the ortho and para intermediates by resonance.', 'The inductive effect only slows the reaction overall.'],
     ],
     compare: [
       ['chlorobenzene', 'chloroethane', ['Reacts very slowly with nucleophiles.', 'Reacts readily with nucleophiles.'], ['Its C–Cl carbon is sp² hybridised.', 'Its C–Cl carbon is sp³ hybridised.']],
     ],
     truths: [
-      ['Haloarenes undergo electrophilic substitution more slowly than benzene.', 'Haloarenes undergo electrophilic substitution faster than benzene.'],
+      ['Chlorobenzene is denser than water.', 'Chlorobenzene floats on water.'],
       ['The para isomer of dichlorobenzene usually melts higher than its ortho and meta isomers.', 'The para isomer of dichlorobenzene usually melts lower than its ortho and meta isomers.'],
-      ['Silver nitrate gives no precipitate with chlorobenzene.', 'Silver nitrate gives an immediate white precipitate with chlorobenzene.'],
     ],
   }),
   ...facts(6, 'c', {
@@ -899,7 +924,6 @@ const blueprints: Blueprint[] = [
     ],
     recall: [
       ['Ethers are less polar than alcohols because they have:', 'no O–H bond', 'no oxygen', 'a shorter chain', 'more carbon'],
-      ['Methoxybenzene with hot concentrated HI gives:', 'phenol and iodomethane', 'iodobenzene and methanol', 'benzene and methanol', 'phenol and methanol'],
       ['Which is the best route to ethoxyethane in the lab?', 'Ethanol with concentrated H₂SO₄ at 413 K', 'Ethanol with concentrated H₂SO₄ at 443 K', 'Ethene with water', 'Ethanal with hydrogen'],
     ],
     reason: [
@@ -908,7 +932,6 @@ const blueprints: Blueprint[] = [
       ['Methoxybenzene with HI gives phenol, not iodobenzene.', 'The bond between the ring and oxygen has partial double bond character.', 'So iodide attacks the methyl carbon instead.'],
     ],
     truths: [
-      ['The C–O–C bond angle in an ether is close to the tetrahedral value.', 'The C–O–C bond angle in an ether is close to 180°.'],
       ['Ethers are often used as solvents because they are quite unreactive.', 'Ethers are rarely used as solvents, because they react readily with most reagents.'],
       ['The methoxy group activates the benzene ring.', 'The methoxy group deactivates the benzene ring.'],
     ],
@@ -983,7 +1006,6 @@ const blueprints: Blueprint[] = [
     ],
     reason: [
       ['Carboxylic acids are stronger acids than alcohols.', 'The carboxylate ion is stabilised by resonance, spreading the charge over two oxygens.', 'An alkoxide has no such resonance.'],
-      ['Carboxylic acids have unusually high boiling points.', 'They form strong hydrogen-bonded dimers.'],
       ['Chloroacetic acid is stronger than acetic acid.', 'Chlorine’s −I effect stabilises the carboxylate ion.'],
       ['Formic acid reduces Tollens’ reagent, but acetic acid doesn’t.', 'Formic acid has an aldehyde-like hydrogen on its carbon.'],
     ],
@@ -992,8 +1014,9 @@ const blueprints: Blueprint[] = [
     ],
     truths: [
       ['Electron-withdrawing groups raise the acid strength of carboxylic acids.', 'Electron-withdrawing groups lower the acid strength of carboxylic acids.'],
-      ['Carboxylic acids don’t give typical carbonyl addition reactions.', 'Carboxylic acids give all the addition reactions of aldehydes.'],
+      ['Methanoic acid is the simplest carboxylic acid.', 'Ethanoic acid is the simplest carboxylic acid.'],
       ['Benzoic acid is stronger than acetic acid.', 'Benzoic acid is weaker than acetic acid.'],
+      ['Carboxylic acids are weaker acids than mineral acids such as HCl.', 'Carboxylic acids are stronger acids than HCl.'],
     ],
     explain: [
       ['Give a chemical test to tell benzoic acid from phenol.', 'Add sodium bicarbonate solution to each.', 'Benzoic acid gives bubbles of CO₂, and phenol doesn’t.'],
@@ -1040,7 +1063,7 @@ const blueprints: Blueprint[] = [
     ],
     truths: [
       ['Alkylamines are stronger bases than ammonia.', 'Alkylamines are weaker bases than ammonia.'],
-      ['Tertiary amines have the lowest boiling points of the three classes.', 'Tertiary amines have the highest boiling points of the three classes.'],
+      ['Aniline is less basic than ammonia.', 'Aniline is more basic than ammonia.'],
       ['Electron-withdrawing groups on the ring weaken the basicity of aniline.', 'Electron-withdrawing groups on the ring strengthen the basicity of aniline.'],
     ],
     explain: [
@@ -1063,9 +1086,9 @@ const blueprints: Blueprint[] = [
       ['an isocyanide', 'An organic compound with an –N≡C group, which has a foul smell.'],
     ],
     recall: [
-      ['A nitrile on complete hydrolysis gives:', 'a carboxylic acid', 'an alcohol', 'an amine', 'an aldehyde'],
+      ['Ethanenitrile has this many carbon atoms:', '2', '1', '3', '4'],
       ['An isocyanide on hydrolysis gives:', 'a primary amine and formic acid', 'a carboxylic acid and ammonia', 'an alcohol and ammonia', 'an aldehyde and water'],
-      ['Reducing ethanenitrile with LiAlH₄ gives:', 'ethanamine', 'ethanol', 'methanamine', 'ethanoic acid'],
+      ['The C≡N bond is made up of:', 'one σ bond and two π bonds', 'three σ bonds', 'two σ bonds and one π bond', 'three π bonds'],
     ],
     reason: [
       ['A cyanide ion is ambident.', 'It can attack through carbon or nitrogen, as both carry a lone pair.'],
@@ -1086,18 +1109,15 @@ const blueprints: Blueprint[] = [
       ['a coupling reaction', 'A diazonium salt reacting with a phenol or an aromatic amine, to form a brightly coloured azo compound.'],
     ],
     recall: [
-      ['Diazotisation is done at a low temperature because:', 'the salt decomposes when warmed', 'nitrous acid needs ice to form', 'aniline freezes above that', 'the reaction is endothermic'],
-      ['Aryl diazonium salts are more stable than alkyl ones because of:', 'resonance with the ring', 'their lower mass', 'their greater size', 'their solubility'],
       ['Which reagent replaces the diazonium group with hydrogen?', 'H₃PO₂', 'CuCl', 'KI', 'H₂O'],
     ],
     reason: [
-      ['Aryl diazonium salts are made and used below 278 K.', 'They break down readily when warmed, giving nitrogen.'],
       ['Azo dyes are strongly coloured.', 'The –N=N– group extends the conjugation between the two rings.', 'So they absorb visible light.'],
     ],
     truths: [
-      ['Coupling with phenol takes place in mildly alkaline conditions.', 'Coupling with phenol takes place in strongly acidic conditions.'],
-      ['Diazonium salts replace their group with iodine without any copper catalyst.', 'Diazonium salts need a copper catalyst to replace their group with iodine.'],
-      ['Warming a diazonium salt in water gives phenol.', 'Warming a diazonium salt in water gives aniline.'],
+      ['Benzenediazonium chloride is soluble in water.', 'Benzenediazonium chloride is insoluble in water.'],
+      ['Nitrogen gas is given off when a diazonium group is replaced by a halogen.', 'The nitrogen stays in the product when a diazonium group is replaced by a halogen.'],
+      ['p-Aminoazobenzene is a yellow dye.', 'p-Aminoazobenzene is colourless.'],
     ],
   }),
 
@@ -1110,25 +1130,18 @@ const blueprints: Blueprint[] = [
       ['a monosaccharide', 'A sugar that can’t be broken down into simpler sugars by hydrolysis.'],
     ],
     recall: [
-      ['Which of these is a non-reducing sugar?', 'Sucrose', 'Glucose', 'Maltose', 'Lactose'],
-      ['Starch is made up of:', 'α-glucose units', 'β-glucose units', 'fructose units', 'galactose units'],
-      ['Cellulose is made up of:', 'β-glucose units', 'α-glucose units', 'fructose units', 'sucrose units'],
-      ['Glucose has an aldehyde group, which is shown by its oxidation with bromine water to:', 'gluconic acid', 'saccharic acid', 'n-hexane', 'sorbitol'],
       ['Lactose breaks down on hydrolysis to:', 'glucose and galactose', 'two glucose units', 'glucose and fructose', 'two fructose units'],
-      ['Sucrose on hydrolysis gives:', 'glucose and fructose', 'two glucose units', 'glucose and galactose', 'two galactose units'],
     ],
     reason: [
-      ['Sucrose doesn’t reduce Fehling’s solution.', 'Its reducing groups are tied up in the glycosidic link.'],
       ['Sucrose is called invert sugar after hydrolysis.', 'Hydrolysis changes the sign of its rotation from right to left.', 'Fructose’s strong left rotation outweighs glucose’s right rotation.'],
-      ['Humans can digest starch, but not cellulose.', 'Humans have no enzyme to break β-glycosidic links.'],
     ],
     compare: [
       ['starch', 'cellulose', ['Made of α-glucose.', 'Made of β-glucose.'], ['Digested by humans.', 'Not digested by humans.'], ['Partly branched and coiled.', 'Straight chains, which form strong fibres.']],
-      ['amylose', 'amylopectin', ['A straight chain.', 'A branched chain.'], ['Soluble in water.', 'Insoluble in water.']],
+      ['amylose', 'amylopectin', ['A straight chain.', 'A branched chain.'], ['Soluble in hot water.', 'Insoluble in water.']],
     ],
     truths: [
-      ['Glucose is an aldohexose.', 'Glucose is a ketohexose.'],
-      ['Fructose is a ketohexose.', 'Fructose is an aldopentose.'],
+      ['Glucose and fructose have the same molecular formula.', 'Glucose and fructose have different molecular formulae.'],
+      ['Lactose is a reducing sugar.', 'Lactose is a non-reducing sugar.'],
       ['Maltose is a reducing sugar.', 'Maltose is a non-reducing sugar.'],
     ],
     explain: [
@@ -1148,10 +1161,8 @@ const blueprints: Blueprint[] = [
       ['Which is a fibrous protein?', 'Keratin', 'Insulin', 'Albumin', 'Haemoglobin'],
       ['Which is a globular protein?', 'Insulin', 'Keratin', 'Myosin', 'Collagen'],
       ['An α-helix is an example of:', 'secondary structure', 'primary structure', 'quaternary structure', 'denaturation'],
-      ['Which amino acid has no chiral centre?', 'Glycine', 'Alanine', 'Valine', 'Leucine'],
     ],
     reason: [
-      ['Boiling an egg changes it irreversibly.', 'Heat denatures its proteins, which destroys their shape.'],
       ['Amino acids behave like salts, with high melting points.', 'They exist as zwitter ions.', 'So strong electrostatic forces hold them together.'],
       ['Glycine is optically inactive.', 'Its α-carbon carries two hydrogen atoms, so it isn’t chiral.'],
     ],
@@ -1160,7 +1171,7 @@ const blueprints: Blueprint[] = [
     ],
     truths: [
       ['Enzymes are mostly proteins.', 'Enzymes are mostly carbohydrates.'],
-      ['Denaturation doesn’t break peptide bonds.', 'Denaturation breaks all the peptide bonds.'],
+      ['Most enzymes work best near body temperature.', 'Most enzymes work best near 100 °C.'],
       ['Natural amino acids are mostly the L form.', 'Natural amino acids are mostly the D form.'],
     ],
     draw: [
@@ -1181,10 +1192,11 @@ const blueprints: Blueprint[] = [
   ...facts(10, 'c', {
     define: [
       ['a vitamin', 'An organic compound needed in small amounts in the diet for normal health.'],
+      ['a fat-soluble vitamin', 'A vitamin that dissolves in fat and can be stored in the body, such as A, D, E or K.'],
+      ['a deficiency disease', 'A disease caused by a lack of a vitamin or another nutrient in the diet.'],
     ],
     recall: [
       ['A lack of vitamin C causes:', 'scurvy', 'rickets', 'night blindness', 'beriberi'],
-      ['A lack of vitamin D causes:', 'rickets', 'scurvy', 'night blindness', 'beriberi'],
       ['A lack of vitamin A causes:', 'night blindness', 'scurvy', 'rickets', 'anaemia'],
       ['A lack of vitamin B₁ causes:', 'beriberi', 'scurvy', 'rickets', 'night blindness'],
       ['Which vitamin is water-soluble?', 'Vitamin C', 'Vitamin A', 'Vitamin D', 'Vitamin E'],
@@ -1192,7 +1204,7 @@ const blueprints: Blueprint[] = [
     ],
     reason: [
       ['Water-soluble vitamins must be taken regularly in the diet.', 'They’re passed out in urine and aren’t stored in the body.'],
-      ['Vitamin C can’t be stored in large amounts.', 'It’s water-soluble, so any excess is excreted.'],
+      ['Babies kept indoors for long may need vitamin D drops.', 'Skin makes vitamin D only in sunlight.'],
     ],
     compare: [
       ['fat-soluble vitamins', 'water-soluble vitamins', ['A, D, E and K.', 'B group and C.'], ['Stored in the liver and fat tissue.', 'Not stored much, and excreted.']],
@@ -1201,6 +1213,7 @@ const blueprints: Blueprint[] = [
       ['Vitamin K helps blood to clot.', 'Vitamin K helps vision in dim light.'],
       ['Vitamin B₁₂ deficiency causes pernicious anaemia.', 'Vitamin B₁₂ deficiency causes rickets.'],
       ['Vitamin D helps the body absorb calcium.', 'Vitamin D prevents the body absorbing calcium.'],
+      ['Citrus fruits are a good source of vitamin C.', 'Citrus fruits are the main source of vitamin D.'],
     ],
   }),
   ...facts(10, 'd', {
@@ -1211,11 +1224,8 @@ const blueprints: Blueprint[] = [
     ],
     recall: [
       ['Which base is found in RNA, but not in DNA?', 'Uracil', 'Thymine', 'Adenine', 'Guanine'],
-      ['Which base is found in DNA, but not in RNA?', 'Thymine', 'Uracil', 'Adenine', 'Cytosine'],
-      ['In DNA, adenine pairs with:', 'thymine', 'guanine', 'cytosine', 'uracil'],
       ['In DNA, guanine pairs with:', 'cytosine', 'adenine', 'thymine', 'uracil'],
       ['The sugar in RNA is:', 'ribose', 'deoxyribose', 'glucose', 'fructose'],
-      ['Which of these is a purine base?', 'Adenine', 'Cytosine', 'Thymine', 'Uracil'],
     ],
     reason: [
       ['DNA strands are complementary.', 'Each base pairs with one partner only.', 'So the sequence on one strand fixes the sequence on the other.'],
@@ -1227,7 +1237,7 @@ const blueprints: Blueprint[] = [
     truths: [
       ['DNA is the genetic material of most living things.', 'RNA is the genetic material of most living things.'],
       ['Adenine and thymine are joined by two hydrogen bonds.', 'Adenine and thymine are joined by three hydrogen bonds.'],
-      ['Guanine and cytosine are joined by three hydrogen bonds.', 'Guanine and cytosine are joined by two hydrogen bonds.'],
+      ['Each nucleotide in DNA carries one of four bases.', 'Each nucleotide in DNA carries one of five bases.'],
     ],
   }),
   custom('oxidant-equations', [4, 'b', 2, 2], { type: 'reaction', format: 'short' }, (g) => {
@@ -1290,6 +1300,8 @@ const blueprints: Blueprint[] = [
       [level === 'primary' ? 'Denaturation leaves it unchanged, as peptide bonds aren’t broken.' : 'Denaturation destroys it, as these weaker forces are disrupted.', 1],
     ]);
   }),
+  ...rest(),
+  ...derivationBlueprints('chemistry', 'XII', { custom } as never),
 ];
 
 export default blueprints;

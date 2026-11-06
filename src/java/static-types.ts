@@ -2,6 +2,7 @@
 // both branches, even though only one runs: `true ? 1 : 2.0` is the double 1.0, and
 // `true ? 'a' : i` is the int 97 when i is an int variable.
 import type { ClassDecl, Expr } from './ast';
+import { ClassTable } from './classes';
 import type { Slot } from './values';
 
 export interface TypeScope {
@@ -44,16 +45,22 @@ function combine(a: string, aConstant: number | null, b: string, bConstant: numb
   return promote(a, b);
 }
 
-function methodType(cls: ClassDecl | undefined | null, name: string): string | null {
-  const returns = new Set((cls?.methods ?? []).filter((m) => m.name === name).map((m) => (m.ret.dims ? null : m.ret.name)));
+function methodType(cls: ClassDecl | undefined | null, name: string, classes: Map<string, ClassDecl>): string | null {
+  if (!cls) return null;
+  const returns = new Set(new ClassTable(classes).visible(cls, name).map((m) => (m.ret.dims ? null : m.ret.name)));
   return returns.size === 1 ? [...returns][0] : null;
 }
 
+function fieldType(cls: ClassDecl | undefined | null, name: string, classes: Map<string, ClassDecl>): string | null {
+  const found = cls ? new ClassTable(classes).field(cls, name) : null;
+  return found && !found.field.type.dims ? found.field.type.name : null;
+}
+
 function callType(e: Extract<Expr, { k: 'call' }>, scope: TypeScope): string | null {
-  if (e.target === null) return methodType(scope.cls, e.name);
+  if (e.target === null) return methodType(scope.cls, e.name, scope.classes);
   if (e.target.k === 'name' && !scope.lookup(e.target.name)) {
     const library = e.target.name;
-    if (scope.classes.has(library)) return methodType(scope.classes.get(library), e.name);
+    if (scope.classes.has(library)) return methodType(scope.classes.get(library), e.name, scope.classes);
     const arg = (i: number) => (e.args[i] ? staticType(e.args[i], scope) : null);
     if (library === 'Math') {
       if (DOUBLE_MATH.has(e.name)) return 'double';
@@ -70,7 +77,7 @@ function callType(e: Extract<Expr, { k: 'call' }>, scope: TypeScope): string | n
   }
   const target = staticType(e.target, scope);
   if (target === 'String') return e.name === 'charAt' ? 'char' : STRING_INT_METHODS.has(e.name) ? 'int' : null;
-  return target ? methodType(scope.classes.get(target), e.name) : null;
+  return target ? methodType(scope.classes.get(target), e.name, scope.classes) : null;
 }
 
 /** The type of a primitive or String expression, or null when it can't be told. */
@@ -78,6 +85,14 @@ export function staticType(e: Expr, scope: TypeScope): string | null {
   switch (e.k) {
     case 'lit':
       return e.t === 'null' ? null : e.t;
+    case 'this':
+      return scope.cls?.name ?? null;
+    case 'super':
+      return scope.cls?.superName ?? null;
+    case 'new':
+      return e.cls;
+    case 'instanceof':
+      return 'boolean';
     case 'name': {
       const slot = scope.lookup(e.name);
       return slot && !slot.type.dims ? slot.type.name : null;
@@ -87,12 +102,10 @@ export function staticType(e: Expr, scope: TypeScope): string | null {
       if (e.target.k === 'name' && !scope.lookup(e.target.name)) {
         const owner = scope.classes.get(e.target.name);
         if (!owner) return LIBRARY_CONSTANTS[e.target.name] ?? null;
-        const field = owner.fields.find((f) => f.name === e.name);
-        return field && !field.type.dims ? field.type.name : null;
+        return fieldType(owner, e.name, scope.classes);
       }
-      const ownerName = e.target.k === 'this' ? scope.cls?.name : staticType(e.target, scope);
-      const field = ownerName ? scope.classes.get(ownerName)?.fields.find((f) => f.name === e.name) : undefined;
-      return field && !field.type.dims ? field.type.name : null;
+      const ownerName = staticType(e.target, scope);
+      return ownerName ? fieldType(scope.classes.get(ownerName), e.name, scope.classes) : null;
     }
     case 'index': {
       let base: Expr = e;

@@ -1,9 +1,11 @@
 // Physics, Class XII. Numericals are answered by the solver registry. The facts are written for this app.
+import { derivationBlueprints } from '../derivations';
+import KNOWLEDGE from './knowledge/physics-xii';
 import { blueprintsFor, type Values } from './dsl';
 import type { DiagramSpec } from '../../practice/bank/diagram';
 import type { Blueprint } from './types';
 
-const { num, mcqNum, facts, custom } = blueprintsFor('physics', 'XII');
+const { num, mcqNum, facts, custom, rest } = blueprintsFor('physics', 'XII', KNOWLEDGE);
 
 const ohms = (x: number) => `${x} Ω`;
 
@@ -37,7 +39,7 @@ const blueprints: Blueprint[] = [
   num('coulomb-unknown', [1, 'a', 2, 2], {
     variants: [
       { text: 'Two equal point charges of {Q} µC repel each other with a force of {F} N. How far apart are they?', parts: [{ ask: 'Separation', use: 'p-xii-1-1', find: 'r', given: { q_1: 'Q uC', q_2: 'Q uC', F: 'F N' }, unit: 'cm', marks: 2 }] },
-      { text: 'Two equal point charges are {D} cm apart in air, and each feels a force of {F} N. Find the size of each charge.', parts: [{ ask: 'Each charge', use: 'p-xii-1-1', find: 'q_1', given: { q_2: 'Q uC', F: 'F N', r: 'D cm' }, unit: 'uC', marks: 2 }] },
+      { text: 'A point charge of {Q} µC and an unknown charge are {D} cm apart in air, and repel each other with a force of {F} N. Find the unknown charge.', parts: [{ ask: 'The unknown charge', use: 'p-xii-1-1', find: 'q_1', given: { q_2: 'Q uC', F: 'F N', r: 'D cm' }, unit: 'uC', marks: 2 }] },
     ],
     vars: { Q: [2, 10, 1], F: [1, 9, 1], D: [10, 30, 5] },
   }),
@@ -98,7 +100,7 @@ const blueprints: Blueprint[] = [
   num('dielectric', [1, 'b', 2, 2], {
     text: 'An air capacitor with plates of area {A} cm² and {D} mm apart has its gap filled with a material of dielectric constant {K}. Calculate its new capacitance.',
     vars: { A: [100, 400, 100], D: [1, 4, 1], K: [2, 8, 1] },
-    parts: [{ ask: 'New capacitance', use: 'p-xii-1-121', find: 'C', given: { n: 'K', A: 'A cm^2', d: 'D mm' }, unit: 'pF', marks: 2 }],
+    parts: [{ ask: 'New capacitance', use: 'p-xii-1-25', find: 'C', given: { K: 'K', A: 'A cm^2', d: 'D mm' }, unit: 'pF', marks: 2 }],
     diagram: (v) => ({ kind: 'capacitor', A: `${v.A} cm²`, d: `${v.D} mm`, dielectric: `K = ${v.K}` }),
   }),
   num('potential-work', [1, 'b', 2, 1], {
@@ -185,7 +187,7 @@ const blueprints: Blueprint[] = [
     reason: [
       ['The electric field is always at right angles to an equipotential surface.', 'A component along the surface would mean a potential difference along it.', 'But every point on the surface is at the same potential.'],
       ['A capacitor blocks a steady current once it is charged.', 'Its plates are separated by an insulator.', 'When its potential equals the supply’s, no more charge flows.'],
-      ['Putting a dielectric between a capacitor’s plates raises its capacitance.', 'Induced charges on the dielectric reduce the field between the plates.', 'A lower potential for the same charge means a larger capacitance.'],
+      ['The plates of a charged capacitor attract each other.', 'They carry equal and opposite charges.', 'Each plate sits in the field of the other, which pulls it towards the other plate.'],
     ],
     compare: [
       ['electric potential', 'electric field', ['A scalar.', 'A vector.'], ['Measured in volts.', 'Measured in V/m or N/C.'], ['Falls as 1/r for a point charge.', 'Falls as 1/r² for a point charge.']],
@@ -197,10 +199,10 @@ const blueprints: Blueprint[] = [
       ['Two equipotential surfaces can never cross.', 'Two equipotential surfaces can cross at right angles.'],
       ['Inside a charged conductor at equilibrium, the potential is the same everywhere.', 'Inside a charged conductor at equilibrium, the potential is zero everywhere.'],
     ],
-    figures: { 'Derive an expression for the capacitance of a parallel plate capacitor with air between its plates.': { kind: 'capacitor', A: 'A', d: 'd' } },
+    // The syllabus asks for the capacitance of a parallel plate capacitor and the energy stored as formulae only, with no derivation.
     long: [
-      ['Derive an expression for the capacitance of a parallel plate capacitor with air between its plates.', 'The field between the plates is E = σ/ε₀ = Q/(ε₀A).', 'The potential difference is V = Ed = Qd/(ε₀A).', 'So C = Q/V = ε₀A/d.'],
-      ['Derive an expression for the energy stored in a charged capacitor.', 'Moving a small charge dq against a potential q/C takes work dW = (q/C)dq.', 'Integrate from 0 to Q to get W = Q²/2C.', 'Using Q = CV, this is also ½CV², which is the stored energy.'],
+      ['Obtain an expression for the electric potential at a distance r from a point charge q.', 'The potential is the work done per unit charge in bringing a test charge from infinity, V = −∫ E · dr from ∞ to r.', 'With E = q/(4πε₀r²) along the line, V = −∫ q/(4πε₀r²) dr from ∞ to r.', 'This gives V = q/(4πε₀r).'],
+      ['Obtain the potential energy of an electric dipole in a uniform field, and say when it is least.', 'Turning the dipole from θ₀ to θ against the torque pE sin θ needs work W = pE(cos θ₀ − cos θ).', 'Taking U = 0 at θ₀ = 90° gives U = −pE cos θ.', 'It is least, −pE, when p points along E.'],
       ['Find the combined capacitance of capacitors in series and in parallel, and show which is larger for two equal capacitors.', 'In series, each carries the same charge and the potentials add.', 'So 1/C = 1/C₁ + 1/C₂.', 'In parallel, each has the same potential and the charges add.', 'So C = C₁ + C₂.', 'For two equal capacitors these give C/2 and 2C, so parallel is larger.'],
     ],
     draw: [
@@ -237,7 +239,8 @@ const blueprints: Blueprint[] = [
   num('ohm-power', [2, 'a', 2, 1], {
     text: '{scene} draws {I} A from a {V} V supply. Find its resistance and the power it uses.',
     scenes: ['An electric iron', 'A room heater', 'A water pump'],
-    vars: { I: [2, 10, 1], V: [110, 240, 10] },
+    // Mains in India is 220 to 240 V.
+    vars: { I: [2, 8, 1], V: [220, 240, 10] },
     parts: [
       { ask: 'Resistance', use: 'p-xii-2-1', find: 'R', given: { V: 'V V', I: 'I A' }, marks: 1 },
       { ask: 'Power used', use: 'p-xii-2-4', find: 'P', given: { V: 'V V', I: 'I A' }, marks: 1 },
@@ -299,16 +302,16 @@ const blueprints: Blueprint[] = [
   num('short-circuit', [2, 'b', 2, 1], {
     variants: [
       { text: 'A cell of emf {E} V has an internal resistance of {R} Ω. Find the current if its terminals are joined by a thick wire of negligible resistance.', parts: [{ ask: 'Short-circuit current', use: 'p-xii-2-60', find: 'I_sc', given: { E_m: 'E V', r: 'R ohm' }, marks: 2 }] },
-      { text: 'A car battery of emf {E} V gives a short-circuit current of {S} A. Find its internal resistance.', parts: [{ ask: 'Internal resistance', use: 'p-xii-2-60', find: 'r', given: { E_m: 'E V', I_sc: 'S A' }, marks: 2 }] },
+      { text: 'A car battery of emf {B} V gives a short-circuit current of {S} A. Find its internal resistance.', parts: [{ ask: 'Internal resistance', use: 'p-xii-2-60', find: 'r', given: { E_m: 'B V', I_sc: 'S A' }, marks: 2 }] },
     ],
-
-    vars: { E: [2, 12, 2], R: [0.1, 1, 0.1], S: [20, 200, 20] },
+    // A car battery is 12 V, with an internal resistance of a few hundredths of an ohm.
+    vars: { E: [2, 12, 2], R: [0.1, 1, 0.1], B: [12, 12.6], S: [200, 600, 100] },
   }),
   num('energy-bill', [2, 'a', 3, 2], {
     style: 'cbq-style',
     text: 'A household {scene} of {P} W runs for {H} hours a day from a {V} V supply.',
     scenes: ['geyser', 'room heater', 'iron'],
-    vars: { P: [500, 2000, 100], H: [1, 4, 1], V: [220, 240, 20] },
+    vars: { P: [500, 2000, 100], H: [2, 6, 1], V: [220, 240, 20] },
     derive: (v) => ({ J: v.P * v.H * 3600, I2: v.P / v.V }),
     parts: [
       { ask: 'Current drawn', use: 'p-xii-2-4', find: 'I', given: { P: 'P W', V: 'V V' }, marks: 1 },
@@ -441,9 +444,9 @@ const blueprints: Blueprint[] = [
   }),
   num('parallel-wires', [3, 'a', 2, 2], {
     diagram: (v) => ({ kind: 'parallel-wires', i1: `${v.A} A`, i2: `${v.B} A`, d: `${v.D} cm`, same: true }),
-    text: 'Two long parallel wires {D} cm apart carry currents of {A} A and {B} A in the same direction. Find the force per metre on each, and state whether they attract or repel.',
+    text: 'Two long parallel wires {D} cm apart carry currents of {A} A and {B} A in the same direction. Find the force per metre on each wire.',
     vars: { D: [2, 20, 2], A: [2, 20, 2], B: [2, 20, 2] },
-    parts: [{ ask: 'Force per metre, which is attractive here', use: 'p-xii-3-12', find: 'F_l', given: { I_1: 'A A', I_2: 'B A', d: 'D cm' }, marks: 2 }],
+    parts: [{ ask: 'Force per metre on each wire', use: 'p-xii-3-12', find: 'F_l', given: { I_1: 'A A', I_2: 'B A', d: 'D cm' }, marks: 2 }],
   }),
   num('charge-in-field', [3, 'a', 3, 2], {
     diagram: (v) => ({ kind: 'field-entry', B: `${v.B} mT`, v: `${v.V} × 10⁶ m/s`, q: 'electron' }),
@@ -540,12 +543,10 @@ const blueprints: Blueprint[] = [
     ],
     recall: [
       ['The susceptibility of a diamagnetic material is:', 'small and negative', 'small and positive', 'large and positive', 'zero'],
-      ['Which of these is ferromagnetic?', 'Iron', 'Aluminium', 'Copper', 'Bismuth'],
       ['Permanent magnets need a material with:', 'high retentivity and high coercivity', 'high retentivity and low coercivity', 'low retentivity and high coercivity', 'low retentivity and low coercivity'],
       ['A transformer core needs a material with:', 'a narrow hysteresis loop', 'a wide hysteresis loop', 'high coercivity', 'no magnetic properties'],
     ],
     reason: [
-      ['Soft iron is used for electromagnet cores.', 'It has low coercivity, so it loses its magnetism quickly when the current stops.'],
       ['Diamagnetic materials are weakly repelled by a magnet.', 'A field induces small magnetic moments opposing it.', 'So the material moves towards the weaker part of the field.'],
       ['Paramagnetism weakens as temperature rises.', 'Thermal motion disturbs the alignment of the atomic magnetic moments.'],
     ],
@@ -556,7 +557,7 @@ const blueprints: Blueprint[] = [
     truths: [
       ['Ferromagnetic materials have domains.', 'Diamagnetic materials have domains.'],
       ['The area of a hysteresis loop measures the energy lost per cycle.', 'The area of a hysteresis loop measures the energy gained per cycle.'],
-      ['A superconductor below its critical temperature expels magnetic fields.', 'A superconductor below its critical temperature concentrates magnetic fields.'],
+      ['A current loop’s moment points along the normal given by the right-hand rule.', 'A current loop’s moment points along the current in the wire.'],
     ],
     draw: [
       ['Sketch a hysteresis loop for a ferromagnetic material, and mark its retentivity and coercivity.', 'A closed loop of B against H, with retentivity marked where it crosses the B axis.', 'Coercivity marked where it crosses the H axis.'],
@@ -579,7 +580,7 @@ const blueprints: Blueprint[] = [
     diagram: (v) => ({ kind: 'rail', B: `${v.B} T`, l: `${v.L} cm`, v: `${v.V} m/s` }),
   }),
   num('rod-current', [4, 'a', 3, 2], {
-    text: 'A {L} cm rod slides at {V} m/s on rails in a {B} T field. The rails are joined by a {R} Ω resistor.',
+    text: 'A rod {L} cm long slides at {V} m/s on rails in a field of {B} T. The rails are joined by a resistor of {R} Ω.',
     vars: { L: [20, 80, 20], V: [2, 10, 2], B: [0.2, 1, 0.2], R: [2, 10, 2] },
     parts: [
       { ask: 'Induced emf', use: 'p-xii-4-2', find: 'E_m', given: { B: 'B T', l: 'L cm', v: 'V m/s' }, marks: 1, save: 'e' },
@@ -617,7 +618,7 @@ const blueprints: Blueprint[] = [
     parts: [
       { ask: 'Impedance of the circuit', use: 'p-xii-4-7', find: 'Z', given: { R: 'R ohm', X_L: 'L ohm', X_C: 'C ohm' }, marks: 2, save: 'z' },
       { ask: 'rms current', use: 'p-xii-2-1', find: 'I', given: { V: 'V V', R: 'z' }, marks: 1, save: 'i' },
-      { ask: 'Power factor angle', use: 'p-xii-4-18', find: 'phi', given: { R: 'R ohm', Z: 'z' }, unit: 'deg', marks: 2 },
+      { ask: 'Phase angle between the current and the voltage, as a size', use: 'p-xii-4-18', find: 'phi', given: { R: 'R ohm', Z: 'z' }, unit: 'deg', marks: 2 },
     ],
     diagram: (v) => ({ kind: 'circuit', source: { type: 'ac', label: `${v.V} V rms` }, loop: [{ type: 'R', label: ohms(v.R) }, { type: 'L', label: `X_L = ${v.L} Ω` }, { type: 'C', label: `X_C = ${v.C} Ω` }] }),
   }),
@@ -656,23 +657,20 @@ const blueprints: Blueprint[] = [
       ['eddy currents', 'Circulating currents induced in the body of a conductor when the flux through it changes.'],
     ],
     recall: [
-      ['Lenz’s law is a consequence of conservation of:', 'energy', 'charge', 'momentum', 'mass'],
+      ['When the north pole of a magnet is pushed towards a coil, the near face of the coil becomes:', 'a north pole', 'a south pole', 'neither pole', 'a south pole and then a north pole'],
       ['The SI unit of inductance is the:', 'henry', 'weber', 'tesla', 'farad'],
-      ['Induced emf depends on the:', 'rate of change of flux', 'size of the flux only', 'direction of the flux only', 'resistance of the coil'],
-      ['Transformer cores are laminated to reduce:', 'eddy currents', 'flux leakage', 'resistance of the windings', 'hysteresis'],
     ],
     reason: [
       ['A magnet falling through a copper tube falls slowly.', 'Eddy currents are induced in the tube.', 'Their field opposes the magnet’s motion, by Lenz’s law.'],
       ['Moving a magnet towards a coil takes more force when the circuit is closed.', 'The induced current opposes the motion.', 'So extra mechanical work is turned into electrical energy.'],
-      ['Transformer cores are made of thin sheets.', 'Thin insulated sheets break up the paths of eddy currents, so less energy is lost as heat.'],
     ],
     compare: [
       ['self-induction', 'mutual induction', ['A change of current in a coil induces an emf in the same coil.', 'A change of current in one coil induces an emf in a nearby coil.'], ['It opposes changes in that coil’s own current.', 'It lets energy pass between two separate circuits.']],
     ],
     truths: [
       ['An induced current opposes the change that causes it.', 'An induced current always helps the change that causes it.'],
-      ['Doubling the number of turns of a coil makes its self-inductance four times as large.', 'Doubling the number of turns of a coil makes its self-inductance twice as large.'],
-      ['Induced emf is zero if the flux through a coil is constant.', 'Induced emf is largest if the flux through a coil is constant.'],
+      ['The induced current in a closed loop is its induced emf divided by its resistance.', 'The induced current in a closed loop is its induced emf multiplied by its resistance.'],
+      ['The induced emf in a coil doesn’t depend on its resistance.', 'The induced emf in a coil is proportional to its resistance.'],
     ],
     explain: [
       ['State Faraday’s laws of electromagnetic induction.', 'An emf is induced whenever the flux through a circuit changes.', 'The size of the emf equals the rate of change of the flux.'],
@@ -820,12 +818,13 @@ const blueprints: Blueprint[] = [
   }),
   num('lens-image', [6, 'a', 3, 2], {
     variants: [
-      { text: 'An object stands {U} cm in front of a convex lens of focal length {F} cm.', parts: [{ ask: 'Image distance', use: 'p-xii-6-3', find: 'v', given: { u: '-U cm', f: 'F cm' }, unit: 'cm', marks: 2, save: 'v' }, { ask: 'Size of the magnification', use: 'p-xii-6-2', find: 'm', given: { v: 'v', u: 'U cm' }, marks: 1 }] },
-      { text: 'A convex lens forms a real image {V} cm from itself when the object is {U} cm from it.', parts: [{ ask: 'Focal length', use: 'p-xii-6-127', find: 'f', given: { u: 'U cm', v: 'V cm' }, unit: 'cm', marks: 2 }, { ask: 'Size of the magnification', use: 'p-xii-6-2', find: 'm', given: { v: 'V cm', u: 'U cm' }, marks: 1 }] },
+      { text: 'An object stands {U} cm in front of a convex lens of focal length {F} cm.', parts: [{ ask: 'Image distance', use: 'p-xii-6-3', find: 'v', given: { u: '-U cm', f: 'F cm' }, unit: 'cm', marks: 2, save: 'v' }, { ask: 'Magnification', use: 'p-xii-6-23', find: 'm', given: { v: 'v', u: '-U cm' }, marks: 1 }] },
+      { text: 'A convex lens forms a real image {V} cm from itself when the object is {U} cm from it.', parts: [{ ask: 'Focal length', use: 'p-xii-6-127', find: 'f', given: { u: 'U cm', v: 'V cm' }, unit: 'cm', marks: 2 }, { ask: 'Magnification', use: 'p-xii-6-23', find: 'm', given: { v: 'V cm', u: '-U cm' }, marks: 1 }] },
     ],
     vars: { U: [20, 90, 10], F: [10, 15, 5], V: [20, 60, 10] },
     when: (v) => v.U > v.F * 1.2,
     diagram: (v) => ({ kind: 'lens', lens: 'convex', f: v.F, u: v.U, fLabel: 'f', uLabel: `${v.U} cm` }),
+    answerDiagram: (v) => ({ kind: 'lens', lens: 'convex', f: v.F, u: v.U, fLabel: 'f', uLabel: `${v.U} cm`, rays: 1 }),
     sim: (v) => ({ id: 'lens', preset: { f: v.F, u: -v.U } }),
   }),
   num('mirror', [6, 'a', 3, 2], {
@@ -834,9 +833,10 @@ const blueprints: Blueprint[] = [
     when: (v) => v.U > v.F * 1.2,
     parts: [
       { ask: 'Distance of the image from the mirror', use: 'p-xii-6-1', find: 'v', given: { u: '-U cm', f: '-F cm' }, unit: 'cm', marks: 2, save: 'v' },
-      { ask: 'Size of the magnification', use: 'p-xii-6-2', find: 'm', given: { v: 'v', u: 'U cm' }, marks: 1 },
+      { ask: 'Magnification', use: 'p-xii-6-2', find: 'm', given: { v: 'v', u: '-U cm' }, marks: 1 },
     ],
     diagram: (v) => ({ kind: 'mirror', mirror: 'concave', f: v.F, u: v.U, fLabel: `f = ${v.F} cm`, uLabel: `${v.U} cm` }),
+    answerDiagram: (v) => ({ kind: 'mirror', mirror: 'concave', f: v.F, u: v.U, fLabel: `f = ${v.F} cm`, uLabel: `${v.U} cm`, rays: 1 }),
   }),
   num('lensmaker', [6, 'a', 2, 2], {
     diagram: (v) => ({ kind: 'lens-surfaces', r1: `${v.A} cm`, r2: `${v.B} cm`, n: `${v.N}` }),
@@ -862,8 +862,9 @@ const blueprints: Blueprint[] = [
     diagram: (v) => ({ kind: 'refraction', i: `${v.I}°`, r: `${v.R}°`, iDeg: v.I, rDeg: v.R, top: 'air', bottom: 'block' }),
     sim: (v) => ({ id: 'snell', preset: { n1: 1, n2: Math.sin((v.I * Math.PI) / 180) / Math.sin((v.R * Math.PI) / 180), iDeg: v.I } }),
     text: 'A ray passes from air into a transparent block at an angle of incidence of {I}°, and bends to {R}° inside it. Find the refractive index of the block, and the speed of light in it.',
-    vars: { I: [30, 60, 15], R: [15, 25, 5] },
-    when: (v) => v.I > v.R,
+    vars: { I: [30, 60, 15], R: [15, 35, 5] },
+    // A real transparent solid: n between about 1.3 and 2.
+    when: (v) => v.I > v.R && Math.sin((v.I * Math.PI) / 180) / Math.sin((v.R * Math.PI) / 180) >= 1.3 && Math.sin((v.I * Math.PI) / 180) / Math.sin((v.R * Math.PI) / 180) <= 2,
     parts: [
       { ask: 'Refractive index', use: 'p-xii-6-7', find: 'mu_2', given: { mu_1: '1', i: 'I deg', r: 'R deg' }, marks: 1, save: 'n' },
       { ask: 'Speed of light in the block', use: 'p-xii-6-31', find: 'v', given: { n: 'n' }, marks: 1 },
@@ -917,11 +918,11 @@ const blueprints: Blueprint[] = [
     ],
   }),
   num('fringe-water', [6, 'c', 3, 2], {
-    text: 'A double slit set-up has a fringe width of {B} mm in air, with light of wavelength {L} nm. The whole set-up is then immersed in water of refractive index {N}.',
-    vars: { B: [0.4, 2, 0.2], L: [450, 650, 50], N: [1.33] },
+    text: 'In a double slit set-up, the slits are {S} mm apart and the screen is {D} m away. Light of wavelength {L} nm is used. The whole set-up is then immersed in water of refractive index {N}.',
+    vars: { S: [0.2, 1, 0.1], D: [1, 2, 0.5], L: [450, 650, 50], N: [1.33] },
     parts: [
-      { ask: 'Wavelength of the light in water', use: 'p-xii-6-34', find: 'lambda_m', given: { lambda_0: 'L nm', n: 'N' }, unit: 'nm', marks: 2 },
-      { ask: 'New fringe width', use: 'p-xii-6-34', find: 'lambda_m', given: { lambda_0: 'B mm', n: 'N' }, unit: 'mm', marks: 1 },
+      { ask: 'Wavelength of the light in water', use: 'p-xii-6-34', find: 'lambda_m', given: { lambda_0: 'L nm', n: 'N' }, unit: 'nm', marks: 1, save: 'w' },
+      { ask: 'Fringe width in water', use: 'p-xii-6-9', find: 'beta', given: { lambda: 'w', D: 'D m', d: 'S mm' }, unit: 'mm', marks: 2 },
     ],
   }),
   num('malus', [6, 'c', 2, 1], {
@@ -941,16 +942,13 @@ const blueprints: Blueprint[] = [
       ['A convex mirror always forms an image that is:', 'virtual, erect and smaller', 'real, inverted and smaller', 'virtual, erect and larger', 'real, erect and smaller'],
       ['When a convex lens is put into water, its focal length:', 'increases', 'decreases', 'stays the same', 'becomes zero'],
       ['Total internal reflection needs light to travel:', 'from a denser to a rarer medium', 'from a rarer to a denser medium', 'at normal incidence', 'only in water'],
-      ['The sky looks blue because blue light is:', 'scattered more than red', 'scattered less than red', 'absorbed by the air', 'reflected by clouds'],
       ['An optical fibre works by:', 'total internal reflection', 'refraction alone', 'diffraction', 'polarisation'],
       ['The focal length of a spherical mirror is related to its radius of curvature by:', 'f = R/2', 'f = 2R', 'f = R', 'f = R²'],
       ['Which colour bends most in passing through a prism?', 'Violet', 'Red', 'Green', 'Yellow'],
     ],
     reason: [
       ['A diamond sparkles.', 'Its high refractive index gives it a small critical angle.', 'So most light that enters is totally internally reflected many times.'],
-      ['The Sun looks reddish at sunrise and sunset.', 'Sunlight then travels through a greater thickness of air.', 'Most of the blue is scattered away, so red is left.'],
       ['A convex mirror is used as a rear-view mirror.', 'It always forms an erect, smaller image.', 'So it covers a wider field of view.'],
-      ['Clouds look white.', 'Water droplets are large compared with the wavelength of light.', 'They scatter all colours about equally.'],
       ['Optical fibres can carry signals around bends.', 'The core has a higher refractive index than the cladding.', 'So light keeps totally internally reflecting along it.'],
     ],
     compare: [
@@ -961,7 +959,6 @@ const blueprints: Blueprint[] = [
       ['A concave lens always forms a virtual image of a real object.', 'A concave lens always forms a real image of a real object.'],
       ['The power of two thin lenses in contact is the sum of their powers.', 'The power of two thin lenses in contact is the product of their powers.'],
       ['Refractive index is greater for violet light than for red light.', 'Refractive index is greater for red light than for violet light.'],
-      ['Scattering by small particles varies as 1/λ⁴.', 'Scattering by small particles varies as λ⁴.'],
       ['A ray going to the optical centre of a thin lens carries on undeviated.', 'A ray going to the optical centre of a thin lens is bent to the focus.'],
     ],
     figures: { 'Show that the refractive index of a prism is n = sin((A + δₘ)/2)/sin(A/2).': { kind: 'prism', angle: 'A' }, 'Derive the lens maker’s formula for a thin lens of refractive index n in air.': { kind: 'lens-surfaces', r1: 'R₁', r2: 'R₂', n: 'n' } },
@@ -1031,12 +1028,9 @@ const blueprints: Blueprint[] = [
   ...facts(6, 'c', {
     define: [
       ['a wavefront', 'The surface through points of a wave that are all in the same phase.'],
-      ['coherent sources', 'Sources of the same frequency with a constant phase difference.'],
-      ['the Brewster angle', 'The angle of incidence at which the reflected light is completely polarised.', 'At this angle, the reflected and refracted rays are at right angles.'],
-      ['polarisation of light', 'The restriction of the electric vibrations of light to one plane.'],
+      ['coherent sources', 'Sources of the same frequency with a constant phase difference.', 'In practice they are made from one source, as by the two slits in Young’s experiment.'],
     ],
     recall: [
-      ['Which shows that light is a transverse wave?', 'Polarisation', 'Interference', 'Diffraction', 'Reflection'],
       ['If the slit separation in a double slit experiment is doubled, the fringe width:', 'is halved', 'is doubled', 'stays the same', 'is four times as large'],
       ['A bright fringe needs a path difference of:', 'a whole number of wavelengths', 'an odd number of half wavelengths', 'exactly half a wavelength', 'zero only'],
       ['The central fringe with white light in a double slit is:', 'white', 'dark', 'red', 'violet'],
@@ -1046,11 +1040,10 @@ const blueprints: Blueprint[] = [
     reason: [
       ['Two separate lamps don’t give steady interference fringes.', 'They aren’t coherent, as their phase difference keeps changing.', 'So the pattern shifts too fast to see.'],
       ['Diffraction of sound is easily noticed, but that of light isn’t.', 'Sound has wavelengths comparable with everyday openings.', 'Light has a far smaller wavelength.'],
-      ['Polaroid sunglasses cut glare from water.', 'Light reflected from water is partly polarised horizontally.', 'The polaroid’s vertical axis blocks this.'],
+      ['Young’s fringes can’t be seen if the slits are very wide.', 'Each wide slit gives its own spread of fringes, shifted from the others.', 'These overlap, so the pattern blurs into even light.'],
     ],
     compare: [
       ['interference', 'diffraction', ['Superposition of waves from two coherent sources.', 'Superposition of wavelets from one wavefront.'], ['Bright fringes are about equally bright.', 'Brightness of the maxima falls away from the centre.'], ['Fringe widths are about equal.', 'The central maximum is twice as wide as the others.']],
-      ['polarised light', 'unpolarised light', ['Its vibrations are in one plane.', 'Its vibrations are in all planes at right angles to the ray.'], ['Passing a rotating polaroid varies its brightness.', 'Passing a rotating polaroid leaves its brightness unchanged.']],
     ],
     truths: [
       ['Fringe width is directly proportional to wavelength.', 'Fringe width is inversely proportional to wavelength.'],
@@ -1115,7 +1108,7 @@ const blueprints: Blueprint[] = [
   num('debroglie', [7, 'a', 2, 1], {
     variants: [
       { text: 'Find the de Broglie wavelength of an electron travelling at {V} × 10⁶ m/s.', parts: [{ ask: 'de Broglie wavelength', use: 'p-xii-7-2', find: 'lambda', given: { m: '9.11e-31 kg', v: 'V*1e6 m/s' }, unit: 'nm', marks: 2 }] },
-      { text: 'A {M} g ball travels at {S} m/s. Find its de Broglie wavelength, and say why no wave effects are seen.', parts: [{ ask: 'de Broglie wavelength. It is far too small to detect', use: 'p-xii-7-2', find: 'lambda', given: { m: 'M g', v: 'S m/s' }, marks: 2 }] },
+      { text: 'A {M} g ball travels at {S} m/s. Find its de Broglie wavelength.', parts: [{ ask: 'de Broglie wavelength', use: 'p-xii-7-2', find: 'lambda', given: { m: 'M g', v: 'S m/s' }, marks: 2 }] },
     ],
     vars: { V: [1, 9, 1], M: [50, 300, 50], S: [10, 40, 10] },
   }),
@@ -1268,7 +1261,7 @@ const blueprints: Blueprint[] = [
   custom('level-transitions', [8, 'a', 1, 2], { type: 'mcq', format: 'mcq' }, (g) => {
     const n = g.int(3, 6);
     const lines = (n * (n - 1)) / 2;
-    return g.mcqNumber(`A hydrogen atom sits in the n = ${n} level. The largest number of different spectral lines it can emit on falling to the ground state, taking every possible route, is:`, lines, '', [
+    return g.mcqNumber(`A sample of hydrogen atoms is excited to the n = ${n} level. The largest number of different spectral lines the sample can give as its atoms fall to the ground state is:`, lines, '', [
       { slip: 'used n − 1, counting only one route', value: n - 1 },
       { slip: 'forgot to halve n(n − 1)', value: n * (n - 1) },
       { slip: 'used n', value: n },
@@ -1317,14 +1310,11 @@ const blueprints: Blueprint[] = [
     define: [
       ['mass defect', 'The difference between the total mass of the separate nucleons and the mass of the nucleus.'],
       ['binding energy of a nucleus', 'The energy needed to separate a nucleus into its nucleons, equal to the mass defect times c².'],
-      ['half-life', 'The time in which half of the nuclei in a sample decay.'],
       ['isotopes', 'Atoms with the same atomic number, but different mass numbers.'],
       ['isobars', 'Atoms with the same mass number, but different atomic numbers.'],
     ],
     recall: [
       ['Nuclear density is:', 'about the same for all nuclei', 'greatest for heavy nuclei', 'greatest for light nuclei', 'proportional to mass number'],
-      ['Beta-minus decay raises the atomic number by:', '1', '2', '0', '4'],
-      ['Alpha decay lowers the mass number by:', '4', '2', '1', '0'],
       ['Which is most stable, judging by binding energy per nucleon?', 'Iron-56', 'Uranium-238', 'Helium-4', 'Hydrogen-2'],
       ['Nuclear forces are:', 'short-range and strong', 'long-range and strong', 'short-range and weak', 'long-range and weak'],
       ['Energy is released in fission because the products have:', 'a greater binding energy per nucleon', 'a smaller binding energy per nucleon', 'more mass overall', 'more nucleons'],
@@ -1336,28 +1326,25 @@ const blueprints: Blueprint[] = [
     ],
     compare: [
       ['nuclear fission', 'nuclear fusion', ['A heavy nucleus splits into lighter ones.', 'Light nuclei join into a heavier one.'], ['Starts with a neutron at ordinary temperatures.', 'Needs extremely high temperatures.'], ['Used in nuclear power stations.', 'Powers the Sun and stars.']],
-      ['alpha rays', 'beta rays', ['Helium nuclei with charge +2e.', 'Fast electrons or positrons, with charge ±e.'], ['Low penetration, high ionising power.', 'Greater penetration, lower ionising power.']],
     ],
     truths: [
       ['The radius of a nucleus varies as the cube root of its mass number.', 'The radius of a nucleus varies directly as its mass number.'],
       ['Binding energy per nucleon is largest around mass number 56.', 'Binding energy per nucleon is largest around mass number 200.'],
       ['The nuclear force doesn’t depend on charge.', 'The nuclear force acts only between protons.'],
-      ['Gamma emission doesn’t change the mass number or atomic number.', 'Gamma emission lowers the mass number by 4.'],
     ],
     long: [
-      ['Starting from the radioactive decay law, derive N = N₀e^(−λt), and from it the relation between half-life and decay constant.', 'The rate of decay is dN/dt = −λN.', 'Integrating gives N = N₀e^(−λt).', 'At the half-life, N = N₀/2.', 'So e^(−λT) = ½, which gives T = ln 2/λ = 0.693/λ.'],
+      ['Show that nuclear density is the same for all nuclei.', 'R = R₀A^(1/3), so the volume of a nucleus is (4/3)πR₀³A.', 'Its mass is about A times the mass of a nucleon, m.', 'So its density is Am/((4/3)πR₀³A) = 3m/(4πR₀³).', 'This has no A in it, so it is the same for every nucleus, about 2.3 × 10¹⁷ kg m⁻³.'],
     ],
     draw: [
       ['Sketch binding energy per nucleon against mass number.', 'A rapid rise for light nuclei, a broad peak near A = 56, and a slow fall for heavy nuclei.', 'Mention why fission and fusion both release energy: each moves towards the peak.'],
-      ['Sketch the number of undecayed nuclei against time.', 'An exponential fall from N₀ with time.', 'N₀/2 at one half-life and N₀/4 at two half-lives.'],
     ],
     cases: [
       {
-        scene: 'Archaeologists date a wooden tool by measuring its carbon-14, which has a half-life of about 5730 years. Living trees keep a steady level of it, and after a tree dies, the level starts to fall.',
+        scene: 'A nuclear power station keeps a steady chain reaction going in its uranium-235 fuel, using heavy water as a moderator and cadmium control rods.',
         parts: [
-          ['Why does the carbon-14 level stop being topped up when the tree dies?', 'The tree stops taking in carbon from the air.', 1],
-          ['If a sample has a quarter of the carbon-14 of living wood, how old is it?', 'Two half-lives, about 11 460 years.', 1],
-          ['Does temperature affect this rate of decay?', 'No, radioactive decay doesn’t depend on temperature.', 1],
+          ['Why must the neutrons be slowed down?', 'Slow neutrons are far more likely to cause fission in uranium-235.', 1],
+          ['What happens to the power if the control rods are pushed further in?', 'It falls, as the rods absorb more neutrons and fewer fissions follow.', 1],
+          ['What must be true, on average, for the reaction to stay steady?', 'Each fission must lead to exactly one more fission.', 1],
         ],
       },
     ],
@@ -1390,7 +1377,7 @@ const blueprints: Blueprint[] = [
     ] as const);
     const a = g.int(0, 1);
     const b = g.int(0, 1);
-    return g.theory(`Inputs A = ${a} and B = ${b} go to a ${gate} gate. Write the output, and the truth table for this gate.`, [
+    return g.theory(`Inputs A = ${a} and B = ${b} go to ${gate === 'AND' || gate === 'OR' ? 'an' : 'a'} ${gate} gate. Write the output, and the truth table for this gate.`, [
       [`Output = ${f(a, b)}.`, 1],
       [`Truth table for ${gate}: 00 → ${f(0, 0)}, 01 → ${f(0, 1)}, 10 → ${f(1, 0)}, 11 → ${f(1, 1)}.`, 1],
     ]);
@@ -1404,8 +1391,8 @@ const blueprints: Blueprint[] = [
     recall: [
       ['An n-type semiconductor is made by adding a:', 'pentavalent impurity', 'trivalent impurity', 'tetravalent impurity', 'divalent impurity'],
       ['A p-type semiconductor is made by adding:', 'boron', 'phosphorus', 'arsenic', 'antimony'],
-      ['The majority carriers in a p-type semiconductor are:', 'holes', 'electrons', 'protons', 'ions'],
-      ['As a semiconductor is heated, its conductivity:', 'rises', 'falls', 'stays the same', 'becomes zero'],
+      ['In a p-type semiconductor, the minority carriers are:', 'free electrons', 'holes', 'acceptor ions', 'donor ions'],
+      ['Which of these is an elemental semiconductor?', 'germanium', 'copper', 'glass', 'rubber'],
       ['Which has the largest band gap?', 'An insulator', 'A conductor', 'A semiconductor', 'They are all the same'],
     ],
     reason: [
@@ -1430,7 +1417,6 @@ const blueprints: Blueprint[] = [
       ['the depletion region', 'The thin region at a p-n junction, which has no free charge carriers.'],
       ['rectification', 'Changing alternating current into direct current in one direction.'],
       ['Zener breakdown', 'The sudden large rise in reverse current at a sharply defined reverse voltage in a heavily doped diode.'],
-      ['a logic gate', 'A circuit that gives a digital output following a logical rule from one or more digital inputs.'],
     ],
     recall: [
       ['In forward bias, the depletion layer:', 'becomes narrower', 'becomes wider', 'is unchanged', 'disappears completely at any voltage'],
@@ -1438,16 +1424,14 @@ const blueprints: Blueprint[] = [
       ['A full-wave rectifier’s output frequency, for a 50 Hz input, is:', '100 Hz', '50 Hz', '25 Hz', '200 Hz'],
       ['An LED emits light because of:', 'recombination of electrons and holes', 'heating of the junction', 'high resistance of the material', 'reverse breakdown'],
       ['A photodiode is operated in:', 'reverse bias', 'forward bias', 'zero bias only', 'breakdown'],
-      ['A NAND gate gives 0 only when:', 'all its inputs are 1', 'all its inputs are 0', 'any input is 0', 'any input is 1'],
     ],
     reason: [
       ['A solar cell needs no external bias.', 'The junction’s built-in field separates the electrons and holes that light produces.', 'That drives a current on its own.'],
       ['Reverse current in a p-n junction is very small.', 'Only the few minority carriers can cross the barrier.'],
-      ['NAND and NOR are called universal gates.', 'Any other gate can be built using only NAND, or only NOR.'],
     ],
     compare: [
       ['forward bias', 'reverse bias', ['p side connected to positive terminal.', 'p side connected to negative terminal.'], ['Depletion layer narrows.', 'Depletion layer widens.'], ['A large current flows.', 'A very small current flows.']],
-      ['half-wave rectifier', 'full-wave rectifier', ['Uses one diode.', 'Uses two diodes, or four in a bridge.'], ['Conducts for half of each cycle.', 'Conducts for the whole cycle.']],
+      ['half-wave rectifier', 'full-wave rectifier', ['Uses one diode.', 'Uses two diodes, with a centre-tapped transformer.'], ['Conducts for half of each cycle.', 'Conducts for the whole cycle.']],
     ],
     truths: [
       ['A diode conducts well in only one direction.', 'A diode conducts equally well in both directions.'],
@@ -1457,7 +1441,6 @@ const blueprints: Blueprint[] = [
     draw: [
       ['Draw the circuit of a full-wave rectifier using two diodes, and sketch its output.', 'A centre-tapped transformer, two diodes and a load resistor.', 'Output pulses in one direction, for every half cycle of the input.'],
       ['Sketch the V–I characteristic of a p-n junction diode.', 'A small current until the knee voltage in forward bias, then a steep rise.', 'A very small reverse current until breakdown.'],
-      ['Draw the symbol and write the truth table for a NOR gate.', 'The OR symbol with a small circle at its output.', 'Output is 1 only when both inputs are 0.'],
     ],
     cases: [
       {
@@ -1470,6 +1453,8 @@ const blueprints: Blueprint[] = [
       },
     ],
   }),
+  ...rest(),
+  ...derivationBlueprints('physics', 'XII', { custom } as never),
 ];
 
 export default blueprints;

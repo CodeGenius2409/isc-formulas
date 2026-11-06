@@ -10,8 +10,10 @@ import { href, openWork, useRoute } from '../lib/router';
 import { useStore } from '../lib/store';
 import { isAttempted, scoreOf } from '../practice/bank/mark';
 import { loadBank } from '../practice/bank';
-import { abandonPaper, answerPaper, finishMarking, PAPER_MINUTES, paperHistoryStore, paperResult, paperSlots, paperSpec, paperStore, startPaper, submitPaper, type Paper, type PaperResult } from '../practice/bank/paper';
+import { abandonPaper, answerPaper, finishMarking, PAPER_MINUTES, paperHistoryStore, paperResult, paperReviewedOnlyStore, paperSlots, paperSpec, paperStore, startPaper, submitPaper, type Paper, type PaperResult } from '../practice/bank/paper';
+import { markFigures, paperDiagramsStore, type FigureMark } from '../practice/gen/figures';
 import { describePlan, paperShareStore, paperUsesGeneratedStore, planShare } from '../practice/gen/mix';
+import { SimPanel } from '../components/bank/SimPanel';
 import type { BankAnswer, BankItem } from '../practice/bank/types';
 import { lastReadStore } from '../state/library';
 
@@ -49,6 +51,8 @@ function PaperHome() {
   const spec = useMemo(() => paperSpec(subject, level), [subject, level]);
   const useGenerated = useStore(paperUsesGeneratedStore);
   const share = useStore(paperShareStore);
+  const diagrams = useStore(paperDiagramsStore);
+  const reviewedOnly = useStore(paperReviewedOnlyStore);
   const bank = useAsync(() => loadBank(subject, level), `${subject}-${level}`);
   const plan = bank.status === 'ready' ? planShare(paperSlots(subject, level, bank.value), useGenerated ? share : 0) : null;
   // Nothing can rule out the bank running short, even with the switch off.
@@ -58,7 +62,7 @@ function PaperHome() {
     setBusy(true);
     setProblem('');
     try {
-      await startPaper(subject, level, { share: shareOverride ?? (useGenerated ? (plan?.share ?? share) : needsGenerated ? plan!.share : 0), seed });
+      await startPaper(subject, level, { share: shareOverride ?? (useGenerated ? (plan?.share ?? share) : needsGenerated ? plan!.share : 0), seed, diagrams, reviewedOnly: seed !== undefined ? q.get('reviewed') === '1' : reviewedOnly });
     } catch (e) {
       setProblem(e instanceof Error ? e.message : 'The paper could not be built.');
     }
@@ -115,6 +119,14 @@ function PaperHome() {
             </label>
             {useGenerated && plan && <ShareSlider value={share} onChange={(v) => paperShareStore.set(v)} message={describePlan(plan)} warning={plan.raised} />}
             {!useGenerated && <p className="mt-1 text-step--1 text-ink-2">{needsGenerated && plan ? plan.raised : 'This paper will use only questions from the bank.'}</p>}
+            <label className="switch-row mt-2">
+              <input type="checkbox" checked={diagrams} onChange={(e) => paperDiagramsStore.set(e.target.checked)} /> Include diagrams
+            </label>
+            {(useGenerated || needsGenerated) && (
+              <label className="switch-row mt-1">
+                <input type="checkbox" checked={reviewedOnly} onChange={(e) => paperReviewedOnlyStore.set(e.target.checked)} /> Only reviewed questions
+              </label>
+            )}
           </div>
           {linkedSeed !== undefined ? (
             <button type="button" className="btn btn-solid mt-3" disabled={busy} onClick={() => void start(linkedSeed, Number(q.get('share') ?? 0))}>
@@ -144,7 +156,7 @@ function PaperHome() {
                     </summary>
                     <ResultTables result={r} />
                     {r.seed !== undefined && (
-                      <a className="btn btn-line mt-2" href={href('paper', { subject: r.subject, level: r.level, seed: String(r.seed), share: String(r.generatedShare ?? 0) })}>
+                      <a className="btn btn-line mt-2" href={href('paper', { subject: r.subject, level: r.level, seed: String(r.seed), share: String(r.generatedShare ?? 0), ...(r.reviewedOnly ? { reviewed: '1' } : {}) })}>
                         Sit this paper again
                       </a>
                     )}
@@ -185,7 +197,7 @@ function Timer({ endsAt }: { endsAt: number }) {
   );
 }
 
-const PaperQuestion = memo(function PaperQuestion({ item, number, answer, marking }: { item: BankItem; number: number; answer: BankAnswer | undefined; marking: boolean }) {
+const PaperQuestion = memo(function PaperQuestion({ item, number, answer, marking, figure }: { item: BankItem; number: number; answer: BankAnswer | undefined; marking: boolean; figure: FigureMark | undefined }) {
   const current = answer ?? {};
   const onChange = (change: Partial<BankAnswer>) => answerPaper(item.id, change);
   return (
@@ -195,9 +207,10 @@ const PaperQuestion = memo(function PaperQuestion({ item, number, answer, markin
         <GeneratedMark item={item} />
         <span className="bank-marks">{marking ? `${scoreOf(item, current)} of ${item.marks}` : `[${item.marks}]`}</span>
       </p>
-      <BankPrompt item={item} />
+      <BankPrompt item={item} figure={figure ?? 'none'} />
       <BankInputs item={item} answer={current} onChange={onChange} marked={marking} />
       {marking && <BankReview item={item} answer={current} onChange={onChange} />}
+      {marking && item.simulator && <SimPanel simulator={item.simulator} answered />}
       <ReportProblem item={item} />
     </li>
   );
@@ -214,6 +227,7 @@ function PaperSheet({ paper, onFinished }: { paper: Paper; onFinished: (result: 
   }, [paper.endsAt, paper.submittedAt]);
 
   const items = paper.sections.flatMap((s) => s.questions.map((q) => q.item));
+  const figures = useMemo(() => markFigures(items, paper.diagrams !== false), [paper.startedAt, paper.diagrams]); // eslint-disable-line react-hooks/exhaustive-deps
   const toAnswer = items.filter((i) => i.form !== 'theory');
   const unanswered = toAnswer.filter((i) => !isAttempted(i, paper.answers[i.id])).length;
   const result = marking ? paperResult(paper) : null;
@@ -234,6 +248,16 @@ function PaperSheet({ paper, onFinished }: { paper: Paper; onFinished: (result: 
       </div>
       <div className="page-pad max-w-[48rem]">
         <h1 className="text-step-3">{marking ? 'Mark your paper' : `${label}, ${paper.total} marks`}</h1>
+        {paper.repeatNote && !marking && (
+          <p className="notice mt-2" role="status" data-testid="repeat-note">
+            {paper.repeatNote}
+          </p>
+        )}
+        {paper.reviewNote && !marking && (
+          <p className="notice mt-2" role="status" data-testid="review-note">
+            {paper.reviewNote}
+          </p>
+        )}
         {marking ? (
           <p className="mt-2 max-w-[65ch] text-ink-2">
             {paper.timedOut ? 'Time is up, so the paper was handed in. ' : ''}Multiple choice, numericals and program output are already marked. For each written answer, tick the points you earned, then finish below.
@@ -241,7 +265,7 @@ function PaperSheet({ paper, onFinished }: { paper: Paper; onFinished: (result: 
         ) : (
           <p className="mt-2 max-w-[65ch] text-ink-2">Write theory answers on paper. Your work is saved as you go, so you can leave and come back, but the clock keeps running.</p>
         )}
-        {anyGenerated && <PaperLegend />}
+        {anyGenerated && <PaperLegend unreviewed={paper.sections.some((s) => s.questions.some((q) => q.item.generated?.unreviewed))} />}
 
         {paper.sections.map((section) => (
           <section key={section.name} className="today-section" aria-label={section.name}>
@@ -250,7 +274,7 @@ function PaperSheet({ paper, onFinished }: { paper: Paper; onFinished: (result: 
             <ol className="m-0 list-none p-0">
               {section.questions.map((q) => {
                 number += 1;
-                return <PaperQuestion key={q.item.id} item={q.item} number={number} answer={paper.answers[q.item.id]} marking={marking} />;
+                return <PaperQuestion key={q.item.id} item={q.item} number={number} answer={paper.answers[q.item.id]} marking={marking} figure={figures.get(q.item.id)} />;
               })}
             </ol>
           </section>

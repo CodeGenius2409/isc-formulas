@@ -1,5 +1,7 @@
 // Everything practice remembers: review schedule, mistakes and daily totals, stored
 // locally, and able to move between devices as a JSON backup.
+import { historyFreshness, noteFactsAnswered } from './fact-history';
+import { historyKeys, type Freshness } from './gen/mix';
 import { canonicalId, isRemovedId, migrateIds } from '../data/aliases';
 import { createStore } from '../lib/store';
 import { readJson, writeJson } from '../lib/storage';
@@ -83,9 +85,17 @@ export interface AnswerRecord {
   mistakeId?: string;
 }
 
+/** Your history as a picker reads it: a fact you got wrong may come back as soon as its question is due for review. */
+export function studentFreshness(now = Date.now()): Freshness {
+  const day = today();
+  const srs = srsStore.get();
+  return historyFreshness((id) => Boolean(srs[id]) && srs[id].due <= day, now);
+}
+
 export function recordAnswer(record: AnswerRecord): void {
   const day = today();
   const id = record.question.formulaId;
+  noteFactsAnswered(historyKeys(record.question), id, record.correct);
   srsStore.set((all) => ({ ...all, [id]: schedule(all[id] ?? newItem(id, day), record.quality, day) }));
   statsStore.set((s) => ({
     answered: s.answered + 1,
@@ -115,6 +125,25 @@ export function recordAnswer(record: AnswerRecord): void {
     };
     mistakesStore.set((list) => [mistake, ...list].slice(0, MISTAKE_LIMIT));
   }
+}
+
+/**
+ * The steps of a derivation you didn't tick. Each comes back on its own in review, asked as "write the missing step",
+ * while the rest of the derivation stays on its own schedule.
+ */
+export function noteMissedSteps(stepBlueprint: string | undefined, points: unknown[], ticks: boolean[] | undefined): void {
+  if (!stepBlueprint) return;
+  const day = today();
+  const missed = points.map((_, i) => i).filter((i) => !ticks?.[i]);
+  if (!missed.length) return;
+  srsStore.set((all) => {
+    const next = { ...all };
+    for (const i of missed) {
+      const id = `g-${stepBlueprint}-${i}`;
+      next[id] = schedule(next[id] ?? newItem(id, day), 1, day);
+    }
+    return next;
+  });
 }
 
 /** Removes the mistake log entry without touching the review schedule. */
