@@ -371,3 +371,5 @@ Work is on a `rebuild` branch. `master` still holds your original files.
   The programs' outputs, every inverse-trig value, and the iodoform and aldol equations all check out.
 - **Review batch 15** (Chemistry XII phenols, Maths XII matrices and continuity; 41 blueprints, 7 fixed). Rolle's theorem and the mean value theorem aren't in the 2028 Calculus unit, so they left the shared pools, as with the other open questions in `reports/syllabus-review.md`. No blueprint was wholly about them.
   Matrices and differentiation were right throughout; Phenols had facts said twice.
+- **Review batch 16** (Physics XII optical instruments, CS XII logic gates and arrays; 43 blueprints, 10 fixed). The eye's accommodation isn't in the Optical Instruments syllabus. Repeats were the main problem in Physics.
+  CS was sound: every gate count, address and program output checks. "A AND gate" now reads "an AND gate", in Class XI too.

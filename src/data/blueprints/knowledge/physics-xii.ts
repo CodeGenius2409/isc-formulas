@@ -112,7 +112,7 @@ const knowledge: Record<string, Facts> = {
     ar: [
       ['the telescope’s lenses', 'An astronomical telescope has an objective of long focal length.', 'An astronomical telescope has an objective of short focal length.', 'The magnifying power is fₒ/fₑ in normal adjustment.', 'The magnifying power is fₑ/fₒ in normal adjustment.', 'A large aperture gathers more light.'],
       ['the microscope’s lenses', 'Both lenses of a compound microscope have short focal lengths.', 'Both lenses of a compound microscope have long focal lengths.', 'Short focal lengths give a larger magnifying power.', 'Short focal lengths give a smaller magnifying power.', 'The objective forms a real, enlarged image.'],
-      ['the eye’s accommodation', 'The eye can focus on objects at different distances.', 'The eye can only focus on objects at one distance.', 'Its ciliary muscles change the focal length of its lens.', 'The eye moves its retina forwards and backwards.', 'The normal near point is about 25 cm away.'],
+      ['the microscope’s first image', 'The objective of a compound microscope forms a real, enlarged image.', 'The objective of a compound microscope forms a virtual, diminished image.', 'The object is placed just beyond the objective’s focus.', 'The object is placed inside the objective’s focus.', 'The eyepiece acts as a simple microscope.'],
     ],
   },
   '6c': {

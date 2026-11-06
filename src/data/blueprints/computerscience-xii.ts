@@ -449,7 +449,7 @@ const blueprints: Blueprint[] = [
     const a = g.int(0, 1);
     const b = g.int(0, 1);
     const right = f(a, b);
-    return g.mcq(`A ${name} gate has inputs ${a} and ${b}. Its output is:`, String(right), [String(1 - right)]);
+    return g.mcq(`${/^[AEIOUX]/.test(name) ? 'An' : 'A'} ${name} gate has inputs ${a} and ${b}. Its output is:`, String(right), [String(1 - right)]);
   }),
   custom('gate-chain', [2, 'a', 2, 2], { type: 'short', format: 'short' }, (g) => {
     const [a, b, c] = [g.int(0, 1), g.int(0, 1), g.int(0, 1)];

@@ -180,11 +180,9 @@ const knowledge: Record<string, Facts> = {
     links: [
       ['same', 'An AND gate followed', 'An OR gate followed'],
       ['same', 'A NAND gate with both', 'A NOR gate with both'],
-      ['same', 'NOR is a universal', 'AND, OR and NOT together'],
       ['contrast', 'an AND gate', 'a NAND gate'],
       ['contrast', 'an OR gate', 'a NOR gate'],
       ['contrast', 'an XOR gate', 'an XNOR gate'],
-      ['contrast', 'a logic gate', 'a universal gate'],
     ],
   },
 
@@ -374,7 +372,6 @@ const knowledge: Record<string, Facts> = {
       ['contrast', 'linear search', 'binary search'],
       ['contrast', 'bubble sort', 'selection sort'],
       ['contrast', 'selection sort', 'insertion sort'],
-      ['contrast', 'an array element', 'the base address of an array'],
     ],
   },
 

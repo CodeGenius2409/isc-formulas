@@ -178,7 +178,7 @@ const blueprints: Blueprint[] = [
     const [name, f] = g.pick(gates);
     const a = g.int(0, 1);
     const b = g.int(0, 1);
-    return g.mcq(`A ${name} gate has inputs ${a} and ${b}. Its output is:`, String(f(a, b)), [String(1 - f(a, b))]);
+    return g.mcq(`${/^[AEIOUX]/.test(name) ? 'An' : 'A'} ${name} gate has inputs ${a} and ${b}. Its output is:`, String(f(a, b)), [String(1 - f(a, b))]);
   }),
   custom('section-a-xi', [1, 'a', 10, 3], { type: 'short', format: 'long' }, (g) => {
     const value = g.int(50, 200);
