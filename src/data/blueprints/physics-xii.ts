@@ -443,9 +443,9 @@ const blueprints: Blueprint[] = [
   }),
   num('parallel-wires', [3, 'a', 2, 2], {
     diagram: (v) => ({ kind: 'parallel-wires', i1: `${v.A} A`, i2: `${v.B} A`, d: `${v.D} cm`, same: true }),
-    text: 'Two long parallel wires {D} cm apart carry currents of {A} A and {B} A in the same direction. Find the force per metre on each, and state whether they attract or repel.',
+    text: 'Two long parallel wires {D} cm apart carry currents of {A} A and {B} A in the same direction. Find the force per metre on each wire.',
     vars: { D: [2, 20, 2], A: [2, 20, 2], B: [2, 20, 2] },
-    parts: [{ ask: 'Force per metre, which is attractive here', use: 'p-xii-3-12', find: 'F_l', given: { I_1: 'A A', I_2: 'B A', d: 'D cm' }, marks: 2 }],
+    parts: [{ ask: 'Force per metre on each wire', use: 'p-xii-3-12', find: 'F_l', given: { I_1: 'A A', I_2: 'B A', d: 'D cm' }, marks: 2 }],
   }),
   num('charge-in-field', [3, 'a', 3, 2], {
     diagram: (v) => ({ kind: 'field-entry', B: `${v.B} mT`, v: `${v.V} × 10⁶ m/s`, q: 'electron' }),

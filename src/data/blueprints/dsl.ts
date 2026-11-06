@@ -8,6 +8,7 @@ import { unitLabel } from '../../solver/unit-label';
 import { fillIn, tidy, type Gen, type Mistake } from '../../practice/gen/gen';
 import type { ClassLevel, SubjectId } from '../types';
 import type { Blueprint, Body, Format, Style } from './types';
+import { DERIVATIONS, derivationFact } from '../derivations';
 
 export type Place = [unit: number, topic: string, marks: number, difficulty: Difficulty];
 type Range = [number, number, number] | number[];
@@ -317,7 +318,9 @@ export function blueprintsFor(subject: SubjectId, level: ClassLevel, knowledge: 
         add(`long${marks}`, marks, marks >= 5 ? 3 : 2, 'derivation', marks >= 5 ? 'long' : 'derivation', 'paper-style', (g) => {
           const [q, ...points] = g.pick(list);
           const diagram = f.figures?.[q];
-          return g.theory(q, points as (string | [string, number])[], { facts: [fact(q)], ...(diagram ? { diagram } : {}) });
+          // A long answer that is one of the library's derivations shares its fact, so a paper doesn't ask it twice.
+          const same = DERIVATIONS.filter((d) => d.subject === subject && d.level === level && d.unit === unit && d.topic === topic && d.seen.test(q)).map(derivationFact);
+          return g.theory(q, points as (string | [string, number])[], { facts: [fact(q), ...same], ...(diagram ? { diagram } : {}) });
         });
       }
     }

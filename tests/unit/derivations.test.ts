@@ -195,3 +195,16 @@ describe('as questions', () => {
     }
   });
 });
+
+describe('a long answer that is one of the library’s derivations', () => {
+  it('shares its fact, so a paper never asks both', async () => {
+    const { loadBlueprints } = await import('../../src/data/blueprints');
+    const { generateItem } = await import('../../src/practice/gen/engine');
+    const set = await loadBlueprints('physics', 'XII');
+    const bp = set.byId.get('p12-3a-long4')!;
+    const facts = new Set<string>();
+    for (let seed = 1; seed < 60; seed++) for (const f of generateItem(bp, seed, set.names(bp)).facts ?? []) facts.add(f);
+    expect(facts.has('dv:physics:ampere-solenoid')).toBe(true);
+    expect(facts.has('dv:physics:biot-circular')).toBe(true);
+  });
+});

@@ -335,7 +335,6 @@ const knowledge: Record<string, Facts> = {
       ['Write the first derivative test.', 'If f′ changes sign from positive to negative at c, c is a local maximum.', 'If it changes from negative to positive, c is a local minimum.'],
     ],
     links: [
-      ['same', 'A local maximum isn’t', 'A local minimum can be'],
       ['same', 'A positive second derivative', 'At a local maximum, a differentiable'],
       ['contrast', 'a local maximum', 'an absolute maximum'],
       ['contrast', 'a tangent to a curve', 'a normal to a curve'],

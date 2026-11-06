@@ -388,10 +388,11 @@ const blueprints: Blueprint[] = [
     const a = g.int(1, 4);
     const b = g.int(-4, 4);
     const x = g.int(1, 4);
+    const c = g.int(1, 5);
     const slope = 2 * a * x + b;
-    return g.mcqNumber(`The slope of the tangent to ${$(`y = ${polyTex([[a, 2], [b, 1], [g.int(1, 5), 0]])}`)} at ${$(`x = ${x}`)} is:`, slope === 0 ? g.retry() : slope, '', [
+    return g.mcqNumber(`The slope of the tangent to ${$(`y = ${polyTex([[a, 2], [b, 1], [c, 0]])}`)} at ${$(`x = ${x}`)} is:`, slope === 0 ? g.retry() : slope, '', [
       { slip: 'forgot to multiply by the power', value: a * x + b },
-      { slip: 'worked out y instead of its slope', value: a * x * x + b * x },
+      { slip: 'worked out y instead of its slope', value: a * x * x + b * x + c },
       { slip: 'left out the linear term', value: 2 * a * x },
       { slip: 'found the slope of the normal', value: -1 / slope },
     ], { digits: 3 });
@@ -410,7 +411,6 @@ const blueprints: Blueprint[] = [
   custom('rate-change', [3, 'b', 2, 1], { type: 'numerical', format: 'numerical', style: 'cbq-style' }, (g) => {
     const [shape, formula, ask, factor] = g.pick([
       ['A circular ripple spreads across a pond. Its radius grows at', 'A = \\pi r^2', 'area', (r: number, v: number) => 2 * Math.PI * r * v],
-      ['A spherical balloon is being inflated. Its radius grows at', 'V = \\tfrac43\\pi r^3', 'volume', (r: number, v: number) => 4 * Math.PI * r * r * v],
     ] as const);
     const v = g.int(1, 5);
     const r = g.int(2, 12);
@@ -425,7 +425,7 @@ const blueprints: Blueprint[] = [
     const f: [number, number][] = [[2 * k, 3], [-3 * k * (p + q), 2], [6 * k * p * q, 1], [c, 0]];
     return {
       form: 'numeric',
-      text: `For ${$(`f(x) = ${polyTex(f)}`)}, find the stationary points, and which is a local maximum.`,
+      text: `For ${$(`f(x) = ${polyTex(f)}`)}, find the stationary points, which of them is a local maximum, and the local maximum value.`,
       parts: [
         g.answerPart('x-coordinate of the local maximum', p, 2, [step('Differentiate and set to zero', `f'(x) = ${6 * k}(x - ${p})(x - ${q}) = 0`), step('Second derivative', `f''(${p}) < 0`, 'x = ' + p)]),
         g.answerPart('x-coordinate of the local minimum', q, 1, [step('Second derivative', `f''(${q}) > 0`)]),
@@ -436,16 +436,17 @@ const blueprints: Blueprint[] = [
   custom('hill-van', [3, 'b', 5, 3], { type: 'numerical', format: 'cbq', style: 'cbq-style' }, (g) => {
     const p = g.int(1, 2);
     const q = p + g.int(2, 3);
-    const c = g.int(2, 6);
+    // The lower turning point, h(q) = 3pq² − q³ + c, stays above the ground.
+    const c = Math.max(0, q ** 3 - 3 * p * q * q) + g.int(2, 6);
     const f: [number, number][] = [[2, 3], [-3 * (p + q), 2], [6 * p * q, 1], [c, 0]];
     const [setting, unit] = g.pick([
       ['A cycling route over the hills follows the height profile', 'hundred metres'],
-      ['A delivery drone rises and falls along a path given by', 'tens of metres'],
-      ['A roller coaster’s track near its first drop has height', 'tens of metres'],
+      ['A delivery drone rises and falls along a path given by', 'metres'],
+      ['A roller coaster’s track near its first drop has height', 'metres'],
     ] as const);
     return {
       form: 'numeric',
-      text: `${setting} ${$(`h(x) = ${polyTex(f)}`)}, ${$('x \\ge 0')}, with h in ${unit}. Rest stops are planned at the turning points.`,
+      text: `${setting} ${$(`h(x) = ${polyTex(f)}`)}, ${$('x \\ge 0')}, with h in ${unit}, measured from the ground.`,
       parts: [
         g.answerPart('Height at the start, when x = 0', c, 1, [step('Put x = 0', `h(0) = ${c}`)]),
         g.answerPart('x at the first turning point', p, 1, [step('Set the derivative to zero', `h'(x) = 6(x - ${p})(x - ${q}) = 0`)]),
@@ -482,10 +483,10 @@ const blueprints: Blueprint[] = [
       ['If f′(x) > 0 on an interval, then f on that interval is:', 'increasing', 'decreasing', 'constant', 'zero'],
       ['If f′(c) = 0 and f″(c) > 0, then c is a point of:', 'local minimum', 'local maximum', 'inflection only', 'discontinuity'],
       ['The product of the slopes of a tangent and a normal at a point is:', '−1', '1', '0', 'never defined'],
-      ['The largest value of a continuous function on a closed interval can occur:', 'at a stationary point, or at an end point', 'only at a stationary point', 'only at an end point', 'nowhere'],
+      ['The largest value of a continuous function on a closed interval can occur:', 'at a critical point, or at an end point', 'only at a stationary point', 'only at an end point', 'nowhere'],
     ],
     truths: [
-      ['A function must have a maximum on a closed interval if it is continuous there.', 'A continuous function never has a maximum on a closed interval.'],
+      ['If f′(x) < 0 on an interval, f is strictly decreasing there.', 'If f′(x) < 0 on an interval, f is strictly increasing there.'],
       ['At a local maximum, a differentiable function’s derivative is zero.', 'At a local maximum, a differentiable function’s derivative is positive.'],
       ['The function eˣ is increasing for all real x.', 'The function eˣ is decreasing for all real x.'],
     ],
@@ -1142,15 +1143,15 @@ const blueprints: Blueprint[] = [
     };
   }),
   custom('cbq-open-box', [3, 'b', 4, 2], { type: 'numerical', format: 'cbq', style: 'cbq-style' }, (g) => {
-    const side = 6 * g.int(2, 8);
-    const x = side / 6;
-    const volume = (side - 2 * x) ** 2 * x;
+    // A rectangular sheet, so as not to repeat the square one. Each pair has a whole-number best cut.
+    const [l, w, x] = g.pick([[16, 10, 2], [24, 9, 2], [45, 24, 5], [21, 16, 3], [30, 14, 3]] as const);
+    const volume = x * (l - 2 * x) * (w - 2 * x);
     return {
       form: 'numeric',
-      text: `A workshop makes an open box from a square sheet of tin of side ${side} cm, by cutting a square of side x cm from each corner and folding up the sides. It wants the largest possible volume.`,
+      text: `A workshop makes an open box from a rectangular sheet of tin ${l} cm by ${w} cm, by cutting a square of side x cm from each corner and folding up the sides. It wants the largest possible volume.`,
       parts: [
-        g.answerPart('The value of x, in cm, that gives the largest volume', x, 3, [step('Write the volume and differentiate', `V = x(${side} - 2x)^2`, `\\dfrac{dV}{dx} = (${side} - 2x)(${side} - 6x) = 0`, `x = ${x}\\text{ (the other root gives no box)}`)]),
-        g.answerPart('That largest volume, in cm³', volume, 1, [step('Substitute', `V = ${x} \\times ${side - 2 * x}^2 = ${volume}`)]),
+        g.answerPart('The value of x, in cm, that gives the largest volume', x, 3, [step('Write the volume and differentiate', `V = x(${l} - 2x)(${w} - 2x)`, `\\dfrac{dV}{dx} = 12x^2 - ${4 * (l + w)}x + ${l * w} = 0`, `x = ${x}\\text{ (the other root is too large for a box)}`)]),
+        g.answerPart('That largest volume, in cm³', volume, 1, [step('Substitute', `V = ${x} \\times ${l - 2 * x} \\times ${w - 2 * x} = ${volume}`)]),
       ],
     };
   }),
