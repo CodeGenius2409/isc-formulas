@@ -86,7 +86,7 @@ const knowledge: Record<string, Facts> = {
     ],
     links: [
       ['same', 'Oxides of a metal become', 'Mn₂O₇ is an acidic'],
-      ['same', 'Mn²⁺ is more stable', 'Fe³⁺ is more stable'],
+      ['same', 'Mn²⁺ has a half-filled', 'Fe³⁺ is more stable'],
       ['same', 'Lanthanoids mainly show', 'Actinoids show a larger'],
       ['cause', 'Actinoids show a larger', '5f electrons are held less'],
       ['same', 'The magnetic moment rises', 'Compounds of Sc³⁺'],
