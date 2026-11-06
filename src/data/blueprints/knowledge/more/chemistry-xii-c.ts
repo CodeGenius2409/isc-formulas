@@ -246,7 +246,7 @@ const knowledge: Record<string, Facts> = {
       ['an oxime', 'The compound formed when an aldehyde or a ketone reacts with hydroxylamine, with the group >C=N–OH.'],
     ],
     recall: [
-      ['The hybridisation of a carbonyl carbon is:', 'sp²', 'sp³', 'sp', 'dsp²'],
+      ['The C=O bond of a carbonyl group is made of:', 'one σ bond and one π bond', 'two σ bonds', 'two π bonds', 'one ionic bond'],
       ['The IUPAC name of CH₃CH₂CHO is:', 'propanal', 'propanone', 'propan-1-ol', 'propanoic acid'],
       ['The IUPAC name of CH₃COCH₃ is:', 'propanone', 'propanal', 'propan-2-ol', 'ethanone'],
       ['An aldehyde is made from a primary alcohol by oxidation with:', 'PCC', 'LiAlH₄', 'H₂ over nickel', 'KOH'],
@@ -255,13 +255,10 @@ const knowledge: Record<string, Facts> = {
       ['Hydration of ethyne with mercury(II) sulphate gives:', 'ethanal', 'propanone', 'ethanol', 'ethene'],
       ['Hydration of propyne with mercury(II) sulphate gives:', 'propanone', 'propanal', 'propan-1-ol', 'ethanal'],
       ['The Etard reaction makes benzaldehyde from toluene with:', 'chromyl chloride', 'HCl', 'KCN', 'Cl₂ with no solvent'],
-      ['The Gattermann–Koch reaction makes benzaldehyde from benzene with:', 'CO and HCl', 'CO₂ and HCl', 'CH₃Cl and AlCl₃', 'H₂ and Pt'],
-      ['Friedel–Crafts acylation of benzene gives a:', 'ketone', 'aldehyde', 'carboxylic acid', 'phenol'],
       ['Which reduces aldehydes and ketones to alcohols without affecting a C=C?', 'NaBH₄', 'Zn–Hg with HCl', 'NH₂NH₂ with KOH', 'Tollens’ reagent'],
       ['Clemmensen reduction of propanone gives:', 'propane', 'propan-2-ol', 'propene', 'propanal'],
       ['HCN adds to a carbonyl compound to give a:', 'cyanohydrin', 'nitrile only', 'hemiacetal', 'hydrazone'],
       ['Sodium hydrogensulphite adds to carbonyl compounds to give a:', 'crystalline adduct', 'liquid ester', 'gas', 'free acid'],
-      ['Aldehydes with an excess of alcohol and dry HCl give:', 'an acetal', 'an ester', 'an ether', 'a ketone'],
       ['A ketone with phenylhydrazine gives a:', 'phenylhydrazone', 'oxime', 'semicarbazone', 'cyanohydrin'],
       ['2,4-DNP gives a coloured precipitate with:', 'aldehydes and ketones', 'alcohols', 'esters', 'amines'],
       ['Which gives an aldol condensation?', 'ethanal', 'methanal', 'benzaldehyde', '2,2-dimethylpropanal'],
@@ -297,7 +294,7 @@ const knowledge: Record<string, Facts> = {
       ['2,4-DNP is used to identify carbonyl compounds.', 'It gives sharp-melting, coloured crystalline products with them.'],
       ['Benzaldehyde is less reactive than propanal to nucleophiles.', 'Resonance with the ring reduces the positive charge on the carbonyl carbon.'],
       ['The carbonyl’s C=O bond is attacked, though C=C isn’t, by a nucleophile.', 'Oxygen pulls electrons, leaving the carbon positive.', 'C=C has no such polarity.'],
-      ['A carbonyl compound’s boiling point is above that of its parent alkane.', 'Its polar C=O group leads to dipole–dipole attractions.'],
+      ['Lower aldehydes and ketones dissolve in water, but higher ones don’t.', 'The C=O group forms hydrogen bonds with water.', 'A longer carbon chain repels water, and outweighs this.'],
       ['Sodium hydrogensulphite is used to separate aldehydes from other organic compounds.', 'The crystalline adduct can be filtered off, and gives back the aldehyde with dilute acid.'],
     ],
     explain: [
@@ -308,7 +305,7 @@ const knowledge: Record<string, Facts> = {
       ['Write the structure of the group that gives a positive iodoform test.', 'CH₃CO–, or CH₃CH(OH)–.'],
       ['How can you tell ethanal from benzaldehyde?', 'Ethanal gives a red precipitate with Fehling’s solution, and benzaldehyde doesn’t.'],
       ['Give two uses of methanal.', 'Making Bakelite.', 'As a preservative, in the form of formalin.'],
-      ['Name the reagents for the two common reductions of >C=O to –CH₂–.', 'Clemmensen: Zn–Hg and HCl.', 'Wolff–Kishner: NH₂NH₂ and KOH.'],
+      ['Give a test that tells methanal from ethanal.', 'Warm each with iodine and sodium hydroxide.', 'Ethanal gives a yellow precipitate of iodoform, and methanal doesn’t.'],
     ],
     compare: [
       ['Clemmensen reduction', 'Wolff–Kishner reduction', ['Uses Zn–Hg and concentrated HCl.', 'Uses NH₂NH₂ and KOH.'], ['Acidic conditions.', 'Basic conditions.']],
@@ -317,7 +314,7 @@ const knowledge: Record<string, Facts> = {
     ],
     ar: [
       ['the benzaldehyde and aldol', 'Benzaldehyde gives no self-aldol condensation.', 'Benzaldehyde readily gives self-aldol condensation.', 'It has no α-hydrogen.', 'It has three α-hydrogens.', 'Benzaldehyde gives the Cannizzaro reaction.'],
-      ['the aldehyde’s oxidation', 'Aldehydes are easily oxidised.', 'Aldehydes can’t be oxidised.', 'They have a hydrogen on the carbonyl carbon.', 'They have no bond to hydrogen at all.', 'Aldehydes are reduced to primary alcohols.'],
+      ['the reduction to alcohols', 'NaBH₄ reduces ethanal to ethanol.', 'NaBH₄ reduces ethanal to ethanoic acid.', 'It supplies hydride ions, which add to the carbonyl carbon.', 'It is a strong oxidising agent.', 'Clemmensen reduction gives an alkane instead.'],
       ['the polarity of carbonyl compounds', 'Carbonyl compounds boil higher than the alkanes of similar mass.', 'Carbonyl compounds boil lower than the alkanes of similar mass.', 'Their polar C=O group gives dipole–dipole attractions.', 'They have strong hydrogen bonds with each other.', 'Carbonyl compounds have a C=O bond.'],
     ],
     links: [

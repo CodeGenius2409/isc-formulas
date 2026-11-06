@@ -402,7 +402,7 @@ const knowledge: Record<string, Facts> = {
     recall: [
       ['for (int i = 0; i < 5; i++) runs its body:', '5 times', '4 times', '6 times', 'forever'],
       ['for (int i = 1; i <= 5; i++) runs its body:', '5 times', '4 times', '6 times', 'forever'],
-      ['for (int i = 10; i > 0; i −= 3) runs its body:', '4 times', '3 times', '10 times', 'forever'],
+      ['for (int i = 10; i > 0; i -= 3) runs its body:', '4 times', '3 times', '10 times', 'forever'],
       ['int i = 0; while (i < 3) i++; leaves i at:', '3', '2', '4', '0'],
       ['int i = 5; do { i++; } while (i < 3); leaves i at:', '6', '5', '3', '4'],
       ['A loop inside another runs its body, in total, for 3 outer and 4 inner passes:', '12 times', '7 times', '3 times', '4 times'],
@@ -427,7 +427,7 @@ const knowledge: Record<string, Facts> = {
       ['continue in a for loop jumps to the update step.', 'continue in a for loop jumps out of the loop.'],
       ['break inside nested loops leaves only the inner loop.', 'break inside nested loops leaves all the loops.'],
       ['Braces are needed to put more than one statement in a loop’s body.', 'A loop’s body can hold many statements without braces.'],
-      ['A variable declared in an inner block can’t be used outside it.', 'A variable declared in an inner block can be used anywhere in the method.'],
+      ['A local variable must be given a value before it is used.', 'A local variable is 0 until it is given a value.'],
       ['The if-else-if ladder tests its conditions in order, and stops at the first true one.', 'The if-else-if ladder runs every branch whose condition is true.'],
     ],
     reason: [
@@ -445,9 +445,6 @@ const knowledge: Record<string, Facts> = {
       ['contrast', 'an entry-controlled loop', 'an exit-controlled loop'],
       ['contrast', 'the break statement', 'the continue statement'],
       ['contrast', 'a statement', 'a block'],
-      ['contrast', 'the scope of a variable', 'the visibility of a variable'],
-      ['contrast', 'a switch statement', 'a conditional statement'],
-      ['contrast', 'a loop', 'an infinite loop'],
     ],
   },
 

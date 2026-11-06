@@ -117,7 +117,8 @@ const blueprints: Blueprint[] = [
     const [a, b] = g.sample(PRINCIPAL, 2);
     const worth: Record<string, number> = { pi6: 1 / 6, '-pi6': -1 / 6, pi3: 1 / 3, pi2: 1 / 2, '2pi3': 2 / 3, pi: 1, pi4: 1 / 4, '-pi4': -1 / 4 };
     const total = frac(Math.round(worth[a.value] * 12), 12).add(frac(Math.round(worth[b.value] * 12), 12));
-    const tex = total.n === 0 ? '0' : `${total.n < 0 ? '-' : ''}\\dfrac{${Math.abs(total.n) === 1 ? '' : Math.abs(total.n)}\\pi}{${total.d}}`;
+    const top = `${Math.abs(total.n) === 1 ? '' : Math.abs(total.n)}\\pi`;
+    const tex = total.n === 0 ? '0' : `${total.n < 0 ? '-' : ''}${total.d === 1 ? top : `\\dfrac{${top}}{${total.d}}`}`;
     return g.theory(`Evaluate ${$(`${a.fn}\\left(${a.arg}\\right) + ${b.fn}\\left(${b.arg}\\right)`)}.`, [
       [`The principal values are ${$(a.tex)} and ${$(b.tex)}.`, 1],
       [`Their sum is ${$(tex)}.`, 1],

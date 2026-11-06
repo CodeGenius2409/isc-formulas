@@ -367,3 +367,5 @@ Work is on a `rebuild` branch. `master` still holds your original files.
   Open syllabus questions in `reports/syllabus-review.md` (radioactivity, polarisation, binomial): questions follow the 2028 syllabus, and blueprints wholly on such topics are flagged, not deleted. The formula book is left for you.
 - **Review batch 13** (Chemistry XII cells, Maths XII determinants and differential equations; 50 blueprints, 11 fixed). No errors of fact; every worked answer checks by hand. The fixes were presentation ("1x²", "(dy/dx)¹"), a repeated CBQ, and repeated or arguable facts.
   Coefficients of 1 and terms of 0 are a recurring kind of slip, now fixed wherever a batch has met them.
+- **Review batch 14** (Chemistry XII aldehydes and ketones, CS XI statements and scope, Maths XII inverse trigonometry; 48 blueprints, 9 fixed). Chemistry keeps to the syllabus's named reactions, so Gattermann–Koch, Friedel–Crafts acylation and acetals went. A Java line had a Unicode minus that wouldn't compile; a scan found no others.
+  The programs' outputs, every inverse-trig value, and the iodoform and aldol equations all check out.

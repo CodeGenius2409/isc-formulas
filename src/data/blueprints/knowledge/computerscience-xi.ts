@@ -70,7 +70,7 @@ const knowledge: Record<string, Facts> = {
     ar: [
       ['switch and break', 'A case without a break falls through to the next.', 'A case without a break always ends the switch.', 'Execution carries on until a break or the end of the switch.', 'Execution jumps back to the start of the switch.', 'default runs if no case matches.'],
       ['the do-while loop', 'A do-while loop always runs at least once.', 'A do-while loop can skip its body completely.', 'Its condition is tested after the body.', 'Its condition is tested before the body.', 'A while loop can run zero times.'],
-      ['scope', 'A variable declared in a loop doesn’t exist outside it.', 'A variable declared in a loop can be used anywhere in the method.', 'A local variable lasts only until its block ends.', 'A local variable lasts for the whole program.', 'continue moves on to the next iteration.'],
+      ['scope', 'A variable declared in a loop doesn’t exist outside it.', 'A variable declared in a loop can be used anywhere in the method.', 'A local variable lasts only until its block ends.', 'A local variable lasts for the whole program.', 'A variable declared in main can be used anywhere in main after its declaration.'],
     ],
   },
   '9a': {
