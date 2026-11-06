@@ -385,3 +385,5 @@ Work is on a `rebuild` branch. `master` still holds your original files.
   Both fixes are shared code, so they apply to every numerical, the solver screen included; tests/unit/solver-display.test.ts covers them.
 - **Review batch 22** (CS XI numbers, objects and methods, Chemistry XII nucleic acids; 46 blueprints, 19 fixed). 2's complement stays in CS XI 1a: the 2028 wording names subtraction in other bases, and complements are how it is taught.
   Bisection stays in Methods, which names "finding roots of algebraic equations". The CS answers themselves (conversions, sums, outputs) all checked.
+- **Review batch 23** (Chemistry XII ethers and carbohydrates, CS XI types and casting; 40 blueprints, 18 fixed). The casting MCQ now uses a negative value, so truncation and Math.floor give different answers.
+  Duplicate AR nodes were again the main problem, with three pairs removed.

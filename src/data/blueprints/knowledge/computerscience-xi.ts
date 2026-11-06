@@ -54,9 +54,9 @@ const knowledge: Record<string, Facts> = {
   },
   '6a': {
     ar: [
-      ['implicit widening', 'An int can be assigned to a double with no cast.', 'A double can be assigned to an int with no cast.', 'Widening can’t lose the size of the value.', 'Widening always loses part of the value.', 'A narrowing conversion needs a cast.'],
-      ['wrapper classes', 'A wrapper class is needed to treat an int as an object.', 'An int is already an object in Java.', 'int is a primitive type.', 'int is a class with methods.', 'Integer.parseInt turns a String into an int.'],
-      ['char as a number', '‘A’ + 1 gives the int 66 in Java.', '‘A’ + 1 gives the String “A1” in Java.', 'A char is promoted to int in arithmetic.', 'A char is treated as a String in arithmetic.', 'A cast to char gives back a letter.'],
+      ['implicit widening', 'An int can be assigned to a double with no cast.', 'A double can be assigned to an int with no cast.', 'Widening can’t lose the size of the value.', 'Widening always loses part of the value.', 'A long literal ends in L.'],
+      ['wrapper classes', 'A wrapper class is needed to treat an int as an object.', 'An int is already an object in Java.', 'int is a primitive type.', 'int is a class with methods.', 'Integer.MAX_VALUE holds the largest int.'],
+      ['char as a number', '‘A’ + 1 gives the int 66 in Java.', '‘A’ + 1 gives the String “A1” in Java.', 'A char is promoted to int in arithmetic.', 'A char is treated as a String in arithmetic.', 'A char literal is written in single quotes.'],
     ],
   },
   '7a': {

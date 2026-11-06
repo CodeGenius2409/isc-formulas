@@ -922,7 +922,6 @@ const blueprints: Blueprint[] = [
     ],
     recall: [
       ['Ethers are less polar than alcohols because they have:', 'no O–H bond', 'no oxygen', 'a shorter chain', 'more carbon'],
-      ['Methoxybenzene with hot concentrated HI gives:', 'phenol and iodomethane', 'iodobenzene and methanol', 'benzene and methanol', 'phenol and methanol'],
       ['Which is the best route to ethoxyethane in the lab?', 'Ethanol with concentrated H₂SO₄ at 413 K', 'Ethanol with concentrated H₂SO₄ at 443 K', 'Ethene with water', 'Ethanal with hydrogen'],
     ],
     reason: [
@@ -931,7 +930,6 @@ const blueprints: Blueprint[] = [
       ['Methoxybenzene with HI gives phenol, not iodobenzene.', 'The bond between the ring and oxygen has partial double bond character.', 'So iodide attacks the methyl carbon instead.'],
     ],
     truths: [
-      ['The C–O–C bond angle in an ether is close to the tetrahedral value.', 'The C–O–C bond angle in an ether is close to 180°.'],
       ['Ethers are often used as solvents because they are quite unreactive.', 'Ethers are rarely used as solvents, because they react readily with most reagents.'],
       ['The methoxy group activates the benzene ring.', 'The methoxy group deactivates the benzene ring.'],
     ],
@@ -1130,25 +1128,18 @@ const blueprints: Blueprint[] = [
       ['a monosaccharide', 'A sugar that can’t be broken down into simpler sugars by hydrolysis.'],
     ],
     recall: [
-      ['Which of these is a non-reducing sugar?', 'Sucrose', 'Glucose', 'Maltose', 'Lactose'],
-      ['Starch is made up of:', 'α-glucose units', 'β-glucose units', 'fructose units', 'galactose units'],
-      ['Cellulose is made up of:', 'β-glucose units', 'α-glucose units', 'fructose units', 'sucrose units'],
-      ['Glucose has an aldehyde group, which is shown by its oxidation with bromine water to:', 'gluconic acid', 'saccharic acid', 'n-hexane', 'sorbitol'],
       ['Lactose breaks down on hydrolysis to:', 'glucose and galactose', 'two glucose units', 'glucose and fructose', 'two fructose units'],
-      ['Sucrose on hydrolysis gives:', 'glucose and fructose', 'two glucose units', 'glucose and galactose', 'two galactose units'],
     ],
     reason: [
-      ['Sucrose doesn’t reduce Fehling’s solution.', 'Its reducing groups are tied up in the glycosidic link.'],
       ['Sucrose is called invert sugar after hydrolysis.', 'Hydrolysis changes the sign of its rotation from right to left.', 'Fructose’s strong left rotation outweighs glucose’s right rotation.'],
-      ['Humans can digest starch, but not cellulose.', 'Humans have no enzyme to break β-glycosidic links.'],
     ],
     compare: [
       ['starch', 'cellulose', ['Made of α-glucose.', 'Made of β-glucose.'], ['Digested by humans.', 'Not digested by humans.'], ['Partly branched and coiled.', 'Straight chains, which form strong fibres.']],
-      ['amylose', 'amylopectin', ['A straight chain.', 'A branched chain.'], ['Soluble in water.', 'Insoluble in water.']],
+      ['amylose', 'amylopectin', ['A straight chain.', 'A branched chain.'], ['Soluble in hot water.', 'Insoluble in water.']],
     ],
     truths: [
-      ['Glucose is an aldohexose.', 'Glucose is a ketohexose.'],
-      ['Fructose is a ketohexose.', 'Fructose is an aldopentose.'],
+      ['Glucose and fructose have the same molecular formula.', 'Glucose and fructose have different molecular formulae.'],
+      ['Lactose is a reducing sugar.', 'Lactose is a non-reducing sugar.'],
       ['Maltose is a reducing sugar.', 'Maltose is a non-reducing sugar.'],
     ],
     explain: [

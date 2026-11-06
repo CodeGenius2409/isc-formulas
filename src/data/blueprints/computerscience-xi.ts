@@ -301,13 +301,13 @@ const blueprints: Blueprint[] = [
   // ---- Unit 6: Types
   custom('output-types', [6, 'a', 2, 1], { type: 'output', format: 'output' }, (g) => g.pick(OPERATORS)(g)),
   custom('casting', [6, 'a', 1, 2], { type: 'mcq', format: 'mcq' }, (g) => {
-    const d = g.int(2, 9) + g.pick([0.5, 0.75, 0.25]);
-    return g.mcqNumber(`What does (int) ${d} give in Java?`, Math.floor(d), '', [
-      { slip: 'rounded up', value: Math.ceil(d) },
+    // A negative value tells truncation apart from rounding down; a positive one is in the recall pool.
+    const d = -(g.int(2, 9) + g.pick([0.5, 0.75, 0.25]));
+    return g.mcqNumber(`What does (int) (${d}) give in Java?`, Math.trunc(d), '', [
+      { slip: 'rounded down, as Math.floor does', value: Math.floor(d) },
       { slip: 'kept the fraction', value: d },
-      { slip: 'added 1', value: Math.floor(d) + 2 },
-      { slip: 'took 1 away', value: Math.floor(d) - 1 },
-    ], { digits: 3 });
+      { slip: 'dropped the minus sign', value: -Math.trunc(d) },
+    ], { digits: 3, working: `A cast to int cuts off the fraction, towards zero, so (int) (${d}) is ${Math.trunc(d)}. Math.floor(${d}) would give ${Math.floor(d)}.` });
   }),
   custom('find-error-type', [6, 'a', 2, 2], { type: 'error', format: 'error' }, (g) => {
     const v = g.int(2, 9);
@@ -322,12 +322,11 @@ const blueprints: Blueprint[] = [
     ],
     recall: [
       ['How many bits does an int use in Java?', '32', '16', '8', '64'],
-      ['How many bits does a char use in Java?', '16', '8', '32', '4'],
       ['Which method changes the text "25" into an int?', 'Integer.parseInt', 'Integer.toString', 'String.valueOf', 'Double.parseDouble'],
       ['Which is the default value of an int data member?', '0', 'null', '1', 'a random value'],
     ],
     compare: [
-      ['implicit casting', 'explicit casting', ['Done automatically, to a larger type.', 'Written by the programmer, to a smaller type.'], ['Loses no information.', 'May lose information.']],
+      ['implicit type conversion', 'explicit type conversion', ['Done automatically, to a larger type.', 'Written by the programmer, to a smaller type.'], ['Loses no information.', 'May lose information.']],
       ['int', 'Integer', ['A primitive type.', 'A wrapper class.'], ['Holds just a value.', 'Holds a value, and has methods.']],
     ],
     truths: [

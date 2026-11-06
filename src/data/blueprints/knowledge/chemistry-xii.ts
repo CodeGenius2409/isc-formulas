@@ -111,9 +111,9 @@ const knowledge: Record<string, Facts> = {
   },
   '7c': {
     ar: [
-      ['the solubility of ethers', 'Ethers of low mass dissolve to some extent in water.', 'Ethers of low mass don’t dissolve in water at all.', 'Their oxygen can form hydrogen bonds with water.', 'They form ions in water.', 'Ethers don’t form hydrogen bonds with one another.'],
-      ['the Williamson synthesis', 'A primary halide gives the best yield in the Williamson synthesis.', 'A tertiary halide gives the best yield in the Williamson synthesis.', 'A tertiary halide tends to eliminate instead.', 'A primary halide tends to eliminate instead.', 'The synthesis uses an alkoxide and a haloalkane.'],
-      ['the bond angle', 'The C–O–C bond angle in an ether is close to the tetrahedral value.', 'The C–O–C bond angle in an ether is 180°.', 'The oxygen is sp³ hybridised.', 'The oxygen is sp hybridised.', 'Oxygen has two lone pairs here.'],
+      ['the solubility of ethers', 'Ethers of low mass dissolve to some extent in water.', 'Ethers of low mass don’t dissolve in water at all.', 'Their oxygen can form hydrogen bonds with water.', 'They form ions in water.', 'Ethoxyethane is less dense than water.'],
+      ['the Williamson synthesis', 'A primary halide gives the best yield in the Williamson synthesis.', 'A tertiary halide gives the best yield in the Williamson synthesis.', 'A tertiary halide tends to eliminate instead.', 'A primary halide tends to eliminate instead.', 'Anisole can be made from sodium phenoxide and iodomethane.'],
+      ['the bond angle', 'The C–O–C bond angle in an ether is close to the tetrahedral value.', 'The C–O–C bond angle in an ether is 180°.', 'The oxygen is sp³ hybridised.', 'The oxygen is sp hybridised.', 'The C–O bond is polar.'],
     ],
   },
   '8a': {
@@ -155,7 +155,7 @@ const knowledge: Record<string, Facts> = {
   '10a': {
     ar: [
       ['glucose as a reducing sugar', 'Glucose reduces Fehling’s solution.', 'Glucose doesn’t reduce Fehling’s solution.', 'It has a free aldehyde group in solution.', 'It has no carbonyl group at all, in any form.', 'A brick-red precipitate shows a positive test.'],
-      ['sucrose', 'Sucrose isn’t a reducing sugar.', 'Sucrose is a strong reducing sugar.', 'Its two units are linked through their reducing groups.', 'It has a free aldehyde group.', 'Hydrolysis gives glucose and fructose.'],
+      ['sucrose', 'Sucrose isn’t a reducing sugar.', 'Sucrose is a strong reducing sugar.', 'Its two units are linked through their reducing groups.', 'It has a free aldehyde group.', 'Sucrose is a disaccharide.'],
       ['starch and cellulose', 'Humans can’t digest cellulose, though they digest starch.', 'Humans digest cellulose, though they can’t digest starch.', 'Cellulose has β-glycosidic links, for which we have no enzyme.', 'Cellulose has α-glycosidic links, which are unbreakable.', 'Both are polymers of glucose.'],
     ],
   },
