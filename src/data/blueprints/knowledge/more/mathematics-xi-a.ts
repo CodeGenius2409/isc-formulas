@@ -192,7 +192,7 @@ const knowledge: Record<string, Facts> = {
   '2c': {
     recall: [
       ['The number of ways of choosing 2 out of 5 is:', '10', '20', '5', '25'],
-      ['The number of arrangements of the letters of the word “LEVEL” is:', '30', '120', '60', '20'],
+      ['The number of ways of arranging 4 different books on a shelf is:', '24', '16', '4', '12'],
     ],
   },
 
@@ -277,7 +277,6 @@ const knowledge: Record<string, Facts> = {
       ['the intercept of a circle on an axis', 'The length of the chord the circle cuts off on that axis.'],
     ],
     recall: [
-      ['The centre of x² + y² + 2gx + 2fy + c = 0 is:', '(−g, −f)', '(g, f)', '(2g, 2f)', '(−2g, −2f)'],
       ['The radius of x² + y² + 2gx + 2fy + c = 0 is:', '√(g² + f² − c)', 'g² + f² − c', '√(g² + f² + c)', '√(c − g² − f²)'],
       ['The centre of x² + y² − 4x + 6y − 3 = 0 is:', '(2, −3)', '(−2, 3)', '(4, −6)', '(−4, 6)'],
       ['The radius of x² + y² − 4x + 6y − 3 = 0 is:', '4', '16', '√10', '3'],
@@ -314,7 +313,6 @@ const knowledge: Record<string, Facts> = {
       ['contrast', 'the standard form of a circle', 'the general form of a circle'],
       ['contrast', 'the diameter form of a circle', 'the parametric form of a circle'],
       ['contrast', 'externally touching circles', 'internally touching circles'],
-      ['contrast', 'a circle', 'the radius of a circle'],
     ],
   },
 

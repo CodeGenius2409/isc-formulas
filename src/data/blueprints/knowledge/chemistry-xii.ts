@@ -31,8 +31,8 @@ const knowledge: Record<string, Facts> = {
   '2c': {
     ar: [
       ['the fuel cell', 'A hydrogen–oxygen fuel cell is more efficient than burning the hydrogen.', 'Burning the hydrogen is always far more efficient than a fuel cell.', 'It turns chemical energy straight into electricity, not through heat.', 'It wastes most of the energy as heat.', 'Its product is water.'],
-      ['rusting', 'Salt water speeds up the rusting of iron.', 'Salt water stops the rusting of iron.', 'It conducts better, helping the electrochemical action.', 'It removes all the oxygen from the water.', 'Rusting needs both oxygen and water.'],
-      ['galvanising', 'A zinc coating protects iron even when it is scratched.', 'A zinc coating protects iron only if it stays perfect.', 'Zinc is more easily oxidised, so it corrodes in place of the iron.', 'Zinc is less easily oxidised than iron.', 'This is an example of sacrificial protection.'],
+      ['the dry cell', 'A dry cell can’t be recharged.', 'A dry cell is recharged in normal use.', 'Its cell reaction can’t be reversed by passing a current.', 'It contains no electrolyte at all.', 'A dry cell is a primary cell.'],
+      ['painting iron', 'Painting iron stops it rusting.', 'Painting iron speeds up its rusting.', 'Paint keeps oxygen and water away from the metal.', 'Paint reacts with iron to form a protective oxide.', 'Oiling and greasing work in the same way.'],
     ],
   },
   '3a': {

@@ -295,19 +295,19 @@ const blueprints: Blueprint[] = [
       ['a permutation', 'An arrangement of objects, in which order matters.'],
       ['a combination', 'A selection of objects, in which order doesn’t matter.'],
       ['the fundamental principle of counting', 'If one event can happen in m ways and another in n ways, both can happen in mn ways.'],
+      ['n factorial', 'n!, the product of all the whole numbers from 1 to n.'],
     ],
     recall: [
-      ['0! equals:', '1', '0', 'not defined', '−1'],
-      ['ⁿCᵣ equals:', 'ⁿCₙ₋ᵣ', 'ⁿPᵣ', 'n!', 'r!'],
       ['The number of ways to arrange n different objects in a circle is:', '(n − 1)!', 'n!', 'n', '2n'],
     ],
     compare: [
       ['permutations', 'combinations', ['Order matters.', 'Order doesn’t matter.'], ['Example: arranging runners on a podium.', 'Example: choosing members of a team.']],
     ],
     truths: [
-      ['ⁿPᵣ is r! times ⁿCᵣ.', 'ⁿCᵣ is r! times ⁿPᵣ.'],
+      ['The number of diagonals of a polygon with n sides is ⁿC₂ − n.', 'The number of diagonals of a polygon with n sides is ⁿC₂.'],
       ['ⁿC₀ equals 1.', 'ⁿC₀ equals 0.'],
       ['ⁿCᵣ + ⁿCᵣ₋₁ equals ⁿ⁺¹Cᵣ.', 'ⁿCᵣ + ⁿCᵣ₋₁ equals ⁿCᵣ₊₁.'],
+      ['There are 504 three-digit numbers with different digits from 1 to 9.', 'There are 729 three-digit numbers with different digits from 1 to 9.'],
     ],
   }),
   ...facts(2, 'd', {
@@ -383,7 +383,7 @@ const blueprints: Blueprint[] = [
     const r = g.int(1, 7);
     const c = h * h + k * k - r * r;
     if (!h || !k) g.retry();
-    return g.theory(`Find the centre and the radius of the circle ${$(`x^2 + y^2 ${signed(-2 * h)}x ${signed(-2 * k)}y ${signed(c)} = 0`)}.`, [`Completing the squares, the centre is (${h}, ${k}).`, `The radius is ${r}.`]);
+    return g.theory(`Find the centre and the radius of the circle ${$(`x^2 + y^2 ${signed(-2 * h)}x ${signed(-2 * k)}y ${signed(c)} = 0`)}.`, [`Completing the squares, the centre is ${$(`(${h}, ${k})`)}.`, `The radius is ${r}.`]);
   }),
   custom('parabola', [3, 'c', 2, 2], { type: 'short', format: 'short' }, (g) => {
     const a = g.int(1, 6);
@@ -433,7 +433,7 @@ const blueprints: Blueprint[] = [
       ['The centre of (x − 2)² + (y + 3)² = 25 is:', '(2, −3)', '(−2, 3)', '(2, 3)', '(−2, −3)'],
     ],
     truths: [
-      ['A tangent is at right angles to the radius at the point of contact.', 'A tangent is parallel to the radius at the point of contact.'],
+      ['The longest chord of a circle is a diameter.', 'The longest chord of a circle is a radius.'],
       ['A circle can be drawn through any three points not on one line.', 'A circle can be drawn through any four points.'],
       ['Every circle’s equation has equal coefficients of x² and y².', 'A circle’s equation has different coefficients of x² and y².'],
     ],
@@ -715,7 +715,7 @@ const blueprints: Blueprint[] = [
       text: `A locker code has ${letters} capital letters followed by ${digits} digits.`,
       parts: [
         g.answerPart('Number of codes if letters and digits may repeat', repeat, 1, [step('Multiply the choices', `26^{${letters}} \\times 10^{${digits}} = ${repeat}`)], '', String(repeat)),
-        g.answerPart('Number of codes if nothing may repeat', noRepeat, 2, [step('Each choice removes one', `= ${noRepeat}`)], '', String(noRepeat)),
+        g.answerPart('Number of codes if nothing may repeat', noRepeat, 2, [step('Each choice removes one', `26 \\times 25${letters === 3 ? ' \\times 24' : ''} \\times 10 \\times 9${digits === 3 ? ' \\times 8' : ''} = ${noRepeat}`)], '', String(noRepeat)),
       ],
     };
   }),

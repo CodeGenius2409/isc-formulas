@@ -40,8 +40,8 @@ const knowledge: Record<string, Facts> = {
   },
   '2c': {
     ar: [
-      ['order', 'ⁿPᵣ is larger than ⁿCᵣ when r ≥ 2.', 'ⁿCᵣ is larger than ⁿPᵣ when r ≥ 2.', 'Each selection can be arranged in r! ways.', 'Each arrangement can be selected in r! ways.', 'ⁿPᵣ = r! × ⁿCᵣ.'],
-      ['the symmetry of selections', 'ⁿCᵣ = ⁿCₙ₋ᵣ.', 'ⁿCᵣ = ⁿCₙ₊ᵣ.', 'Choosing r items is the same as leaving out n − r.', 'Choosing r items is the same as choosing n items.', 'ⁿC₀ = 1.'],
+      ['order', 'ⁿPᵣ is larger than ⁿCᵣ when r ≥ 2.', 'ⁿCᵣ is larger than ⁿPᵣ when r ≥ 2.', 'Each selection can be arranged in r! ways.', 'Each arrangement can be selected in r! ways.', '⁵P₂ = 20.'],
+      ['the symmetry of selections', 'ⁿCᵣ = ⁿCₙ₋ᵣ.', 'ⁿCᵣ = ⁿCₙ₊ᵣ.', 'Choosing r items is the same as leaving out n − r.', 'Choosing r items is the same as choosing n items.', 'Among 5 people there are 10 handshakes, one for each pair.'],
       ['factorials', '0! is taken to be 1.', '0! is taken to be 0.', 'This makes ⁿCₙ = 1 come out correctly.', 'This makes ⁿCₙ = 0 come out correctly.', 'n! = n × (n − 1)!.'],
     ],
   },
@@ -68,9 +68,9 @@ const knowledge: Record<string, Facts> = {
   },
   '3b': {
     ar: [
-      ['the general equation of a circle', 'x² + y² + 2gx + 2fy + c = 0 has the centre (−g, −f).', 'x² + y² + 2gx + 2fy + c = 0 has the centre (g, f).', 'Completing the squares gives (x + g)² + (y + f)² = g² + f² − c.', 'Completing the squares gives (x − g)² + (y − f)² = c.', 'Its radius is √(g² + f² − c).'],
-      ['the condition for a circle', 'x² + y² + 2gx + 2fy + c = 0 is a real circle only if g² + f² > c.', 'x² + y² + 2gx + 2fy + c = 0 is a real circle for any values.', 'The square of the radius must be positive.', 'The square of the centre must be negative.', 'If g² + f² = c, it is a single point.'],
-      ['the tangent', 'A tangent is perpendicular to the radius at the point of contact.', 'A tangent is parallel to the radius at the point of contact.', 'The radius is the shortest distance from the centre to the tangent.', 'The radius is the longest distance from the centre to the tangent.', 'The distance from the centre to a tangent equals the radius.'],
+      ['the general equation of a circle', 'x² + y² + 2gx + 2fy + c = 0 has the centre (−g, −f).', 'x² + y² + 2gx + 2fy + c = 0 has the centre (g, f).', 'Completing the squares gives (x + g)² + (y + f)² = g² + f² − c.', 'Completing the squares gives (x − g)² + (y − f)² = c.', 'Two circles are concentric if they share a centre.'],
+      ['concentric circles', 'x² + y² = 4 and x² + y² = 9 never meet.', 'x² + y² = 4 and x² + y² = 9 meet at two points.', 'They are concentric, with radii 2 and 3.', 'They have the same radius.', 'Their radii add up to 5.'],
+      ['the tangent', 'A tangent is perpendicular to the radius at the point of contact.', 'A tangent is parallel to the radius at the point of contact.', 'The radius is the shortest distance from the centre to the tangent.', 'The radius is the longest distance from the centre to the tangent.', 'A tangent meets a circle at just one point.'],
     ],
   },
   '3c': {

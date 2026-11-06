@@ -12,9 +12,9 @@ const knowledge: Record<string, Facts> = {
   },
   '2a': {
     ar: [
-      ['Unicode and ASCII', 'Unicode can represent far more characters than ASCII.', 'ASCII can represent far more characters than Unicode.', 'It has far more code points for the world’s scripts.', 'It has only 7 bits for each character.', 'Java’s char holds a 16-bit Unicode value.'],
-      ['ASCII codes', 'In ASCII, ‘A’ has a smaller code than ‘a’.', 'In ASCII, ‘a’ has a smaller code than ‘A’.', 'Capital letters start at 65, and small letters at 97.', 'Small letters start at 65, and capitals at 97.', 'A small letter’s code is 32 more than its capital’s.'],
-      ['ASCII’s size', 'Standard ASCII has 128 characters.', 'Standard ASCII has 1024 characters.', 'It uses a 7-bit code.', 'It uses a 10-bit code.', 'Its codes for digits begin at 48.'],
+      ['Unicode and ASCII', 'Unicode can represent far more characters than ASCII.', 'ASCII can represent far more characters than Unicode.', 'It has far more code points for the world’s scripts.', 'It has only 7 bits for each character.', 'Unicode includes all the ASCII characters.'],
+      ['ASCII codes', 'In ASCII, ‘A’ has a smaller code than ‘a’.', 'In ASCII, ‘a’ has a smaller code than ‘A’.', 'Capital letters start at 65, and small letters at 97.', 'Small letters start at 65, and capitals at 97.', 'ASCII control characters have codes below 32.'],
+      ['ASCII’s size', 'Standard ASCII has 128 characters.', 'Standard ASCII has 1024 characters.', 'It uses a 7-bit code.', 'It uses a 10-bit code.', 'ASCII has no codes for Devanagari letters.'],
     ],
   },
   '3a': {

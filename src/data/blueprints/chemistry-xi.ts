@@ -36,7 +36,7 @@ const blueprints: Blueprint[] = [
   num('moles', [1, 'b', 2, 1], {
     text: '{G} g of a substance of molar mass {M} g/mol is taken. Find the number of molecules.',
     vars: { G: [5, 90, 5], M: [18, 44, 46, 58, 180] },
-    derive: (v) => ({ N: v.G / v.M }),
+    derive: (v) => ({ N: Number((v.G / v.M).toPrecision(3)) }),
     parts: [{ ask: 'Number of molecules', use: 'c-xi-1-2', find: 'N', given: { n: 'N mol' }, marks: 2 }],
   }),
   num('molarity-xi', [1, 'c', 2, 1], {
@@ -108,6 +108,7 @@ const blueprints: Blueprint[] = [
       ['The number of atoms in 1 mol of O₂ is:', '2 × 6.022 × 10²³', '6.022 × 10²³', '3 × 6.022 × 10²³', '16 × 6.022 × 10²³'],
       ['A compound with the empirical formula CH₂O and a molar mass of 180 g/mol has the molecular formula:', 'C₆H₁₂O₆', 'CH₂O', 'C₂H₄O₂', 'C₃H₆O₃'],
       ['The mass of 1 mol of water is:', '18 g', '16 g', '2 g', '20 g'],
+      ['The number of moles in 22 g of CO₂ is:', '0.5', '1', '2', '0.25'],
     ],
     reason: [
       ['Stoichiometry needs moles rather than mass.', 'Reactions go by numbers of particles.', 'Moles count particles, while masses vary with the substance.'],
@@ -116,6 +117,7 @@ const blueprints: Blueprint[] = [
       ['Empirical formula can equal the molecular formula.', 'Empirical formula can never equal the molecular formula.'],
       ['A balanced equation gives the mole ratio of reactants and products.', 'A balanced equation gives their ratio by mass directly.'],
       ['Percentage yield can’t be more than 100 for a pure product.', 'Percentage yield is usually more than 100 for a pure product.'],
+      ['One mole of any gas at STP takes up about 22.4 L.', 'One mole of any gas at STP takes up about 2.24 L.'],
     ],
     cases: [
       {

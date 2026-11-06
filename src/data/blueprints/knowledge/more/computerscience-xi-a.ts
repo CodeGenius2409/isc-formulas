@@ -76,8 +76,6 @@ const knowledge: Record<string, Facts> = {
       ['extended ASCII', 'An 8-bit form of ASCII with 256 characters.'],
     ],
     recall: [
-      ['Standard ASCII uses this many bits:', '7', '8', '16', '32'],
-      ['The number of characters in standard ASCII is:', '128', '256', '65 536', '1 000 000'],
       ['The ASCII code of the digit 0 is:', '48', '0', '30', '65'],
       ['The ASCII code of a space is:', '32', '0', '48', '20'],
       ['ASCII codes of capitals differ from their small letters by:', '32', '26', '16', '1'],

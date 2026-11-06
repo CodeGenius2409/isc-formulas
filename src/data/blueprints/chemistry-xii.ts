@@ -410,7 +410,7 @@ const blueprints: Blueprint[] = [
       ['Which is a secondary, rechargeable cell?', 'Lead storage battery', 'Dry cell', 'Mercury cell', 'Daniell cell'],
       ['Rusting of iron is speeded up by:', 'dissolved salts', 'oil', 'paint', 'alkali'],
       ['Galvanising protects iron by coating it with:', 'zinc', 'tin', 'copper', 'lead'],
-      ['The density of the acid in a lead storage battery on discharge:', 'falls', 'rises', 'is unchanged', 'first rises and then falls'],
+      ['In a lead storage battery, the anode is made of:', 'lead', 'lead dioxide', 'zinc', 'graphite'],
     ],
     reason: [
       ['Density of the acid in a lead storage battery falls as it discharges.', 'Sulphuric acid is used up, forming lead sulphate and water.'],
@@ -424,6 +424,7 @@ const blueprints: Blueprint[] = [
       ['A hydrogen–oxygen fuel cell produces water as its product.', 'A hydrogen–oxygen fuel cell produces carbon dioxide as its product.'],
       ['Rusting needs both oxygen and water.', 'Rusting needs only oxygen.'],
       ['Tin protects iron only while its coating is unbroken.', 'Tin protects iron even when its coating is broken.'],
+      ['Rusting is an electrochemical process.', 'Rusting is a purely physical process.'],
     ],
     cases: [
       {

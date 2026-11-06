@@ -151,7 +151,7 @@ const blueprints: Blueprint[] = [
     ],
     truths: [
       ['2’s complement has one form for zero.', '2’s complement has two forms for zero.'],
-      ['Upper case letters come before lower case letters in ASCII.', 'Lower case letters come before upper case letters in ASCII.'],
+      ['UTF-8 needs more than one byte for a Devanagari letter.', 'UTF-8 stores every Devanagari letter in a single byte.'],
       ['A parity bit helps detect single-bit errors.', 'A parity bit corrects any number of errors.'],
     ],
   }),
@@ -179,13 +179,13 @@ const blueprints: Blueprint[] = [
   }),
   custom('section-a-xi', [1, 'a', 10, 3], { type: 'short', format: 'long' }, (g) => {
     const value = g.int(50, 200);
-    const neg = g.int(5, 100);
+    const neg = g.int(5, 49);
     const a = g.int(0, 1);
     const b = g.int(0, 1);
-    return g.theory(`(a) Convert the decimal number ${value} to binary, octal and hexadecimal. [3]\n(b) Find the 8-bit 2’s complement form of −${neg}. [3]\n(c) Find the output of an XOR gate with inputs ${a} and ${b}, and write its truth table. [2]\n(d) State De Morgan’s two laws. [2]`, [
+    return g.theory(`(a) Convert the decimal number ${value} to binary, octal and hexadecimal. [3]\n(b) Subtract ${neg} from ${value} in binary, and check your answer in decimal. [3]\n(c) Find the output of an XOR gate with inputs ${a} and ${b}, and write its truth table. [2]\n(d) State De Morgan’s two laws. [2]`, [
       [`(a) ${value} is ${value.toString(2)} in binary, ${value.toString(8)} in octal, and ${value.toString(16).toUpperCase()} in hexadecimal.`, 3],
-      [`(b) ${neg} is ${neg.toString(2).padStart(8, '0')}, whose 1’s complement is ${(255 - neg).toString(2).padStart(8, '0')}.`, 2],
-      [`(b) Adding 1 gives ${(256 - neg).toString(2).padStart(8, '0')}.`, 1],
+      [`(b) ${value.toString(2)} − ${neg.toString(2)} = ${(value - neg).toString(2)}.`, 2],
+      [`(b) In decimal, ${value} − ${neg} = ${value - neg}.`, 1],
       [`(c) The output is ${a ^ b}.`, 1],
       ['(c) 00 → 0, 01 → 1, 10 → 1, 11 → 0.', 1],
       ['(d) (A + B)′ = A′B′.', 1],
