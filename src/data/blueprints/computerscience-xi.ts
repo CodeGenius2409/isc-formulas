@@ -173,9 +173,9 @@ const blueprints: Blueprint[] = [
   custom('gate-xi', [3, 'b', 1, 1], { type: 'mcq', format: 'mcq' }, (g) => {
     const gates: [string, (a: number, b: number) => number][] = [['AND', (a, b) => a & b], ['OR', (a, b) => a | b], ['NAND', (a, b) => 1 - (a & b)], ['NOR', (a, b) => 1 - (a | b)], ['XOR', (a, b) => a ^ b]];
     const [name, f] = g.pick(gates);
-    const a = g.int(0, 1);
-    const b = g.int(0, 1);
-    return g.mcq(`${/^[AEIOUX]/.test(name) ? 'An' : 'A'} ${name} gate has inputs ${a} and ${b}. Its output is:`, String(f(a, b)), [String(1 - f(a, b))]);
+    // Four options: the gate’s output column, against the columns of other gates.
+    const column = (h: (x: number, y: number) => number) => [h(0, 0), h(0, 1), h(1, 0), h(1, 1)].join(', ');
+    return g.mcq(`For inputs 00, 01, 10 and 11, in that order, ${/^[AEIOUX]/.test(name) ? 'an' : 'a'} ${name} gate gives:`, column(f), g.sample(gates.filter(([n]) => n !== name).map(([, h]) => column(h)), 3));
   }),
   custom('section-a-xi', [1, 'a', 10, 3], { type: 'short', format: 'long' }, (g) => {
     const value = g.int(50, 200);
@@ -213,16 +213,17 @@ const blueprints: Blueprint[] = [
     define: [
       ['a half adder', 'A circuit adding two bits, giving a sum and a carry.'],
       ['a logic gate', 'A circuit whose output follows a logical rule from its inputs.'],
+      ['a universal gate', 'A gate from which any other gate can be built, such as NAND or NOR.'],
     ],
     recall: [
       ['Which gate gives 1 only when all its inputs are 1?', 'AND', 'OR', 'NOR', 'XOR'],
       ['Which gate gives the opposite of its one input?', 'NOT', 'AND', 'OR', 'XOR'],
-      ['A half adder’s carry is:', 'A AND B', 'A OR B', 'A XOR B', 'NOT A'],
+      ['A truth table for a 3-input AND gate has this many rows:', '8', '3', '6', '9'],
     ],
     truths: [
       ['A NAND gate is an AND gate followed by a NOT gate.', 'A NAND gate is an OR gate followed by a NOT gate.'],
-      ['XOR gives 1 when its two inputs differ.', 'XOR gives 1 when its two inputs are the same.'],
-      ['A half adder has two outputs.', 'A half adder has three outputs.'],
+      ['An OR gate gives 0 only when all its inputs are 0.', 'An OR gate gives 0 when any input is 0.'],
+      ['A full adder can be made from two half adders and an OR gate.', 'A full adder can be made from one half adder alone.'],
     ],
     draw: [
       ['Draw the truth table and the circuit for a half adder.', 'A table: 00 → 0 0, 01 → 1 0, 10 → 1 0, 11 → 0 1, as sum then carry.', 'An XOR gate for the sum, and an AND gate for the carry.'],
@@ -279,7 +280,7 @@ const blueprints: Blueprint[] = [
       ['an exception', 'An event that stops the normal flow of a program while it runs.'],
     ],
     recall: [
-      ['Dividing an int by zero throws:', 'ArithmeticException', 'NullPointerException', 'IOException', 'ClassCastException'],
+      ['Which block always runs, whether or not an exception occurs?', 'finally', 'catch', 'try', 'throw'],
       ['A missing semicolon is a:', 'syntax error', 'runtime error', 'logical error', 'warning only'],
       ['Which keyword handles an exception?', 'catch', 'if', 'switch', 'static'],
     ],
@@ -288,8 +289,9 @@ const blueprints: Blueprint[] = [
     ],
     truths: [
       ['try must be followed by catch or finally.', 'try can stand on its own.'],
-      ['A logical error isn’t reported by the compiler.', 'A logical error is always reported by the compiler.'],
+      ['Using an array index past its end throws ArrayIndexOutOfBoundsException.', 'Using an array index past its end throws ArithmeticException.'],
       ['Using a null reference throws NullPointerException.', 'Using a null reference throws ArithmeticException.'],
+      ['throw is used to raise an exception.', 'throw is used to catch an exception.'],
     ],
     reason: [
       ['Logical errors are the hardest to find.', 'The program runs without any message.', 'Only wrong answers show that something’s wrong.'],

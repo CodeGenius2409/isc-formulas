@@ -179,6 +179,7 @@ const knowledge: Record<string, Facts> = {
     define: [
       ['the discriminant of a quadratic', 'The value b² − 4ac, which fixes the nature of the roots.'],
       ['a quadratic inequality', 'An inequality with a quadratic expression, such as x² − 3x + 2 > 0.'],
+      ['a root of an equation', 'A value of the variable that makes the equation true.'],
     ],
     recall: [
       ['The solution of x² − 3x + 2 < 0 is:', '1 < x < 2', 'x < 1 or x > 2', 'x > 2 only', 'x < 1 only'],

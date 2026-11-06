@@ -178,7 +178,7 @@ const blueprints: Blueprint[] = [
     const p = g.int(-6, 6);
     const q = g.int(-6, 6);
     if (p === q || !p || !q) g.retry();
-    return { form: 'numeric', text: `The equation ${$(`x^2 ${signed(-(p + q))}x ${signed(p * q)} = 0`)} has roots α and β. Find the sum and the product of the roots.`, parts: [g.answerPart('α + β', p + q, 1, [step('Use −b/a', `\\alpha + \\beta = ${p + q}`)]), g.answerPart('αβ', p * q, 1, [step('Use c/a', `\\alpha\\beta = ${p * q}`)])] };
+    return { form: 'numeric', text: `The equation ${$(`${polyTex([[1, 2], [-(p + q), 1], [p * q, 0]])} = 0`)} has roots α and β. Find the sum and the product of the roots.`, parts: [g.answerPart('α + β', p + q, 1, [step('Use −b/a', `\\alpha + \\beta = ${p + q}`)]), g.answerPart('αβ', p * q, 1, [step('Use c/a', `\\alpha\\beta = ${p * q}`)])] };
   }),
   custom('discriminant', [2, 'b', 1, 2], { type: 'mcq', format: 'mcq' }, (g) => {
     const a = g.int(1, 3);
@@ -187,7 +187,7 @@ const blueprints: Blueprint[] = [
     if (!b || !c) g.retry();
     const d = b * b - 4 * a * c;
     const right = d > 0 ? 'real and different' : d === 0 ? 'real and equal' : 'not real';
-    return g.mcq(`The roots of ${$(`${polyTex([[a, 2], [b, 1], [c, 0]])} = 0`)} are:`, right, ['real and different', 'real and equal', 'not real', 'all zero'].filter((o) => o !== right), { why: `The discriminant is ${d}.` });
+    return g.mcq(`The roots of ${$(`${polyTex([[a, 2], [b, 1], [c, 0]])} = 0`)} are:`, right, ['real and different', 'real and equal', 'not real', 'all zero'].filter((o) => o !== right), { why: `The discriminant is ${d < 0 ? `−${-d}` : d}.` });
   }),
   custom('nCr', [2, 'c', 2, 1], { type: 'numerical', format: 'numerical' }, (g) => {
     const n = g.int(5, 12);
@@ -277,14 +277,15 @@ const blueprints: Blueprint[] = [
   }),
   ...facts(2, 'b', {
     recall: [
-      ['The sum of the roots of ax² + bx + c = 0 is:', '−b/a', 'b/a', 'c/a', '−c/a'],
-      ['The product of the roots of ax² + bx + c = 0 is:', 'c/a', '−c/a', 'b/a', '−b/a'],
+      ['If one root of x² − 5x + k = 0 is 2, then k is:', '6', '3', '10', '−6'],
+      ['The roots of x² − 5x + 6 = 0 are:', '2 and 3', '−2 and −3', '1 and 6', '−1 and 6'],
       ['Roots are real and equal when the discriminant is:', '0', 'positive', 'negative', '1'],
     ],
     truths: [
-      ['A negative discriminant gives roots that aren’t real.', 'A negative discriminant gives real, equal roots.'],
+      ['A quadratic with real coefficients has complex roots in conjugate pairs.', 'A quadratic with real coefficients can have just one complex root.'],
       ['A quadratic has exactly two roots, counted with repetition.', 'A quadratic can have five roots.'],
       ['If 1 is a root, then a + b + c = 0.', 'If 1 is a root, then a + b + c = 1.'],
+      ['The roots of ax² + bx + c = 0 are (−b ± √(b² − 4ac))/(2a).', 'The roots of ax² + bx + c = 0 are (b ± √(b² − 4ac))/(2a).'],
     ],
     explain: [
       ['Write the quadratic equation with roots 3 and 5.', 'x² − (3 + 5)x + 3 × 5 = 0, which is x² − 8x + 15 = 0.'],
@@ -521,18 +522,19 @@ const blueprints: Blueprint[] = [
     define: [
       ['the limit of a function', 'The value the function approaches, as its variable approaches a given value.'],
       ['the derivative at a point', 'The limit of the rate of change of a function, as the interval shrinks to zero.'],
+      ['the left-hand limit', 'The value a function approaches as x comes towards a point from below.'],
     ],
     recall: [
-      ['The limit of sin x / x, as x tends to 0, is:', '1', '0', 'not defined', 'infinite'],
-      ['The derivative of a constant is:', '0', '1', 'the constant', 'x'],
+      ['The derivative of x² + 3x is:', '2x + 3', 'x² + 3', '2x', '2x + 3x'],
       ['The derivative of sin x is:', 'cos x', '−cos x', 'tan x', 'sin x'],
       ['The derivative of cos x is:', '−sin x', 'sin x', 'tan x', '−cos x'],
       ['The product rule says that (uv)′ is:', 'u′v + uv′', 'u′v′', 'u′v − uv′', 'uv′'],
     ],
     truths: [
       ['The derivative gives the slope of the tangent to a curve.', 'The derivative gives the area under a curve.'],
-      ['A limit can exist where the function isn’t defined.', 'A limit can exist only where the function is defined.'],
+      ['The derivative of x² at x = 3 is 6.', 'The derivative of x² at x = 3 is 9.'],
       ['The left-hand and right-hand limits must agree for the limit to exist.', 'The left-hand and right-hand limits are always different.'],
+      ['The quotient rule gives (u/v)′ = (u′v − uv′)/v².', 'The quotient rule gives (u/v)′ = (u′v + uv′)/v².'],
     ],
     reason: [
       ['The limit of (x² − 1)/(x − 1) as x tends to 1 exists, though the function isn’t defined at 1.', 'A limit looks at values near the point, not at the point.', 'Near 1, the function equals x + 1, which approaches 2.'],

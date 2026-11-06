@@ -336,8 +336,8 @@ const blueprints: Blueprint[] = [
     ],
     recall: [
       ['The bond angle in methane is about:', '109.5°', '120°', '180°', '90°'],
-      ['Water’s bond angle is less than methane’s because of:', 'repulsion by lone pairs', 'its larger size', 'its ionic bond', 'its double bond'],
-      ['Which of these is paramagnetic?', 'O₂', 'N₂', 'F₂', 'H₂'],
+      ['The shape of NH₃ is:', 'trigonal pyramidal', 'trigonal planar', 'tetrahedral', 'T-shaped'],
+      ['The bond order of H₂ is:', '1', '2', '0', '½'],
       ['The carbon atoms in ethyne are:', 'sp hybridised', 'sp² hybridised', 'sp³ hybridised', 'unhybridised'],
     ],
     reason: [
@@ -350,8 +350,9 @@ const blueprints: Blueprint[] = [
     ],
     truths: [
       ['A higher bond order usually means a shorter bond.', 'A higher bond order usually means a longer bond.'],
-      ['Bond order zero means no molecule forms.', 'Bond order zero means a very stable molecule.'],
+      ['N₂ has a higher bond order than O₂.', 'O₂ has a higher bond order than N₂.'],
       ['sp³d² hybridisation gives an octahedral arrangement.', 'sp³d² hybridisation gives a linear arrangement.'],
+      ['sp² hybridisation gives bond angles of 120°.', 'sp² hybridisation gives bond angles of 109.5°.'],
     ],
   }),
 
@@ -696,10 +697,12 @@ const blueprints: Blueprint[] = [
     define: [
       ['Markovnikov’s rule', 'When HX adds to an unsymmetrical alkene, the hydrogen goes to the carbon that already has more hydrogens.'],
       ['ozonolysis', 'Breaking a double bond using ozone, followed by zinc and water, to give carbonyl compounds.'],
+      ['geometrical isomerism', 'Isomerism from different arrangements of groups about a double bond, which can’t rotate.'],
+      ['a carbocation', 'An ion with a positive charge on a carbon atom.'],
     ],
     recall: [
       ['Alkenes mainly undergo:', 'electrophilic addition', 'nucleophilic substitution', 'free radical addition only', 'elimination'],
-      ['Bromine water turning colourless shows the presence of:', 'a C=C or C≡C bond', 'a C–C bond', 'an –OH group', 'an aldehyde group'],
+      ['Ethene with hydrogen over nickel gives:', 'ethane', 'ethyne', 'ethanol', 'methane'],
       ['The carbon atoms in ethene are:', 'sp² hybridised', 'sp³ hybridised', 'sp hybridised', 'unhybridised'],
     ],
     reason: [

@@ -33,8 +33,8 @@ const knowledge: Record<string, Facts> = {
   },
   '2b': {
     ar: [
-      ['the discriminant', 'A real quadratic with a negative discriminant has no real roots.', 'A real quadratic with a negative discriminant has two real roots.', 'The formula needs the square root of the discriminant.', 'The formula needs the cube root of the discriminant.', 'A zero discriminant gives equal roots.'],
-      ['the sum of the roots', 'The sum of the roots of ax² + bx + c = 0 is −b/a.', 'The sum of the roots of ax² + bx + c = 0 is b/a.', 'Expanding a(x − α)(x − β) gives −a(α + β) as the coefficient of x.', 'Expanding a(x − α)(x − β) gives a(α + β) as the coefficient of x.', 'The product of the roots is c/a.'],
+      ['the discriminant', 'A real quadratic with a negative discriminant has no real roots.', 'A real quadratic with a negative discriminant has two real roots.', 'The formula needs the square root of the discriminant.', 'The formula needs the cube root of the discriminant.', 'The discriminant of x² + 1 is −4.'],
+      ['the sum of the roots', 'The sum of the roots of ax² + bx + c = 0 is −b/a.', 'The sum of the roots of ax² + bx + c = 0 is b/a.', 'Expanding a(x − α)(x − β) gives −a(α + β) as the coefficient of x.', 'Expanding a(x − α)(x − β) gives a(α + β) as the coefficient of x.', 'The roots of x² − 1 = 0 are ±1.'],
       ['the parabola of a quadratic', 'When a > 0, the graph of ax² + bx + c opens upwards.', 'When a > 0, the graph of ax² + bx + c opens downwards.', 'The x² term dominates for large x.', 'The constant term dominates for large x.', 'The vertex lies at x = −b/2a.'],
     ],
   },
@@ -91,7 +91,7 @@ const knowledge: Record<string, Facts> = {
     ar: [
       ['limits and values', 'A limit can exist at a point where the function isn’t defined.', 'A limit can exist only where the function is defined.', 'A limit depends on values near the point, not on the value at it.', 'A limit is simply the value of the function at the point.', 'The limit of (x² − 1)/(x − 1) as x → 1 is 2.'],
       ['the standard limit', 'The limit of (sin x)/x as x → 0 is 1, with x in radians.', 'The limit of (sin x)/x as x → 0 is 0, with x in radians.', 'sin x is nearly equal to x for small x in radians.', 'sin x is nearly equal to 1 for small x.', 'In degrees, the limit is π/180.'],
-      ['the derivative', 'The derivative of a constant is zero.', 'The derivative of a constant is one.', 'A constant doesn’t change as x changes.', 'A constant changes at a steady rate as x changes.', 'The derivative of xⁿ is nxⁿ⁻¹.'],
+      ['the derivative', 'The derivative of a constant is zero.', 'The derivative of a constant is one.', 'A constant doesn’t change as x changes.', 'A constant changes at a steady rate as x changes.', 'The derivative of 5x is 5.'],
     ],
   },
   '5a': {

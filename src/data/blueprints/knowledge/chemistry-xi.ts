@@ -55,8 +55,8 @@ const knowledge: Record<string, Facts> = {
   '4b': {
     ar: [
       ['VSEPR and shape', 'The bond angle in water is less than the tetrahedral angle.', 'The bond angle in water is greater than the tetrahedral angle.', 'Lone pairs repel bond pairs more than bond pairs repel each other.', 'Bond pairs repel more than lone pairs do.', 'Oxygen in water is sp³ hybridised.'],
-      ['molecular orbitals', 'O₂ is paramagnetic.', 'O₂ is diamagnetic.', 'It has two unpaired electrons in antibonding orbitals.', 'All its electrons are paired.', 'The bond order of O₂ is 2.'],
-      ['bond order', 'He₂ doesn’t exist as a stable molecule.', 'He₂ is a stable molecule with a bond order of 2.', 'Its bond order is zero.', 'Its bond order is 3.', 'Bond order is half of the difference between bonding and antibonding electrons.'],
+      ['hydrogen bonding', 'Water boils far higher than H₂S.', 'H₂S boils far higher than water.', 'Water molecules are held together by hydrogen bonds.', 'H₂S has stronger hydrogen bonds.', 'H₂S is a gas at room temperature.'],
+      ['bond order', 'He₂ doesn’t exist as a stable molecule.', 'He₂ is a stable molecule with a bond order of 2.', 'Its bond order is zero.', 'Its bond order is 3.', 'He₂⁺ has a bond order of ½.'],
     ],
   },
   '5a': {
@@ -124,8 +124,8 @@ const knowledge: Record<string, Facts> = {
   },
   '9b': {
     ar: [
-      ['Markovnikov’s rule', 'HBr adds to propene to give mostly 2-bromopropane.', 'HBr adds to propene to give mostly 1-bromopropane.', 'The more stable secondary carbocation forms.', 'The less stable primary carbocation forms.', 'Peroxides reverse this, but only with HBr.'],
-      ['geometrical isomers', 'But-2-ene shows geometrical isomerism.', 'But-1-ene shows geometrical isomerism.', 'Each carbon of its double bond has two different groups.', 'Its double bond rotates freely.', 'Cis isomers usually have a higher boiling point.'],
+      ['ozonolysis products', 'Ozonolysis of but-2-ene gives only ethanal.', 'Ozonolysis of but-2-ene gives methanal and propanal.', 'The double bond splits in the middle, giving two identical two-carbon pieces.', 'The double bond is at the end of the chain.', 'Zinc stops the products being oxidised further.'],
+      ['the π bond', 'Alkenes are more reactive than alkanes.', 'Alkanes are more reactive than alkenes.', 'The π bond is weaker, and its electrons are open to attack by electrophiles.', 'Alkenes have more C–H bonds.', 'Ethene is a gas at room temperature.'],
       ['the reaction of alkenes', 'Alkenes decolourise bromine water.', 'Alkanes decolourise bromine water in the dark.', 'The C=C bond adds bromine across it.', 'Bromine dissolves in the C–H bonds.', 'A π bond is weaker than a σ bond.'],
     ],
   },

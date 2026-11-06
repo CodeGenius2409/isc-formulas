@@ -28,7 +28,7 @@ const knowledge: Record<string, Facts> = {
     ar: [
       ['universal gates', 'Any logic circuit can be built from NAND gates alone.', 'Any logic circuit can be built from OR gates alone.', 'NAND can make NOT, AND and OR.', 'NAND can make only NOT.', 'NOR is also a universal gate.'],
       ['XOR', 'An XOR gate gives 0 when both its inputs are 1.', 'An XOR gate gives 1 when both its inputs are 1.', 'It gives 1 only when its inputs differ.', 'It gives 1 only when its inputs match.', 'A half adder’s sum comes from an XOR gate.'],
-      ['the half adder', 'A half adder needs two outputs.', 'A half adder needs just one output.', 'It gives a sum and a carry.', 'It gives only a carry.', 'A half adder adds two bits.'],
+      ['the half adder', 'A half adder needs two outputs.', 'A half adder needs just one output.', 'It gives a sum and a carry.', 'It gives only a carry.', 'A half adder has no carry input.'],
     ],
   },
   '4a': {

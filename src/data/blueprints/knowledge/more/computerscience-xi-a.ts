@@ -174,7 +174,7 @@ const knowledge: Record<string, Facts> = {
       ['XNOR gives 1 when its two inputs are the same.', 'XNOR gives 1 when its two inputs differ.'],
     ],
     explain: [
-      ['Write the sum and carry of a half adder.', 'Sum = A ⊕ B.', 'Carry = AB.'],
+      ['Write the Boolean expressions of a NAND and a NOR gate.', 'NAND: (A·B)′.', 'NOR: (A + B)′.'],
     ],
   },
 
