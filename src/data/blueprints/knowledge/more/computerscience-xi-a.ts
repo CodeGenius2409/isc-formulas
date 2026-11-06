@@ -211,7 +211,7 @@ const knowledge: Record<string, Facts> = {
       ['Which describes a car’s colour, in object terms?', 'an attribute', 'a behaviour', 'a class', 'a method'],
       ['Which describes a car being driven, in object terms?', 'a behaviour', 'an attribute', 'a class', 'a field'],
       ['A real-world example of a class and an object is:', 'Student and the student Ravi', 'Ravi and Student', 'a pen and ink', 'red and colour'],
-      ['Which memory holds objects made with new?', 'the heap', 'the stack only', 'the register', 'the file system'],
+      ['Which memory holds objects made with new?', 'the heap', 'the CPU cache only', 'the register', 'the file system'],
       ['The class file of a class Box is named:', 'Box.class', 'Box.java', 'box.exe', 'Box.jvm'],
     ],
     truths: [

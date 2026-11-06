@@ -38,7 +38,7 @@ const knowledge: Record<string, Facts> = {
   '3a': {
     ar: [
       ['order and the half-life', 'The half-life of a first-order reaction doesn’t depend on the starting concentration.', 'The half-life of a first-order reaction is proportional to the starting concentration.', 't½ = 0.693/k, which has no concentration in it.', 't½ = 0.693 k, which has concentration in it.', 'A zero-order half-life does depend on the starting concentration.'],
-      ['order and molecularity', 'The order of a reaction can be a fraction.', 'The order of a reaction must be a whole number.', 'It is found from experiment, and not from the equation.', 'It is always the sum of the coefficients in the equation.', 'Molecularity must be a whole number.'],
+      ['order and molecularity', 'The order of a reaction can be a fraction.', 'The order of a reaction must be a whole number.', 'It is the sum of the powers in a rate law found by experiment, and these needn’t be whole numbers.', 'It is always the sum of the coefficients in the equation.', 'Molecularity must be a whole number.'],
       ['the units of k', 'A rate constant’s unit tells the order of a reaction.', 'All rate constants have the same unit.', 'Its unit is (mol/L)¹⁻ⁿ s⁻¹ for an order n.', 'Its unit is always mol/L.', 'A first-order rate constant has the unit s⁻¹.'],
       ['pseudo-first-order reactions', 'The hydrolysis of an ester in much water is first order.', 'The hydrolysis of an ester in much water is second order in water.', 'Water’s concentration hardly changes.', 'Water doesn’t take part in the reaction.', 'Such a reaction is called pseudo-first-order.'],
     ],

@@ -107,9 +107,23 @@ export interface Formatted {
 
 const SUP: Record<string, string> = { '-': '⁻', '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴', '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹' };
 
+/**
+ * Rounds to `sf` significant figures as a person would, half up, from the decimal digits. Binary floating point
+ * stores 0.693/600 as 0.0011549999…, which toPrecision would show as 0.00115 rather than 0.00116.
+ */
+export function roundSig(value: number, sf: number): number {
+  if (value === 0 || !Number.isFinite(value)) return value;
+  const [mantissa, exponent] = Math.abs(value).toExponential(14).split('e');
+  const digits = mantissa.replace('.', '');
+  let kept = Number(digits.slice(0, sf));
+  if (Number(digits[sf] ?? 0) >= 5) kept += 1;
+  return Math.sign(value) * Number(`${kept}e${Number(exponent) - sf + 1}`);
+}
+
 /** Formats to `sf` significant figures, in scientific notation when very large or small. */
 export function formatNumber(value: number, sf: number): Formatted {
   if (value === 0) return { text: '0', tex: '0' };
+  value = roundSig(value, sf);
   const abs = Math.abs(value);
   if (abs >= 1e5 || abs < 1e-3) {
     const [mantissa, exponent] = value.toExponential(Math.max(sf - 1, 0)).split('e');

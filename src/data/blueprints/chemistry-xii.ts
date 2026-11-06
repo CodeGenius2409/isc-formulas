@@ -260,7 +260,7 @@ const blueprints: Blueprint[] = [
   // ---- Unit 2: Electrochemistry
   mcqNum('nernst-mcq', [2, 'a', 1, 2], {
     text: 'A cell has E° = {E} V, with n = {N} and a reaction quotient of {Q}, at 298 K. Its emf is closest to:',
-    vars: { E: [0.5, 1.5, 0.1], N: [1, 2], Q: [10, 100, 1000] },
+    vars: { E: [0.5, 1.5, 0.1], N: [1, 2], Q: [0.1, 10, 100, 1000] },
     use: 'c-xii-3-55',
     find: 'E',
     given: { E0: 'E V', N_v: '0.0591 V', n: 'N', Q: 'Q' },
@@ -281,8 +281,10 @@ const blueprints: Blueprint[] = [
     ],
   }),
   num('equilibrium-constant', [2, 'a', 2, 2], {
-    text: 'A cell reaction involves {N} electrons and has a standard emf of {E} V at 298 K. Find log K for the reaction.',
-    vars: { N: [1, 2, 3], E: [0.1, 1.1, 0.1] },
+    text: 'A cell reaction involves {N} electrons and has a standard emf of {E} V at 298 K. Find its equilibrium constant K.',
+    vars: { N: [1, 3, 1], E: [0.1, 1.1, 0.1] },
+    // log K = nE°/0.0591 stays below about 37, as for a Daniell cell.
+    when: (v) => v.N * v.E <= 2.2,
     parts: [{ ask: 'Value of K', use: 'c-xii-3-4', find: 'K', given: { n: 'N', E0: 'E V', N_v: '0.0591 V' }, marks: 2 }],
   }),
   num('gibbs', [2, 'a', 2, 1], {
@@ -295,7 +297,7 @@ const blueprints: Blueprint[] = [
       { text: 'A current of {I} A passes through a solution of a metal salt for {T} minutes. The metal has a molar mass of {M} g/mol, and its ions gain {N} electrons each. Find the mass deposited.', parts: [{ ask: 'Mass deposited', use: 'c-xii-3-7', find: 'm', given: { M: 'M g/mol', I: 'I A', t: 'T min', n: 'N' }, marks: 3 }] },
       { text: 'In electroplating, how long must a current of {I} A run to deposit {W} g of a metal of molar mass {M} g/mol, whose ions gain {N} electrons each?', parts: [{ ask: 'Time needed', use: 'c-xii-3-7', find: 't', given: { m: 'W g', M: 'M g/mol', I: 'I A', n: 'N' }, unit: 'min', marks: 3 }] },
     ],
-    vars: { I: [1, 10, 1], T: [10, 60, 10], M: [27, 56, 59, 64, 108], N: [1, 2, 3], W: [1, 5, 1] },
+    vars: { I: [1, 10, 1], T: [10, 60, 10], M: [27, 56, 59, 64, 108], N: [1, 3, 1], W: [1, 5, 1] },
   }),
   num('conductivity', [2, 'b', 3, 2], {
     text: 'The conductivity of a {C} mol/L solution of a weak acid is {K} × 10⁻³ S/m. Its limiting molar conductivity is {L} × 10⁻⁴ S m²/mol.',
@@ -430,7 +432,7 @@ const blueprints: Blueprint[] = [
   }),
   num('first-order-time', [3, 'a', 3, 2], {
     text: 'A first-order reaction has a half-life of {H} minutes. A sample starts at {A} mol/L.',
-    vars: { H: [10, 60, 10], A: [0.2, 1, 0.2], P: [50, 75, 87.5] },
+    vars: { H: [10, 60, 10], A: [0.2, 1, 0.2], P: [75, 87.5, 90, 99] },
     derive: (v) => ({ LEFT: v.A * (1 - v.P / 100) }),
     parts: [
       { ask: 'Rate constant', use: 'c-xii-4-40', find: 'k', given: { t_half: 'H min' }, unit: 's^-1', marks: 1, save: 'k' },

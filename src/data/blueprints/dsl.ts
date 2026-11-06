@@ -116,6 +116,8 @@ const CODE: Record<SubjectId, string> = { physics: 'p', chemistry: 'c', mathemat
 function drawValues(g: Gen, vars: Record<string, Range>): Values {
   const out: Values = {};
   for (const [name, spec] of Object.entries(vars)) {
+    // Three numbers are a range: low, high and step. A choice of three needs writing as a range, or as a longer list.
+    if (spec.length === 3 && (spec[2] <= 0 || spec[1] < spec[0] || (spec[1] > spec[0] && spec[2] > spec[1] - spec[0]))) throw new Error(`${name}: [${spec.join(', ')}] isn't a range`);
     out[name] = spec.length === 3 ? g.step(spec[0], spec[1], spec[2]) : g.pick(spec);
   }
   return out;

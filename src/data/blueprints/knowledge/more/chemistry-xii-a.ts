@@ -380,7 +380,7 @@ const knowledge: Record<string, Facts> = {
     explain: [
       ['Give two ways of finding the order of a reaction.', 'The method of initial rates.', 'Using integrated rate equations or a graph.'],
       ['State two differences between order and molecularity.', 'Order is found by experiment, while molecularity comes from the mechanism.', 'Order can be zero or a fraction, while molecularity is a whole number.'],
-      ['List four factors that affect the rate of a reaction.', 'Concentration and surface area.', 'Temperature.', 'A catalyst and radiation.'],
+      ['List three factors that affect the rate of a reaction.', 'The concentration of the reactants.', 'Temperature.', 'A catalyst.'],
       ['Write the time for three quarters of a first-order reaction, in terms of its half-life.', 't₃⁄₄ = 2 t₁⁄₂.'],
       ['How is the instantaneous rate found from a graph?', 'Draw a tangent to the concentration–time curve at that moment, and find its slope.'],
       ['Find how a rate equation’s unit of k depends on the order n.', 'The unit is (mol L⁻¹)^(1−n) s⁻¹.'],
@@ -392,12 +392,10 @@ const knowledge: Record<string, Facts> = {
     ],
     ar: [
       ['the rate as time goes on', 'The rate of most reactions falls as they go on.', 'The rate of most reactions rises as they go on.', 'Reactants get used up, so collisions get fewer.', 'Products speed up every collision.', 'The rate constant stays fixed at a fixed temperature.'],
-      ['the first-order half-life', 'A first-order half-life doesn’t depend on how much is left.', 'A first-order half-life is proportional to how much is left.', 'For such a reaction, t₁⁄₂ = 0.693/k, which has no concentration in it.', 'For such a reaction, t₁⁄₂ = [A]₀/(2k).', 'A graph of log[A] against time is a straight line for such a reaction.'],
+      ['a reaction on a surface', 'The decomposition of ammonia on hot platinum at high pressure is zero order.', 'The decomposition of ammonia on hot platinum at high pressure is second order.', 'The metal’s surface is fully covered with gas, so more gas can’t raise the rate.', 'Two ammonia molecules must collide in the gas for each one that reacts.', 'At low pressure, the same reaction is first order.'],
       ['the surface of the solid', 'Powdered marble reacts with acid faster than a lump of it.', 'Powdered marble reacts with acid more slowly than a lump of it.', 'The acid has a larger surface to react with.', 'The acid has a smaller surface to react with.', 'The reaction gives carbon dioxide.'],
     ],
     links: [
-      ['same', 'Order can be zero', 'Order is found by experiment'],
-      ['same', 'Molecularity is always', 'Molecularity applies only'],
       ['same', 'The half-life of a first-order', 'A first-order reaction never'],
       ['same', 'The rate of a reaction changes', 'Rate constant doesn’t change'],
       ['same', 'A finely divided solid', 'Nature of reactants affects'],

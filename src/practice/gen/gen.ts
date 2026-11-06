@@ -4,6 +4,7 @@ import type { Body, McqBody, NumericBody, TheoryBody } from '../../data/blueprin
 import { getEntry } from '../../solver/registry';
 import { solve, type SolveInput, type Step } from '../../solver/solve';
 import { unitLabel } from '../../solver/unit-label';
+import { roundSig } from '../../solver/units';
 import { buildParts } from '../bank/index';
 import type { BankOption, MarkPoint, NumericPart, NumericPartDef } from '../bank/types';
 import type { Rng } from '../questions';
@@ -17,6 +18,7 @@ const SUPER: Record<string, string> = { '-': '⁻', 0: '⁰', 1: '¹', 2: '²', 
 export function tidy(value: number, digits = 3): string {
   if (!Number.isFinite(value)) throw new Retry('not a finite number');
   if (value === 0) return '0';
+  value = roundSig(value, digits);
   const size = Math.abs(value);
   if (size >= 1e5 || size < 1e-3) {
     const [mantissa, power] = value.toExponential(digits - 1).split('e');

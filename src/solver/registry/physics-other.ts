@@ -135,6 +135,7 @@ export const PHYSICS_OTHER: SolverEntry[] = [
   // Optics
   { id: 'p-xii-6-1', topic: O, eq: '1/v + 1/u = 1/f', ask: 'f', vars: { v: 'image distance|objectDistance', u: 'object distance|objectDistance', f: 'focal length|focal' } },
   { id: 'p-xii-6-2', topic: O, eq: 'm = -v/u', ask: 'm', vars: { m: 'magnification|real', v: 'image distance|objectDistance', u: 'object distance|objectDistance' } },
+  { id: 'p-xii-6-23', topic: O, eq: 'm = v/u', ask: 'm', vars: { m: 'magnification|real', v: 'image distance|objectDistance', u: 'object distance|objectDistance' } },
   { id: 'p-xii-6-3', topic: O, eq: '1/v - 1/u = 1/f', ask: 'f', vars: { v: ['image distance', 'objectDistance', { gen: [0.2, 1] }], u: ['object distance', 'objectDistance', { gen: [-1, -0.2] }], f: 'focal length|focal' } },
   { id: 'p-xii-6-4', topic: O, eq: '1/f = (mu - 1)*(1/R_1 - 1/R_2)', ask: 'f', vars: { f: 'focal length|focal', mu: 'refractive index|refractive', R_1: ['first radius', 'focal', { gen: [0.1, 0.5] }], R_2: ['second radius', 'focal', { gen: [-0.5, -0.1] }] } },
   { id: 'p-xii-6-7', topic: O, eq: 'mu_1*sin(i) = mu_2*sin(r)', ask: 'r', vars: { mu_1: ['first refractive index', 'refractive', { gen: [1, 1.2] }], i: ['angle of incidence', 'angle', { max: Math.PI / 2 }], mu_2: ['second refractive index', 'refractive', { gen: [1.3, 2] }], r: ['angle of refraction', 'angle', { max: Math.PI / 2 }] } },

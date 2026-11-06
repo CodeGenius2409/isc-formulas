@@ -98,7 +98,7 @@ const blueprints: Blueprint[] = [
   }),
   mcqNum('projectile-range', [2, 'b', 1, 1], {
     text: 'A ball is thrown at {U} m/s, at {T}° to the ground. Its range is about:',
-    vars: { U: [10, 40, 5], T: [30, 45, 60] },
+    vars: { U: [10, 40, 5], T: [30, 60, 15] },
     use: 'p-xi-2-10',
     find: 'R_h',
     given: { u: 'U m/s', theta: 'T deg' },
@@ -113,7 +113,7 @@ const blueprints: Blueprint[] = [
   }),
   num('projectile', [2, 'b', 3, 2], {
     text: 'A cricket ball is hit at {U} m/s at {T}° to the horizontal. Take g = 9.8 m/s².',
-    vars: { U: [10, 40, 5], T: [30, 45, 60] },
+    vars: { U: [10, 40, 5], T: [30, 60, 15] },
     parts: [
       { ask: 'Time of flight', use: 'p-xi-2-8', find: 'T', given: { u: 'U m/s', theta: 'T deg' }, marks: 1 },
       { ask: 'Greatest height', use: 'p-xi-2-9', find: 'H', given: { u: 'U m/s', theta: 'T deg' }, marks: 1 },
@@ -135,7 +135,7 @@ const blueprints: Blueprint[] = [
   num('vectors-resultant', [2, 'b', 2, 2], {
     diagram: (v) => ({ kind: 'vectors', a: `${v.A} m/s`, b: `${v.B} m/s`, angle: `${v.T}°`, deg: v.T }),
     text: 'A body has two velocities of {A} m/s and {B} m/s at the same time, at {T}° to each other. Find the size of the resultant velocity.',
-    vars: { A: [3, 12, 1], B: [4, 12, 1], T: [60, 90, 120] },
+    vars: { A: [3, 12, 1], B: [4, 12, 1], T: [60, 120, 30] },
     parts: [{ ask: 'Size of the resultant', use: 'p-xi-2-113', find: 'R_v', given: { A: 'A m/s', B: 'B m/s', theta: 'T deg' }, unit: 'm/s', marks: 2 }],
   }),
   ...facts(2, 'a', {
@@ -248,7 +248,7 @@ const blueprints: Blueprint[] = [
   }),
   num('incline', [3, 'b', 2, 2], {
     text: 'A block slides down a {T}° slope with a coefficient of kinetic friction of {U}. Find its acceleration.',
-    vars: { T: [30, 45, 60], U: [0.1, 0.3, 0.1] },
+    vars: { T: [30, 60, 15], U: [0.1, 0.3, 0.1] },
     parts: [{ ask: 'Acceleration down the slope', use: 'p-xi-3-9', find: 'a', given: { theta: 'T deg', mu: 'U' }, marks: 2 }],
     diagram: (v) => ({ kind: 'incline', angle: `${v.T}°`, m: 'm', mu: `μ = ${v.U}` }),
     sim: (v) => ({ id: 'inclined', preset: { deg: v.T, mu: v.U } }),

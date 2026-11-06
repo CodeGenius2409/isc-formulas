@@ -822,8 +822,8 @@ const blueprints: Blueprint[] = [
   }),
   num('lens-image', [6, 'a', 3, 2], {
     variants: [
-      { text: 'An object stands {U} cm in front of a convex lens of focal length {F} cm.', parts: [{ ask: 'Image distance', use: 'p-xii-6-3', find: 'v', given: { u: '-U cm', f: 'F cm' }, unit: 'cm', marks: 2, save: 'v' }, { ask: 'Size of the magnification', use: 'p-xii-6-2', find: 'm', given: { v: 'v', u: 'U cm' }, marks: 1 }] },
-      { text: 'A convex lens forms a real image {V} cm from itself when the object is {U} cm from it.', parts: [{ ask: 'Focal length', use: 'p-xii-6-127', find: 'f', given: { u: 'U cm', v: 'V cm' }, unit: 'cm', marks: 2 }, { ask: 'Size of the magnification', use: 'p-xii-6-2', find: 'm', given: { v: 'V cm', u: 'U cm' }, marks: 1 }] },
+      { text: 'An object stands {U} cm in front of a convex lens of focal length {F} cm.', parts: [{ ask: 'Image distance', use: 'p-xii-6-3', find: 'v', given: { u: '-U cm', f: 'F cm' }, unit: 'cm', marks: 2, save: 'v' }, { ask: 'Magnification', use: 'p-xii-6-23', find: 'm', given: { v: 'v', u: '-U cm' }, marks: 1 }] },
+      { text: 'A convex lens forms a real image {V} cm from itself when the object is {U} cm from it.', parts: [{ ask: 'Focal length', use: 'p-xii-6-127', find: 'f', given: { u: 'U cm', v: 'V cm' }, unit: 'cm', marks: 2 }, { ask: 'Magnification', use: 'p-xii-6-23', find: 'm', given: { v: 'V cm', u: '-U cm' }, marks: 1 }] },
     ],
     vars: { U: [20, 90, 10], F: [10, 15, 5], V: [20, 60, 10] },
     when: (v) => v.U > v.F * 1.2,
@@ -837,7 +837,7 @@ const blueprints: Blueprint[] = [
     when: (v) => v.U > v.F * 1.2,
     parts: [
       { ask: 'Distance of the image from the mirror', use: 'p-xii-6-1', find: 'v', given: { u: '-U cm', f: '-F cm' }, unit: 'cm', marks: 2, save: 'v' },
-      { ask: 'Size of the magnification', use: 'p-xii-6-2', find: 'm', given: { v: 'v', u: 'U cm' }, marks: 1 },
+      { ask: 'Magnification', use: 'p-xii-6-2', find: 'm', given: { v: 'v', u: '-U cm' }, marks: 1 },
     ],
     diagram: (v) => ({ kind: 'mirror', mirror: 'concave', f: v.F, u: v.U, fLabel: `f = ${v.F} cm`, uLabel: `${v.U} cm` }),
     answerDiagram: (v) => ({ kind: 'mirror', mirror: 'concave', f: v.F, u: v.U, fLabel: `f = ${v.F} cm`, uLabel: `${v.U} cm`, rays: 1 }),
@@ -866,8 +866,9 @@ const blueprints: Blueprint[] = [
     diagram: (v) => ({ kind: 'refraction', i: `${v.I}°`, r: `${v.R}°`, iDeg: v.I, rDeg: v.R, top: 'air', bottom: 'block' }),
     sim: (v) => ({ id: 'snell', preset: { n1: 1, n2: Math.sin((v.I * Math.PI) / 180) / Math.sin((v.R * Math.PI) / 180), iDeg: v.I } }),
     text: 'A ray passes from air into a transparent block at an angle of incidence of {I}°, and bends to {R}° inside it. Find the refractive index of the block, and the speed of light in it.',
-    vars: { I: [30, 60, 15], R: [15, 25, 5] },
-    when: (v) => v.I > v.R,
+    vars: { I: [30, 60, 15], R: [15, 35, 5] },
+    // A real transparent solid: n between about 1.3 and 2.
+    when: (v) => v.I > v.R && Math.sin((v.I * Math.PI) / 180) / Math.sin((v.R * Math.PI) / 180) >= 1.3 && Math.sin((v.I * Math.PI) / 180) / Math.sin((v.R * Math.PI) / 180) <= 2,
     parts: [
       { ask: 'Refractive index', use: 'p-xii-6-7', find: 'mu_2', given: { mu_1: '1', i: 'I deg', r: 'R deg' }, marks: 1, save: 'n' },
       { ask: 'Speed of light in the block', use: 'p-xii-6-31', find: 'v', given: { n: 'n' }, marks: 1 },
@@ -945,16 +946,13 @@ const blueprints: Blueprint[] = [
       ['A convex mirror always forms an image that is:', 'virtual, erect and smaller', 'real, inverted and smaller', 'virtual, erect and larger', 'real, erect and smaller'],
       ['When a convex lens is put into water, its focal length:', 'increases', 'decreases', 'stays the same', 'becomes zero'],
       ['Total internal reflection needs light to travel:', 'from a denser to a rarer medium', 'from a rarer to a denser medium', 'at normal incidence', 'only in water'],
-      ['The sky looks blue because blue light is:', 'scattered more than red', 'scattered less than red', 'absorbed by the air', 'reflected by clouds'],
       ['An optical fibre works by:', 'total internal reflection', 'refraction alone', 'diffraction', 'polarisation'],
       ['The focal length of a spherical mirror is related to its radius of curvature by:', 'f = R/2', 'f = 2R', 'f = R', 'f = R²'],
       ['Which colour bends most in passing through a prism?', 'Violet', 'Red', 'Green', 'Yellow'],
     ],
     reason: [
       ['A diamond sparkles.', 'Its high refractive index gives it a small critical angle.', 'So most light that enters is totally internally reflected many times.'],
-      ['The Sun looks reddish at sunrise and sunset.', 'Sunlight then travels through a greater thickness of air.', 'Most of the blue is scattered away, so red is left.'],
       ['A convex mirror is used as a rear-view mirror.', 'It always forms an erect, smaller image.', 'So it covers a wider field of view.'],
-      ['Clouds look white.', 'Water droplets are large compared with the wavelength of light.', 'They scatter all colours about equally.'],
       ['Optical fibres can carry signals around bends.', 'The core has a higher refractive index than the cladding.', 'So light keeps totally internally reflecting along it.'],
     ],
     compare: [
@@ -965,7 +963,6 @@ const blueprints: Blueprint[] = [
       ['A concave lens always forms a virtual image of a real object.', 'A concave lens always forms a real image of a real object.'],
       ['The power of two thin lenses in contact is the sum of their powers.', 'The power of two thin lenses in contact is the product of their powers.'],
       ['Refractive index is greater for violet light than for red light.', 'Refractive index is greater for red light than for violet light.'],
-      ['Scattering by small particles varies as 1/λ⁴.', 'Scattering by small particles varies as λ⁴.'],
       ['A ray going to the optical centre of a thin lens carries on undeviated.', 'A ray going to the optical centre of a thin lens is bent to the focus.'],
     ],
     figures: { 'Show that the refractive index of a prism is n = sin((A + δₘ)/2)/sin(A/2).': { kind: 'prism', angle: 'A' }, 'Derive the lens maker’s formula for a thin lens of refractive index n in air.': { kind: 'lens-surfaces', r1: 'R₁', r2: 'R₂', n: 'n' } },

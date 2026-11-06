@@ -70,8 +70,8 @@ const knowledge: Record<string, Facts> = {
       ['A convex lens in a medium denser than itself acts as a diverging lens.', 'A convex lens in a medium denser than itself acts as a stronger converging lens.'],
       ['Power of a lens depends on the medium in which it sits.', 'Power of a lens is the same in every medium.'],
       ['A diverging lens has negative power.', 'A diverging lens has positive power.'],
-      ['Cutting a convex lens across its axis into two equal halves gives each half twice the focal length.', 'Cutting a convex lens across its axis into two equal halves leaves the focal length of each the same.'],
-      ['Cutting a lens along its axis keeps the focal length of each half.', 'Cutting a lens along its axis doubles the focal length of each half.'],
+      ['Cutting an equiconvex lens into two plano-convex halves, at right angles to its axis, doubles the focal length of each.', 'Cutting an equiconvex lens into two plano-convex halves, at right angles to its axis, keeps the focal length of each.'],
+      ['Cutting a lens in two by a plane containing its axis keeps the focal length of each half.', 'Cutting a lens in two by a plane containing its axis doubles the focal length of each half.'],
       ['Covering half a convex lens gives a dimmer full image.', 'Covering half a convex lens gives half an image.'],
       ['A prism’s deviation depends on its angle, its material and the angle of incidence.', 'A prism’s deviation depends only on its colour of glass.'],
       ['A prism gives a spectrum because different colours travel at different speeds in glass.', 'A prism gives a spectrum because it adds colours to white light.'],
@@ -112,13 +112,12 @@ const knowledge: Record<string, Facts> = {
     ],
     ar: [
       ['the depth of a pool', 'A pool seems shallower than its true depth.', 'A pool seems deeper than its true depth.', 'Rays from its bottom bend away from the normal as they leave the water.', 'Rays from its bottom bend towards the normal as they leave the water.', 'The refractive index of water is about 4/3.'],
-      ['the mirror in water', 'A spherical mirror’s focal length doesn’t change in water.', 'A spherical mirror’s focal length falls in water.', 'Reflection doesn’t depend on the medium’s refractive index.', 'A mirror has no focal length in water.', 'The focal length of a mirror is half its radius of curvature.'],
+      ['the mirror in water', 'A spherical mirror’s focal length doesn’t change in water.', 'A spherical mirror’s focal length falls in water.', 'Reflection doesn’t depend on the medium’s refractive index.', 'A mirror has no focal length in water.', 'A glass lens’s focal length does change in water.'],
       ['the combination of lenses', 'Lenses in contact have powers that simply add.', 'Lenses in contact have powers that multiply.', 'The image in the first lens acts as the object for the next, and the two lens equations add.', 'Each lens blocks the other’s light.', 'Power is measured in dioptres.'],
       ['the critical angle', 'Diamond has a smaller critical angle than glass.', 'Diamond has a larger critical angle than glass.', 'Its refractive index is larger, and sin c = 1/n.', 'Its refractive index is smaller, and sin c = n.', 'A diamond cut well sparkles.'],
       ['the frequency in a medium', 'Light’s wavelength falls when it enters glass.', 'Light’s wavelength rises when it enters glass.', 'Its frequency is fixed and its speed falls.', 'Its speed rises and its frequency falls.', 'Refractive index has no unit.'],
     ],
     links: [
-      ['cause', 'Wavelength becomes shorter', 'Frequency stays the same'],
       ['same', 'A convex mirror gives a wider', 'A concave mirror can form both'],
       ['cause', 'Violet deviates more than red', 'The refractive index of a lens material'],
       ['same', 'A diverging lens has negative', 'Power of a lens depends'],
@@ -127,7 +126,6 @@ const knowledge: Record<string, Facts> = {
       ['contrast', 'the pole of a spherical mirror', 'the centre of curvature of a spherical mirror'],
       ['contrast', 'the refractive index of a medium', 'relative refractive index'],
       ['contrast', 'the angular dispersion of a prism', 'the dispersive power of a prism'],
-      ['contrast', 'the critical angle', 'total internal reflection'],
     ],
   },
 
