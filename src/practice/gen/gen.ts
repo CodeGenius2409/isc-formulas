@@ -4,7 +4,7 @@ import type { Body, McqBody, NumericBody, TheoryBody } from '../../data/blueprin
 import { getEntry } from '../../solver/registry';
 import { solve, type SolveInput, type Step } from '../../solver/solve';
 import { unitLabel } from '../../solver/unit-label';
-import { roundSig } from '../../solver/units';
+import { plainNumber, roundSig } from '../../solver/units';
 import { buildParts } from '../bank/index';
 import type { BankOption, MarkPoint, NumericPart, NumericPartDef } from '../bank/types';
 import type { Rng } from '../questions';
@@ -104,9 +104,9 @@ export class Gen {
         if (fixed === undefined) throw new Error(`${this.id}: ${use} needs ${v.symbol}`);
         inputs[v.symbol] = { raw: String(fixed), unit: v.unit };
       } else if (typeof spec === 'number') {
-        inputs[v.symbol] = { raw: String(spec), unit: v.unit };
+        inputs[v.symbol] = { raw: plainNumber(spec), unit: v.unit };
       } else {
-        inputs[v.symbol] = { raw: String(spec[0]), unit: spec[1] };
+        inputs[v.symbol] = { raw: plainNumber(spec[0]), unit: spec[1] };
       }
     }
     const outcome = solve(entry, find, inputs, { resultUnit: unit, exact: this.subject === 'mathematics' });

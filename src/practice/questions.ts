@@ -10,7 +10,7 @@ import { formatDim, parseDim, sameDim } from '../solver/dims';
 import { getEntry } from '../solver/registry';
 import { defaultUnknown, solve, varTex, type SolveInput, type Step } from '../solver/solve';
 import type { ResolvedEntry, ResolvedVar } from '../solver/types';
-import { dimOfUnit, formatNumber, parseInput } from '../solver/units';
+import { dimOfUnit, formatNumber, parseInput, plainNumber } from '../solver/units';
 import { unitTex } from '../solver/tex';
 import { unitLabel } from '../solver/unit-label';
 import { answerSummary } from './bank/mark';
@@ -115,7 +115,7 @@ function niceValue(v: ResolvedVar, rng: Rng): number {
 
 function rawOf(v: ResolvedVar, value: number): { raw: string; unit: string } {
   if (v.show === 'deg') return { raw: String(Math.round(value / DEG)), unit: 'deg' };
-  return { raw: String(value), unit: v.unit };
+  return { raw: plainNumber(value), unit: v.unit };
 }
 
 const WRONG_UNITS = ['m', 's', 'kg', 'N', 'J', 'W', 'Pa', 'A', 'V', 'mol', 'K', 'm/s', 'm/s^2', 'Hz', 'C'];

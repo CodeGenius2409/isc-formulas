@@ -148,9 +148,8 @@ const knowledge: Record<string, Facts> = {
   },
   '9c': {
     ar: [
-      ['the stability of diazonium salts', 'Diazotisation is carried out at about 0 to 5 °C.', 'Diazotisation is carried out at about 90 °C.', 'Diazonium salts decompose at higher temperatures.', 'Diazonium salts can form only in boiling water.', 'Nitrous acid is made in the mixture.'],
       ['the coupling reaction', 'Coupling with phenol takes place in mildly alkaline conditions.', 'Coupling with phenol takes place in strongly acidic conditions.', 'The phenoxide ion formed is more reactive than phenol.', 'Phenol can’t react with electrophiles.', 'Coupling gives a brightly coloured azo dye.'],
-      ['the Sandmeyer reaction', 'Copper(I) chloride replaces the diazonium group with chlorine.', 'Copper(I) chloride replaces the diazonium group with hydrogen.', 'This is the Sandmeyer reaction.', 'This is the Cannizzaro reaction.', 'Nitrogen gas is given off.'],
+      ['the acid in diazotisation', 'Diazotisation is done with excess hydrochloric acid.', 'Diazotisation is done in alkaline solution.', 'Excess acid stops the diazonium salt from coupling with unreacted aniline.', 'Alkali is needed to make nitrous acid from NaNO₂.', 'The mixture is kept at 273–278 K.'],
     ],
   },
   '10a': {

@@ -7,6 +7,7 @@ import type { ClassLevel, SubjectId } from '../../data/types';
 import { getEntry } from '../../solver/registry';
 import { solve, varTex, type SolveInput, type Step } from '../../solver/solve';
 import { unitLabel } from '../../solver/unit-label';
+import { plainNumber } from '../../solver/units';
 import { pickUnitChoices, seededRng, type Rng } from '../questions';
 import { bankOfId } from './define';
 import type { BankDef, BankItem, BankQuestion, NumericDef, NumericItem, NumericPart } from './types';
@@ -107,7 +108,7 @@ export function buildParts(def: Pick<NumericDef, 'id' | 'subject' | 'parts'>, va
       const [, minus, name, factor] = /^(-?)([^*]+)(?:\*(.+))?$/.exec(written)!;
       const size = (name in values ? values[name] : Number(name)) * Number(factor ?? 1);
       if (!Number.isFinite(size)) throw new Error(`${def.id}: can't read "${spec}"`);
-      inputs[v.symbol] = { raw: String(minus ? -size : size), unit: unit ?? v.unit };
+      inputs[v.symbol] = { raw: plainNumber(minus ? -size : size), unit: unit ?? v.unit };
     }
     const outcome = solve(entry, part.find, inputs, { resultUnit: part.unit, exact: def.subject === 'mathematics' });
     if (!outcome.ok) return null;

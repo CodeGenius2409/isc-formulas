@@ -111,6 +111,9 @@ const SUP: Record<string, string> = { '-': '⁻', '0': '⁰', '1': '¹', '2': '�
  * Rounds to `sf` significant figures as a person would, half up, from the decimal digits. Binary floating point
  * stores 0.693/600 as 0.0011549999…, which toPrecision would show as 0.00115 rather than 0.00116.
  */
+/** A computed value as the solver should read it: 6 × 10⁻⁴ is "0.0006", not "0.0006000000000000001", whose 16 figures would set the answer’s precision. */
+export const plainNumber = (value: number): string => String(Number(value.toPrecision(12)));
+
 export function roundSig(value: number, sf: number): number {
   if (value === 0 || !Number.isFinite(value)) return value;
   const [mantissa, exponent] = Math.abs(value).toExponential(14).split('e');

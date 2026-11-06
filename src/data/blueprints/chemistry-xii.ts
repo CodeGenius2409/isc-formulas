@@ -1109,18 +1109,15 @@ const blueprints: Blueprint[] = [
       ['a coupling reaction', 'A diazonium salt reacting with a phenol or an aromatic amine, to form a brightly coloured azo compound.'],
     ],
     recall: [
-      ['Diazotisation is done at a low temperature because:', 'the salt decomposes when warmed', 'nitrous acid needs ice to form', 'aniline freezes above that', 'the reaction is endothermic'],
-      ['Aryl diazonium salts are more stable than alkyl ones because of:', 'resonance with the ring', 'their lower mass', 'their greater size', 'their solubility'],
       ['Which reagent replaces the diazonium group with hydrogen?', 'H₃PO₂', 'CuCl', 'KI', 'H₂O'],
     ],
     reason: [
-      ['Aryl diazonium salts are made and used below 278 K.', 'They break down readily when warmed, giving nitrogen.'],
       ['Azo dyes are strongly coloured.', 'The –N=N– group extends the conjugation between the two rings.', 'So they absorb visible light.'],
     ],
     truths: [
-      ['Coupling with phenol takes place in mildly alkaline conditions.', 'Coupling with phenol takes place in strongly acidic conditions.'],
-      ['Diazonium salts replace their group with iodine without any copper catalyst.', 'Diazonium salts need a copper catalyst to replace their group with iodine.'],
-      ['Warming a diazonium salt in water gives phenol.', 'Warming a diazonium salt in water gives aniline.'],
+      ['Benzenediazonium chloride is soluble in water.', 'Benzenediazonium chloride is insoluble in water.'],
+      ['Nitrogen gas is given off when a diazonium group is replaced by a halogen.', 'The nitrogen stays in the product when a diazonium group is replaced by a halogen.'],
+      ['p-Aminoazobenzene is a yellow dye.', 'p-Aminoazobenzene is colourless.'],
     ],
   }),
 

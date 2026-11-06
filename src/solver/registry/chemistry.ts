@@ -63,10 +63,10 @@ export const CHEMISTRY: SolverEntry[] = [
   { id: 'c-xi-6-127', topic: T, eq: 'DeltaG0 = -n*F*E0', ask: 'DeltaG0', vars: { DeltaG0: 'standard Gibbs energy change|molarEnergy', n: ['electrons transferred', 'count', { gen: [1, 6] }], F: 'c:F', E0: ['standard cell potential', 'voltage', { gen: [0.1, 3] }] } },
 
   // Equilibrium
-  { id: 'c-xi-7-3', topic: E, eq: 'pH = -log10(H)', vars: { pH: 'pH|ph', H: 'value of [H⁺] in mol/L|concValue' } },
-  { id: 'c-xi-7-4', topic: E, eq: 'pOH = -log10(OH)', vars: { pOH: 'pOH|ph', OH: 'value of [OH⁻] in mol/L|concValue' } },
-  { id: 'c-xi-7-5', topic: E, eq: 'K_w = H*OH', ask: 'K_w', vars: { K_w: 'ionic product of water|equilibrium', H: 'value of [H⁺]|concValue', OH: 'value of [OH⁻]|concValue' } },
-  { id: 'c-xi-7-6', topic: E, eq: 'pH = pK_a + log10(S_c/A_c)', ask: 'pH', vars: { pH: 'pH of the buffer|ph', pK_a: ['pKa', 'ph', { gen: [3, 10] }], S_c: 'value of [salt]|concValue', A_c: 'value of [acid]|concValue' } },
+  { id: 'c-xi-7-3', topic: E, eq: 'pH = -log10(H)', vars: { pH: 'pH|ph', H: ['value of [H⁺] in mol/L', 'concValue', { tex: '[\\mathrm{H^+}]' }] } },
+  { id: 'c-xi-7-4', topic: E, eq: 'pOH = -log10(OH)', vars: { pOH: 'pOH|ph', OH: ['value of [OH⁻] in mol/L', 'concValue', { tex: '[\\mathrm{OH^-}]' }] } },
+  { id: 'c-xi-7-5', topic: E, eq: 'K_w = H*OH', ask: 'K_w', vars: { K_w: 'ionic product of water|equilibrium', H: ['value of [H⁺]', 'concValue', { tex: '[\\mathrm{H^+}]' }], OH: ['value of [OH⁻]', 'concValue', { tex: '[\\mathrm{OH^-}]' }] } },
+  { id: 'c-xi-7-6', topic: E, eq: 'pH = pK_a + log10(S_c/A_c)', ask: 'pH', vars: { pH: 'pH of the buffer|ph', pK_a: ['pKa', 'ph', { gen: [3, 10] }], S_c: ['value of [salt]', 'concValue', { tex: '[\\mathrm{salt}]' }], A_c: ['value of [acid]', 'concValue', { tex: '[\\mathrm{acid}]' }] } },
   { id: 'c-xi-7-9', topic: E, eq: 'K_a*K_b = K_w', ask: 'K_b', vars: { K_a: 'acid constant|equilibrium', K_b: 'base constant|equilibrium', K_w: ['ionic product of water', 'equilibrium', { value: 1e-14 }] } },
   { id: 'c-xi-7-10', topic: E, eq: 'alpha = sqrt(K_a/C_c)', vars: { alpha: 'degree of dissociation|fraction', K_a: ['acid constant', 'equilibrium', { gen: [1e-6, 1e-4] }], C_c: ['value of the concentration', 'concValue', { gen: [0.01, 1] }] } },
   { id: 'c-xi-7-13', topic: E, eq: 'K_h = K_w/K_a', vars: { K_h: 'hydrolysis constant|equilibrium', K_w: ['ionic product of water', 'equilibrium', { value: 1e-14 }], K_a: 'acid constant|equilibrium' } },

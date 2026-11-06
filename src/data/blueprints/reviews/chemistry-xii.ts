@@ -291,6 +291,19 @@ const reviews: Reviews = {
   'c12-9a-recall': ['2026-11-06', 'The strongest base in water and the carbylamine test repeated truths. Now methanamine as a gas, and the β-naphthol test for aromatic amines.'],
   'c12-9a-truth': ['2026-11-06', 'The boiling-point order of amines was said twice. One is now that aniline is less basic than ammonia.'],
   'c12-9b-assertion': ['2026-11-05', 'Task 3: rebuilt from concept nodes, so the reason is always about the assertion; every node re-read.'],
+  'c12-9c-assertion': ['2026-11-06', 'The Sandmeyer node’s “reason” was “This is the Sandmeyer reaction”, a name, not a cause; the stability node repeated two reasons; the azo node repeated a 2-mark reason. Now excess acid in diazotisation and the weak electrophile.'],
+  'c12-9c-assertion-linked': ['2026-11-06', 'Read with samples; correct, no change needed.'],
+  'c12-9c-compare-linked': ['2026-11-06', 'Read with samples; correct, no change needed.'],
+  'c12-9c-define': ['2026-11-06', 'Read with samples; correct, no change needed.'],
+  'c12-9c-explain1': ['2026-11-06', 'Read with samples; correct, no change needed.'],
+  'c12-9c-explain2': ['2026-11-06', 'Read with samples; correct, no change needed.'],
+  'c12-9c-match': ['2026-11-06', 'Read with samples; correct, no change needed.'],
+  'c12-9c-name-it-c': ['2026-11-06', 'Reaction names now read “Kolbe’s reaction”, “esterification”, “the Sandmeyer reaction” instead of “the Kolbe’s reaction” and “the Esterification”.'],
+  'c12-9c-predict-c': ['2026-11-06', 'Read with samples; correct, no change needed.'],
+  'c12-9c-reason1': ['2026-11-06', 'Use below 278 K and coupling only with activated rings repeated the AR and truths; removed.'],
+  'c12-9c-reason2': ['2026-11-06', 'Read with samples; correct, no change needed.'],
+  'c12-9c-recall': ['2026-11-06', 'Why diazotisation is cold, why aryl salts are stable, and the H₃PO₂, KI and phenol products repeated reasons, truths and the reaction questions. Removed, with ethanol’s reduction to benzene added.'],
+  'c12-9c-truth': ['2026-11-06', 'Coupling in alkali, phenol from water, iodide without copper and a weak electrophile were each said two or three times. Now solubility, aniline yellow, nitrogen lost on halogenation, and the stable fluoroborate.'],
 };
 
 export default reviews;

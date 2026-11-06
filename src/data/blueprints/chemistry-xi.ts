@@ -520,8 +520,7 @@ const blueprints: Blueprint[] = [
       ['At 298 K, the pH of pure water is:', '7', '0', '1', '14'],
       ['Which is a Lewis acid?', 'BF₃', 'NH₃', 'OH⁻', 'H₂O'],
       ['An acid and base that differ by one proton are called:', 'a conjugate pair', 'a buffer', 'isomers', 'a salt'],
-      ['A solution of NH₄Cl in water is:', 'acidic', 'basic', 'neutral', 'a buffer'],
-      ['A solution of sodium ethanoate in water is:', 'basic', 'acidic', 'neutral', 'a strong acid'],
+      ['The pOH of a solution of pH 4 at 298 K is:', '10', '4', '−4', '14'],
     ],
     reason: [
       ['A solution of sodium ethanoate is basic.', 'Ethanoate ions react with water.', 'That gives ethanoic acid and hydroxide ions.'],

@@ -444,11 +444,9 @@ const knowledge: Record<string, Facts> = {
       ['The diazotisation of aniline is usually done at:', '273–278 K', '373 K', '500 K', '200 K'],
       ['Diazotisation uses aniline, HCl and:', 'NaNO₂', 'NaNO₃', 'NaOH', 'KCN'],
       ['The nitrous acid for diazotisation is made:', 'in the same flask, as it’s needed', 'long beforehand, and stored', 'by electrolysis', 'from air alone'],
-      ['Benzene diazonium chloride with H₃PO₂ gives:', 'benzene', 'phenol', 'aniline', 'chlorobenzene'],
       ['Benzene diazonium chloride with CuCN and KCN gives:', 'benzonitrile', 'phenol', 'benzene', 'benzoic acid'],
-      ['Benzene diazonium chloride with KI gives:', 'iodobenzene', 'phenol', 'benzene', 'aniline'],
       ['Benzene diazonium chloride with CuBr gives:', 'bromobenzene', 'phenol', 'benzene', 'benzonitrile'],
-      ['Benzene diazonium chloride with phenol in mild alkali gives:', 'p-hydroxyazobenzene', 'benzene', 'chlorobenzene', 'aniline'],
+      ['Benzenediazonium chloride warmed with ethanol gives:', 'benzene', 'phenol', 'aniline', 'chlorobenzene'],
       ['Benzene diazonium chloride with aniline in mild acid gives:', 'p-aminoazobenzene', 'benzene', 'phenol', 'nitrobenzene'],
       ['The colour of the dye from phenol and benzene diazonium chloride is:', 'orange', 'blue', 'colourless', 'green'],
       ['Which are the main uses of diazonium salts?', 'making dyes and aromatic compounds', 'making metals', 'making glass', 'making cement'],
@@ -461,15 +459,13 @@ const knowledge: Record<string, Facts> = {
       ['Coupling with aniline takes place in mild acid.', 'Coupling with aniline takes place in strong alkali.'],
       ['The para position is the usual site of coupling.', 'The meta position is the usual site of coupling.'],
       ['In a coupling reaction, the nitrogen stays in the product.', 'In a coupling reaction, the nitrogen is lost as a gas.'],
-      ['A diazonium ion is a weak electrophile.', 'A diazonium ion is a strong nucleophile.'],
+      ['Benzenediazonium fluoroborate is stable enough to be isolated as a solid.', 'Benzenediazonium fluoroborate explodes as soon as it forms.'],
       ['Sandmeyer reactions use copper(I) salts.', 'Sandmeyer reactions use silver(I) salts.'],
       ['Diazonium chemistry lets groups be placed where direct substitution can’t reach.', 'Diazonium chemistry can only put groups where direct substitution already can.'],
       ['A diazonium group replaced by hydrogen gives a route to 1,3,5-tribromobenzene.', 'A diazonium group replaced by hydrogen gives a route to aniline.'],
     ],
     reason: [
       ['Diazonium salts are not usually stored.', 'They decompose on standing, so they are used straight away in solution.'],
-      ['A diazonium ion couples only with activated rings.', 'It is a weak electrophile, so it needs a ring rich in electrons.'],
-      ['Coupling with phenol is done in mildly alkaline solution.', 'Alkali gives the phenoxide ion, which reacts faster.'],
       ['Aryl diazonium ions are more stable than alkyl ones.', 'The positive charge is spread over the ring by resonance.'],
     ],
     explain: [
@@ -478,7 +474,7 @@ const knowledge: Record<string, Facts> = {
       ['Write the reaction of a diazonium salt with water.', 'C₆H₅N₂⁺Cl⁻ + H₂O → C₆H₅OH + N₂ + HCl.'],
     ],
     ar: [
-      ['the azo colour', 'Azo compounds are strongly coloured.', 'Azo compounds are always colourless.', 'Their –N=N– group links aromatic rings in an extended conjugated system.', 'They have no double bonds at all.', 'Azo dyes form by coupling.'],
+      ['the weak electrophile', 'Benzenediazonium ion doesn’t couple with benzene itself.', 'Benzenediazonium ion couples readily with benzene itself.', 'It is a weak electrophile, and benzene’s ring isn’t activated.', 'It is a strong nucleophile.', 'It couples readily with phenol in mild alkali.'],
     ],
     links: [
       ['same', 'Aryl diazonium salts are stable', 'Dry diazonium salts'],

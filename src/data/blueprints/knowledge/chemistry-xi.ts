@@ -82,9 +82,9 @@ const knowledge: Record<string, Facts> = {
   },
   '6b': {
     ar: [
-      ['the buffer', 'A buffer keeps its pH almost steady.', 'A buffer’s pH changes sharply on adding a little acid.', 'Its weak acid and conjugate base take up added alkali and acid.', 'It contains only a strong acid.', 'A mixture of ethanoic acid and sodium ethanoate is a buffer.'],
+      ['the polybasic acid', 'H₃PO₄ gives up its second proton less readily than its first.', 'H₃PO₄ gives up its second proton more readily than its first.', 'Removing H⁺ from the negative ion H₂PO₄⁻ is harder than from the neutral molecule.', 'The second proton is held by a weaker bond.', 'H₃PO₄ is a tribasic acid.'],
       ['the common ion effect', 'Sodium ethanoate suppresses the ionisation of ethanoic acid.', 'Sodium ethanoate increases the ionisation of ethanoic acid.', 'It adds a common ion, which shifts the equilibrium to the left.', 'It removes the ethanoate ions from the solution.', 'Ethanoic acid is a weak acid.'],
-      ['salt hydrolysis', 'A solution of sodium carbonate is alkaline.', 'A solution of sodium carbonate is acidic.', 'The carbonate ion is hydrolysed to give hydroxide ions.', 'The sodium ion is hydrolysed to give hydrogen ions.', 'A solution of NH₄Cl is acidic.'],
+      ['salt hydrolysis', 'A solution of sodium carbonate is alkaline.', 'A solution of sodium carbonate is acidic.', 'The carbonate ion is hydrolysed to give hydroxide ions.', 'The sodium ion is hydrolysed to give hydrogen ions.', 'Sodium carbonate is used as washing soda.'],
     ],
   },
   '7a': {

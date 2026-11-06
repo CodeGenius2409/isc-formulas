@@ -492,13 +492,11 @@ const blueprints: Blueprint[] = [
     recall: [
       ['The sum of a half adder is:', 'A XOR B', 'A AND B', 'A OR B', 'A NOR B'],
       ['The carry of a half adder is:', 'A AND B', 'A XOR B', 'A OR B', 'A NAND B'],
-      ['A 3-to-8 decoder has how many output lines?', '8', '3', '16', '4'],
-      ['A multiplexer with 8 inputs needs how many select lines?', '3', '8', '4', '2'],
       ['An octal to binary encoder has:', '8 inputs and 3 outputs', '3 inputs and 8 outputs', '8 inputs and 8 outputs', '3 inputs and 3 outputs'],
     ],
     truths: [
-      ['A full adder can be built from two half adders and an OR gate.', 'A full adder can be built from one half adder alone.'],
-      ['A decoder has more outputs than inputs.', 'A decoder has more inputs than outputs.'],
+      ['A full adder’s sum is 1 when an odd number of its inputs are 1.', 'A full adder’s sum is 1 when an even number of its inputs are 1.'],
+      ['A 1-to-4 demultiplexer needs 2 select lines.', 'A 1-to-4 demultiplexer needs 4 select lines.'],
       ['A multiplexer has many inputs and one output.', 'A multiplexer has one input and many outputs.'],
     ],
     compare: [
@@ -934,11 +932,10 @@ const blueprints: Blueprint[] = [
       ['Constant factors are dropped in Big O notation.', 'It describes growth for large inputs.', 'For large n, a constant factor matters far less than the rate of growth.'],
     ],
     compare: [
-      ['O(n)', 'O(n²)', ['Doubling n doubles the time.', 'Doubling n makes the time four times as long.'], ['Typical of one loop.', 'Typical of two nested loops.']],
+      ['O(n)', 'O(n²)', ['Linear search is an example.', 'Bubble sort is an example.'], ['Typical of one loop.', 'Typical of two nested loops.']],
     ],
     truths: [
       ['O(2n) simplifies to O(n).', 'O(2n) simplifies to O(n²).'],
-      ['Lower-order terms are dropped in Big O notation.', 'Only the lowest-order term is kept in Big O notation.'],
       ['An O(1) operation takes about the same time for any input size.', 'An O(1) operation takes one more step for each input.'],
     ],
   }),

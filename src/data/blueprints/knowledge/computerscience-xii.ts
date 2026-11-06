@@ -28,8 +28,8 @@ const knowledge: Record<string, Facts> = {
   '2b': {
     ar: [
       ['the full adder', 'A full adder can be built from two half adders and an OR gate.', 'A full adder can be built from one half adder alone.', 'It must add three bits, two at a time.', 'It must add only two bits.', 'Its carry is AB + BC + CA.'],
-      ['the multiplexer', 'A multiplexer with 8 inputs needs 3 select lines.', 'A multiplexer with 8 inputs needs 8 select lines.', '2³ = 8, so three lines can pick out any input.', '3² = 8, so three lines can pick out any input.', 'A multiplexer has many inputs and one output.'],
-      ['the decoder', 'A 3-to-8 decoder activates one output for each input code.', 'A 3-to-8 decoder activates every output for each input code.', 'Each three-bit code stands for just one line.', 'Each three-bit code stands for all eight lines.', 'An encoder does the opposite job.'],
+      ['the multiplexer', 'A multiplexer with 8 inputs needs 3 select lines.', 'A multiplexer with 8 inputs needs 8 select lines.', '2³ = 8, so three lines can pick out any input.', '3² = 8, so three lines can pick out any input.', 'A multiplexer is also called a data selector.'],
+      ['the decoder', 'A 3-to-8 decoder activates one output for each input code.', 'A 3-to-8 decoder activates every output for each input code.', 'Each three-bit code stands for just one line.', 'Each three-bit code stands for all eight lines.', 'A 3-to-8 decoder has three input lines.'],
     ],
   },
   '3a': {
@@ -105,9 +105,9 @@ const knowledge: Record<string, Facts> = {
   },
   '9a': {
     ar: [
-      ['nested loops', 'Two nested loops over n items take O(n²) steps.', 'Two nested loops over n items take O(n) steps.', 'The inner body runs n times for each of the n outer turns.', 'The inner body runs once in total.', 'Three nested loops take O(n³) steps.'],
-      ['logarithmic growth', 'Binary search on a million items takes about 20 comparisons at worst.', 'Binary search on a million items takes about a million comparisons at worst.', 'Each comparison halves the range, and 2²⁰ is about a million.', 'Each comparison removes just one item.', 'Its complexity is O(log n).'],
-      ['constants in Big O', 'Big O ignores constant factors.', 'Big O depends mainly on constant factors.', 'For large n, the growth rate matters most.', 'For large n, the constants matter most.', 'O(2n) is the same as O(n).'],
+      ['nested loops', 'Two nested loops over n items take O(n²) steps.', 'Two nested loops over n items take O(n) steps.', 'The inner body runs n times for each of the n outer turns.', 'The inner body runs once in total.', 'Bubble sort uses two nested loops.'],
+      ['logarithmic growth', 'Binary search on a million items takes about 20 comparisons at worst.', 'Binary search on a million items takes about a million comparisons at worst.', 'Each comparison halves the range, and 2²⁰ is about a million.', 'Each comparison removes just one item.', 'Binary search needs a sorted array.'],
+      ['the best case', 'Linear search can finish after one comparison.', 'Linear search always needs n comparisons.', 'The item it looks for may be the first one checked.', 'It must check every item before it stops.', 'Linear search works on unsorted data.'],
     ],
   },
 };
