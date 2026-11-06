@@ -963,7 +963,7 @@ const blueprints: Blueprint[] = [
     const p = frac(1, g.pick([2, 3, 4, 5, 6]));
     const q = frac(1).sub(p);
     const ans = frac(nCr(n, r)).mul(new Frac(p.n ** r, p.d ** r)).mul(new Frac(q.n ** (n - r), q.d ** (n - r)));
-    return { form: 'numeric', text: `A trial succeeds with probability ${$(p.tex())}. It is repeated ${n} times independently. Find the probability of exactly ${r} ${r === 1 ? 'success' : 'successes'}.`, parts: [g.answerPart('The probability', ans.value, 3, [step('Use the binomial formula', `P(X = ${r}) = \\binom{${n}}{${r}}\\left(${p.tex()}\\right)^{${r}}\\left(${q.tex()}\\right)^{${n - r}} = ${ans.tex()}`)], '', ans.text())] };
+    return { form: 'numeric', text: `A trial succeeds with probability ${$(p.tex())}. It is repeated ${n} times independently. Find the probability of exactly ${r} ${r === 1 ? 'success' : 'successes'}.`, parts: [g.answerPart('The probability', ans.value, 3, [step('Choose which trials succeed, and multiply, as the trials are independent', `P = \\binom{${n}}{${r}}\\left(${p.tex()}\\right)^{${r}}\\left(${q.tex()}\\right)^{${n - r}} = ${ans.tex()}`)], '', ans.text())] };
   }),
   custom('distribution-mean', [7, 'a', 3, 2], { type: 'numerical', format: 'numerical' }, (g) => {
     const xs = [0, 1, 2, 3];
@@ -1002,8 +1002,6 @@ const blueprints: Blueprint[] = [
     recall: [
       ['If A and B are independent, then P(A|B) equals:', 'P(A)', 'P(B)', 'P(A)P(B)', '1'],
       ['The sum of probabilities in a probability distribution is:', '1', '0', 'n', 'the mean'],
-      ['The mean of a binomial distribution is:', 'np', 'npq', 'n/p', 'pq'],
-      ['The variance of a binomial distribution is:', 'npq', 'np', 'n²p', '√(np)'],
       ['Mutually exclusive events with non-zero probabilities are:', 'not independent', 'always independent', 'certain', 'impossible'],
     ],
     truths: [

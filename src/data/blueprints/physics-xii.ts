@@ -619,7 +619,7 @@ const blueprints: Blueprint[] = [
     parts: [
       { ask: 'Impedance of the circuit', use: 'p-xii-4-7', find: 'Z', given: { R: 'R ohm', X_L: 'L ohm', X_C: 'C ohm' }, marks: 2, save: 'z' },
       { ask: 'rms current', use: 'p-xii-2-1', find: 'I', given: { V: 'V V', R: 'z' }, marks: 1, save: 'i' },
-      { ask: 'Power factor angle', use: 'p-xii-4-18', find: 'phi', given: { R: 'R ohm', Z: 'z' }, unit: 'deg', marks: 2 },
+      { ask: 'Phase angle between the current and the voltage, as a size', use: 'p-xii-4-18', find: 'phi', given: { R: 'R ohm', Z: 'z' }, unit: 'deg', marks: 2 },
     ],
     diagram: (v) => ({ kind: 'circuit', source: { type: 'ac', label: `${v.V} V rms` }, loop: [{ type: 'R', label: ohms(v.R) }, { type: 'L', label: `X_L = ${v.L} Ω` }, { type: 'C', label: `X_C = ${v.C} Ω` }] }),
   }),

@@ -92,7 +92,7 @@ const knowledge: Record<string, Facts> = {
     ar: [
       ['independent events', 'If A and B are independent, then P(A ∩ B) = P(A)P(B).', 'If A and B are independent, then P(A ∩ B) = 0.', 'P(A | B) = P(A) then, as B has no effect on A.', 'P(A | B) = 1 then, as B forces A.', 'Mutually exclusive events aren’t independent, if both have positive probability.'],
       ['the theorem of total probability', 'Bayes’ theorem needs total probability for its denominator.', 'Bayes’ theorem has no denominator.', 'P(A) is found by adding over all the causes.', 'P(A) is found by multiplying over all the causes.', 'Bayes’ theorem finds the probability of a cause, given the effect.'],
-      ['a binomial distribution', 'In a binomial distribution, the mean is np.', 'In a binomial distribution, the mean is npq.', 'Each of n trials has an expected p successes.', 'Each of n trials has an expected pq successes.', 'The variance is npq.'],
+      ['sampling without replacement', 'Two cards drawn one after the other, without replacement, aren’t independent draws.', 'Two cards drawn one after the other, without replacement, are independent draws.', 'The first card changes what is left, so the probabilities for the second change.', 'The pack is the same for both draws.', 'Drawing with replacement makes the two draws independent.'],
       ['a probability distribution', 'The probabilities in a distribution add up to 1.', 'The probabilities in a distribution add up to 0.', 'One of the values must occur.', 'None of the values can occur.', 'The mean is also called the expected value.'],
     ],
   },

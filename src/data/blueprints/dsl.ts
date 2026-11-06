@@ -291,11 +291,15 @@ export function blueprintsFor(subject: SubjectId, level: ClassLevel, knowledge: 
       });
     }
     const termFor = (name: string) => f.define?.find((d) => d[0] === name);
+    const plain = (s: string) => s.toLowerCase().replace(/\b(a|an|the)\b/g, '').replace(/s\b/g, '').replace(/\s+/g, ' ').trim();
+    const alike = (x: string, y: string) => plain(x).includes(plain(y)) || plain(y).includes(plain(x));
+    /** The facts of written comparisons of the same two things, so that a paper doesn't ask the pair twice. */
+    const comparedAs = (a: string, b: string) => (f.compare ?? []).filter(([x, y]) => (alike(a, x) && alike(b, y)) || (alike(a, y) && alike(b, x))).map(([x, y]) => fact(`${x} | ${y}`));
     const contrasts = (f.links ?? []).filter((l) => l[0] === 'contrast' && termFor(l[1]) && termFor(l[2]));
     if (contrasts.length) {
       add('compare-linked', 2, 2, 'distinguish', 'distinguish', 'paper-style', (g) => {
         const [, a, b] = g.pick(contrasts);
-        return g.theory(fillIn(g.pick(ASK_COMPARE), { a, b }), [`${capital(a)}: ${termFor(a)![1]}`, `${capital(b)}: ${termFor(b)![1]}`], { facts: [fact(a), fact(b)] });
+        return g.theory(fillIn(g.pick(ASK_COMPARE), { a, b }), [`${capital(a)}: ${termFor(a)![1]}`, `${capital(b)}: ${termFor(b)![1]}`], { facts: [fact(a), fact(b), ...comparedAs(a, b)] });
       });
     }
     if (f.explain?.length) {

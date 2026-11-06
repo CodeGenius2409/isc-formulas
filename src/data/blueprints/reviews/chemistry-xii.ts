@@ -7,7 +7,7 @@ const reviews: Reviews = {
   'c12-1a-assertion-linked': ['2026-11-06', 'Read with samples; correct, no change needed.'],
   'c12-1a-boiling-elevation': ['2026-11-06', 'Kept to 1 m or less, as ΔT = K_b m holds for dilute solutions.'],
   'c12-1a-case3': ['2026-11-06', 'Read with samples; correct, no change needed.'],
-  'c12-1a-compare-linked': ['2026-11-06', 'Read with samples; correct, no change needed.'],
+  'c12-1a-compare-linked': ['2026-11-06', 'Read with samples. Now shares the fact of the written comparison of the same pair (batch 3).'],
   'c12-1a-compare2': ['2026-11-06', 'Read with samples; correct, no change needed.'],
   'c12-1a-compare3': ['2026-11-06', 'Read with samples; correct, no change needed.'],
   'c12-1a-define': ['2026-11-06', 'Read with samples; correct, no change needed.'],

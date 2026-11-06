@@ -322,7 +322,7 @@ const knowledge: Record<string, Facts> = {
     ],
     truths: [
       ['An a.c. ammeter reads the rms value.', 'An a.c. ammeter reads the peak value.'],
-      ['The average of a sine wave over a full cycle is zero.', 'The average of a sine wave over a full cycle is the peak value.'],
+      ['The rms value of a sinusoidal current is about 0.707 of its peak.', 'The rms value of a sinusoidal current is about 0.637 of its peak.'],
       ['The rms value of a.c. gives the same heating as a d.c. current of that size.', 'The peak value of a.c. gives the same heating as a d.c. current of that size.'],
       ['A capacitor’s reactance falls as the frequency rises.', 'A capacitor’s reactance rises as the frequency rises.'],
       ['An inductor’s reactance rises in proportion to the frequency.', 'An inductor’s reactance falls in proportion to the frequency.'],
@@ -341,7 +341,7 @@ const knowledge: Record<string, Facts> = {
       ['Resistance damps LC oscillations.', 'Resistance makes LC oscillations last for ever.'],
       ['The emf of an a.c. generator is zero when the plane of its coil is at right angles to the field.', 'The emf of an a.c. generator is largest when the plane of its coil is at right angles to the field.'],
       ['An a.c. generator’s output frequency equals the coil’s rate of rotation.', 'An a.c. generator’s output frequency equals twice the coil’s rate of rotation.'],
-      ['Slip rings carry an a.c. generator’s current to the outside circuit.', 'A cell carries an a.c. generator’s current to the outside circuit.'],
+      ['Slip rings carry an a.c. generator’s current to the outside circuit.', 'A split-ring commutator carries an a.c. generator’s current to the outside circuit.'],
     ],
     reason: [
       ['An a.c. supply is more dangerous than a d.c. supply of the same rms value.', 'The peak voltage of a.c. is √2 times its rms value.'],
@@ -351,7 +351,7 @@ const knowledge: Record<string, Facts> = {
       ['Heating depends on the rms value, not the average value of a.c.', 'Heating depends on I², which is positive in both half cycles.', 'The average of the current alone is zero over a cycle.'],
       ['Tuning a radio needs a circuit at resonance.', 'The current is largest at the frequency of the wanted station.', 'Other frequencies get much less current.'],
       ['A low power factor is unwanted in power lines.', 'The same power then needs a larger current, which wastes more energy in the wires.'],
-      ['A resonance circuit can’t use a very large resistance.', 'Large resistance gives a low, broad peak, which doesn’t select one frequency well.'],
+      ['A tuning circuit should have a low resistance.', 'A large resistance gives a low, broad peak, which can’t pick out one station.'],
     ],
     explain: [
       ['State the principle of an a.c. generator.', 'A coil turning in a magnetic field has a changing flux through it, which induces an alternating emf.'],
@@ -364,22 +364,21 @@ const knowledge: Record<string, Facts> = {
     ],
     compare: [
       ['rms value', 'peak value', ['The value that gives the same heating as a d.c. of that size.', 'The largest value reached in a cycle.'], ['Equal to I₀/√2.', 'Equal to √2 I_rms.'], ['Read by an a.c. meter.', 'Not read by an ordinary a.c. meter.']],
-      ['alternating current', 'direct current', ['Reverses direction regularly.', 'Flows in one direction.'], ['Is easily stepped up and down by transformers.', 'Can’t be stepped up by a transformer.'], ['Comes from a generator with slip rings.', 'Comes from a cell.']],
+      ['alternating current', 'direct current', ['Reverses direction regularly.', 'Flows in one direction.'], ['Is easily stepped up and down by transformers.', 'Can’t be stepped up by a transformer.'], ['Comes from a generator with slip rings.', 'Comes from a cell, or a generator with a split-ring commutator.']],
       ['resistance', 'reactance', ['Doesn’t depend on the frequency for a.c.', 'Depends on the frequency.'], ['Uses power, which appears as heat.', 'Uses no average power.']],
       ['a choke coil', 'a resistor', ['Limits a.c. with little power loss.', 'Limits a.c. with much power lost as heat.'], ['Has a low power factor.', 'Has a power factor of one.']],
     ],
     ar: [
       ['the heating effect of a.c.', 'Alternating current has a heating effect though its average over a cycle is zero.', 'Alternating current has no heating effect as its average over a cycle is zero.', 'Heating depends on the square of the current, which is never negative.', 'Heating depends on the direction of the current.', 'An a.c. ammeter reads the rms value.'],
-      ['the resonance of a tuning circuit', 'A series LCR circuit has its largest current at resonance.', 'A series LCR circuit has its smallest current at resonance.', 'The reactances cancel, so the impedance is at its smallest.', 'The reactances add, so the impedance is at its largest.', 'The power factor at resonance is one.'],
-      ['the capacitor in an a.c. circuit', 'A capacitor uses no net energy in an a.c. circuit.', 'A capacitor uses large amounts of net energy in an a.c. circuit.', 'It stores energy in one quarter cycle and returns it in the next.', 'The capacitor has infinite resistance at all frequencies.', 'A capacitor’s current leads its voltage by 90°.'],
+      ['the sharpness of resonance', 'A tuning circuit with a smaller resistance picks out one station better.', 'A tuning circuit with a larger resistance picks out one station better.', 'A smaller resistance gives a taller, narrower peak of current, so a higher Q factor.', 'A larger resistance makes the peak of current taller and narrower.', 'The resonant frequency doesn’t depend on the resistance.'],
+      ['the capacitor in an a.c. circuit', 'A capacitor uses no net energy in an a.c. circuit.', 'A capacitor uses large amounts of net energy in an a.c. circuit.', 'It stores energy in one quarter cycle and returns it in the next.', 'The capacitor has infinite resistance at all frequencies.', 'A capacitor’s reactance falls as the frequency rises.'],
       ['the LC oscillation', 'The current in an LC circuit is greatest when the capacitor has no charge.', 'The current in an LC circuit is greatest when the capacitor has its largest charge.', 'All the energy is then in the magnetic field of the inductor.', 'All the energy is then in the electric field of the capacitor.', 'The frequency of LC oscillations depends on L and C.'],
     ],
     links: [
       ['same', 'A pure inductor uses no', 'A pure capacitor uses no'],
-      ['cause', 'A resistor is the only part', 'A pure capacitor uses no'],
       ['same', 'A capacitor’s reactance falls', 'An inductor’s reactance rises'],
       ['same', 'Below its resonant frequency', 'Above its resonant frequency'],
-      ['same', 'An a.c. ammeter reads', 'The average of a sine wave'],
+      ['same', 'An a.c. ammeter reads', 'The rms value of a sinusoidal'],
       ['contrast', 'inductive reactance', 'capacitive reactance'],
       ['contrast', 'the rms value of an alternating current', 'the mean value of an alternating current'],
       ['contrast', 'the peak value of an alternating current', 'the mean value of an alternating current'],

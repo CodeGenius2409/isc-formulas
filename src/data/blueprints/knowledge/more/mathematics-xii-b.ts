@@ -214,7 +214,7 @@ const knowledge: Record<string, Facts> = {
       ['Each probability in a distribution must be:', 'between 0 and 1', 'greater than 1', 'negative', 'a whole number'],
       ['In Bayes’ theorem, the denominator is:', 'the total probability of the evidence', 'one', 'the sum of the priors alone', 'zero'],
       ['If two events are independent, P(A|B) and P(A) are:', 'equal', 'always 0', 'always 1', 'opposite'],
-      ['P(A ∪ B)′ is equal to:', 'P(A′ ∩ B′)', 'P(A′ ∪ B′)', 'P(A′) + P(B′)', 'P(A ∩ B)'],
+      ['P((A ∪ B)′) is equal to:', 'P(A′ ∩ B′)', 'P(A′ ∪ B′)', 'P(A′) + P(B′)', 'P(A ∩ B)'],
       ['If P(A′) = 0.3, P(A) is:', '0.7', '0.3', '1.3', '0'],
     ],
     truths: [
@@ -246,11 +246,9 @@ const knowledge: Record<string, Facts> = {
     links: [
       ['same', 'P(A|B) and P(B|A)', 'Conditional probability needs'],
       ['same', 'Independent events with', 'A and B independent means'],
-      ['same', 'In Bayes’ theorem, the events', 'The posterior probabilities'],
       ['same', 'The sum of probabilities of', 'A mean needn’t be'],
       ['contrast', 'mutually exclusive events', 'exhaustive events'],
       ['contrast', 'a prior probability', 'a posterior probability'],
-      ['contrast', 'a random variable', 'the mean of a random variable'],
       ['contrast', 'a partition of a sample space', 'exhaustive events'],
       ['contrast', 'the theorem of total probability', 'Bayes’ theorem'],
       ['contrast', 'independent events', 'mutually exclusive events'],

@@ -139,3 +139,16 @@ describe('links between facts', () => {
     }
   }
 });
+
+describe('a "distinguish" pair made from two definitions', () => {
+  it('shares the fact of a written comparison of the same pair', async () => {
+    const { loadBlueprints } = await import('../../src/data/blueprints');
+    const { generateItem } = await import('../../src/practice/gen/engine');
+    const set = await loadBlueprints('physics', 'XII');
+    const bp = set.byId.get('p12-3a-compare-linked')!;
+    const facts = new Set<string>();
+    for (let seed = 1; seed < 80; seed++) for (const f of generateItem(bp, seed, set.names(bp)).facts ?? []) facts.add(f);
+    expect(facts.has('p12-3a:an ammeter | a voltmeter')).toBe(true);
+    expect(facts.has('p12-3a:Biot–Savart law | Ampere’s circuital law')).toBe(true);
+  });
+});
