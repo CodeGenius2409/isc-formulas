@@ -199,7 +199,7 @@ const knowledge: Record<string, Facts> = {
       ['Zinc displaces copper from copper sulphate solution, but copper doesn’t displace zinc.', 'Zinc has a lower reduction potential than copper.', 'So it is more readily oxidised.'],
       ['Copper sulphate solution can’t be stored in a zinc vessel.', 'Zinc displaces copper from the solution, which damages the vessel.'],
       ['A cell’s emf can’t be measured accurately with a voltmeter that draws current.', 'Current through the cell’s internal resistance reduces the voltage at its terminals.'],
-      ['Doubling a half-reaction doesn’t double E°.', 'E° is a property per electron, and so doesn’t depend on amount.'],
+      ['In a cell made of two metals, the more reactive one is the anode.', 'It has the lower reduction potential.', 'So it is the one oxidised, giving electrons to the outer circuit.'],
       ['A Daniell cell stops working eventually.', 'Its emf falls as concentrations change, reaching zero at equilibrium.'],
       ['Gold doesn’t dissolve in dilute acid.', 'Its reduction potential is far above that of hydrogen.', 'So it can’t displace H⁺.'],
     ],
@@ -221,7 +221,6 @@ const knowledge: Record<string, Facts> = {
       ['the cell at equilibrium', 'A cell at equilibrium has an emf of zero.', 'A cell at equilibrium has its largest emf.', 'ΔG is zero at equilibrium, and ΔG = −nFE.', 'ΔG is largest at equilibrium.', 'A used-up cell can’t do electrical work.'],
     ],
     links: [
-      ['same', 'A cell’s emf falls', 'The Nernst equation shows'],
       ['same', 'Electrode potentials are intensive', 'ΔG is extensive'],
       ['same', 'Electrons flow from anode', 'Conventional current flows'],
       ['same', 'A metal with a lower reduction', 'A large positive E°'],

@@ -16,7 +16,7 @@ const knowledge: Record<string, Facts> = {
   },
   '2a': {
     ar: [
-      ['electrode signs', 'The anode of a galvanic cell is negative.', 'The anode of a galvanic cell is positive.', 'Oxidation there releases electrons onto the electrode.', 'Reduction there takes electrons from the electrode.', 'Electrons flow from anode to cathode through the wire.'],
+      ['electrode signs', 'The anode of a galvanic cell is negative.', 'The anode of a galvanic cell is positive.', 'Oxidation there releases electrons onto the electrode.', 'Reduction there takes electrons from the electrode.', 'Zinc is the anode of a Daniell cell.'],
       ['copper and acids', 'Copper doesn’t displace hydrogen from dilute acid.', 'Copper readily displaces hydrogen from dilute acid.', 'Its standard electrode potential is positive.', 'Its standard electrode potential is negative.', 'Zinc does displace hydrogen from dilute acid.'],
       ['the salt bridge', 'A salt bridge lets a Daniell cell keep working.', 'A salt bridge stops a Daniell cell from working.', 'It keeps both half-cells electrically neutral.', 'It carries electrons between the half-cells.', 'KCl is often used in a salt bridge.'],
     ],

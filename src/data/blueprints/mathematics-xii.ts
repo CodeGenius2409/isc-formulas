@@ -233,7 +233,7 @@ const blueprints: Blueprint[] = [
       { slip: 'multiplied by k only once', value: k * d },
       { slip: 'used k² whatever the order', value: k * k * d },
       { slip: 'added k', value: k + d },
-      { slip: 'raised d to the power', value: k * d ** n },
+      { slip: 'raised |A| to the power n, not k', value: k * d ** n },
     ] : [
       { slip: 'used |A|ⁿ', value: d ** n },
       { slip: 'took it to equal |A|', value: d },
@@ -625,17 +625,19 @@ const blueprints: Blueprint[] = [
     const degree = g.int(1, 3);
     const d = order === 1 ? '\\dfrac{dy}{dx}' : `\\dfrac{d^{${order}}y}{dx^{${order}}}`;
     const low = order === 1 ? 'y' : '\\dfrac{dy}{dx}';
-    return g.mcq(`The order and degree of ${$(`\\left(${d}\\right)^{${degree}} + ${low} = 0`)} are:`, `order ${order}, degree ${degree}`, [
+    const lhs = degree === 1 ? d : `\\left(${d}\\right)^{${degree}}`;
+    return g.mcq(`The order and degree of ${$(`${lhs} + ${low} = 0`)} are:`, `order ${order}, degree ${degree}`, [
       `order ${degree}, degree ${order}`,
       `order ${order + 1}, degree ${degree}`,
       `order ${order}, degree ${degree + 1}`,
-    ].filter((o) => o !== `order ${order}, degree ${degree}`));
+      `order ${order + 1}, degree ${degree + 1}`,
+    ].filter((o) => o !== `order ${order}, degree ${degree}`).slice(0, 3));
   }),
   custom('de-separable', [3, 'e', 3, 2], { type: 'numerical', format: 'numerical' }, (g) => {
     const k = g.int(1, 3);
     const y0 = g.int(1, 5);
     const x1 = g.int(1, 2);
-    return { form: 'numeric', text: `Solve ${$(`\\dfrac{dy}{dx} = ${k === 1 ? '' : k}y`)}, given ${$(`y = ${y0}`)} at ${$('x = 0')}, and find y at ${$(`x = ${x1}`)}, correct to two decimal places.`, parts: [g.answerPart('Value of y', y0 * Math.exp(k * x1), 3, [step('Separate the variables', `\\dfrac{dy}{y} = ${k}\\,dx`), step('Integrate', `\\log y = ${k}x + C`), step('Use the condition', `y = ${y0}e^{${k}x}`)])] };
+    return { form: 'numeric', text: `Solve ${$(`\\dfrac{dy}{dx} = ${k === 1 ? '' : k}y`)}, given ${$(`y = ${y0}`)} at ${$('x = 0')}, and find y at ${$(`x = ${x1}`)}, correct to two decimal places.`, parts: [g.answerPart('Value of y', y0 * Math.exp(k * x1), 3, [step('Separate the variables', `\\dfrac{dy}{y} = ${k}\\,dx`), step('Integrate', `\\log y = ${k === 1 ? '' : k}x + C`), step('Use the condition', `y = ${y0 === 1 ? '' : y0}e^{${k === 1 ? '' : k}x}`)])] };
   }),
   custom('de-linear', [3, 'e', 5, 3], { type: 'numerical', format: 'long' }, (g) => {
     const p = g.int(1, 3);
@@ -650,10 +652,10 @@ const blueprints: Blueprint[] = [
     const y2 = coef.mul(x2 ** (m + 1)).add(big.div(x2 ** p));
     return {
       form: 'numeric',
-      text: `Solve the linear differential equation ${$(`\\dfrac{dy}{dx} + \\dfrac{${p}}{x}y = ${c}${m === 0 ? '' : m === 1 ? 'x' : `x^{${m}}`}`)}, given ${$(`y = ${y1}`)} when ${$(`x = ${x1}`)}.`,
+      text: `Solve the linear differential equation ${$(`\\dfrac{dy}{dx} + \\dfrac{${p}}{x}y = ${c === 1 && m > 0 ? '' : c}${m === 0 ? '' : m === 1 ? 'x' : `x^{${m}}`}`)}, given ${$(`y = ${y1}`)} when ${$(`x = ${x1}`)}.`,
       parts: [
-        g.answerPart(`The power of x in the integrating factor`, p, 2, [step('Find the integrating factor', `e^{\\int \\frac{${p}}{x}dx} = x^{${p}}`)]),
-        g.answerPart(`Value of y when x = ${x2}`, y2.value, 3, [step('Multiply through and integrate', `x^{${p}}y = ${coef.tex()}x^{${m + p + 1}} + C`), step('Use the given condition', `C = ${big.tex()}`), step('Find y at the new x', `y(${x2}) = ${y2.tex()}`)], '', y2.text()),
+        g.answerPart(`The power of x in the integrating factor`, p, 2, [step('Find the integrating factor', `e^{\\int \\frac{${p}}{x}dx} = ${p === 1 ? 'x' : `x^{${p}}`}`)]),
+        g.answerPart(`Value of y when x = ${x2}`, y2.value, 3, [step('Multiply through and integrate', `${p === 1 ? 'x' : `x^{${p}}`}y = ${coef.tex()}x^{${m + p + 1}} + C`), step('Use the given condition', `C = ${big.tex()}`), step('Find y at the new x', `y(${x2}) = ${y2.tex()}`)], '', y2.text()),
       ],
     };
   }),
@@ -661,8 +663,9 @@ const blueprints: Blueprint[] = [
     const n0 = g.pick([100, 200, 500, 1000]);
     const hours = g.pick([2, 3, 4]);
     const ask = hours * g.pick([2, 3]);
-    const scene = g.pick(['A colony of bacteria in a lab dish', 'A patch of algae in a pond', 'A yeast culture in a fermenter']);
-    return { form: 'numeric', text: `${scene} grows at a rate proportional to its size. It starts at ${n0} and doubles every ${hours} hours. How large is it after ${ask} hours?`, parts: [g.answerPart('Size at that time', n0 * 2 ** (ask / hours), 3, [step('Set up and solve', `\\dfrac{dN}{dt} = kN \\Rightarrow N = N_0 e^{kt}`), step('Use the doubling time', `N = ${n0}\\cdot 2^{t/${hours}}`), step('Put in the time', `N(${ask}) = ${n0 * 2 ** (ask / hours)}`)])] };
+    const scene = g.pick(['A medicine in a patient’s blood', 'A pollutant in a lake that is being cleaned']);
+    const left = n0 / 2 ** (ask / hours);
+    return { form: 'numeric', text: `${scene} is removed at a rate proportional to the amount left. It starts at ${n0} mg and halves every ${hours} hours. How much is left after ${ask} hours?`, parts: [g.answerPart('Amount left, in mg', left, 3, [step('Set up and solve', `\\dfrac{dN}{dt} = -kN \\Rightarrow N = N_0 e^{-kt}`), step('Use the halving time', `N = ${n0}\\left(\\tfrac12\\right)^{t/${hours}}`), step('Put in the time', `N(${ask}) = ${left}`)])] };
   }),
   ...facts(3, 'e', {
     define: [

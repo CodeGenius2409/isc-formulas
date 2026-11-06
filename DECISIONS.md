@@ -365,3 +365,5 @@ Work is on a `rebuild` branch. `master` still holds your original files.
   CS binary trees: the syllabus lists the terms and three traversals only, so search trees and full and complete trees went.
 - **Review batch 12** (Chemistry XII conductance, Maths XII relations and functions, Physics XII atoms; 51 blueprints, 12 fixed). One question was wrong as worded: a single hydrogen atom gives at most n − 1 lines; the n(n − 1)/2 answer is for a sample. Electroplating now pairs each metal with its real ion.
   Open syllabus questions in `reports/syllabus-review.md` (radioactivity, polarisation, binomial): questions follow the 2028 syllabus, and blueprints wholly on such topics are flagged, not deleted. The formula book is left for you.
+- **Review batch 13** (Chemistry XII cells, Maths XII determinants and differential equations; 50 blueprints, 11 fixed). No errors of fact; every worked answer checks by hand. The fixes were presentation ("1x²", "(dy/dx)¹"), a repeated CBQ, and repeated or arguable facts.
+  Coefficients of 1 and terms of 0 are a recurring kind of slip, now fixed wherever a batch has met them.
