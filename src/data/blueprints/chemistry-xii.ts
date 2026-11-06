@@ -11,7 +11,7 @@ const { num, mcqNum, facts, custom, rest } = blueprintsFor('chemistry', 'XII', K
 /** Compound key and name, by family. Keys match src/data/generated/structures.json, which a test confirms. */
 const FAMILIES: Record<string, [string, string][]> = {
   haloalkanes: [['chloromethane', 'Chloromethane'], ['bromoethane', 'Bromoethane'], ['iodoethane', 'Iodoethane'], ['1-bromopropane', '1-Bromopropane'], ['2-bromopropane', '2-Bromopropane'], ['2-bromobutane', '2-Bromobutane'], ['tert-butyl-bromide', '2-Bromo-2-methylpropane'], ['chloroform', 'Trichloromethane']],
-  alcohols: [['methanol', 'Methanol'], ['ethanol', 'Ethanol'], ['propan-1-ol', 'Propan-1-ol'], ['propan-2-ol', 'Propan-2-ol'], ['tert-butanol', '2-Methylpropan-2-ol'], ['glycol', 'Ethane-1,2-diol'], ['benzyl-alcohol', 'Benzyl alcohol'], ['phenol', 'Phenol']],
+  alcohols: [['methanol', 'Methanol'], ['ethanol', 'Ethanol'], ['propan-1-ol', 'Propan-1-ol'], ['propan-2-ol', 'Propan-2-ol'], ['tert-butanol', '2-Methylpropan-2-ol'], ['glycol', 'Ethane-1,2-diol'], ['benzyl-alcohol', 'Benzyl alcohol']],
   ethers: [['diethyl-ether', 'Ethoxyethane'], ['anisole', 'Methoxybenzene'], ['mtbe', '2-Methoxy-2-methylpropane'], ['2-methylanisole', '2-Methylanisole'], ['4-nitroanisole', '4-Nitroanisole']],
   carbonyls: [['ethanal', 'Ethanal'], ['propanal', 'Propanal'], ['propanone', 'Propanone'], ['benzaldehyde', 'Benzaldehyde'], ['acetophenone', 'Acetophenone'], ['crotonaldehyde', 'But-2-enal'], ['3-nitrobenzaldehyde', '3-Nitrobenzaldehyde']],
   acids: [['formic-acid', 'Methanoic acid'], ['acetic-acid', 'Ethanoic acid'], ['propanoic-acid', 'Propanoic acid'], ['oxalic-acid', 'Ethanedioic acid'], ['benzoic-acid', 'Benzoic acid'], ['chloroacetic-acid', 'Chloroethanoic acid']],
@@ -35,7 +35,7 @@ interface Reaction {
   topic: string;
 }
 const NAME: Record<string, string> = Object.fromEntries(Object.values(FAMILIES).flat());
-Object.assign(NAME, { ethene: 'Ethene', propene: 'Propene', acetonitrile: 'Ethanenitrile', 'sodium-acetate': 'Sodium ethanoate', 'ethyl-acetate': 'Ethyl ethanoate', 'sodium-phenoxide': 'Sodium phenoxide', 'salicylic-acid': '2-Hydroxybenzoic acid', salicylaldehyde: '2-Hydroxybenzaldehyde', 'picric-acid': '2,4,6-Trinitrophenol', tribromophenol: '2,4,6-Tribromophenol', chlorobenzene: 'Chlorobenzene', iodobenzene: 'Iodobenzene', benzene: 'Benzene', nitrobenzene: 'Nitrobenzene', 'phenyl-isocyanide': 'Phenyl isocyanide', 'ethyl-isocyanide': 'Ethyl isocyanide', iodoform: 'Triiodomethane', methane: 'Methane', ethane: 'Ethane', toluene: 'Toluene', acetamide: 'Ethanamide', benzamide: 'Benzamide', propanenitrile: 'Propanenitrile', benzonitrile: 'Benzonitrile', diazonium: 'Benzenediazonium chloride', 'acetyl-chloride': 'Ethanoyl chloride', hydroxyazobenzene: '4-Hydroxyazobenzene', aminoazobenzene: '4-Aminoazobenzene', aldol: '3-Hydroxybutanal', 'sodium-benzoate': 'Sodium benzoate', 'sodium-formate': 'Sodium methanoate', methanal: 'Methanal', 'phthalic-anhydride': 'Phthalic anhydride', 'acetic-anhydride': 'Ethanoic anhydride', bromobenzene: 'Bromobenzene', 'cumene-hydroperoxide': 'Cumene hydroperoxide', cumene: 'Cumene', 'sodium-ethoxide': 'Sodium ethoxide' });
+Object.assign(NAME, { phenol: 'Phenol', ethene: 'Ethene', propene: 'Propene', acetonitrile: 'Ethanenitrile', 'sodium-acetate': 'Sodium ethanoate', 'ethyl-acetate': 'Ethyl ethanoate', 'sodium-phenoxide': 'Sodium phenoxide', 'salicylic-acid': '2-Hydroxybenzoic acid', salicylaldehyde: '2-Hydroxybenzaldehyde', 'picric-acid': '2,4,6-Trinitrophenol', tribromophenol: '2,4,6-Tribromophenol', chlorobenzene: 'Chlorobenzene', iodobenzene: 'Iodobenzene', benzene: 'Benzene', nitrobenzene: 'Nitrobenzene', 'phenyl-isocyanide': 'Phenyl isocyanide', 'ethyl-isocyanide': 'Ethyl isocyanide', iodoform: 'Triiodomethane', methane: 'Methane', ethane: 'Ethane', toluene: 'Toluene', acetamide: 'Ethanamide', benzamide: 'Benzamide', propanenitrile: 'Propanenitrile', benzonitrile: 'Benzonitrile', diazonium: 'Benzenediazonium chloride', 'acetyl-chloride': 'Ethanoyl chloride', hydroxyazobenzene: '4-Hydroxyazobenzene', aminoazobenzene: '4-Aminoazobenzene', aldol: '3-Hydroxybutanal', 'sodium-benzoate': 'Sodium benzoate', 'sodium-formate': 'Sodium methanoate', methanal: 'Methanal', 'phthalic-anhydride': 'Phthalic anhydride', 'acetic-anhydride': 'Ethanoic anhydride', bromobenzene: 'Bromobenzene', 'cumene-hydroperoxide': 'Cumene hydroperoxide', cumene: 'Cumene', 'sodium-ethoxide': 'Sodium ethoxide' });
 
 const REACTIONS: Reaction[] = [
   { from: 'bromoethane', reagent: 'aqueous KOH', to: 'ethanol', wrong: ['ethene', 'diethyl-ether', 'ethanal'], because: 'Aqueous hydroxide substitutes for the halogen, by nucleophilic substitution.', unit: 6, topic: 'a' },
@@ -124,6 +124,19 @@ const COMPLEXES: { f: string; name: string; ox: string; cn: number; hyb: string;
   { f: '[Cr(H₂O)₆]³⁺', name: 'hexaaquachromium(III) ion', ox: '+3', cn: 6, hyb: 'd²sp³', shape: 'octahedral', mag: 'paramagnetic', unp: 3, ligand: 'H₂O' },
   { f: '[Pt(NH₃)₂Cl₂]', name: 'diamminedichloridoplatinum(II)', ox: '+2', cn: 4, hyb: 'dsp²', shape: 'square planar', mag: 'diamagnetic', unp: 0, ligand: 'NH₃ and Cl⁻' },
 ];
+
+/** Wrong names a student might write: the wrong oxidation state, -ate in a cation or missing from an anion, and the wrong count of the first ligand. */
+const ATE: [string, string][] = [['ferrate', 'iron'], ['cobaltate', 'cobalt'], ['nickelate', 'nickel'], ['cuprate', 'copper'], ['zincate', 'zinc'], ['argentate', 'silver'], ['chromate', 'chromium'], ['platinate', 'platinum']];
+function nameSlips(name: string): string[] {
+  const roman = name.match(/\(([IV]+)\)/)![1];
+  const otherState = ({ I: 'II', II: 'III', III: 'II', IV: 'II' } as Record<string, string>)[roman] ?? 'II';
+  const state = name.replace(`(${roman})`, `(${otherState})`);
+  const anion = ATE.find(([ate]) => name.includes(`${ate}(`));
+  const cation = ATE.find(([, metal]) => name.includes(`${metal}(`));
+  const ate = anion ? name.replace(`${anion[0]}(`, `${anion[1]}(`) : cation ? name.replace(`${cation[1]}(`, `${cation[0]}(`) : name;
+  const count = name.replace(/^(di|tetra|hexa)/, (p) => ({ di: 'tetra', tetra: 'hexa', hexa: 'tetra' } as Record<string, string>)[p]);
+  return [state, ate, count];
+}
 
 const blueprints: Blueprint[] = [
   // ---- Unit 1: Solutions
@@ -649,7 +662,7 @@ const blueprints: Blueprint[] = [
   // ---- Unit 5: Coordination
   custom('complex-name', [5, 'a', 1, 1], { type: 'mcq', format: 'mcq' }, (g) => {
     const c = g.pick(COMPLEXES);
-    return g.mcq(`What is the IUPAC name of ${c.f}?`, c.name, g.sample(COMPLEXES.filter((x) => x !== c), 3).map((x) => x.name));
+    return g.mcq(`What is the IUPAC name of ${c.f}?`, c.name, nameSlips(c.name), { why: 'Ligands come first, in alphabetical order, then the metal, with -ate only in an anion, then its oxidation state.' });
   }),
   custom('complex-ox', [5, 'a', 1, 1], { type: 'mcq', format: 'mcq' }, (g) => {
     const c = g.pick(COMPLEXES);
@@ -704,7 +717,7 @@ const blueprints: Blueprint[] = [
     ],
     truths: [
       ['An octahedral complex has its t₂g set lower in energy than its e_g set.', 'An octahedral complex has its e_g set lower in energy than its t₂g set.'],
-      ['Square planar complexes can show geometrical isomerism.', 'Tetrahedral complexes commonly show geometrical isomerism.'],
+      ['Square planar complexes can show geometrical isomerism.', 'Square planar complexes can never show geometrical isomerism.'],
       ['EDTA is a hexadentate ligand.', 'EDTA is a monodentate ligand.'],
       ['Stability of a complex rises as the charge on the metal ion rises.', 'Stability of a complex falls as the charge on the metal ion rises.'],
     ],

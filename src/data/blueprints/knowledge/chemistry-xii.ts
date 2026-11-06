@@ -70,7 +70,7 @@ const knowledge: Record<string, Facts> = {
       ['the chelate effect', 'EDTA forms especially stable complexes.', 'EDTA forms only very weak complexes.', 'It is hexadentate, so it makes several rings around the metal.', 'It is monodentate, so it uses one bond.', 'A chelate has a ligand with two or more donor atoms.'],
       ['the spectrochemical series', '[Co(NH₃)₆]³⁺ is diamagnetic, while [CoF₆]³⁻ is paramagnetic.', '[Co(NH₃)₆]³⁺ is paramagnetic, while [CoF₆]³⁻ is diamagnetic.', 'NH₃ is a strong-field ligand, and F⁻ a weak-field one.', 'F⁻ is a strong-field ligand, and NH₃ a weak-field one.', 'A strong-field ligand gives a large crystal field splitting.'],
       ['the isomers of complexes', '[Pt(NH₃)₂Cl₂] has cis and trans isomers.', '[Pt(NH₃)₂Cl₂] has no isomers.', 'It is square planar.', 'It is tetrahedral.', 'Cisplatin is one of them, and is used against cancer.'],
-      ['the tetrahedral field', 'Tetrahedral complexes are nearly always high spin.', 'Tetrahedral complexes are nearly always low spin.', 'Their crystal field splitting is small, about 4/9 of the octahedral.', 'Their crystal field splitting is very large.', 'A tetrahedral complex has no d orbitals pointing right at its ligands.'],
+      ['the tetrahedral field', 'Tetrahedral complexes are nearly always high spin.', 'Tetrahedral complexes are nearly always low spin.', 'Their crystal field splitting is small, about 4/9 of the octahedral.', 'Their crystal field splitting is very large.', '[NiCl₄]²⁻ is a tetrahedral complex.'],
     ],
   },
   '6a': {

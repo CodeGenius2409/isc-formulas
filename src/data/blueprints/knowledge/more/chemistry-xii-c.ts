@@ -40,7 +40,7 @@ const knowledge: Record<string, Facts> = {
       ['Which reagent stops the oxidation of a primary alcohol at the aldehyde?', 'PCC', 'acidified KMnO₄', 'concentrated HNO₃', 'alkaline KMnO₄'],
       ['Which alcohol gives a yellow iodoform precipitate?', 'ethanol', 'methanol', 'propan-1-ol', 'butan-1-ol'],
       ['An alcohol with an acid forms an ester in the presence of:', 'concentrated H₂SO₄', 'NaOH', 'Na', 'NaCl'],
-      ['Drinking methanol can cause:', 'blindness', 'better sight', 'no harm at all', 'only mild sleepiness'],
+      ['Drinking methanol can cause:', 'blindness', 'only a mild headache', 'a rise in blood sugar', 'no harm, as the body excretes it unchanged'],
     ],
     truths: [
       ['Alcohols are weak acids that react with sodium.', 'Alcohols are strong acids that turn blue litmus red at once.'],
@@ -60,7 +60,7 @@ const knowledge: Record<string, Facts> = {
       ['Methanol is poisonous, even in small amounts.', 'Methanol is safe to drink in small amounts.'],
     ],
     reason: [
-      ['Ethanol is miscible with water.', 'It forms hydrogen bonds with water molecules.'],
+      ['Propan-2-ol boils lower than propan-1-ol.', 'Its branched molecules are more compact, with less surface for attractions between them.'],
       ['Dehydration of a tertiary alcohol is easier.', 'It goes through a tertiary carbocation, which is the most stable.'],
       ['Lucas’ reagent gives turbidity faster with a tertiary alcohol.', 'A tertiary carbocation forms most easily, so the chloride forms fast.'],
       ['Ethanol’s boiling point is higher than that of dimethyl ether.', 'Ethanol has hydrogen bonding between its molecules.', 'Dimethyl ether doesn’t, having no O–H bond.'],
@@ -68,7 +68,7 @@ const knowledge: Record<string, Facts> = {
       ['Commercial alcohol is denatured.', 'Added poison makes it unfit to drink, so it can be sold without drink taxes.'],
     ],
     explain: [
-      ['Write the mechanism of the dehydration of ethanol in three steps.', 'The alcohol is protonated to an oxonium ion.', 'It loses water to give a carbocation.', 'The carbocation loses H⁺ to give ethene.'],
+      ['Describe the Lucas test for primary, secondary and tertiary alcohols.', 'Shake the alcohol with anhydrous ZnCl₂ in concentrated HCl, at room temperature.', 'A tertiary alcohol turns cloudy at once, and a secondary one within about five minutes.', 'A primary alcohol stays clear at room temperature.'],
       ['Write the equation for sodium with ethanol.', '2C₂H₅OH + 2Na → 2C₂H₅ONa + H₂.'],
       ['Write the reaction of ethanol with ethanoic acid.', 'C₂H₅OH + CH₃COOH ⇌ CH₃COOC₂H₅ + H₂O, with concentrated H₂SO₄.'],
       ['Give two uses of ethanol and of methanol.', 'Ethanol: a solvent and a fuel.', 'Methanol: a raw material for methanal and a fuel additive.'],
@@ -89,7 +89,6 @@ const knowledge: Record<string, Facts> = {
       ['same', 'The dehydration of an alcohol', 'A carbocation is formed'],
       ['contrast', 'a primary alcohol', 'a tertiary alcohol'],
       ['contrast', 'a secondary alcohol', 'a tertiary alcohol'],
-      ['contrast', 'fermentation', 'esterification'],
     ],
   },
 

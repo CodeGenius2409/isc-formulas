@@ -351,3 +351,5 @@ Work is on a `rebuild` branch. `master` still holds your original files.
   The lens magnification used the mirror's m = −v/u, so the solver has the book's m = v/u for lenses.
 - **Review batch 5** (Maths XI trigonometry, Maths XII integrals, Physics XII cells and bridges; 47 blueprints, 6 fixed). These topics were sound: every standard integral, identity and value checks out. Kept: heights and distances in one Class XI CBQ, as it applies the definition of tan, which is in the syllabus.
   Fixed: near-repeats, an 8 V car battery, and working printed as "+ 0x² + 1x".
+- **Review batch 6** (Chemistry XII coordination compounds, haloalkanes, alcohols; 58 blueprints, 12 fixed). All three are in the syllabus as written, including Swarts, Finkelstein and Wurtz. The alcohols' chemistry is "of primary alcohols only", but telling primary, secondary and tertiary apart is listed, so oxidation and the Lucas test stay as tests.
+  The naming MCQ's distractors are now built from slips a student makes, not other complexes' names.
