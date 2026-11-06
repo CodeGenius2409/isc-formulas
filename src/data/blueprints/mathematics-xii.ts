@@ -691,7 +691,7 @@ const blueprints: Blueprint[] = [
       { slip: 'added instead of multiplying', value: a[0] + b[0] + a[1] + b[1] + a[2] + b[2] },
       { slip: 'forgot a term', value: a[0] * b[0] + a[1] * b[1] },
       { slip: 'ignored a sign', value: Math.abs(a[0] * b[0]) + Math.abs(a[1] * b[1]) + Math.abs(a[2] * b[2]) },
-      { slip: 'found the first two products only', value: a[1] * b[1] + a[2] * b[2] },
+      { slip: 'left out the first product', value: a[1] * b[1] + a[2] * b[2] },
     ], { digits: 4 });
   }),
   custom('magnitude', [4, 'a', 2, 1], { type: 'numerical', format: 'numerical' }, (g) => {
@@ -705,8 +705,8 @@ const blueprints: Blueprint[] = [
     const b0 = g.int(1, 4);
     const c = g.pick([1, 2]);
     const b1 = -(a[0] * b0 + a[1] * k * c) / a[2];
-    if (!Number.isInteger(b1)) g.retry();
-    return { form: 'numeric', text: `The vectors ${$(`${vecTex(a)}`)} and ${$(`${b0}\\hat{i} + ${c === 1 ? '' : c}\\lambda\\hat{j} ${signed(b1)}\\hat{k}`)} are perpendicular. Find ${$('\\lambda')}.`, parts: [g.answerPart('Value of λ', k, 2, [step('Set the dot product to zero', `${a[0] * b0} + ${a[1] * c}\\lambda ${signed(a[2] * b1)} = 0`, `\\lambda = ${k}`)])] };
+    if (!Number.isInteger(b1) || b1 === 0) g.retry();
+    return { form: 'numeric', text: `The vectors ${$(`${vecTex(a)}`)} and ${$(`${b0 === 1 ? '' : b0}\\hat{i} + ${c === 1 ? '' : c}\\lambda\\hat{j} ${b1 < 0 ? '-' : '+'} ${Math.abs(b1) === 1 ? '' : Math.abs(b1)}\\hat{k}`)} are perpendicular. Find ${$('\\lambda')}.`, parts: [g.answerPart('Value of λ', k, 2, [step('Set the dot product to zero', `${a[0] * b0} + ${a[1] * c}\\lambda ${signed(a[2] * b1)} = 0`, `\\lambda = ${k}`)])] };
   }),
   custom('cross-area', [4, 'a', 3, 2], { type: 'numerical', format: 'numerical' }, (g) => {
     const a = [g.int(1, 3), g.int(0, 3), g.int(0, 2)];
@@ -1195,8 +1195,8 @@ const blueprints: Blueprint[] = [
     const work = F[0] * d[0] + F[1] * d[1] + F[2] * d[2];
     return {
       form: 'numeric',
-      text: `A crane pulls a load with a force ${$(`\\vec F = ${vecTex(F)}`)} newtons, and moves it through ${$(`\\vec d = ${vecTex(d)}`)} metres.`,
-      parts: [g.answerPart('The work done, in joules', work, 2, [step('Take the dot product', `\\vec F \\cdot \\vec d = ${F[0]} \\times ${d[0]} + ${F[1]} \\times ${d[1]} + ${F[2]} \\times ${d[2]} = ${work}`)])],
+      text: `A crane pulls a load with a force ${$(`\\vec F = ${vecTex(F)}`)} kilonewtons, and moves it through ${$(`\\vec d = ${vecTex(d)}`)} metres.`,
+      parts: [g.answerPart('The work done, in kilojoules', work, 2, [step('Take the dot product', `\\vec F \\cdot \\vec d = ${F[0]} \\times ${d[0]} + ${F[1]} \\times ${d[1]} + ${F[2]} \\times ${d[2]} = ${work}`)])],
     };
   }),
   custom('cbq-drone-plane', [5, 'a', 3, 2], { type: 'numerical', format: 'cbq', style: 'cbq-style' }, (g) => {

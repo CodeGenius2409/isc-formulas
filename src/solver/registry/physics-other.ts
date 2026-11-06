@@ -74,6 +74,7 @@ export const PHYSICS_OTHER: SolverEntry[] = [
   { id: 'p-xii-1-86', topic: E, eq: 'V = W/q_0', vars: { V: 'potential|voltage', W: 'work done|energy', q_0: 'test charge|charge' } },
   { id: 'p-xii-1-90', topic: E, eq: 'U = q*V', vars: { U: 'potential energy|energy', q: 'charge|charge', V: 'potential|voltage' } },
   { id: 'p-xii-1-95', topic: E, eq: 'U = (1/(4*pi*eps0))*q_1*q_2/r', ask: 'U', vars: { U: 'potential energy|energy', eps0: 'c:eps0', q_1: 'first charge|charge', q_2: 'second charge|charge', r: 'separation|length' } },
+  { id: 'p-xii-1-25', topic: E, eq: 'C = K*eps0*A/d', vars: { C: 'capacitance|capacitance', K: 'dielectric constant|dielectric', eps0: 'c:eps0', A: 'plate area|area', d: 'plate separation|smallLength' } },
   { id: 'p-xii-1-121', topic: E, eq: 'C = (n - 1)*eps0*A/d', vars: { C: 'capacitance|capacitance', n: 'number of plates|count', eps0: 'c:eps0', A: 'plate area|area', d: 'plate separation|smallLength' } },
   { id: 'p-xii-1-135', topic: E, eq: 'u = sigma^2/(2*eps0)', vars: { u: 'energy density|energydensity', sigma: 'surface charge density|chargedensity', eps0: 'c:eps0' } },
   { id: 'p-xii-1-140', topic: E, eq: 'DeltaU = (C_1*C_2/(2*(C_1 + C_2)))*(V_1 - V_2)^2', ask: 'DeltaU', vars: { DeltaU: 'energy lost|energy', C_1: 'first capacitance|capacitance', C_2: 'second capacitance|capacitance', V_1: 'first voltage|voltage', V_2: 'second voltage|voltage' } },

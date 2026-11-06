@@ -353,3 +353,5 @@ Work is on a `rebuild` branch. `master` still holds your original files.
   Fixed: near-repeats, an 8 V car battery, and working printed as "+ 0x² + 1x".
 - **Review batch 6** (Chemistry XII coordination compounds, haloalkanes, alcohols; 58 blueprints, 12 fixed). All three are in the syllabus as written, including Swarts, Finkelstein and Wurtz. The alcohols' chemistry is "of primary alcohols only", but telling primary, secondary and tertiary apart is listed, so oxidation and the Lucas test stay as tests.
   The naming MCQ's distractors are now built from slips a student makes, not other complexes' names.
+- **Review batch 7** (Maths XII vectors, Physics XII potential and capacitance; 42 blueprints, 11 fixed). A wrong formula: the dielectric numerical used the n-plate capacitor formula with n = K, so its answers were too small. The solver now has C = Kε₀A/d from the book.
+  The syllabus says the parallel plate capacitance and energy stored are "No derivation, formulae only", though its detailed list says "obtain". The explicit note wins, as in Task 8, so those two derivations were replaced.

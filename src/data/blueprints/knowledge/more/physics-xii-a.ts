@@ -133,7 +133,7 @@ const knowledge: Record<string, Facts> = {
       ['Potential energy of a dipole in a uniform field is lowest when the angle between p and E is:', '0°', '90°', '180°', '45°'],
     ],
     truths: [
-      ['Electric potential is a scalar, so potentials add without regard to direction.', 'Electric potential is a vector, so potentials add by the parallelogram law.'],
+      ['Bringing two like charges closer together raises their potential energy.', 'Bringing two like charges closer together lowers their potential energy.'],
       ['The potential at a point can be zero where the electric field is not zero.', 'The electric field must be zero wherever the potential is zero.'],
       ['The electric field can be zero at a point where the potential isn’t zero.', 'The potential must be zero wherever the electric field is zero.'],
       ['The work done by an electrostatic field around a closed path is zero.', 'The work done by an electrostatic field around a closed path is always positive.'],
@@ -153,7 +153,7 @@ const knowledge: Record<string, Facts> = {
       ['The free charges of a conductor move to its surface under static conditions.', 'The free charges of a conductor gather at its centre under static conditions.'],
     ],
     reason: [
-      ['An electric field and an equipotential surface meet at right angles.', 'A part of the field along the surface would do work moving a charge along it, which can’t happen on an equipotential.'],
+      ['A charged conductor’s surface is an equipotential.', 'Under static conditions, there is no field along the surface, or charges would move.', 'So no work is done moving a charge between two points of it.'],
       ['The inside of a hollow charged conductor is at the same potential as its surface.', 'The field inside is zero.', 'So no work is done moving a test charge from the surface to any point within.'],
       ['Two conductors at different potentials share charge when they touch.', 'Positive charge flows from higher to lower potential.', 'It stops when they reach one potential.'],
       ['A dielectric raises capacitance rather than lowering it.', 'Its induced surface charges reduce the field between the plates.', 'So for the same charge, the potential difference is less, and C = Q/V is greater.'],
@@ -178,7 +178,7 @@ const knowledge: Record<string, Facts> = {
     ar: [
       ['potential and field at a point', 'The potential on the equatorial plane of a dipole is zero though the field there isn’t.', 'The field on the equatorial plane of a dipole is zero though the potential there isn’t.', 'The potentials of its two charges cancel there, while their fields add as vectors.', 'A dipole has no charge on its equatorial plane, so nothing can act there.', 'A dipole’s net charge is zero.'],
       ['the combination of capacitors', 'Capacitors in parallel have the same potential difference.', 'Capacitors in parallel have the same charge.', 'They are all joined across the same two points.', 'They are all joined one after another.', 'The total capacitance in parallel is the sum of the separate capacitances.'],
-      ['a dielectric in a charged capacitor', 'The energy in an isolated charged capacitor falls when a dielectric is put in.', 'The energy in an isolated charged capacitor rises when a dielectric is put in.', 'The charge is fixed and the capacitance rises, so Q²/(2C) falls.', 'The charge falls and the capacitance is fixed.', 'The potential difference across it falls too.'],
+      ['a dielectric in a charged capacitor', 'The energy in an isolated charged capacitor falls when a dielectric is put in.', 'The energy in an isolated charged capacitor rises when a dielectric is put in.', 'The charge is fixed and the capacitance rises, so Q²/(2C) falls.', 'The charge falls and the capacitance is fixed.', 'Mica and paper are common dielectrics.'],
     ],
     links: [
       ['same', 'Equipotential surfaces are closer', 'The field points in the direction'],

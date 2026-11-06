@@ -100,7 +100,7 @@ const blueprints: Blueprint[] = [
   num('dielectric', [1, 'b', 2, 2], {
     text: 'An air capacitor with plates of area {A} cm² and {D} mm apart has its gap filled with a material of dielectric constant {K}. Calculate its new capacitance.',
     vars: { A: [100, 400, 100], D: [1, 4, 1], K: [2, 8, 1] },
-    parts: [{ ask: 'New capacitance', use: 'p-xii-1-121', find: 'C', given: { n: 'K', A: 'A cm^2', d: 'D mm' }, unit: 'pF', marks: 2 }],
+    parts: [{ ask: 'New capacitance', use: 'p-xii-1-25', find: 'C', given: { K: 'K', A: 'A cm^2', d: 'D mm' }, unit: 'pF', marks: 2 }],
     diagram: (v) => ({ kind: 'capacitor', A: `${v.A} cm²`, d: `${v.D} mm`, dielectric: `K = ${v.K}` }),
   }),
   num('potential-work', [1, 'b', 2, 1], {
@@ -187,7 +187,7 @@ const blueprints: Blueprint[] = [
     reason: [
       ['The electric field is always at right angles to an equipotential surface.', 'A component along the surface would mean a potential difference along it.', 'But every point on the surface is at the same potential.'],
       ['A capacitor blocks a steady current once it is charged.', 'Its plates are separated by an insulator.', 'When its potential equals the supply’s, no more charge flows.'],
-      ['Putting a dielectric between a capacitor’s plates raises its capacitance.', 'Induced charges on the dielectric reduce the field between the plates.', 'A lower potential for the same charge means a larger capacitance.'],
+      ['The plates of a charged capacitor attract each other.', 'They carry equal and opposite charges.', 'Each plate sits in the field of the other, which pulls it towards the other plate.'],
     ],
     compare: [
       ['electric potential', 'electric field', ['A scalar.', 'A vector.'], ['Measured in volts.', 'Measured in V/m or N/C.'], ['Falls as 1/r for a point charge.', 'Falls as 1/r² for a point charge.']],
@@ -199,10 +199,10 @@ const blueprints: Blueprint[] = [
       ['Two equipotential surfaces can never cross.', 'Two equipotential surfaces can cross at right angles.'],
       ['Inside a charged conductor at equilibrium, the potential is the same everywhere.', 'Inside a charged conductor at equilibrium, the potential is zero everywhere.'],
     ],
-    figures: { 'Derive an expression for the capacitance of a parallel plate capacitor with air between its plates.': { kind: 'capacitor', A: 'A', d: 'd' } },
+    // The syllabus asks for the capacitance of a parallel plate capacitor and the energy stored as formulae only, with no derivation.
     long: [
-      ['Derive an expression for the capacitance of a parallel plate capacitor with air between its plates.', 'The field between the plates is E = σ/ε₀ = Q/(ε₀A).', 'The potential difference is V = Ed = Qd/(ε₀A).', 'So C = Q/V = ε₀A/d.'],
-      ['Derive an expression for the energy stored in a charged capacitor.', 'Moving a small charge dq against a potential q/C takes work dW = (q/C)dq.', 'Integrate from 0 to Q to get W = Q²/2C.', 'Using Q = CV, this is also ½CV², which is the stored energy.'],
+      ['Obtain an expression for the electric potential at a distance r from a point charge q.', 'The potential is the work done per unit charge in bringing a test charge from infinity, V = −∫ E · dr from ∞ to r.', 'With E = q/(4πε₀r²) along the line, V = −∫ q/(4πε₀r²) dr from ∞ to r.', 'This gives V = q/(4πε₀r).'],
+      ['Obtain the potential energy of an electric dipole in a uniform field, and say when it is least.', 'Turning the dipole from θ₀ to θ against the torque pE sin θ needs work W = pE(cos θ₀ − cos θ).', 'Taking U = 0 at θ₀ = 90° gives U = −pE cos θ.', 'It is least, −pE, when p points along E.'],
       ['Find the combined capacitance of capacitors in series and in parallel, and show which is larger for two equal capacitors.', 'In series, each carries the same charge and the potentials add.', 'So 1/C = 1/C₁ + 1/C₂.', 'In parallel, each has the same potential and the charges add.', 'So C = C₁ + C₂.', 'For two equal capacitors these give C/2 and 2C, so parallel is larger.'],
     ],
     draw: [

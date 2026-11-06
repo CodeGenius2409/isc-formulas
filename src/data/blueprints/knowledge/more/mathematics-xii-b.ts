@@ -66,7 +66,6 @@ const knowledge: Record<string, Facts> = {
       ['contrast', 'equal vectors', 'collinear vectors'],
       ['contrast', 'direction cosines of a vector', 'direction ratios of a vector'],
       ['contrast', 'a zero vector', 'a unit vector'],
-      ['contrast', 'the scalar product of two vectors', 'the vector product of two vectors'],
     ],
   },
 
