@@ -22,6 +22,9 @@ function planeTex(a: number, b: number, c: number, d: number): string {
 const $ = (tex: string) => `$${tex}$`;
 
 /** A one-mark question on an exact value. The wrong options are realistic slips, kept distinct. */
+/** One term of a polynomial in TeX, with no coefficient of 1 and nothing for 0. */
+const term = (k: Frac, power: string) => (k.n === 0 ? '' : `${k.n === k.d ? '' : k.tex()}${power}`);
+
 function mcqFrac(g: Gen, text: string, right: Frac, slips: Frac[], why?: string): Body {
   const seen = new Set([right.text()]);
   const wrong: string[] = [];
@@ -516,7 +519,7 @@ const blueprints: Blueprint[] = [
     const high = low + g.int(1, 3);
     const anti = (x: number) => frac(a, 3).mul(x ** 3).add(frac(b, 2).mul(x ** 2)).add(c * x);
     const ans = anti(high).sub(anti(low));
-    return { form: 'numeric', text: `Evaluate ${$(`\\int_{${low}}^{${high}} (${polyTex([[a, 2], [b, 1], [c, 0]])})\\,dx`)}.`, parts: [g.answerPart('The value', ans.value, 2, [step('Find an antiderivative', `F(x) = ${frac(a, 3).tex()}x^3 + ${frac(b, 2).tex()}x^2 + ${c}x`), step('Subtract at the limits', `F(${high}) - F(${low}) = ${ans.tex()}`)], '', ans.text())] };
+    return { form: 'numeric', text: `Evaluate ${$(`\\int_{${low}}^{${high}} (${polyTex([[a, 2], [b, 1], [c, 0]])})\\,dx`)}.`, parts: [g.answerPart('The value', ans.value, 2, [step('Find an antiderivative', `F(x) = ${[term(frac(a, 3), 'x^3'), term(frac(b, 2), 'x^2'), term(frac(c), 'x')].filter(Boolean).join(' + ')}`), step('Subtract at the limits', `F(${high}) - F(${low}) = ${ans.tex()}`)], '', ans.text())] };
   }),
   custom('definite-odd', [3, 'c', 1, 2], { type: 'mcq', format: 'mcq' }, (g) => {
     const a = g.int(1, 4);

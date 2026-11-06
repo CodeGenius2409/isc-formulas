@@ -391,7 +391,6 @@ const knowledge: Record<string, Facts> = {
       ['same', 'The integral from a to b of f(x)', 'The integral from 0 to a of f(x)'],
       ['contrast', 'an indefinite integral', 'a definite integral'],
       ['contrast', 'integration by substitution', 'integration by parts'],
-      ['contrast', 'a proper rational function', 'partial fractions'],
     ],
   },
 

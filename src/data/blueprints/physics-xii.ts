@@ -301,10 +301,10 @@ const blueprints: Blueprint[] = [
   num('short-circuit', [2, 'b', 2, 1], {
     variants: [
       { text: 'A cell of emf {E} V has an internal resistance of {R} Ω. Find the current if its terminals are joined by a thick wire of negligible resistance.', parts: [{ ask: 'Short-circuit current', use: 'p-xii-2-60', find: 'I_sc', given: { E_m: 'E V', r: 'R ohm' }, marks: 2 }] },
-      { text: 'A car battery of emf {E} V gives a short-circuit current of {S} A. Find its internal resistance.', parts: [{ ask: 'Internal resistance', use: 'p-xii-2-60', find: 'r', given: { E_m: 'E V', I_sc: 'S A' }, marks: 2 }] },
+      { text: 'A car battery of emf {B} V gives a short-circuit current of {S} A. Find its internal resistance.', parts: [{ ask: 'Internal resistance', use: 'p-xii-2-60', find: 'r', given: { E_m: 'B V', I_sc: 'S A' }, marks: 2 }] },
     ],
-
-    vars: { E: [2, 12, 2], R: [0.1, 1, 0.1], S: [20, 200, 20] },
+    // A car battery is 12 V, with an internal resistance of a few hundredths of an ohm.
+    vars: { E: [2, 12, 2], R: [0.1, 1, 0.1], B: [12, 12.6], S: [200, 600, 100] },
   }),
   num('energy-bill', [2, 'a', 3, 2], {
     style: 'cbq-style',

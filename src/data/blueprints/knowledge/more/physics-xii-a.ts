@@ -307,7 +307,7 @@ const knowledge: Record<string, Facts> = {
       ['With a potentiometer, the balance length is proportional to the:', 'potential difference measured', 'square of the potential difference', 'cross-section of the wire', 'galvanometer’s resistance'],
       ['Comparing emfs with a potentiometer uses:', 'E₁/E₂ = l₁/l₂', 'E₁/E₂ = l₂/l₁', 'E₁E₂ = l₁l₂', 'E₁ + E₂ = l₁ + l₂'],
       ['Most power is delivered to an external resistor when it equals the cell’s:', 'internal resistance', 'emf', 'terminal voltage', 'galvanometer’s resistance'],
-      ['A metre bridge is most accurate when its balance point is:', 'near the middle of the wire', 'near one end', 'beyond the wire', 'at the very start'],
+      ['The wire of a metre bridge must have a resistance per unit length that is:', 'the same all along it', 'largest at the middle', 'zero at the ends', 'largest at one end'],
     ],
     truths: [
       ['A cell’s emf doesn’t depend on the current it supplies.', 'A cell’s emf falls in proportion to the current it supplies.'],
@@ -323,7 +323,7 @@ const knowledge: Record<string, Facts> = {
       ['A potentiometer draws no current from the cell under test at balance.', 'A potentiometer draws the most current from the cell under test at balance.'],
       ['At balance, the galvanometer in a potentiometer circuit shows no deflection.', 'At balance, the galvanometer in a potentiometer circuit shows full-scale deflection.'],
       ['The potential drop along a uniform potentiometer wire is proportional to its length.', 'The potential drop along a uniform potentiometer wire is proportional to the square of its length.'],
-      ['A longer potentiometer wire gives more accurate readings for the same driving cell.', 'A shorter potentiometer wire gives more accurate readings for the same driving cell.'],
+      ['The potential gradient is the same all along a uniform potentiometer wire.', 'The potential gradient is largest at the start of a uniform potentiometer wire.'],
       ['The driving cell in a potentiometer must have a larger emf than the cell under test.', 'The driving cell in a potentiometer must have a smaller emf than the cell under test.'],
       ['A cell’s internal resistance is usually larger when it is old.', 'A cell’s internal resistance falls to zero as it ages.'],
     ],
