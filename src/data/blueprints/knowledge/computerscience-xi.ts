@@ -5,9 +5,9 @@ import MORE_A from './more/computerscience-xi-a';
 const knowledge: Record<string, Facts> = {
   '1a': {
     ar: [
-      ['hexadecimal and binary', 'Hexadecimal is often used for writing long binary values.', 'Hexadecimal makes binary values longer to write.', 'Each hexadecimal digit stands for four bits.', 'Each hexadecimal digit stands for one bit.', 'Hexadecimal uses the digits 0 to 9 and the letters A to F.'],
+      ['octal digits', '18 isn’t a valid octal number.', '18 is a valid octal number.', 'Octal uses only the digits 0 to 7.', 'Octal numbers must be even.', 'Decimal 8 is 10 in octal.'],
       ['2’s complement', 'Computers commonly use 2’s complement for negative numbers.', 'Computers commonly use a separate sign bit, and no complements, for all arithmetic.', 'Addition and subtraction can then share one circuit.', 'Each number then needs two separate circuits.', '2’s complement has only one form for zero.'],
-      ['the range of 8 bits', 'Eight bits in 2’s complement go from −128 to 127.', 'Eight bits in 2’s complement go from −255 to 255.', 'They give 256 values, with half of them negative.', 'They give 512 values.', 'An unsigned byte goes from 0 to 255.'],
+      ['the range of 8 bits', 'Eight bits in 2’s complement go from −128 to 127.', 'Eight bits in 2’s complement go from −255 to 255.', 'They give 256 values, with half of them negative.', 'They give 512 values.', 'The leftmost bit shows the sign.'],
     ],
   },
   '2a': {
@@ -41,7 +41,7 @@ const knowledge: Record<string, Facts> = {
   '5a': {
     ar: [
       ['references', 'Two reference variables can refer to one object.', 'Two reference variables must always refer to two different objects.', 'Assigning a reference copies the address, not the object.', 'Assigning a reference copies the object.', 'A change through one reference is seen through the other.'],
-      ['the garbage collector', 'A Java programmer doesn’t free memory by hand.', 'A Java programmer must free every object’s memory by hand.', 'The garbage collector reclaims objects with no references to them.', 'The JVM never reclaims any memory.', 'Objects are created on the heap.'],
+      ['the garbage collector', 'A Java programmer doesn’t free memory by hand.', 'A Java programmer must free every object’s memory by hand.', 'The garbage collector reclaims objects with no references to them.', 'The JVM never reclaims any memory.', 'Java has no delete operator.'],
       ['new and the constructor', 'The new operator always calls a constructor.', 'The new operator never calls a constructor.', 'A constructor sets up each object as it is created.', 'A constructor runs only when the object is deleted.', 'A class with no constructor gets a default one.'],
     ],
   },
@@ -75,7 +75,7 @@ const knowledge: Record<string, Facts> = {
   },
   '9a': {
     ar: [
-      ['pass by value', 'A method can’t change a caller’s int variable through its parameter.', 'A method can always change a caller’s int variable through its parameter.', 'Java passes a copy of a primitive value.', 'Java passes the variable itself.', 'A method can change the fields of an object passed to it.'],
+      ['the return statement', 'A method stops as soon as it runs a return statement.', 'A method goes on to its last line even after a return statement.', 'return sends control straight back to the caller.', 'return only stores the value for later.', 'A method can have more than one return statement.'],
       ['overloading', 'Two methods can have one name, if their parameter lists differ.', 'Two methods can have one name, if only their return types differ.', 'The compiler tells them apart by their parameters.', 'The compiler tells them apart by their return types alone.', 'Constructors can also be overloaded.'],
       ['static methods', 'A static method can be called with no object.', 'A static method can only be called on an object.', 'It belongs to the class.', 'It belongs to each object.', 'A static method can’t use this.'],
     ],

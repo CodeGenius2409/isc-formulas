@@ -383,3 +383,5 @@ Work is on a `rebuild` branch. `master` still holds your original files.
   Wurtz–Fittig stays as a pool fact: the 2023 paper asked it, and the 2028 wording ("basic idea") doesn't clearly drop it.
 - **Review batch 21** (CS XII adders and complexity, Chemistry XI ionic equilibrium, Chemistry XII diazonium salts; 48 blueprints, 19 fixed). Generated values are now cleaned to 12 figures before the solver reads them, so float noise no longer sets an answer's precision. The solver also brackets a value in standard form before a power.
   Both fixes are shared code, so they apply to every numerical, the solver screen included; tests/unit/solver-display.test.ts covers them.
+- **Review batch 22** (CS XI numbers, objects and methods, Chemistry XII nucleic acids; 46 blueprints, 19 fixed). 2's complement stays in CS XI 1a: the 2028 wording names subtraction in other bases, and complements are how it is taught.
+  Bisection stays in Methods, which names "finding roots of algebraic equations". The CS answers themselves (conversions, sums, outputs) all checked.

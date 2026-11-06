@@ -24,7 +24,7 @@ function convertQuestion(g: Gen, marks: 1 | 2): Body {
     const slips: [string, string][] = direction
       ? [
           [reversed, 'read the remainders from the top down'],
-          [Math.floor(value / base).toString(base).toUpperCase(), 'left out the last remainder'],
+          [Math.floor(value / base).toString(base).toUpperCase(), 'left out the first remainder'],
           [(value % base ** (shown.length - 1)).toString(base).toUpperCase(), 'left out the final quotient'],
           [(value + base).toString(base).toUpperCase(), 'carried one too many'],
         ]
@@ -118,8 +118,6 @@ const blueprints: Blueprint[] = [
     recall: [
       ['The base of the hexadecimal system is:', '16', '8', '10', '2'],
       ['The hexadecimal digit F stands for:', '15', '16', '14', '10'],
-      ['How many bits are used for each octal digit?', '3', '4', '2', '8'],
-      ['How many bits are used for each hexadecimal digit?', '4', '3', '8', '2'],
     ],
     reason: [
       ['Hexadecimal is often used instead of binary for writing addresses.', 'Each hexadecimal digit stands for four bits.', 'So long binary numbers become short and easy to read.'],
@@ -127,7 +125,6 @@ const blueprints: Blueprint[] = [
     truths: [
       ['Binary uses only the digits 0 and 1.', 'Binary uses the digits 0 to 2.'],
       ['Moving one place left in binary doubles the place value.', 'Moving one place left in binary triples the place value.'],
-      ['Eight bits can represent 256 values.', 'Eight bits can represent 128 values.'],
     ],
     compare: [
       ['binary', 'decimal', ['Base 2.', 'Base 10.'], ['Used inside computers.', 'Used by people every day.']],
@@ -274,7 +271,6 @@ const blueprints: Blueprint[] = [
       ['Without new, a declared object variable refers to no object.', 'Without new, a declared object variable refers to a default object.'],
     ],
     reason: [
-      ['Two reference variables can refer to one object.', 'Assigning a reference copies the address, not the object.'],
     ],
   }),
   ...facts(5, 'b', {
@@ -470,16 +466,15 @@ const blueprints: Blueprint[] = [
     recall: [
       ['A method that returns nothing has the return type:', 'void', 'null', 'int', 'empty'],
       ['Which statement sends a value back from a method?', 'return', 'send', 'break', 'give'],
-      ['The name of a constructor must match the:', 'class', 'first method', 'file only', 'package'],
     ],
     compare: [
       ['a constructor', 'a method', ['Has the same name as the class.', 'Can have any valid name.'], ['Has no return type.', 'Must have a return type, or void.']],
       ['call by value', 'call by reference', ['A copy of the value is passed.', 'A reference to the object is passed.'], ['Changes don’t reach the caller.', 'Changes to the object are seen by the caller.']],
     ],
     truths: [
-      ['Overloaded methods differ in their parameter lists.', 'Overloaded methods differ only in return type.'],
+      ['System.out.println is an overloaded method.', 'System.out.println can print only String values.'],
       ['Java supplies a default constructor if none is written.', 'Java never supplies a default constructor.'],
-      ['Primitive parameters in Java are passed by value.', 'Primitive parameters in Java are passed by reference.'],
+      ['A method can return an object.', 'A method can return only a primitive value.'],
     ],
     reason: [
       ['A method can’t change a caller’s int variable through its parameter.', 'Java passes a copy of a primitive value.', 'So changes stay inside the method.'],

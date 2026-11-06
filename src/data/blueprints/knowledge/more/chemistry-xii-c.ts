@@ -693,7 +693,6 @@ const knowledge: Record<string, Facts> = {
       ['Which bases are purines?', 'adenine and guanine', 'cytosine and thymine', 'uracil and cytosine', 'thymine and uracil'],
       ['In RNA, adenine pairs with:', 'uracil', 'thymine', 'guanine', 'cytosine'],
       ['The double helix of DNA was proposed by:', 'Watson and Crick', 'Rutherford and Soddy', 'Lewis and Langmuir', 'Bohr and Einstein'],
-      ['The two strands of DNA are held together by:', 'hydrogen bonds', 'peptide bonds', 'ionic bonds to sodium', 'metal bonds'],
       ['The two strands of DNA run:', 'in opposite directions', 'in the same direction', 'at right angles', 'in a circle, with no ends'],
       ['Most RNA is:', 'single-stranded', 'double-stranded', 'triple-stranded', 'made of amino acids'],
       ['In a DNA sample with 30% adenine, the percentage of guanine is:', '20%', '30%', '40%', '70%'],
@@ -715,18 +714,14 @@ const knowledge: Record<string, Facts> = {
       ['A three-base code in messenger RNA stands for one amino acid.', 'A single base in messenger RNA stands for one amino acid.'],
     ],
     reason: [
-      ['A purine always pairs with a pyrimidine in DNA.', 'This keeps the width of the helix the same, and allows the hydrogen bonds to fit.'],
       ['DNA is well suited to keep genetic information.', 'It is stable, and its two strands can be copied.'],
-      ['RNA can’t be a stable long-term store like DNA.', 'Its 2′-OH group makes it easier to hydrolyse.'],
       ['G≡C pairs make DNA harder to separate than A=T pairs.', 'They have three hydrogen bonds, not two.'],
     ],
     explain: [
       ['Name the two kinds of bases in nucleic acids, with examples.', 'Purines: adenine and guanine.', 'Pyrimidines: cytosine, thymine and uracil.'],
-      ['Give two differences of the sugar and bases between DNA and RNA.', 'DNA has deoxyribose, and RNA has ribose.', 'DNA has thymine, and RNA has uracil.'],
       ['Give the two functions of nucleic acids.', 'They pass on hereditary information.', 'They direct the making of proteins.'],
     ],
     ar: [
-      ['Chargaff’s equal amounts', 'In DNA, the amounts of adenine and thymine are about the same.', 'In DNA, the amounts of adenine and thymine are very different.', 'Adenine on one strand always pairs with thymine on the other.', 'Adenine always pairs with guanine.', 'Guanine pairs with cytosine.'],
     ],
     links: [
       ['same', 'In DNA, the number of purine', 'The ratio of adenine to thymine'],

@@ -1229,11 +1229,8 @@ const blueprints: Blueprint[] = [
     ],
     recall: [
       ['Which base is found in RNA, but not in DNA?', 'Uracil', 'Thymine', 'Adenine', 'Guanine'],
-      ['Which base is found in DNA, but not in RNA?', 'Thymine', 'Uracil', 'Adenine', 'Cytosine'],
-      ['In DNA, adenine pairs with:', 'thymine', 'guanine', 'cytosine', 'uracil'],
       ['In DNA, guanine pairs with:', 'cytosine', 'adenine', 'thymine', 'uracil'],
       ['The sugar in RNA is:', 'ribose', 'deoxyribose', 'glucose', 'fructose'],
-      ['Which of these is a purine base?', 'Adenine', 'Cytosine', 'Thymine', 'Uracil'],
     ],
     reason: [
       ['DNA strands are complementary.', 'Each base pairs with one partner only.', 'So the sequence on one strand fixes the sequence on the other.'],
@@ -1245,7 +1242,7 @@ const blueprints: Blueprint[] = [
     truths: [
       ['DNA is the genetic material of most living things.', 'RNA is the genetic material of most living things.'],
       ['Adenine and thymine are joined by two hydrogen bonds.', 'Adenine and thymine are joined by three hydrogen bonds.'],
-      ['Guanine and cytosine are joined by three hydrogen bonds.', 'Guanine and cytosine are joined by two hydrogen bonds.'],
+      ['Each nucleotide in DNA carries one of four bases.', 'Each nucleotide in DNA carries one of five bases.'],
     ],
   }),
   custom('oxidant-equations', [4, 'b', 2, 2], { type: 'reaction', format: 'short' }, (g) => {

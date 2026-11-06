@@ -175,8 +175,8 @@ const knowledge: Record<string, Facts> = {
   },
   '10d': {
     ar: [
-      ['base pairing', 'Adenine is equal in amount to thymine in DNA.', 'Adenine is equal in amount to guanine in DNA.', 'Each adenine pairs with a thymine on the other strand.', 'Each adenine pairs with another adenine on the other strand.', 'Guanine pairs with cytosine.'],
-      ['the differences of DNA and RNA', 'RNA has uracil in place of thymine.', 'RNA has thymine in place of uracil.', 'Its four bases are A, U, G and C.', 'Its four bases are A, T, G and C.', 'RNA has ribose as its sugar.'],
+      ['base pairing', 'Adenine is equal in amount to thymine in DNA.', 'Adenine is equal in amount to guanine in DNA.', 'Each adenine pairs with a thymine on the other strand.', 'Each adenine pairs with another adenine on the other strand.', 'Adenine is a purine.'],
+      ['the differences of DNA and RNA', 'RNA has uracil in place of thymine.', 'RNA has thymine in place of uracil.', 'Its four bases are A, U, G and C.', 'Its four bases are A, T, G and C.', 'Messenger RNA carries the code to the ribosome.'],
       ['the structure of DNA', 'DNA’s two strands hold together along their length.', 'DNA’s two strands aren’t joined.', 'Hydrogen bonds link its base pairs.', 'Peptide bonds link its base pairs.', 'The strands form a double helix.'],
     ],
   },
