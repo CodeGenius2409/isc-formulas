@@ -459,6 +459,12 @@ mark {
   white-space: nowrap;
 }
 
+.gen-unreviewed {
+  display: inline-flex;
+  gap: 0.25rem;
+  color: var(--ink-2);
+}
+
 .bank-body[data-generated],
 .paper-question[data-generated] {
   border-left: 2px dotted var(--ink-2);

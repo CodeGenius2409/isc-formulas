@@ -14,7 +14,7 @@ import { useStore } from '../lib/store';
 import type { BankItem, Difficulty } from '../practice/bank/types';
 import { answerLines, saveBlob, STUDENT_FOOTER } from '../practice/gen/docx';
 import { describePlan, generatedCount, planShare, teacherShareStore } from '../practice/gen/mix';
-import { allItems, answerSpace, arranged, bankForSections, buildFullPaper, capacityOf, buildQuestionSet, countAvailable, deleteItem, deletePaper, emptyFilters, FORMATS, makeSets, moveItem, moveItemTo, officialStructure, paperFromFile, paperToFile, presetsStore, regenerateItem, regenerateUnlocked, savePaper, savePreset, teacherHistoryStore, totalMarks, updateItem, avoidRecentStore, recentPaperFreshness, type CustomSection, type Filters, type FormatChoice, type PaperItem, type TeacherPaper } from '../practice/gen/teacher';
+import { allItems, answerSpace, arranged, bankForSections, buildFullPaper, capacityOf, buildQuestionSet, countAvailable, deleteItem, deletePaper, emptyFilters, FORMATS, makeSets, moveItem, moveItemTo, officialStructure, paperFromFile, paperToFile, presetsStore, regenerateItem, regenerateUnlocked, savePaper, savePreset, teacherHistoryStore, totalMarks, updateItem, avoidRecentStore, recentPaperFreshness, teacherReviewedOnlyStore, type CustomSection, type Filters, type FormatChoice, type PaperItem, type TeacherPaper } from '../practice/gen/teacher';
 
 const freshSeed = () => Math.floor(Math.random() * 2 ** 31);
 
@@ -534,13 +534,14 @@ export default function GeneratorView() {
   const [structureKind, setStructureKind] = useState<'official' | 'custom'>('official');
   const [custom, setCustom] = useState<CustomSection[]>([{ name: 'Section A', count: 10, marks: 1, formats: [] }, { name: 'Section B', count: 5, marks: 3, formats: [] }]);
   const avoid = useStore(avoidRecentStore);
+  const reviewedOnly = useStore(teacherReviewedOnlyStore);
   const [presetName, setPresetName] = useState('');
   const [paper, setPaper] = useState<TeacherPaper | null>(null);
   const [sets, setSets] = useState<TeacherPaper[]>([]);
   const [busy, setBusy] = useState(false);
   const [problem, setProblem] = useState('');
   const fileRef = useRef<HTMLInputElement>(null);
-  const effective = useMemo(() => ({ ...filters, share }), [filters, share]);
+  const effective = useMemo(() => ({ ...filters, share, reviewedOnly }), [filters, share, reviewedOnly]);
   const syllabus = useAsync(() => loadSyllabus(filters.subject), filters.subject);
   const label = getSubject(filters.subject).label;
   const isCs = filters.subject === 'computerscience';
@@ -549,7 +550,7 @@ export default function GeneratorView() {
     document.title = 'Generate questions: ISC Formula Book';
   }, []);
 
-  const available = useAsync(() => countAvailable(effective), JSON.stringify([effective.subject, effective.levels, effective.units, effective.topics, effective.formats, effective.styles, effective.difficulties, effective.marks, avoid]));
+  const available = useAsync(() => countAvailable(effective), JSON.stringify([effective.subject, effective.levels, effective.units, effective.topics, effective.formats, effective.styles, effective.difficulties, effective.marks, effective.reviewedOnly, avoid]));
 
   const structure = useMemo(() => (mode === 'paper' ? (structureKind === 'official' ? officialStructure(filters.subject, paperLevel) : custom) : []), [mode, structureKind, filters.subject, paperLevel, custom]);
   const sectionBank = useAsync(() => bankForSections(effective, paperLevel, structure), JSON.stringify([effective.subject, effective.units, effective.topics, effective.formats, effective.styles, effective.difficulties, paperLevel, structure, avoid]));
@@ -773,6 +774,9 @@ export default function GeneratorView() {
           )}
           <label className="switch-row mt-1">
             <input type="checkbox" checked={avoid} onChange={(e) => avoidRecentStore.set(e.target.checked)} /> Avoid facts used in my recent papers
+          </label>
+          <label className="switch-row mt-1">
+            <input type="checkbox" checked={reviewedOnly} onChange={(e) => teacherReviewedOnlyStore.set(e.target.checked)} /> Only reviewed questions
           </label>
         </section>
 

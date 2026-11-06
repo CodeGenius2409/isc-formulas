@@ -30,6 +30,8 @@ export interface GeneratedTag {
   seed: number;
   style: 'paper-style' | 'cbq-style';
   format: 'mcq' | 'assertion' | 'very-short' | 'short' | 'long' | 'numerical' | 'derivation' | 'reason' | 'distinguish' | 'diagram' | 'cbq' | 'output' | 'error' | 'program';
+  /** Its blueprint hasn't been read as a teacher would yet. */
+  unreviewed?: true;
 }
 
 /** One marking point. */

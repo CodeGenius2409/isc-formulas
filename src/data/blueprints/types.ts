@@ -68,6 +68,16 @@ export interface Blueprint {
   format: Format;
   style: Style;
   python?: 1;
+  /** Set when the class loads, from its file in reviews/. False until it has been read as a teacher would. */
+  reviewed?: boolean;
+  /** When it was read, and what was fixed. */
+  review?: { date: string; note: string };
+  /** Why it can't be made right yet. A flagged blueprint stays in use, marked as not yet reviewed. */
+  flag?: string;
   /** Builds one question from the generator's dice. It can call `g.retry()` for values that don't work out. */
   make(g: Gen): Body;
 }
+
+/** One blueprint's review: the date it was read, what was fixed, and, for one that can't be made right, why. */
+export type ReviewRow = readonly [date: string, note: string, flag?: string];
+export type Reviews = Record<string, ReviewRow>;

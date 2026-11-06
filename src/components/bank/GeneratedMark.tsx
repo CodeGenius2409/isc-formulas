@@ -4,6 +4,7 @@ import type { BankItem } from '../../practice/bank/types';
 import { reportProblem } from '../../practice/gen/report';
 
 export const GENERATED_NOTICE = 'Generated practice question. This is not an official ISC question and may contain mistakes.';
+export const UNREVIEWED_NOTICE = 'Not yet reviewed: the pattern behind this question hasn’t been read and checked line by line yet.';
 export const PAPER_NOTICE = 'This paper contains generated questions, marked with a die. They are not official ISC questions and may contain mistakes.';
 
 /** Beside the question number. Bank questions don't get one, so a glance is enough. */
@@ -13,6 +14,12 @@ export function GeneratedMark({ item }: { item: BankItem }) {
     <span className="gen-mark" data-testid="generated-mark" title={GENERATED_NOTICE}>
       <Dices size={14} aria-hidden /> Generated
       <span className="sr-only">. {GENERATED_NOTICE}</span>
+      {item.generated.unreviewed && (
+        <span className="gen-unreviewed" data-testid="unreviewed-mark" title={UNREVIEWED_NOTICE}>
+          <span aria-hidden>·</span> Not yet reviewed
+          <span className="sr-only">. {UNREVIEWED_NOTICE}</span>
+        </span>
+      )}
     </span>
   );
 }
@@ -29,13 +36,14 @@ export function GeneratedNote({ item }: { item: BankItem }) {
 }
 
 /** Shown once at the top of a paper with any generated questions, on screen and in print. */
-export function PaperLegend() {
+export function PaperLegend({ unreviewed = false }: { unreviewed?: boolean }) {
   return (
     <p className="gen-legend" data-testid="paper-legend">
       <span className="gen-mark">
         <Dices size={14} aria-hidden /> Generated
       </span>{' '}
       {PAPER_NOTICE}
+      {unreviewed && <> Those marked “Not yet reviewed” come from patterns that haven’t been checked line by line yet.</>}
     </p>
   );
 }

@@ -107,7 +107,7 @@ export function generateItem(bp: Blueprint, seed: number, names: Names): BankIte
         continue;
       }
       const marks = body.form === 'theory' || body.form === 'numeric' ? bp.marks : bp.marks;
-      const generated: GeneratedTag = { blueprint: bp.id, seed, style: bp.style, format: bp.format };
+      const generated: GeneratedTag = { blueprint: bp.id, seed, style: bp.style, format: bp.format, ...(bp.reviewed ? {} : { unreviewed: true as const }) };
       return {
         ...body,
         id: generatedId(bp.id, seed),

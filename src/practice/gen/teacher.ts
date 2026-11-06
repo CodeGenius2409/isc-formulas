@@ -47,6 +47,8 @@ export interface Filters {
   marks: number[];
   /** From 0 to 100. */
   share: number;
+  /** Only questions from blueprints that have been reviewed. Off unless chosen. */
+  reviewedOnly?: boolean;
 }
 
 export const emptyFilters = (subject: SubjectId = 'physics'): Filters => ({ subject, levels: [], units: [], topics: [], formats: [], styles: [], difficulties: [], marks: [], share: 50 });
@@ -88,7 +90,7 @@ function matches(item: { unit: number; topic: string; marks: number; difficulty:
 }
 
 const isDerivation = (type: BankType) => type === 'derivation' || type === 'proof';
-export const blueprintMatches = (bp: Blueprint, f: Filters): boolean => matches(bp, bp.level, isDerivation(bp.type) && f.formats.includes('derivation') ? 'derivation' : bp.format, bp.style, f);
+export const blueprintMatches = (bp: Blueprint, f: Filters): boolean => (!f.reviewedOnly || bp.reviewed === true) && matches(bp, bp.level, isDerivation(bp.type) && f.formats.includes('derivation') ? 'derivation' : bp.format, bp.style, f);
 export const bankMatches = (def: BankDef, level: ClassLevel, f: Filters): boolean => matches(def, level, bankFormat(def), bankStyle(def), f);
 
 async function loadSources(f: Filters): Promise<Source[]> {
@@ -655,6 +657,8 @@ export function deletePaper(id: string): void {
 }
 
 /** On by default. A teacher's saved papers are the history here, as a student's sittings aren't relevant to them. */
+/** Off by default: unreviewed blueprints stay in use, with their note. */
+export const teacherReviewedOnlyStore = createStore<boolean>(readJson<boolean>('isc-teacher-reviewed-only', false), (v) => writeJson('isc-teacher-reviewed-only', v));
 export const avoidRecentStore = createStore<boolean>(readJson<boolean>('isc-teacher-avoid-recent', true), (v) => writeJson('isc-teacher-avoid-recent', v));
 
 /** The facts used in the papers kept here, with when, so a new paper can prefer others. */

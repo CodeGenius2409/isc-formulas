@@ -193,7 +193,7 @@ export async function buildDocx(paper: TeacherPaper, kind: DocKind): Promise<Blo
   async function addQuestion(entry: PaperItem, n: number) {
     const q = entry.question.item;
     const text = entry.editedText ?? q.text;
-    const tag = q.generated ? ' (Generated)' : '';
+    const tag = q.generated ? (q.generated.unreviewed ? ' (Generated, not yet reviewed)' : ' (Generated)') : '';
     const marks = paper.options.showMarks ? ` [${q.marks}]` : '';
     if (kind === 'key') {
       body.push(new Paragraph({ spacing: { before: 200 }, children: [run(`Question ${n}${tag}`, { bold: true })] }));

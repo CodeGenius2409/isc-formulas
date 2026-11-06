@@ -293,3 +293,17 @@ Facts are the rows a topic’s questions are made from: definitions, recall ques
 | XII 8a Binary trees [Conceptual] (most asked) | 55 | 17 | 58 | 51 |
 | XII 9a Complexity and Big O notation (most asked) | 20 | 16 | 55 | 48 |
 <!-- /fact-counts -->
+
+## Task 2: every blueprint reviewed, in batches
+
+Each blueprint is read as an ISC teacher would: every fact correct and in the syllabus, the model answer complete and in marking-scheme style, the marks right, the wording clear, the values realistic, and the distractors plausible but definitely wrong. A few instances of each are generated and read, and for a blueprint made from a topic’s facts, every fact it can draw on is read. What can’t be confirmed from the syllabus is checked against a reliable reference. Batches go in order of how often their topic is asked in the papers.
+
+There are 2,211 blueprints now, not 1,484: Tasks 3, 6 and 8 added derivations, linked assertion–reason and “distinguish” blueprints, and blueprints for new kinds of facts. 429 counted as reviewed from the start: the 321 derivation blueprints checked in Task 8, and the 108 assertion–reason blueprints Task 3 rebuilt and re-read, in the topics where Task 6 didn’t add new concepts. The earlier spot check read about 320 blueprints, but didn’t record which, so those are read again.
+
+Each blueprint’s date and note are in `src/data/blueprints/reviews/`.
+
+<!-- review-progress -->
+| Batch | Topics | Blueprints reviewed | Problems found and fixed | Flagged | Reviewed so far, of 2,211 |
+|---:|---|---:|---|---:|---:|
+| 0 | Derivations (Task 8), assertion–reason (Task 3) | 429 | Checked in those tasks | 0 | 429 |
+<!-- /review-progress -->

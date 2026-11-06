@@ -1,0 +1,40 @@
+// Which of this class's blueprints have been read as a teacher would, when, and what was fixed. See reports/question-quality.md.
+import type { Reviews } from '../types';
+
+const reviews: Reviews = {
+  'c12-10c-assertion': ['2026-11-05', 'Task 3: rebuilt from concept nodes, so the reason is always about the assertion; every node re-read.'],
+  'c12-1a-dv-depression-freezing-ask': ['2026-11-05', 'Task 8: model derivation, steps and marks written from the syllabus; results checked by mathjs where they can be.'],
+  'c12-1a-dv-depression-freezing-hence': ['2026-11-05', 'Task 8: model derivation, steps and marks written from the syllabus; results checked by mathjs where they can be.'],
+  'c12-1a-dv-depression-freezing-step': ['2026-11-05', 'Task 8: model derivation, steps and marks written from the syllabus; results checked by mathjs where they can be.'],
+  'c12-1a-dv-elevation-boiling-ask': ['2026-11-05', 'Task 8: model derivation, steps and marks written from the syllabus; results checked by mathjs where they can be.'],
+  'c12-1a-dv-elevation-boiling-hence': ['2026-11-05', 'Task 8: model derivation, steps and marks written from the syllabus; results checked by mathjs where they can be.'],
+  'c12-1a-dv-elevation-boiling-step': ['2026-11-05', 'Task 8: model derivation, steps and marks written from the syllabus; results checked by mathjs where they can be.'],
+  'c12-1a-dv-osmotic-molar-mass-ask': ['2026-11-05', 'Task 8: model derivation, steps and marks written from the syllabus; results checked by mathjs where they can be.'],
+  'c12-1a-dv-osmotic-molar-mass-hence': ['2026-11-05', 'Task 8: model derivation, steps and marks written from the syllabus; results checked by mathjs where they can be.'],
+  'c12-1a-dv-osmotic-molar-mass-step': ['2026-11-05', 'Task 8: model derivation, steps and marks written from the syllabus; results checked by mathjs where they can be.'],
+  'c12-1a-dv-raoult-lowering-ask': ['2026-11-05', 'Task 8: model derivation, steps and marks written from the syllabus; results checked by mathjs where they can be.'],
+  'c12-1a-dv-raoult-lowering-step': ['2026-11-05', 'Task 8: model derivation, steps and marks written from the syllabus; results checked by mathjs where they can be.'],
+  'c12-2a-dv-gibbs-emf-ask': ['2026-11-05', 'Task 8: model derivation, steps and marks written from the syllabus; results checked by mathjs where they can be.'],
+  'c12-2a-dv-gibbs-emf-hence': ['2026-11-05', 'Task 8: model derivation, steps and marks written from the syllabus; results checked by mathjs where they can be.'],
+  'c12-2a-dv-gibbs-emf-step': ['2026-11-05', 'Task 8: model derivation, steps and marks written from the syllabus; results checked by mathjs where they can be.'],
+  'c12-2a-dv-nernst-k-ask': ['2026-11-05', 'Task 8: model derivation, steps and marks written from the syllabus; results checked by mathjs where they can be.'],
+  'c12-2a-dv-nernst-k-hence': ['2026-11-05', 'Task 8: model derivation, steps and marks written from the syllabus; results checked by mathjs where they can be.'],
+  'c12-2a-dv-nernst-k-step': ['2026-11-05', 'Task 8: model derivation, steps and marks written from the syllabus; results checked by mathjs where they can be.'],
+  'c12-2c-assertion': ['2026-11-05', 'Task 3: rebuilt from concept nodes, so the reason is always about the assertion; every node re-read.'],
+  'c12-3a-dv-half-life-first-ask': ['2026-11-05', 'Task 8: model derivation, steps and marks written from the syllabus; results checked by mathjs where they can be.'],
+  'c12-3a-dv-half-life-first-hence': ['2026-11-05', 'Task 8: model derivation, steps and marks written from the syllabus; results checked by mathjs where they can be.'],
+  'c12-3a-dv-half-life-first-step': ['2026-11-05', 'Task 8: model derivation, steps and marks written from the syllabus; results checked by mathjs where they can be.'],
+  'c12-3a-dv-integrated-first-ask': ['2026-11-05', 'Task 8: model derivation, steps and marks written from the syllabus; results checked by mathjs where they can be.'],
+  'c12-3a-dv-integrated-first-error': ['2026-11-05', 'Task 8: model derivation, steps and marks written from the syllabus; results checked by mathjs where they can be.'],
+  'c12-3a-dv-integrated-first-hence': ['2026-11-05', 'Task 8: model derivation, steps and marks written from the syllabus; results checked by mathjs where they can be.'],
+  'c12-3a-dv-integrated-first-step': ['2026-11-05', 'Task 8: model derivation, steps and marks written from the syllabus; results checked by mathjs where they can be.'],
+  'c12-3a-dv-integrated-zero-ask': ['2026-11-05', 'Task 8: model derivation, steps and marks written from the syllabus; results checked by mathjs where they can be.'],
+  'c12-3a-dv-integrated-zero-hence': ['2026-11-05', 'Task 8: model derivation, steps and marks written from the syllabus; results checked by mathjs where they can be.'],
+  'c12-3a-dv-integrated-zero-step': ['2026-11-05', 'Task 8: model derivation, steps and marks written from the syllabus; results checked by mathjs where they can be.'],
+  'c12-3b-assertion': ['2026-11-05', 'Task 3: rebuilt from concept nodes, so the reason is always about the assertion; every node re-read.'],
+  'c12-6c-assertion': ['2026-11-05', 'Task 3: rebuilt from concept nodes, so the reason is always about the assertion; every node re-read.'],
+  'c12-8b-assertion': ['2026-11-05', 'Task 3: rebuilt from concept nodes, so the reason is always about the assertion; every node re-read.'],
+  'c12-9b-assertion': ['2026-11-05', 'Task 3: rebuilt from concept nodes, so the reason is always about the assertion; every node re-read.'],
+};
+
+export default reviews;

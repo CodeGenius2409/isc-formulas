@@ -10,7 +10,7 @@ import { href, openWork, useRoute } from '../lib/router';
 import { useStore } from '../lib/store';
 import { isAttempted, scoreOf } from '../practice/bank/mark';
 import { loadBank } from '../practice/bank';
-import { abandonPaper, answerPaper, finishMarking, PAPER_MINUTES, paperHistoryStore, paperResult, paperSlots, paperSpec, paperStore, startPaper, submitPaper, type Paper, type PaperResult } from '../practice/bank/paper';
+import { abandonPaper, answerPaper, finishMarking, PAPER_MINUTES, paperHistoryStore, paperResult, paperReviewedOnlyStore, paperSlots, paperSpec, paperStore, startPaper, submitPaper, type Paper, type PaperResult } from '../practice/bank/paper';
 import { markFigures, paperDiagramsStore, type FigureMark } from '../practice/gen/figures';
 import { describePlan, paperShareStore, paperUsesGeneratedStore, planShare } from '../practice/gen/mix';
 import { SimPanel } from '../components/bank/SimPanel';
@@ -52,6 +52,7 @@ function PaperHome() {
   const useGenerated = useStore(paperUsesGeneratedStore);
   const share = useStore(paperShareStore);
   const diagrams = useStore(paperDiagramsStore);
+  const reviewedOnly = useStore(paperReviewedOnlyStore);
   const bank = useAsync(() => loadBank(subject, level), `${subject}-${level}`);
   const plan = bank.status === 'ready' ? planShare(paperSlots(subject, level, bank.value), useGenerated ? share : 0) : null;
   // Nothing can rule out the bank running short, even with the switch off.
@@ -61,7 +62,7 @@ function PaperHome() {
     setBusy(true);
     setProblem('');
     try {
-      await startPaper(subject, level, { share: shareOverride ?? (useGenerated ? (plan?.share ?? share) : needsGenerated ? plan!.share : 0), seed, diagrams });
+      await startPaper(subject, level, { share: shareOverride ?? (useGenerated ? (plan?.share ?? share) : needsGenerated ? plan!.share : 0), seed, diagrams, reviewedOnly: seed !== undefined ? q.get('reviewed') === '1' : reviewedOnly });
     } catch (e) {
       setProblem(e instanceof Error ? e.message : 'The paper could not be built.');
     }
@@ -121,6 +122,11 @@ function PaperHome() {
             <label className="switch-row mt-2">
               <input type="checkbox" checked={diagrams} onChange={(e) => paperDiagramsStore.set(e.target.checked)} /> Include diagrams
             </label>
+            {(useGenerated || needsGenerated) && (
+              <label className="switch-row mt-1">
+                <input type="checkbox" checked={reviewedOnly} onChange={(e) => paperReviewedOnlyStore.set(e.target.checked)} /> Only reviewed questions
+              </label>
+            )}
           </div>
           {linkedSeed !== undefined ? (
             <button type="button" className="btn btn-solid mt-3" disabled={busy} onClick={() => void start(linkedSeed, Number(q.get('share') ?? 0))}>
@@ -150,7 +156,7 @@ function PaperHome() {
                     </summary>
                     <ResultTables result={r} />
                     {r.seed !== undefined && (
-                      <a className="btn btn-line mt-2" href={href('paper', { subject: r.subject, level: r.level, seed: String(r.seed), share: String(r.generatedShare ?? 0) })}>
+                      <a className="btn btn-line mt-2" href={href('paper', { subject: r.subject, level: r.level, seed: String(r.seed), share: String(r.generatedShare ?? 0), ...(r.reviewedOnly ? { reviewed: '1' } : {}) })}>
                         Sit this paper again
                       </a>
                     )}
@@ -247,6 +253,11 @@ function PaperSheet({ paper, onFinished }: { paper: Paper; onFinished: (result: 
             {paper.repeatNote}
           </p>
         )}
+        {paper.reviewNote && !marking && (
+          <p className="notice mt-2" role="status" data-testid="review-note">
+            {paper.reviewNote}
+          </p>
+        )}
         {marking ? (
           <p className="mt-2 max-w-[65ch] text-ink-2">
             {paper.timedOut ? 'Time is up, so the paper was handed in. ' : ''}Multiple choice, numericals and program output are already marked. For each written answer, tick the points you earned, then finish below.
@@ -254,7 +265,7 @@ function PaperSheet({ paper, onFinished }: { paper: Paper; onFinished: (result: 
         ) : (
           <p className="mt-2 max-w-[65ch] text-ink-2">Write theory answers on paper. Your work is saved as you go, so you can leave and come back, but the clock keeps running.</p>
         )}
-        {anyGenerated && <PaperLegend />}
+        {anyGenerated && <PaperLegend unreviewed={paper.sections.some((s) => s.questions.some((q) => q.item.generated?.unreviewed))} />}
 
         {paper.sections.map((section) => (
           <section key={section.name} className="today-section" aria-label={section.name}>
