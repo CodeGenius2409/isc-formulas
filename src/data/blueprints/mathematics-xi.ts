@@ -122,8 +122,8 @@ const blueprints: Blueprint[] = [
     ],
     truths: [
       ['Every function is a relation.', 'Every relation is a function.'],
-      ['In a function, each input has exactly one output.', 'In a function, each input has many outputs.'],
-      ['The modulus function never gives a negative value.', 'The modulus function always gives a negative value.'],
+      ['Two functions are equal only if they have the same domain and the same rule.', 'Two functions are equal whenever they have the same rule, whatever their domains.'],
+      ['[x] = x exactly when x is an integer.', '[x] = x for every real number x.'],
     ],
     reason: [
       ['A circle isn’t the graph of a function of x.', 'Most values of x match two values of y.'],

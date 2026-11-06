@@ -69,7 +69,7 @@ function propositionQuestion(g: Gen): { text: string; answer: string; kind: stri
   const p = g.pick(PROPOSITIONS);
   const column = truthColumn(p.size, p.f);
   const kind = classify(column);
-  return { text: p.text, kind, answer: `The final column reads ${column.map((b) => (b ? 1 : 0)).join(', ')}, top to bottom.` };
+  return { text: p.text, kind, answer: `With the rows in order from all 0s to all 1s, the final column reads ${column.map((b) => (b ? 1 : 0)).join(', ')}.` };
 }
 
 /** Word problems: conditions in everyday words, with the rule computed into a truth table. */
@@ -344,7 +344,7 @@ const blueprints: Blueprint[] = [
   // ---- Unit 1: Boolean algebra and logic
   custom('prop-kind', [1, 'a', 1, 1], { type: 'mcq', format: 'mcq' }, (g) => {
     const q = propositionQuestion(g);
-    return g.mcq(`The proposition ${q.text} is a:`, q.kind, ['tautology', 'contradiction', 'contingency', 'an equivalence'].filter((k) => k !== q.kind).slice(0, 3), { why: q.answer });
+    return g.mcq(`The proposition ${q.text} is:`, `a ${q.kind}`, ['a tautology', 'a contradiction', 'a contingency', 'none of these'].filter((k) => k !== `a ${q.kind}`).slice(0, 3), { why: q.answer });
   }),
   custom('prop-table', [1, 'a', 2, 2], { type: 'short', format: 'short' }, (g) => {
     const q = propositionQuestion(g);
@@ -353,7 +353,7 @@ const blueprints: Blueprint[] = [
   custom('contrapositive', [1, 'a', 2, 1], { type: 'short', format: 'short' }, (g) => {
     const [p, q, notP, notQ] = g.pick([
       ['it rains', 'the match is cancelled', 'it doesn’t rain', 'the match isn’t cancelled'],
-      ['a number is even', 'it is divisible by 2', 'a number isn’t even', 'it isn’t divisible by 2'],
+      ['n is even', 'n is divisible by 2', 'n isn’t even', 'n isn’t divisible by 2'],
       ['the power fails', 'the alarm rings', 'the power doesn’t fail', 'the alarm doesn’t ring'],
       ['you pass the test', 'you get a certificate', 'you don’t pass the test', 'you don’t get a certificate'],
     ] as const);
@@ -398,9 +398,9 @@ const blueprints: Blueprint[] = [
     ],
     recall: [
       ['The contrapositive of p ⇒ q is:', '~q ⇒ ~p', 'q ⇒ p', '~p ⇒ ~q', 'p ⇒ ~q'],
-      ['p ⇒ q is false only when:', 'p is true and q is false', 'p is false and q is true', 'both are true', 'both are false'],
+      ['If p is true and q is false, the value of p ⇔ q is:', 'false', 'true', 'true only if r is true', 'neither true nor false'],
       ['A conditional and its contrapositive are:', 'logically equivalent', 'always opposite', 'unrelated', 'both tautologies'],
-      ['p ⇔ q is true when:', 'p and q have the same truth value', 'p is true and q is false', 'p is false and q is true', 'p and q differ'],
+      ['~(p ⇒ q) is equivalent to:', 'p ∧ ~q', '~p ∧ q', '~p ⇒ ~q', 'q ⇒ p'],
     ],
     truths: [
       ['A proposition’s converse isn’t always equivalent to it.', 'A proposition’s converse is always equivalent to it.'],

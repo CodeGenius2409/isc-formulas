@@ -590,29 +590,30 @@ const blueprints: Blueprint[] = [
     const a = g.int(1, 3);
     const h = g.int(1, 4);
     const area = frac(a * h ** 3, 3);
-    return { form: 'numeric', text: `Find the area bounded by ${$(`y = ${polyTex([[a, 2]])}`)}, the x-axis, and the lines ${$('x = 0')} and ${$(`x = ${h}`)}.`, parts: [g.answerPart('The area', area.value, 2, [step('Integrate', `\\int_0^{${h}} ${polyTex([[a, 2]])}\\,dx = \\left[${frac(a, 3).tex()}x^3\\right]_0^{${h}} = ${area.tex()}`)], 'sq. units', area.text())] };
+    return { form: 'numeric', text: `Find the area bounded by ${$(`y = ${polyTex([[a, 2]])}`)}, the x-axis, and the lines ${$('x = 0')} and ${$(`x = ${h}`)}.`, parts: [g.answerPart('The area', area.value, 2, [step('Integrate', `\\int_0^{${h}} ${polyTex([[a, 2]])}\\,dx = \\left[${term(frac(a, 3), 'x^3')}\\right]_0^{${h}} = ${area.tex()}`)], 'sq. units', area.text())] };
   }),
   custom('area-line-parabola', [3, 'd', 5, 3], { type: 'numerical', format: 'long' }, (g) => {
     const k = g.int(1, 4);
     const area = frac(k ** 3, 6);
+    const kx = k === 1 ? 'x' : `${k}x`;
     return {
       form: 'numeric',
-      text: `A region is bounded by the parabola ${$('y = x^2')} and the line ${$(`y = ${k}x`)}.`,
+      text: `A region is bounded by the parabola ${$('y = x^2')} and the line ${$(`y = ${kx}`)}.`,
       diagram: { kind: 'graph', x: 'x', y: 'y', lines: [{ label: 'y = x²', points: Array.from({ length: 21 }, (_, i) => { const t = (-0.2 + (i / 20) * (k + 0.4)); return [t, t * t] as [number, number]; }), smooth: 1 }, { label: `y = ${k === 1 ? '' : k}x`, points: [[-0.2, -0.2 * k], [k + 0.2, (k + 0.2) * k]] }] },
       parts: [
-        g.answerPart('x-coordinate where the two curves meet, other than the origin', k, 2, [step('Set them equal', `x^2 = ${k}x`, `x = 0 \\text{ or } x = ${k}`)]),
-        g.answerPart('Area of the region', area.value, 3, [step('Integrate the difference', `\\int_0^{${k}} (${k}x - x^2)\\,dx = ${area.tex()}`)], 'sq. units', area.text()),
+        g.answerPart('x-coordinate where the two curves meet, other than the origin', k, 2, [step('Set them equal', `x^2 = ${kx}`, `x = 0 \\text{ or } x = ${k}`)]),
+        g.answerPart('Area of the region', area.value, 3, [step('Integrate the difference', `\\int_0^{${k}} (${kx} - x^2)\\,dx = ${area.tex()}`)], 'sq. units', area.text()),
       ],
     };
   }),
   ...facts(3, 'd', {
     recall: [
       ['The area under a curve from x = a to x = b is found by:', 'integrating y with respect to x from a to b', 'differentiating y', 'multiplying y and x', 'finding the mean of y'],
-      ['When a curve lies below the x-axis, the integral of y over that stretch is:', 'negative', 'positive', 'zero', 'not defined'],
+      ['The area under y = x³ from 0 to 2 is:', '4', '8', '2', '16'],
     ],
     truths: [
       ['The area between two curves is the integral of the upper one minus the lower one.', 'The area between two curves is the integral of the lower one minus the upper one.'],
-      ['Area is always taken as a positive quantity.', 'Area can be reported as a negative quantity.'],
+      ['Integration gives a triangle’s area as half its base times its height.', 'Integration gives a triangle’s area as its base times its height.'],
       ['The area of a circle of radius r can be found by integration.', 'Integration can’t find the area of a circle.'],
     ],
     long: [
@@ -837,16 +838,19 @@ const blueprints: Blueprint[] = [
     const q = g.int(2, 6);
     const A = 2 * g.int(2, 6);
     const B = 2 * g.int(2, 6);
-    const corners = [[0, 0], [A, 0], [0, B], [g.int(1, A - 1), g.int(1, B - 1)]];
+    const corner = [g.int(1, A - 1), g.int(1, B - 1)];
+    // The fourth corner must lie beyond the line joining (A, 0) and (0, B), or the region isn’t convex.
+    if (corner[0] / A + corner[1] / B <= 1) g.retry('a region that isn’t convex');
+    const corners = [[0, 0], [A, 0], corner, [0, B]];
     const values = corners.map(([x, y]) => p * x + q * y);
     const best = Math.max(...values);
     return { form: 'numeric', text: `The feasible region of a linear programming problem has corner points ${corners.map((c) => `(${c})`).join(', ')}. Find the maximum of ${$(`Z = ${p}x + ${q}y`)}.`, parts: [g.answerPart('Maximum value of Z', best, 3, [step('Evaluate Z at each corner', ...corners.map((c, i) => `Z(${c}) = ${values[i]}`)), step('Take the largest', `Z_{\\max} = ${best}`)])] };
   }),
   custom('lp-word', [6, 'a', 5, 3], { type: 'numerical', format: 'cbq', style: 'cbq-style' }, (g) => {
-    const [thing, a, b] = g.pick([
-      ['A small workshop makes tables (T) and chairs (C)', 'tables', 'chairs'],
-      ['A bakery makes cakes (T) and loaves (C)', 'cakes', 'loaves'],
-      ['A farmer grows wheat (T) and maize (C), in hectares,', 'wheat', 'maize'],
+    const [intro, a, b, room, work, profit, scale] = g.pick([
+      ['A small workshop makes x tables and y chairs a week.', 'tables', 'chairs', (S: number) => `Each table or chair takes one unit of storage, and there are ${S} units.`, (L: number) => `A table takes 2 hours of labour and a chair takes 1, and there are ${L} hours.`, (P: string, Q: string) => `The profit is ₹${P} on a table and ₹${Q} on a chair.`, 100],
+      ['A bakery makes x cakes and y loaves for a fair.', 'cakes', 'loaves', (S: number) => `Each cake or loaf needs one tray, and there are ${S} trays.`, (L: number) => `A cake takes 2 hours of oven time and a loaf takes 1, and there are ${L} hours.`, (P: string, Q: string) => `The profit is ₹${P} on a cake and ₹${Q} on a loaf.`, 10],
+      ['A farmer plants x hectares of wheat and y hectares of maize.', 'hectares of wheat', 'hectares of maize', (S: number) => `There are ${S} hectares of land.`, (L: number) => `A hectare of wheat needs 2 days of labour and a hectare of maize needs 1, and there are ${L} days.`, (P: string, Q: string) => `The profit is ₹${P} on a hectare of wheat and ₹${Q} on a hectare of maize.`, 5000],
     ] as const);
     // x + y ≤ S, 2x + y ≤ L, x, y ≥ 0. Corners (0,0), (L/2,0), (L−S, 2S−L), (0,S).
     const S = g.int(6, 14);
@@ -862,11 +866,11 @@ const blueprints: Blueprint[] = [
     if (values.filter((v) => v === best).length > 1) g.retry('a tie for the best corner');
     return {
       form: 'numeric',
-      text: `${thing}. Each unit of either uses one unit of storage, and there are ${S} units of it. Each of ${a} takes 2 hours of labour, each of ${b} takes 1, and there are ${L} hours. Profit is ₹${P * 100} on each of ${a} and ₹${Q * 100} on each of ${b}. How many of each give the most profit?`,
+      text: `${intro} ${room(S)} ${work(L)} ${profit((P * scale).toLocaleString('en-IN'), (Q * scale).toLocaleString('en-IN'))} How many of each give the most profit?`,
       parts: [
         g.answerPart(`Number of ${a}`, at[0], 2, [step('Write the constraints', 'x + y \\le ' + S, '2x + y \\le ' + L, 'x, y \\ge 0'), step('Find the corners', ...corners.map((c) => `(${c})`))]),
-        g.answerPart(`Number of ${b}`, at[1], 1, [step('Compare Z at each corner', ...corners.map((c, i) => `Z(${c}) = ${values[i]}`))]),
-        g.answerPart('Largest profit, in rupees', best * 100, 2, [step('Multiply by the scale', `${best}\\times 100 = ${best * 100}`)]),
+        g.answerPart(`Number of ${b}`, at[1], 1, [step(`Compare Z = ${P}x + ${Q}y, in units of ₹${scale}, at each corner`, ...corners.map((c, i) => `Z(${c}) = ${values[i]}`))]),
+        g.answerPart('Largest profit, in rupees', best * scale, 2, [step('Multiply by the scale', `${best}\\times ${scale} = ${best * scale}`)]),
       ],
     };
   }),
@@ -874,6 +878,9 @@ const blueprints: Blueprint[] = [
     const p = g.int(2, 6);
     const q = g.int(2, 6);
     const corners = [[g.int(1, 3), g.int(5, 8)], [g.int(4, 6), g.int(3, 4)], [g.int(7, 9), g.int(1, 2)], [g.int(0, 1), g.int(1, 2)]];
+    // Every corner must turn the same way, going round, or one of them is inside the region.
+    const turns = corners.map((c, i) => { const [b, a] = [corners[(i + 1) % 4], corners[(i + 2) % 4]]; return (b[0] - c[0]) * (a[1] - b[1]) - (b[1] - c[1]) * (a[0] - b[0]); });
+    if (!turns.every((t) => t < 0)) g.retry('a region that isn’t convex');
     const values = corners.map(([x, y]) => p * x + q * y);
     const best = Math.max(...values);
     if (values.filter((v) => v === best).length > 1) g.retry('a tie for the best corner');

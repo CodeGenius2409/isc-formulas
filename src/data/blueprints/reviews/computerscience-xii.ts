@@ -2,7 +2,17 @@
 import type { Reviews } from '../types';
 
 const reviews: Reviews = {
-  'k12-1a-assertion': ['2026-11-05', 'Task 3: rebuilt from concept nodes, so the reason is always about the assertion; every node re-read.'],
+  'k12-1a-assertion': ['2026-11-06', 'Read again: the contrapositive node repeated the 2-mark reason, so it is now the rows of a truth table; the conditional’s “also true” line no longer repeats a recall.'],
+  'k12-1a-assertion-linked': ['2026-11-06', 'Read with samples; correct, no change needed.'],
+  'k12-1a-compare-linked': ['2026-11-06', 'Read with samples; correct, no change needed.'],
+  'k12-1a-contrapositive': ['2026-11-06', '“If it is divisible by 2, then a number is even” now reads “If n is divisible by 2, then n is even.”'],
+  'k12-1a-define': ['2026-11-06', 'Read with samples; correct, no change needed.'],
+  'k12-1a-explain1': ['2026-11-06', 'Read with samples; correct, no change needed.'],
+  'k12-1a-prop-kind': ['2026-11-06', '“is a: an equivalence” fixed; options are “a tautology”, “a contradiction”, “a contingency” and “none of these”. The truth column now says its row order.'],
+  'k12-1a-prop-table': ['2026-11-06', 'The final column now says its rows run from all 0s to all 1s.'],
+  'k12-1a-reason2': ['2026-11-06', 'The contrapositive was also an AR node with the same reason; that node is now the rows of a truth table.'],
+  'k12-1a-recall': ['2026-11-06', 'p ⇒ q false only when, p ⇔ q true when, p ⇒ q ≡ ~p ∨ q and p ⇔ q as two conditionals repeated the AR. Replaced with p ⇔ q’s value, ~(p ⇒ q), p ∨ F and ~(p ∨ ~q).'],
+  'k12-1a-truth': ['2026-11-06', 'p ⇔ q false when they differ, and the converse and inverse being equivalent, were said elsewhere. Now the idempotent law and when p ∨ q is false.'],
   'k12-1b-assertion': ['2026-11-05', 'Task 3: rebuilt from concept nodes, so the reason is always about the assertion; every node re-read.'],
   'k12-1b-assertion-linked': ['2026-11-06', 'Read with samples; correct, no change needed.'],
   'k12-1b-cbq-alarm-boolean': ['2026-11-06', 'Read with samples; correct, no change needed.'],

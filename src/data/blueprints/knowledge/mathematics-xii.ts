@@ -55,7 +55,7 @@ const knowledge: Record<string, Facts> = {
   },
   '3d': {
     ar: [
-      ['areas', 'An area is taken as positive.', 'An area can be left as negative.', 'A definite integral under the x-axis comes out negative, so its modulus is taken.', 'A definite integral is always positive.', 'The area between two curves is the integral of the upper minus the lower.'],
+      ['the area of a triangle', 'The area under y = x from 0 to a is a²/2.', 'The area under y = x from 0 to a is a².', 'The region is a right triangle with base a and height a.', 'The integral of x is x².', 'Area is measured in square units.'],
       ['a symmetrical region', 'The area of a circle can be found as four times one quadrant.', 'The area of a circle can be found only by adding many small squares.', 'A circle is symmetric about both axes.', 'A circle is symmetric about no axis.', 'The area of a circle of radius a is πa².'],
       ['the limits of integration', 'To find the area between a curve and a line, first find where they meet.', 'The area between a curve and a line can always use the limits 0 and 1.', 'The points where they meet give the limits of the integral.', 'The points where they meet give the upper curve.', 'y = x² and y = x meet at x = 0 and x = 1.'],
     ],

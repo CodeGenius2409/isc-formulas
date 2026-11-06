@@ -375,3 +375,5 @@ Work is on a `rebuild` branch. `master` still holds your original files.
   CS was sound: every gate count, address and program output checks. "A AND gate" now reads "an AND gate", in Class XI too.
 - **Review batch 17** (Physics XII EM waves, Chemistry XII K₂Cr₂O₇/KMnO₄ and amines; 46 blueprints, 10 fixed). Name-it answers now say "Kolbe's reaction", "esterification" and "the Sandmeyer reaction", and keep the capital in N-phenylethanamide.
   Most problems were facts said twice across a topic's blueprints; the chemistry itself was right.
+- **Review batch 18** (CS XII propositional logic, Maths XI relations and functions, Maths XII areas and linear programming; 43 blueprints, 21 fixed, 1 flagged). LP corner sets are now always convex, and the word problem has realistic profits.
+  One-one proofs are Class XII syllabus, so the Class XI one is flagged, not removed. Repeats across a topic's recall, truths and AR were the main problem.

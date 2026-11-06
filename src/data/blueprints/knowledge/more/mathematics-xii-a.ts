@@ -405,7 +405,7 @@ const knowledge: Record<string, Facts> = {
     recall: [
       ['The area under y = x from 0 to 2 is:', '2', '4', '1', '8'],
       ['The area under y = x² from 0 to 3 is:', '9', '27', '3', '6'],
-      ['The area under y = sin x from 0 to π is:', '2', '0', '1', 'π'],
+      ['The area under y = 2x from 1 to 3 is:', '8', '9', '6', '4'],
       ['The area under y = eˣ from 0 to 1 is:', 'e − 1', 'e', '1', 'e + 1'],
       ['The area under y = 1/x from 1 to e is:', '1', 'e', 'e − 1', '1/e'],
       ['The area under y = √x from 0 to 1 is:', '2/3', '1/2', '1', '3/2'],
@@ -424,18 +424,18 @@ const knowledge: Record<string, Facts> = {
     truths: [
       ['An integral over a part where the curve is below the x-axis is negative.', 'An integral over a part where the curve is below the x-axis is positive.'],
       ['Areas above and below the x-axis must be found apart, and added as sizes.', 'Areas above and below the x-axis can always be found with one integral.'],
-      ['The area between curves uses the upper curve minus the lower curve.', 'The area between curves uses the lower curve minus the upper curve.'],
+      ['An area found with horizontal strips equals the same area found with vertical strips.', 'An area found with horizontal strips is always larger than with vertical strips.'],
       ['A symmetrical region’s area can be found from one part, then multiplied.', 'A symmetrical region’s area can’t be found from any one part.'],
       ['An ellipse’s area reduces to a circle’s, when a = b.', 'An ellipse’s area reduces to a parabola’s, when a = b.'],
-      ['The limits of integration come from where the curves meet.', 'The limits of integration are always 0 and 1.'],
+      ['The area between a curve and the x-axis is unchanged when the curve is reflected in the x-axis.', 'The area between a curve and the x-axis doubles when the curve is reflected in the x-axis.'],
     ],
     explain: [
       ['Write the steps for the area between two curves.', 'Find where the curves meet.', 'Decide which is above.', 'Integrate the difference between the limits.'],
-      ['Find the area of one loop of y = sin x, in brief.', 'Integrate from 0 to π.', 'The value is 2.'],
+      ['Find the area of one arch of y = sin x, in brief.', 'Integrate from 0 to π.', 'The value is 2.'],
     ],
     links: [
       ['cause', 'Areas above and below', 'An integral over a part'],
-      ['same', 'The area between curves', 'The limits of integration come'],
+      ['same', 'An area found with horizontal', 'The area between a curve and the x-axis is unchanged'],
       ['same', 'A symmetrical region’s', 'An ellipse’s area reduces'],
       ['contrast', 'a horizontal strip', 'a vertical strip'],
       ['contrast', 'the area under a curve', 'the area between two curves'],

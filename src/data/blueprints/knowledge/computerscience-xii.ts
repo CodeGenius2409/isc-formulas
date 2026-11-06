@@ -5,9 +5,9 @@ import MORE_A from './more/computerscience-xii-a';
 const knowledge: Record<string, Facts> = {
   '1a': {
     ar: [
-      ['the conditional', 'p ⇒ q is false only when p is true and q is false.', 'p ⇒ q is false whenever p is false.', 'A promise is broken only if its condition holds and its result doesn’t.', 'A promise is broken whenever its condition fails.', 'p ⇒ q is equivalent to ~p ∨ q.'],
+      ['the conditional', 'p ⇒ q is false only when p is true and q is false.', 'p ⇒ q is false whenever p is false.', 'A promise is broken only if its condition holds and its result doesn’t.', 'A promise is broken whenever its condition fails.', 'p ⇒ q is read as “p implies q”.'],
       ['the biconditional', 'p ⇔ q is true when p and q have the same truth value.', 'p ⇔ q is true when p and q have different truth values.', 'p ⇔ q means p ⇒ q and q ⇒ p both hold.', 'p ⇔ q means neither p ⇒ q nor q ⇒ p holds.', 'XNOR behaves in the same way.'],
-      ['the contrapositive', 'A statement and its contrapositive always agree.', 'A statement and its inverse always agree.', 'p ⇒ q and ~q ⇒ ~p are false in the same case, and no other.', 'p ⇒ q and ~p ⇒ ~q are false in the same case, and no other.', 'The converse and the inverse agree with each other.'],
+      ['the rows of a truth table', 'A truth table for 4 variables has 16 rows.', 'A truth table for 4 variables has 8 rows.', 'Each variable doubles the number of combinations, giving 2⁴.', 'Each variable adds two rows.', 'A contradiction has 0 in every row of its final column.'],
     ],
   },
   '1b': {
