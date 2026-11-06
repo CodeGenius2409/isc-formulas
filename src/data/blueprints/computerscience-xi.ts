@@ -168,7 +168,7 @@ const blueprints: Blueprint[] = [
     ];
     const p = g.pick(list);
     const col = truthColumn(2, p.f);
-    return g.theory(`Draw a truth table for ${p.text}, and say whether it is a tautology, a contradiction or a contingency.`, [`The final column reads ${col.map((b) => (b ? 1 : 0)).join(', ')}, top to bottom.`, `It is a ${classify(col)}.`]);
+    return g.theory(`Draw a truth table for ${p.text}, and say whether it is a tautology, a contradiction or a contingency.`, [`With the rows in order from all 0s to all 1s, the final column reads ${col.map((b) => (b ? 1 : 0)).join(', ')}.`, `It is a ${classify(col)}.`]);
   }),
   custom('gate-xi', [3, 'b', 1, 1], { type: 'mcq', format: 'mcq' }, (g) => {
     const gates: [string, (a: number, b: number) => number][] = [['AND', (a, b) => a & b], ['OR', (a, b) => a | b], ['NAND', (a, b) => 1 - (a & b)], ['NOR', (a, b) => 1 - (a | b)], ['XOR', (a, b) => a ^ b]];
@@ -198,13 +198,11 @@ const blueprints: Blueprint[] = [
       ['a truth table', 'A table of a logical expression’s value, for every combination of its inputs.'],
     ],
     recall: [
-      ['p ∧ q is true when:', 'both are true', 'either is true', 'neither is true', 'p is false'],
-      ['p ∨ q is false when:', 'both are false', 'both are true', 'p is true', 'q is true'],
       ['~(~p) is equivalent to:', 'p', '~p', 'a contradiction', 'a tautology'],
     ],
     truths: [
       ['A tautology is always true.', 'A tautology is always false.'],
-      ['A conditional is false only if a true statement implies a false one.', 'A conditional is false only if a false statement implies a true one.'],
+      ['A biconditional is true when both its parts are false.', 'A biconditional is false when both its parts are false.'],
       ['Two variables need a truth table of four rows.', 'Two variables need a truth table of eight rows.'],
     ],
     reason: [
@@ -700,12 +698,12 @@ const blueprints: Blueprint[] = [
   // ---- Real-life questions.
   custom('cbq-door-logic', [3, 'a', 2, 2], { type: 'short', format: 'cbq', style: 'cbq-style' }, (g) => {
     const [name, on, why] = g.pick([
-      ['AND', 'both A and B are 1', 'Only when both inputs are 1 does an AND gate give 1.'],
-      ['OR', 'at least one of A and B is 1', 'An OR gate gives 1 when any input is 1.'],
-      ['NAND', 'A and B aren’t both 1', 'A NAND gate gives 0 only when both inputs are 1.'],
-      ['XOR', 'A and B differ', 'An XOR gate gives 1 only when its inputs differ.'],
+      ['∧, the conjunction A ∧ B', 'both A and B are true', 'A ∧ B is true only when both A and B are true.'],
+      ['∨, the disjunction A ∨ B', 'at least one of A and B is true', 'A ∨ B is false only when both A and B are false.'],
+      ['⇔, the biconditional A ⇔ B', 'A and B are both true or both false', 'A ⇔ B is true exactly when A and B have the same truth value.'],
+      ['⇒, the conditional A ⇒ B', 'it isn’t the case that A is true and B is false', 'A ⇒ B is false only when A is true and B is false.'],
     ]);
-    return g.theory(`A lift’s motor should run when ${on}, where A and B are two sensors. (i) Which gate does this? (ii) Give a reason.`, [[`(i) ${name}.`, 1], [`(ii) ${why}`, 1]]);
+    return g.theory(`A lift’s motor should run when ${on}, where A and B are statements read from two sensors. (i) Which connective joins A and B to give this? (ii) Give a reason.`, [[`(i) ${name}.`, 1], [`(ii) ${why}`, 1]]);
   }),
   custom('cbq-fee-loop', [8, 'a', 2, 2], { type: 'output', format: 'cbq', style: 'cbq-style' }, (g) => {
     const fee = g.pick([100, 200, 500]);

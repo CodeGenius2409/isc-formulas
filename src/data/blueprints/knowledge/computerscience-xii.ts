@@ -48,15 +48,15 @@ const knowledge: Record<string, Facts> = {
   },
   '4b': {
     ar: [
-      ['strings are objects', 'equals() is used to compare the contents of two Strings.', '== is used to compare the contents of two Strings.', 'String is a class, and == compares references.', 'String is a primitive type, and == compares its characters.', 'equalsIgnoreCase() ignores capitals.'],
-      ['substring', 's.substring(1, 3) has two characters.', 's.substring(1, 3) has three characters.', 'The end index isn’t included.', 'The end index is included.', 'Indexes start from 0.'],
-      ['StringBuffer', 'StringBuffer is better than String for many changes to a text.', 'String is better than StringBuffer for many changes to a text.', 'It changes in place, instead of making a new object each time.', 'It makes a new object at each change.', 'Its methods include append and reverse.'],
+      ['strings are objects', 'equals() is used to compare the contents of two Strings.', '== is used to compare the contents of two Strings.', 'String is a class, and == compares references.', 'String is a primitive type, and == compares its characters.', 'String is in the package java.lang.'],
+      ['substring', 's.substring(1, 3) has two characters.', 's.substring(1, 3) has three characters.', 'The end index isn’t included.', 'The end index is included.', 's.substring(0) is the whole of s.'],
+      ['trim', 'trim() doesn’t remove spaces in the middle of a string.', 'trim() removes every space in a string.', 'It removes spaces only at the two ends.', 'It removes only the first space.', 'trim() returns a new String.'],
     ],
   },
   '5a': {
     ar: [
-      ['the base case', 'Every recursive method needs a base case.', 'A recursive method works without any base case.', 'Without it, the calls never stop.', 'Without it, the method returns at once.', 'Each call should move closer to the base case.'],
-      ['recursion and memory', 'Recursion usually uses more memory than a loop.', 'A loop usually uses more memory than recursion.', 'Each call adds a frame on the call stack.', 'Each loop iteration adds a frame on the call stack.', 'Each recursive call has its own local variables.'],
+      ['tail recursion', 'In tail recursion, nothing is left to do after the recursive call.', 'In tail recursion, work is still left to do after the recursive call.', 'The recursive call is the method’s very last action.', 'The recursive call comes first in the method.', 'A factorial written as n * fact(n - 1) isn’t tail-recursive.'],
+      ['recursion and memory', 'Recursion usually uses more memory than a loop.', 'A loop usually uses more memory than recursion.', 'Each call adds a frame on the call stack.', 'Each loop iteration adds a frame on the call stack.', 'Java limits how deep the call stack can grow.'],
       ['statements after the call', 'Statements after a recursive call run as the calls return.', 'Statements after a recursive call never run.', 'Each call must finish its recursive call before it can go on.', 'Each call ends as soon as it makes its recursive call.', 'This can print values in reverse order.'],
     ],
   },
@@ -71,8 +71,8 @@ const knowledge: Record<string, Facts> = {
   '6b': {
     ar: [
       ['implementing many interfaces', 'A class can implement several interfaces.', 'A class can implement only one interface.', 'An interface brings no method bodies, so nothing can clash.', 'An interface brings many method bodies, which all clash.', 'A class can extend only one class.'],
-      ['instantiating an interface', 'An interface can’t be created with new.', 'An interface can be created with new.', 'Its methods have no bodies to run.', 'Its methods all have complete bodies.', 'A variable of an interface type can hold an object of an implementing class.'],
-      ['an interface’s methods', 'A method implementing an interface’s method must be public.', 'A method implementing an interface’s method must be private.', 'An interface’s methods are public, and an override can’t be less visible.', 'An interface’s methods are private, and an override can’t be more visible.', 'An interface’s fields are constants.'],
+      ['instantiating an interface', 'An interface can’t be created with new.', 'An interface can be created with new.', 'Its methods have no bodies to run.', 'Its methods all have complete bodies.', 'An interface is compiled to its own class file.'],
+      ['an interface’s methods', 'A method implementing an interface’s method must be public.', 'A method implementing an interface’s method must be private.', 'An interface’s methods are public, and an override can’t be less visible.', 'An interface’s methods are private, and an override can’t be more visible.', 'A class may implement an interface and still add methods of its own.'],
     ],
   },
   '7a': {

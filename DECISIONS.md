@@ -389,3 +389,5 @@ Work is on a `rebuild` branch. `master` still holds your original files.
   Duplicate AR nodes were again the main problem, with three pairs removed.
 - **Review batch 24** (Maths XI sets and conics, CS XII inheritance; 46 blueprints, 13 fixed). AR statements were repeated word for word as truths in all three topics. Every conic, set and Java answer checked.
   Interfaces aren't in the Inheritance syllabus, so an "also true" line about them was replaced.
+- **Review batch 25** (CS XII strings, recursion and interfaces, CS XI propositional logic; 47 blueprints, 21 fixed). The Class XI lift question asked about gates, which are 3b, so it now asks which connective; its id is unchanged.
+  Interfaces' new facts follow the syllabus's one stated emphasis: the construct interface against a class's interface in the wider sense.

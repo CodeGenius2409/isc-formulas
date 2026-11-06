@@ -640,11 +640,9 @@ const blueprints: Blueprint[] = [
       ['"HELLO".substring(1, 3) gives:', '"EL"', '"ELL"', '"HE"', '"LL"'],
       ['"HELLO".charAt(4) gives:', "'O'", "'L'", "'H'", 'an error'],
       ['"HELLO".indexOf(\'L\') gives:', '2', '3', '1', '-1'],
-      ['Comparing the contents of two strings needs:', 'equals()', '==', 'compareSign()', '='],
-      ['Strings in Java are:', 'immutable', 'changed in place by every method', 'primitive', 'arrays of int'],
     ],
     truths: [
-      ['substring(a, b) stops before index b.', 'substring(a, b) includes the character at index b.'],
+      ['s.charAt(0) is the first character of s.', 's.charAt(1) is the first character of s.'],
       ['length() is a method for strings, but length is a field for arrays.', 'length() is a method for arrays, but length is a field for strings.'],
       ['compareTo returns 0 for equal strings.', 'compareTo returns 1 for equal strings.'],
     ],
@@ -676,7 +674,6 @@ const blueprints: Blueprint[] = [
     recall: [
       ['A recursive method with no base case will end with:', 'StackOverflowError', 'NullPointerException', 'correct output', 'an infinite while loop with no error'],
       ['Which part of memory keeps track of recursive calls?', 'The call stack', 'The heap', 'The array', 'The class file'],
-      ['Which is generally true of recursion compared with a loop?', 'It uses more memory', 'It uses less memory', 'It can’t solve the same problems', 'It never ends'],
     ],
     reason: [
       ['Every recursive method needs a base case.', 'Without it, the calls never stop.', 'The call stack then overflows.'],
@@ -686,8 +683,8 @@ const blueprints: Blueprint[] = [
     ],
     truths: [
       ['Each recursive call gets its own copy of the local variables.', 'All recursive calls share one copy of the local variables.'],
-      ['Statements after a recursive call run while the calls return.', 'Statements after a recursive call never run.'],
-      ['Tail-recursive code does its call as its last action.', 'Tail-recursive code does its call as its first action.'],
+      ['A void method can be recursive.', 'Only a method that returns a value can be recursive.'],
+      ['Indirect recursion needs at least two methods.', 'Indirect recursion uses only one method.'],
     ],
   }),
 
@@ -749,18 +746,15 @@ const blueprints: Blueprint[] = [
       ['Which keyword does a class use for an interface?', 'implements', 'extends', 'interface', 'super'],
       ['The methods declared in an interface are, by default:', 'public and abstract', 'private and static', 'protected and final', 'private and abstract'],
       ['The fields of an interface are, by default:', 'public, static and final', 'private', 'protected and abstract', 'local to each method'],
-      ['Which can a class do with interfaces?', 'Implement more than one', 'Implement just one', 'Extend none', 'Instantiate them directly'],
     ],
     reason: [
-      ['A class can implement many interfaces, though it can extend only one class.', 'An interface brings no method bodies to inherit.', 'So two parents can’t clash over which body to use.'],
-      ['An interface can’t be created with new.', 'Its methods have no bodies.', 'So an object of it would have nothing to run.'],
+      ['A default method lets an interface gain a method without breaking old classes.', 'Classes that implement it inherit the default body.', 'So they needn’t all be rewritten.'],
     ],
     compare: [
       ['the Java construct interface', 'the interface of a class', ['Declared with the keyword interface.', 'Not a keyword: the set of method prototypes a class offers.'], ['A class must use implements to take it on.', 'Every class has one, without any keyword.']],
-      ['an interface', 'an abstract class', ['Has no constructors.', 'Can have constructors.'], ['A class can implement many.', 'A class can extend only one.']],
+      ['an interface', 'an abstract class', ['Declared with the keyword interface.', 'Declared with abstract class.'], ['Its methods are public by default.', 'Its methods can have any access.']],
     ],
     truths: [
-      ['An interface can’t be instantiated.', 'An interface can be instantiated with new.'],
       ['An abstract method has no body.', 'An abstract method must have a body.'],
       ['A class implementing an interface must define its methods, or be declared abstract.', 'A class implementing an interface can leave its methods without bodies and still be created with new.'],
     ],
@@ -1162,9 +1156,9 @@ const blueprints: Blueprint[] = [
     return findError(g, broken, broken.replace(`return ${n};\n  }\n}`, `return ${n};\n  }\n  public int second() {\n    return 0;\n  }\n}`), ['Both doesn\'t define second(), so it isn\'t a complete implementation of Pair.', 'Correct it by defining public int second(), or by declaring Both abstract.']);
   }),
   custom('design-interface', [6, 'b', 5, 3], { type: 'program', format: 'program' }, (g) => {
-    const [iface, method, c1, c2, f1, f2] = g.pick([['Taxable', 'tax', 'Book', 'Phone', 'price * 0.05', 'price * 0.18'], ['Rated', 'score', 'Exam', 'Quiz', 'price * 2', 'price * 3'], ['Billable', 'charge', 'Call', 'Text', 'price * 2', 'price + 1']]);
-    const model = `interface ${iface} {\n  double ${method}();\n}\nclass ${c1} implements ${iface} {\n  double price;\n  ${c1}(double p) {\n    price = p;\n  }\n  public double ${method}() {\n    return ${f1};\n  }\n}\nclass ${c2} implements ${iface} {\n  double price;\n  ${c2}(double p) {\n    price = p;\n  }\n  public double ${method}() {\n    return ${f2};\n  }\n}`;
-    return designChecked(g, `Write an interface ${iface} with a method double ${method}(). Then write classes ${c1} and ${c2}, each with a data member price and a constructor, that implement it. In ${c1}, ${method}() returns ${f1}, and in ${c2}, it returns ${f2}. Don't write main().`, model, `class Test {\n  public static void main(String[] args) {\n    ${iface}[] all = { new ${c1}(100), new ${c2}(100) };\n    System.out.println(all[0].${method}() + all[1].${method}());\n  }\n}`, [
+    const [iface, method, c1, c2, field, f1, f2] = g.pick([['Taxable', 'tax', 'Book', 'Phone', 'price', 'price * 0.05', 'price * 0.18'], ['Rated', 'score', 'Exam', 'Quiz', 'marks', 'marks * 2', 'marks * 3'], ['Billable', 'charge', 'Call', 'Text', 'units', 'units * 2', 'units + 1']]);
+    const model = `interface ${iface} {\n  double ${method}();\n}\nclass ${c1} implements ${iface} {\n  double ${field};\n  ${c1}(double p) {\n    ${field} = p;\n  }\n  public double ${method}() {\n    return ${f1};\n  }\n}\nclass ${c2} implements ${iface} {\n  double ${field};\n  ${c2}(double p) {\n    ${field} = p;\n  }\n  public double ${method}() {\n    return ${f2};\n  }\n}`;
+    return designChecked(g, `Write an interface ${iface} with a method double ${method}(). Then write classes ${c1} and ${c2}, each with a data member ${field} and a constructor, that implement it. In ${c1}, ${method}() returns ${f1}, and in ${c2}, it returns ${f2}. Don't write main().`, model, `class Test {\n  public static void main(String[] args) {\n    ${iface}[] all = { new ${c1}(100), new ${c2}(100) };\n    System.out.println(all[0].${method}() + all[1].${method}());\n  }\n}`, [
       ['Declares the interface, with the method\'s heading only.', 1],
       [`Uses implements ${iface} in both classes.`, 1],
       ['Writes the data member and constructor in both.', 1],
