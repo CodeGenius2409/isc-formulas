@@ -115,7 +115,7 @@ const knowledge: Record<string, Facts> = {
     reason: [
       ['Don’t-care cells can make a simpler expression.', 'They can be treated as 1 to make a larger group, or ignored.'],
       ['A group of two adjacent cells removes one variable.', 'That variable changes across the pair, so it cancels: X·A + X·A′ = X.'],
-      ['Boolean algebra has no subtraction or division.', 'It has only two values and three basic operations.', 'So there’s no way to cancel terms from each side.'],
+      ['Boolean algebra has no subtraction or division.', 'OR and AND have no inverse operations, so a term can’t be cancelled from both sides.', 'For example, A + B = A + C doesn’t mean B = C: with A = 1, both sides are 1 whatever B and C are.'],
     ],
     links: [
       ['same', 'A POS expression', 'An SOP expression'],

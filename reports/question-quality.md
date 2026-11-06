@@ -306,4 +306,5 @@ Each blueprint’s date and note are in `src/data/blueprints/reviews/`.
 | Batch | Topics | Blueprints reviewed | Problems found and fixed | Flagged | Reviewed so far, of 2,211 |
 |---:|---|---:|---|---:|---:|
 | 0 | Derivations (Task 8), assertion–reason (Task 3) | 429 | Checked in those tasks | 0 | 429 |
+| 1 | CS XII 1b, Chemistry XII 1a | 41 | 11 blueprints fixed: two recall questions asked the same thing (K₂SO₄); a reason appeared twice; three assertion–reason “also true” lines in fact explained the assertion, or repeated another concept; a “saline” drip called a non-electrolyte, with a pressure far from blood’s; molalities up to 3 m for a dilute-solution formula; a K-map truth table’s rows numbered from 0 without saying so; a consensus step and a reason on Boolean algebra that didn’t explain | 0 | 470 |
 <!-- /review-progress -->

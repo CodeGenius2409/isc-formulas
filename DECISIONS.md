@@ -341,3 +341,5 @@ Work is on a `rebuild` branch. `master` still holds your original files.
 
 - **Task 2, labelling:** each class has a review file, `src/data/blueprints/reviews/`, with each blueprint's date and note, applied when the class loads. A flagged one counts as not reviewed and stays in use. A generated question from an unreviewed blueprint says "Not yet reviewed" beside "Generated", on screen, in print and in Word.
   "Only reviewed questions" is off by default on both screens. A mock paper is never short, so if nothing reviewed fits a place, an unreviewed one fills it, marked, and the paper says so. For a teacher, it narrows the counts shown before generating, as any filter does. There are 2,211 blueprints now, not 1,484.
+- **Review batch 1** (CS XII Boolean algebra, Chemistry XII solutions; 40 blueprints, 11 fixed): every fact, and two samples of each blueprint, read. Arithmetic, K-maps and truth tables were right; the problems were repeats, "also true" reasons that in fact explained the assertion, and an unrealistic drip.
+  Kept as is: azeotropes, though not named in the syllabus, as non-ideal solutions are, and they're what a teacher would teach with them.

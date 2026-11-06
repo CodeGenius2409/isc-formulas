@@ -7,7 +7,7 @@ import MORE_C from './more/chemistry-xii-c';
 const knowledge: Record<string, Facts> = {
   '1a': {
     ar: [
-      ['osmosis', 'A cucumber shrinks in salty water.', 'A cucumber swells in salty water.', 'The salt solution is hypertonic to the cucumber’s cells.', 'The salt solution is hypotonic to the cucumber’s cells.', 'Water passes through a semipermeable membrane by osmosis.'],
+      ['osmosis', 'A cucumber shrinks in salty water.', 'A cucumber swells in salty water.', 'The salt solution is hypertonic to the cucumber’s cells.', 'The salt solution is hypotonic to the cucumber’s cells.', 'Osmosis also lets plants take in water through their roots.'],
       ['the vapour pressure of a solution', 'A non-volatile solute lowers a liquid’s vapour pressure.', 'A non-volatile solute raises a liquid’s vapour pressure.', 'Fewer solvent molecules are at the surface to escape.', 'More solvent molecules are at the surface to escape.', 'Raoult’s law relates this lowering to the mole fraction of the solute.'],
       ['the abnormal molar mass', 'Ethanoic acid in benzene shows about half its expected depression of freezing point.', 'Ethanoic acid in benzene shows about twice its expected depression of freezing point.', 'Its molecules form dimers there.', 'Its molecules split into ions there.', 'The van’t Hoff factor is then about 0.5.'],
       ['the van’t Hoff factor', 'A 0.1 m NaCl solution has about twice the expected freezing point depression.', 'A 0.1 m NaCl solution has about half the expected freezing point depression.', 'It splits into two ions, and colligative properties depend on the number of particles.', 'It forms dimers in water.', 'Its van’t Hoff factor is close to 2.'],

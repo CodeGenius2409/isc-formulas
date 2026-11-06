@@ -152,6 +152,8 @@ const blueprints: Blueprint[] = [
     text: '{G} g of a non-volatile solute of molar mass {M} g/mol is dissolved in {W} g of water. K_b for water is 0.52 K kg/mol.',
     vars: { G: [5, 30, 5], M: [60, 180, 20], W: [100, 500, 100] },
     derive: (v) => ({ N: v.G / v.M, MOL: v.G / v.M / (v.W / 1000) }),
+    // A dilute solution, as the formula assumes.
+    when: (v) => v.MOL <= 1,
     parts: [
       { ask: 'Molality', use: 'c-xii-2-15', find: 'm', given: { n: 'N mol', W: 'W g' }, marks: 1 },
       { ask: 'Elevation in boiling point', use: 'c-xii-2-3', find: 'DeltaT_b', given: { K_b: '0.52 K*kg/mol', m: 'MOL mol/kg' }, marks: 2 },
@@ -166,8 +168,8 @@ const blueprints: Blueprint[] = [
   }),
   num('osmotic', [1, 'a', 3, 2], {
     style: 'cbq-style',
-    text: 'A hospital’s saline drip uses a solution of {G} g of a non-electrolyte (molar mass {M} g/mol) per litre, at {T} K. Find the osmotic pressure of the solution, which must match that of blood.',
-    vars: { G: [20, 60, 10], M: [100, 300, 50], T: [298, 310, 2] },
+    text: 'A drip for a hospital patient contains {G} g of glucose (molar mass {M} g/mol) per litre of solution, at {T} K. Find the osmotic pressure of the solution.',
+    vars: { G: [40, 60, 5], M: [180], T: [300, 310, 2] },
     derive: (v) => ({ C: (v.G / v.M) * 1000 }),
     parts: [{ ask: 'Osmotic pressure', use: 'c-xii-2-5', find: 'pi_o', given: { C: 'C mol/m^3', T: 'T K' }, unit: 'atm', marks: 3 }],
   }),

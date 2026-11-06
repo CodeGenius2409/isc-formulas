@@ -115,7 +115,7 @@ function wordProblem(g: Gen): TheoryBody {
   if (!coverIsRight(cover, minterms, 4)) g.retry();
   const sop = sopText(cover, 4).replace(/[ABCD]/g, (c) => names[VARS.indexOf(c)]);
   return g.theory(`${s.story}\nThe inputs are:\n${s.inputs.map(([n, m]) => `${n}: ${m}`).join('\n')}\nThe output X means "${s.output}". In all cases, 1 means yes and 0 means no.\nDraw the truth table, and write the reduced SOP expression for X(${names.join(', ')}).`, [
-    [`A truth table of 16 rows, with X = 1 in rows ${minterms.join(', ')}.`, 2],
+    [`A truth table of 16 rows, with X = 1 for the inputs ${names.join('')} = ${minterms.map((m) => m.toString(2).padStart(4, '0')).join(', ')}.`, 2],
     [`X = ${sop}.`, 3],
   ]);
 }
@@ -376,7 +376,7 @@ const blueprints: Blueprint[] = [
       ['A + A′B', ['(A + A′)(A + B)', 'A + A′ = 1'], 'A + B'],
       ['AB + AB′', ['A(B + B′)', 'B + B′ = 1'], 'A'],
       ['(A + B)(A + B′)', ['A + BB′', 'BB′ = 0'], 'A'],
-      ['AB + A′C + BC', ['the consensus theorem: BC is redundant', 'it’s covered by AB and A′C'], 'AB + A′C'],
+      ['AB + A′C + BC', ['BC = BC(A + A′) = ABC + A′BC', 'absorption, as ABC is covered by AB and A′BC by A′C'], 'AB + A′C'],
       ['(A′ + B′)′', ['De Morgan’s law', 'A″ and B″ reduce to A and B'], 'AB'],
     ] as const);
     return g.theory(`Simplify using the laws of Boolean algebra: ${expr}`, [`Use ${steps[0]}, then ${steps[1]}.`, `The answer is ${answer}.`]);
