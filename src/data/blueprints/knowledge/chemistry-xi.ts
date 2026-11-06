@@ -20,8 +20,8 @@ const knowledge: Record<string, Facts> = {
   '1c': {
     ar: [
       ['the end point of a titration', 'Phenolphthalein suits the titration of a weak acid with a strong base.', 'Methyl orange suits the titration of a weak acid with a strong base.', 'The equivalence point lies at a pH above 7, in its range.', 'The equivalence point lies at a pH below 4, in its range.', 'Phenolphthalein changes colour between pH 8 and 10.'],
-      ['equivalent mass', 'The equivalent mass of H₂SO₄ is half its molar mass, when both hydrogens react.', 'The equivalent mass of H₂SO₄ is twice its molar mass, when both hydrogens react.', 'Its basicity is then 2.', 'Its basicity is then ½.', 'The normality of a solution is its molarity times the n-factor.'],
-      ['the standard solution', 'NaOH isn’t used as a primary standard.', 'NaOH is the best primary standard.', 'It absorbs moisture and carbon dioxide from the air.', 'It is perfectly stable in air.', 'Anhydrous sodium carbonate is a primary standard.'],
+      ['equivalent mass', 'The equivalent mass of H₂SO₄ is half its molar mass, when both hydrogens react.', 'The equivalent mass of H₂SO₄ is twice its molar mass, when both hydrogens react.', 'Its basicity is then 2.', 'Its basicity is then ½.', 'The molar mass of H₂SO₄ is 98 g mol⁻¹.'],
+      ['the standard solution', 'NaOH isn’t used as a primary standard.', 'NaOH is the best primary standard.', 'It absorbs moisture and carbon dioxide from the air.', 'It is perfectly stable in air.', 'Oxalic acid crystals are a primary standard.'],
     ],
   },
   '2a': {
@@ -96,7 +96,7 @@ const knowledge: Record<string, Facts> = {
   },
   '8a': {
     ar: [
-      ['isomerism', 'Ethanol and methoxymethane are isomers.', 'Ethanol and methoxymethane are the same compound.', 'They have one molecular formula, and differ in structure.', 'They have different molecular formulae.', 'They are functional group isomers.'],
+      ['isomerism', 'Pentane and 2,2-dimethylpropane are isomers.', 'Pentane and 2,2-dimethylpropane are the same compound.', 'Both are C₅H₁₂, with different chains.', 'They have different molecular formulae.', 'They are chain isomers.'],
       ['chirality', 'Butan-2-ol is optically active.', 'Butan-2-ol is optically inactive.', 'It has a carbon atom bonded to four different groups.', 'It has no carbon atom bonded to four different groups.', 'A chiral molecule has a non-superimposable mirror image.'],
       ['nomenclature', 'The longest chain gives the parent name of an alkane.', 'The shortest chain gives the parent name of an alkane.', 'IUPAC names are built on the longest continuous chain.', 'IUPAC names are built on the smallest group.', 'Numbering gives substituents the lowest possible numbers.'],
     ],

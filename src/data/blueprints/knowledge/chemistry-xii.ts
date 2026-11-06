@@ -126,9 +126,9 @@ const knowledge: Record<string, Facts> = {
   },
   '8b': {
     ar: [
-      ['the acidity of carboxylic acids', 'Carboxylic acids are stronger acids than alcohols.', 'Alcohols are stronger acids than carboxylic acids.', 'The carboxylate ion is stabilised by resonance.', 'The alkoxide ion is stabilised by resonance.', 'Carboxylic acids release carbon dioxide from carbonates.'],
+      ['benzoic acid in water', 'Benzoic acid is only slightly soluble in cold water.', 'Benzoic acid mixes with cold water in all proportions.', 'Its large phenyl group is non-polar.', 'It forms no hydrogen bonds at all.', 'It dissolves much better in hot water.'],
       ['the boiling points of acids', 'Ethanoic acid boils higher than propan-1-ol.', 'Propan-1-ol boils higher than ethanoic acid.', 'Its molecules form hydrogen-bonded dimers.', 'Its molecules have no hydrogen bonds.', 'The two compounds have similar molar masses.'],
-      ['substituents and acid strength', 'Trichloroethanoic acid is much stronger than ethanoic acid.', 'Trichloroethanoic acid is much weaker than ethanoic acid.', 'The three chlorine atoms draw electrons away, stabilising the anion.', 'The three chlorine atoms push electrons in, destabilising the anion.', 'Methanoic acid is stronger than ethanoic acid.'],
+      ['the carbonyl of an acid', 'The C=O of a carboxylic acid doesn’t give the usual addition reactions of ketones.', 'The C=O of a carboxylic acid adds HCN and NaHSO₃ just as a ketone does.', 'Its electrons are shared by resonance with the –OH oxygen.', 'A carboxylic acid has no C=O group.', 'Carboxylic acids do react with PCl₅.'],
     ],
   },
   '9a': {

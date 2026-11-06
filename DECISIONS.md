@@ -391,3 +391,5 @@ Work is on a `rebuild` branch. `master` still holds your original files.
   Interfaces aren't in the Inheritance syllabus, so an "also true" line about them was replaced.
 - **Review batch 25** (CS XII strings, recursion and interfaces, CS XI propositional logic; 47 blueprints, 21 fixed). The Class XI lift question asked about gates, which are 3b, so it now asks which connective; its id is unchanged.
   Interfaces' new facts follow the syllabus's one stated emphasis: the construct interface against a class's interface in the wider sense.
+- **Review batch 26** (Physics XI waves, Chemistry XI volumetric analysis and isomerism, Chemistry XII carboxylic acids; 45 blueprints, 17 fixed). The Doppler effect left the Waves pool: the 2028 unit ends at beats, and no blueprint was wholly about it.
+  The dilution numerical now asks for the volume to dilute to, which is what its answer gives.

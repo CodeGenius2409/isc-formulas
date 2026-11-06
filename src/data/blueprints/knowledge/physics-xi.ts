@@ -176,9 +176,9 @@ const knowledge: Record<string, Facts> = {
       'Draw the first two modes': { kind: 'graph', x: 'Along the string', y: 'Displacement', lines: [{ label: 'First mode', points: curve((x) => Math.sin(Math.PI * x), 0, 1) }, { label: 'Second mode', points: curve((x) => Math.sin(2 * Math.PI * x), 0, 1) }], ticksX: [[0.5, 'Node, second mode']] },
     },
     ar: [
-      ['sound in gases', 'Sound travels faster in warm air than in cold air.', 'Sound travels slower in warm air than in cold air.', 'The speed of sound is proportional to the square root of the absolute temperature.', 'The speed of sound is proportional to the pressure of the air.', 'A change of pressure alone, at constant temperature, doesn’t change the speed of sound.'],
+      ['sound in gases', 'Sound travels faster in warm air than in cold air.', 'Sound travels slower in warm air than in cold air.', 'The speed of sound is proportional to the square root of the absolute temperature.', 'The speed of sound is proportional to the pressure of the air.', 'Sound travels at about 330 m/s in air at 0 °C.'],
       ['beats', 'Beats need two frequencies that are close to each other.', 'Beats need two frequencies that are exactly equal.', 'The ear can follow only slow changes of loudness, and the beat frequency is the difference.', 'The ear hears the sum of the two frequencies as the beat.', 'At one beat in each second, the two frequencies differ by 1 Hz.'],
-      ['organ pipes', 'A closed pipe gives only odd harmonics.', 'A closed pipe gives only even harmonics.', 'It must have a node at the closed end and an antinode at the open end.', 'It must have an antinode at both ends.', 'An open pipe of the same length has twice the fundamental frequency of a closed one.'],
+      ['organ pipes', 'A closed pipe gives only odd harmonics.', 'A closed pipe gives only even harmonics.', 'It must have a node at the closed end and an antinode at the open end.', 'It must have an antinode at both ends.', 'An organ pipe’s note depends on its length.'],
     ],
   },
 };

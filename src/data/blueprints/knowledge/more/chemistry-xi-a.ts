@@ -20,7 +20,6 @@ const knowledge: Record<string, Facts> = {
       ['a titrant', 'The solution of known concentration added from a burette in a titration.'],
     ],
     recall: [
-      ['The equivalent mass of H₂SO₄ in a full neutralisation is:', '49', '98', '24.5', '196'],
       ['The equivalent mass of NaOH is:', '40', '80', '20', '23'],
       ['The equivalent mass of Na₂CO₃ in a full neutralisation is:', '53', '106', '26.5', '212'],
       ['The equivalent mass of Ca(OH)₂ is:', '37', '74', '18.5', '148'],
@@ -47,7 +46,7 @@ const knowledge: Record<string, Facts> = {
       ['Equivalent mass depends on the reaction.', 'The n-factor of a substance can differ between reactions.'],
     ],
     links: [
-      ['same', 'A primary standard should', 'Sodium hydroxide is not'],
+      ['same', 'A primary standard should', 'A secondary standard is'],
       ['same', 'Normality equals molarity', 'The number of gram equivalents'],
       ['contrast', 'the basicity of an acid', 'the acidity of a base'],
       ['contrast', 'percentage by mass', 'percentage by mass per volume'],

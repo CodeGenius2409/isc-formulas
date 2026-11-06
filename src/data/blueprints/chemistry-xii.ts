@@ -1004,7 +1004,6 @@ const blueprints: Blueprint[] = [
     ],
     reason: [
       ['Carboxylic acids are stronger acids than alcohols.', 'The carboxylate ion is stabilised by resonance, spreading the charge over two oxygens.', 'An alkoxide has no such resonance.'],
-      ['Carboxylic acids have unusually high boiling points.', 'They form strong hydrogen-bonded dimers.'],
       ['Chloroacetic acid is stronger than acetic acid.', 'Chlorine’s −I effect stabilises the carboxylate ion.'],
       ['Formic acid reduces Tollens’ reagent, but acetic acid doesn’t.', 'Formic acid has an aldehyde-like hydrogen on its carbon.'],
     ],
@@ -1013,8 +1012,9 @@ const blueprints: Blueprint[] = [
     ],
     truths: [
       ['Electron-withdrawing groups raise the acid strength of carboxylic acids.', 'Electron-withdrawing groups lower the acid strength of carboxylic acids.'],
-      ['Carboxylic acids don’t give typical carbonyl addition reactions.', 'Carboxylic acids give all the addition reactions of aldehydes.'],
+      ['Methanoic acid is the simplest carboxylic acid.', 'Ethanoic acid is the simplest carboxylic acid.'],
       ['Benzoic acid is stronger than acetic acid.', 'Benzoic acid is weaker than acetic acid.'],
+      ['Carboxylic acids are weaker acids than mineral acids such as HCl.', 'Carboxylic acids are stronger acids than HCl.'],
     ],
     explain: [
       ['Give a chemical test to tell benzoic acid from phenol.', 'Add sodium bicarbonate solution to each.', 'Benzoic acid gives bubbles of CO₂, and phenol doesn’t.'],

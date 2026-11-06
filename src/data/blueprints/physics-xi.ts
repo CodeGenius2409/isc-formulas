@@ -1070,26 +1070,22 @@ const blueprints: Blueprint[] = [
       ['a progressive wave', 'A wave that carries energy from one place to another.'],
       ['a stationary wave', 'A wave pattern from two equal waves moving in opposite directions, with fixed nodes and antinodes.'],
       ['beats', 'Regular rises and falls in loudness, from two sounds of slightly different frequencies.'],
-      ['the Doppler effect', 'The apparent change in frequency caused by relative motion of the source and the observer.'],
     ],
     recall: [
       ['Sound waves in air are:', 'longitudinal', 'transverse', 'electromagnetic', 'stationary always'],
-      ['A closed pipe’s harmonics are:', 'odd only', 'even only', 'all of them', 'none of them'],
       ['The beat frequency of 256 Hz and 260 Hz is:', '4 Hz', '258 Hz', '516 Hz', '2 Hz'],
       ['The distance between two adjacent nodes in a stationary wave is:', 'half a wavelength', 'one wavelength', 'a quarter of a wavelength', 'two wavelengths'],
-      ['The speed of sound in air, as temperature rises:', 'increases', 'decreases', 'stays the same', 'goes to zero'],
     ],
     reason: [
       ['Sound travels faster in steel than in air.', 'Steel has a very high elasticity, which more than makes up for its high density.'],
       ['Sound can’t travel in a vacuum.', 'It needs a medium to carry its vibrations.'],
-      ['The pitch of a passing ambulance’s siren falls as it passes.', 'Waves are bunched up as it approaches.', 'Then they’re stretched out as it moves away.'],
     ],
     compare: [
       ['transverse waves', 'longitudinal waves', ['Particles vibrate at right angles to the wave.', 'Particles vibrate along the wave.'], ['Form crests and troughs.', 'Form compressions and rarefactions.']],
       ['progressive waves', 'stationary waves', ['Carry energy along.', 'Don’t carry energy along.'], ['All particles have the same amplitude.', 'Amplitude varies from zero at nodes to a maximum at antinodes.']],
     ],
     truths: [
-      ['An open pipe has all harmonics.', 'An open pipe has only odd harmonics.'],
+      ['The first overtone of an open pipe is its second harmonic.', 'The first overtone of an open pipe is its third harmonic.'],
       ['Frequency doesn’t change when sound enters another medium.', 'Frequency always changes when sound enters another medium.'],
       ['Speed of a wave on a string depends on its tension.', 'Speed of a wave on a string doesn’t depend on its tension.'],
     ],

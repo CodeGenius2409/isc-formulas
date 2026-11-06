@@ -45,7 +45,7 @@ const blueprints: Blueprint[] = [
     parts: [{ ask: 'Molarity', use: 'c-xii-2-6', find: 'M', given: { n: 'N mol', V: 'V L' }, marks: 2 }],
   }),
   num('dilution', [1, 'c', 2, 1], {
-    text: 'How much water must be added to {V} mL of a {A} M solution to make it {B} M?',
+    text: 'To what volume must {V} mL of a {A} M solution be diluted to make it {B} M?',
     vars: { V: [50, 200, 50], A: [1, 4, 1], B: [0.2, 0.8, 0.2] },
     parts: [{ ask: 'Final volume needed', use: 'c-xi-1-51', find: 'V_2', given: { M_1: 'A mol/L', V_1: 'V mL', M_2: 'B mol/L' }, marks: 2 }],
   }),
@@ -136,7 +136,6 @@ const blueprints: Blueprint[] = [
     ],
     recall: [
       ['Phenolphthalein is suitable for titrating:', 'a strong acid with a strong base', 'a weak acid with a weak base', 'a strong acid with a weak base', 'no acid at all'],
-      ['Normality is related to molarity by:', 'normality = molarity × n-factor', 'normality = molarity / n-factor', 'normality = molarity²', 'they’re always equal'],
       ['Which indicator suits a strong acid with a weak base?', 'Methyl orange', 'Phenolphthalein', 'Litmus paper only', 'Starch'],
     ],
     reason: [
@@ -145,7 +144,7 @@ const blueprints: Blueprint[] = [
     truths: [
       ['M₁V₁ = M₂V₂ applies to a dilution.', 'M₁V₁ = M₂V₂ never applies to a dilution.'],
       ['The end point of a titration comes close to the equivalence point.', 'The end point of a titration is far from the equivalence point.'],
-      ['Sodium hydroxide is not a primary standard, as it absorbs moisture.', 'Sodium hydroxide is a good primary standard.'],
+      ['A secondary standard is standardised against a primary standard.', 'A secondary standard needs no standardising.'],
     ],
   }),
 
@@ -610,6 +609,7 @@ const blueprints: Blueprint[] = [
       ['Each member of a homologous series differs by CH₂.', 'Each member of a homologous series differs by CH₃.'],
       ['Geometrical isomerism needs restricted rotation about a bond.', 'Geometrical isomerism needs free rotation about a bond.'],
       ['Optical isomers need a chiral centre, or another source of asymmetry.', 'Optical isomers need a double bond.'],
+      ['Propanal and propanone are functional isomers.', 'Propanal and propanone are chain isomers.'],
     ],
   }),
   ...facts(8, 'b', {
