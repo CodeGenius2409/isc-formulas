@@ -99,7 +99,7 @@ const knowledge: Record<string, Facts> = {
   '8a': {
     ar: [
       ['the height of a tree', 'A binary tree of height h (in levels) has at most 2ʰ − 1 nodes.', 'A binary tree of height h (in levels) has at most 2h nodes.', 'Each level can hold twice as many nodes as the one before.', 'Each level can hold just two nodes.', 'Level 1 has one node, the root.'],
-      ['traversals', 'In-order traversal of a binary search tree gives the values in sorted order.', 'Pre-order traversal of a binary search tree gives the values in sorted order.', 'The left subtree holds smaller values, and the right holds larger ones.', 'The left subtree holds larger values, and the right holds smaller ones.', 'In-order visits left, root, then right.'],
+      ['traversals', 'Pre-order traversal always visits the root of the tree first.', 'Post-order traversal always visits the root of the tree first.', 'Pre-order visits each node before either of its subtrees.', 'Post-order visits each node before its subtrees.', 'In-order visits the left subtree, the root, then the right subtree.'],
       ['the root and leaves', 'A leaf has no children.', 'A leaf has exactly two children.', 'It lies at the end of a branch.', 'It lies at the top of the tree.', 'An internal node has at least one child.'],
     ],
   },

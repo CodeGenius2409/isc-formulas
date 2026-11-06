@@ -113,7 +113,6 @@ const knowledge: Record<string, Facts> = {
       ['Write the formula of the distance between two parallel planes ax + by + cz = d₁ and ax + by + cz = d₂.', '|d₁ − d₂|/√(a² + b² + c²).'],
     ],
     links: [
-      ['same', 'Skew lines neither', 'Two skew lines can’t'],
       ['same', 'A line parallel to a plane', 'A line perpendicular to a plane'],
       ['same', 'Three points that aren’t', 'A general plane has'],
       ['contrast', 'direction cosines of a line', 'direction ratios of a line'],

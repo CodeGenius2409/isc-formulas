@@ -1315,14 +1315,11 @@ const blueprints: Blueprint[] = [
     define: [
       ['mass defect', 'The difference between the total mass of the separate nucleons and the mass of the nucleus.'],
       ['binding energy of a nucleus', 'The energy needed to separate a nucleus into its nucleons, equal to the mass defect times c².'],
-      ['half-life', 'The time in which half of the nuclei in a sample decay.'],
       ['isotopes', 'Atoms with the same atomic number, but different mass numbers.'],
       ['isobars', 'Atoms with the same mass number, but different atomic numbers.'],
     ],
     recall: [
       ['Nuclear density is:', 'about the same for all nuclei', 'greatest for heavy nuclei', 'greatest for light nuclei', 'proportional to mass number'],
-      ['Beta-minus decay raises the atomic number by:', '1', '2', '0', '4'],
-      ['Alpha decay lowers the mass number by:', '4', '2', '1', '0'],
       ['Which is most stable, judging by binding energy per nucleon?', 'Iron-56', 'Uranium-238', 'Helium-4', 'Hydrogen-2'],
       ['Nuclear forces are:', 'short-range and strong', 'long-range and strong', 'short-range and weak', 'long-range and weak'],
       ['Energy is released in fission because the products have:', 'a greater binding energy per nucleon', 'a smaller binding energy per nucleon', 'more mass overall', 'more nucleons'],
@@ -1334,28 +1331,25 @@ const blueprints: Blueprint[] = [
     ],
     compare: [
       ['nuclear fission', 'nuclear fusion', ['A heavy nucleus splits into lighter ones.', 'Light nuclei join into a heavier one.'], ['Starts with a neutron at ordinary temperatures.', 'Needs extremely high temperatures.'], ['Used in nuclear power stations.', 'Powers the Sun and stars.']],
-      ['alpha rays', 'beta rays', ['Helium nuclei with charge +2e.', 'Fast electrons or positrons, with charge ±e.'], ['Low penetration, high ionising power.', 'Greater penetration, lower ionising power.']],
     ],
     truths: [
       ['The radius of a nucleus varies as the cube root of its mass number.', 'The radius of a nucleus varies directly as its mass number.'],
       ['Binding energy per nucleon is largest around mass number 56.', 'Binding energy per nucleon is largest around mass number 200.'],
       ['The nuclear force doesn’t depend on charge.', 'The nuclear force acts only between protons.'],
-      ['Gamma emission doesn’t change the mass number or atomic number.', 'Gamma emission lowers the mass number by 4.'],
     ],
     long: [
-      ['Starting from the radioactive decay law, derive N = N₀e^(−λt), and from it the relation between half-life and decay constant.', 'The rate of decay is dN/dt = −λN.', 'Integrating gives N = N₀e^(−λt).', 'At the half-life, N = N₀/2.', 'So e^(−λT) = ½, which gives T = ln 2/λ = 0.693/λ.'],
+      ['Show that nuclear density is the same for all nuclei.', 'R = R₀A^(1/3), so the volume of a nucleus is (4/3)πR₀³A.', 'Its mass is about A times the mass of a nucleon, m.', 'So its density is Am/((4/3)πR₀³A) = 3m/(4πR₀³).', 'This has no A in it, so it is the same for every nucleus, about 2.3 × 10¹⁷ kg m⁻³.'],
     ],
     draw: [
       ['Sketch binding energy per nucleon against mass number.', 'A rapid rise for light nuclei, a broad peak near A = 56, and a slow fall for heavy nuclei.', 'Mention why fission and fusion both release energy: each moves towards the peak.'],
-      ['Sketch the number of undecayed nuclei against time.', 'An exponential fall from N₀ with time.', 'N₀/2 at one half-life and N₀/4 at two half-lives.'],
     ],
     cases: [
       {
-        scene: 'Archaeologists date a wooden tool by measuring its carbon-14, which has a half-life of about 5730 years. Living trees keep a steady level of it, and after a tree dies, the level starts to fall.',
+        scene: 'A nuclear power station keeps a steady chain reaction going in its uranium-235 fuel, using heavy water as a moderator and cadmium control rods.',
         parts: [
-          ['Why does the carbon-14 level stop being topped up when the tree dies?', 'The tree stops taking in carbon from the air.', 1],
-          ['If a sample has a quarter of the carbon-14 of living wood, how old is it?', 'Two half-lives, about 11 460 years.', 1],
-          ['Does temperature affect this rate of decay?', 'No, radioactive decay doesn’t depend on temperature.', 1],
+          ['Why must the neutrons be slowed down?', 'Slow neutrons are far more likely to cause fission in uranium-235.', 1],
+          ['What happens to the power if the control rods are pushed further in?', 'It falls, as the rods absorb more neutrons and fewer fissions follow.', 1],
+          ['What must be true, on average, for the reaction to stay steady?', 'Each fission must lead to exactly one more fission.', 1],
         ],
       },
     ],

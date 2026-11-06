@@ -151,12 +151,11 @@ const knowledge: Record<string, Facts> = {
   '8b': {
     answerFigures: {
       'Sketch binding energy per nucleon': { kind: 'graph', x: 'Mass number', y: 'Binding energy per nucleon', lines: [{ points: [[2, 1.1], [4, 7.1], [12, 7.7], [56, 8.8], [120, 8.5], [238, 7.6]] }], ticksX: [[56, '56']] },
-      'Sketch the number of undecayed nuclei': { kind: 'graph', x: 'Time', y: 'Undecayed nuclei', lines: [{ points: curve((t) => 2 ** -t, 0, 5) }], ticksY: [[1, 'N₀'], [0.5, 'N₀/2']], ticksX: [[1, 'T½']] },
     },
     ar: [
       ['fusion and temperature', 'Fusion needs a very high temperature.', 'Fusion happens easily at room temperature.', 'Nuclei must have enough kinetic energy to overcome their repulsion.', 'Nuclei attract each other strongly at any distance.', 'Fusion powers the Sun.'],
       ['binding energy', 'Both fission of heavy nuclei and fusion of light ones release energy.', 'Only fusion of light nuclei releases energy.', 'Each makes a product with more binding energy per nucleon.', 'Each makes a product with less binding energy per nucleon.', 'Binding energy per nucleon is greatest near iron.'],
-      ['the half-life', 'The half-life of a sample doesn’t depend on how much of it there is.', 'The half-life of a sample falls as it gets smaller.', 'Each nucleus decays with the same chance per second.', 'The nuclei in a small sample decay faster.', 'The half-life is 0.693/λ.'],
+      ['the nuclear density', 'All nuclei have about the same density.', 'Heavy nuclei are much denser than light ones.', 'The volume of a nucleus is proportional to its mass number, as R = R₀A^(1/3).', 'Heavy nuclei pack more neutrons into the same volume.', 'Nuclear density is about 2.3 × 10¹⁷ kg m⁻³.'],
       ['the nuclear force', 'The nucleus holds together despite the repulsion of its protons.', 'The nucleus flies apart unless its protons have no charge.', 'A strong, short-range nuclear force binds the nucleons.', 'Gravity between the protons is what binds them.', 'The nuclear force acts on both protons and neutrons.'],
     ],
   },

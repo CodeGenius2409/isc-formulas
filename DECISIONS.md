@@ -361,3 +361,5 @@ Work is on a `rebuild` branch. `master` still holds your original files.
   The fringe width in water was worked by applying λ/n to a width; it now gives the slits and screen and uses β = λD/d with the wavelength in water.
 - **Review batch 10** (Chemistry XII transition elements, Physics XII charges and fields; 42 blueprints, 7 fixed). A wrong answer: "two equal charges" was worked with a second charge the question didn't give. It now states that charge. The transition elements were sound throughout.
   Repeats were the rest: the same fact twice in a topic, which a paper could ask twice.
+- **Review batch 11** (Physics XII nuclei, Maths XII 3-D geometry, CS XII binary trees; 46 blueprints, 18 fixed, 9 flagged). Radioactivity isn't in the 2028 syllabus, and an earlier version already asked you whether to keep it (`reports/syllabus-review.md`, item 1). So nothing is deleted: its facts left the shared pools, and its 9 blueprints are flagged, including 7 that Task 8 counted as reviewed.
+  CS binary trees: the syllabus lists the terms and three traversals only, so search trees and full and complete trees went.

@@ -654,7 +654,7 @@ const knowledge: Record<string, Facts> = {
     ],
     recall: [
       ['The largest number of children a binary tree’s node can have is:', '2', '1', '3', 'any number'],
-      ['The number of nodes at level l of a full binary tree, with the root at level 0, is:', '2ˡ', 'l', '2l', 'l²'],
+      ['The largest number of nodes at level l of a binary tree, with the root at level 0, is:', '2ˡ', 'l', '2l', 'l²'],
       ['The largest number of nodes in a binary tree of height h is:', '2^(h + 1) − 1', '2ʰ', 'h²', '2h'],
       ['The depth of the root is:', '0', '1', '2', 'the height'],
       ['The degree of a leaf is:', '0', '1', '2', '3'],

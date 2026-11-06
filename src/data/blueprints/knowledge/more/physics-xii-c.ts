@@ -539,13 +539,11 @@ const knowledge: Record<string, Facts> = {
     ],
     reason: [
       ['Nuclear density is independent of mass number.', 'Radius varies as A^(1/3), so volume varies as A.', 'Mass also varies as A, so their ratio doesn’t change.'],
-      ['Electrons can’t stay in a nucleus.', 'A particle confined to that size would have far more energy than the observed energies, as seen from its de Broglie wavelength.'],
       ['Neutrons are slowed down in a reactor.', 'Slow neutrons are much more likely to cause fission in uranium-235.'],
       ['Graphite or heavy water is used as a moderator.', 'Their nuclei are light, so they take energy from neutrons in collisions.', 'They absorb very few neutrons themselves.'],
       ['Cadmium rods are used to control a reactor.', 'Cadmium absorbs neutrons strongly, so the rate of fission falls as the rods go in.'],
       ['A small piece of uranium doesn’t keep a chain reaction going.', 'Too many neutrons escape through its surface before they cause more fissions.'],
       ['Fusion hasn’t yet been controlled for steady power on Earth.', 'It needs extremely high temperature and pressure, which are hard to contain.'],
-      ['Fusion needs very high temperatures.', 'Nuclei repel each other, so only very fast ones can get close enough to fuse.'],
     ],
     explain: [
       ['Give two properties of nuclear forces.', 'They are very strong and short-ranged.', 'They don’t depend on charge.'],

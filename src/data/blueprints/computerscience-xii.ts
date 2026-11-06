@@ -884,11 +884,9 @@ const blueprints: Blueprint[] = [
       ['In-order traversal visits:', 'left, root, right', 'root, left, right', 'left, right, root', 'right, root, left'],
       ['Pre-order traversal visits:', 'root, left, right', 'left, root, right', 'left, right, root', 'right, left, root'],
       ['Post-order traversal visits:', 'left, right, root', 'root, left, right', 'left, root, right', 'right, root, left'],
-      ['In-order traversal of a binary search tree gives its values:', 'in sorted order', 'in reverse order only', 'in random order', 'in level order'],
     ],
     compare: [
-      ['in-order traversal', 'pre-order traversal', ['Visits the root between its subtrees.', 'Visits the root before its subtrees.'], ['On a search tree, gives sorted values.', 'Is useful for copying a tree.']],
-      ['a full binary tree', 'a complete binary tree', ['Every node has zero or two children.', 'All levels are filled, except perhaps the last, which fills from the left.'], ['Its last level may have gaps anywhere.', 'Its last level has no gaps before its rightmost node.']],
+      ['in-order traversal', 'pre-order traversal', ['Visits the root between its subtrees.', 'Visits the root before its subtrees.'], ['Visits the root of the whole tree after its left subtree.', 'Visits the root of the whole tree first.']],
     ],
     truths: [
       ['A tree with n nodes has n − 1 edges.', 'A tree with n nodes has n edges.'],
@@ -896,7 +894,7 @@ const blueprints: Blueprint[] = [
       ['A leaf has a degree of zero.', 'A leaf has a degree of two.'],
     ],
     reason: [
-      ['A balanced search tree finds a value quickly.', 'Each comparison discards about half of the remaining nodes.'],
+      ['The root has a depth of zero.', 'Depth counts the edges from the root, and there are none from the root to itself.'],
     ],
   }),
 

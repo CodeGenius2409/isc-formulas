@@ -25,6 +25,9 @@ const $ = (tex: string) => `$${tex}$`;
 /** One term of a polynomial in TeX, with no coefficient of 1 and nothing for 0. */
 const term = (k: Frac, power: string) => (k.n === 0 ? '' : `${k.n === k.d ? '' : k.tex()}${power}`);
 
+/** ax + by + cz, as a teacher would write it: no 0 terms and no coefficients of 1. All are positive here. */
+const linear = (k: number[]) => k.map((c, i) => [c, 'xyz'[i]] as const).filter(([c]) => c).map(([c, v]) => `${c === 1 ? '' : c}${v}`).join(' + ');
+
 function mcqFrac(g: Gen, text: string, right: Frac, slips: Frac[], why?: string): Body {
   const seen = new Set([right.text()]);
   const wrong: string[] = [];
@@ -1206,7 +1209,7 @@ const blueprints: Blueprint[] = [
     const d = a * x + b * y + c * z - s * h;
     return {
       form: 'numeric',
-      text: `A drone is at the point ${$(`(${x}, ${y}, ${z})`)}, in metres. A sloping roof lies in the plane ${$(`${a}x + ${b}y + ${c}z = ${d}`)}.`,
+      text: `A drone is at the point ${$(`(${x}, ${y}, ${z})`)}, in metres. A sloping roof lies in the plane ${$(`${linear([a, b, c])} = ${d}`)}.`,
       parts: [g.answerPart('The shortest distance from the drone to the plane of the roof, in metres', h, 3, [step('Use the distance formula', `\\dfrac{|${a} \\times ${x} + ${b} \\times ${y} + ${c} \\times ${z} - (${d})|}{\\sqrt{${a * a} + ${b * b} + ${c * c}}} = \\dfrac{${s * h}}{${s}} = ${h}`)])],
     };
   }),
