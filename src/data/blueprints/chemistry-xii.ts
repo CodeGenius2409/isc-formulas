@@ -307,10 +307,12 @@ const blueprints: Blueprint[] = [
   }),
   num('electrolysis-mass', [2, 'b', 3, 2], {
     variants: [
-      { text: 'A current of {I} A passes through a solution of a metal salt for {T} minutes. The metal has a molar mass of {M} g/mol, and its ions gain {N} electrons each. Find the mass deposited.', parts: [{ ask: 'Mass deposited', use: 'c-xii-3-7', find: 'm', given: { M: 'M g/mol', I: 'I A', t: 'T min', n: 'N' }, marks: 3 }] },
-      { text: 'In electroplating, how long must a current of {I} A run to deposit {W} g of a metal of molar mass {M} g/mol, whose ions gain {N} electrons each?', parts: [{ ask: 'Time needed', use: 'c-xii-3-7', find: 't', given: { m: 'W g', M: 'M g/mol', I: 'I A', n: 'N' }, unit: 'min', marks: 3 }] },
+      { text: 'A current of {I} A passes through a solution of a metal salt for {T} minutes. The metal has a molar mass of {M} g/mol, and its ions each carry a charge of +{N}. Find the mass deposited.', parts: [{ ask: 'Mass deposited', use: 'c-xii-3-7', find: 'm', given: { M: 'M g/mol', I: 'I A', t: 'T min', n: 'N' }, marks: 3 }] },
+      { text: 'In electroplating, how long must a current of {I} A run to deposit {W} g of a metal of molar mass {M} g/mol, whose ions each carry a charge of +{N}?', parts: [{ ask: 'Time needed', use: 'c-xii-3-7', find: 't', given: { m: 'W g', M: 'M g/mol', I: 'I A', n: 'N' }, unit: 'min', marks: 3 }] },
     ],
-    vars: { I: [1, 10, 1], T: [10, 60, 10], M: [27, 56, 59, 64, 108], N: [1, 3, 1], W: [1, 5, 1] },
+    // Each metal with its usual ion: Al³⁺, Fe²⁺, Ni²⁺, Cu²⁺ and Ag⁺.
+    vars: { I: [1, 10, 1], T: [10, 60, 10], K: [0, 4, 1], W: [1, 5, 1] },
+    derive: (v) => ({ M: [27, 56, 59, 64, 108][v.K], N: [3, 2, 2, 2, 1][v.K] }),
   }),
   num('conductivity', [2, 'b', 3, 2], {
     text: 'The conductivity of a {C} mol/L solution of a weak acid is {K} × 10⁻³ S/m. Its limiting molar conductivity is {L} × 10⁻⁴ S m²/mol.',

@@ -88,7 +88,7 @@ const blueprints: Blueprint[] = [
     return g.mcqNumber(`How many ${ask === 'all' ? '' : 'reflexive '}relations are there on a set with ${n} elements?`, ask === 'all' ? total : reflexive, '', [
       { slip: 'used 2ⁿ rather than 2 to the power n²', value: 2 ** n },
       { slip: 'used n² on its own', value: n * n },
-      { slip: 'left out the diagonal pairs', value: ask === 'all' ? reflexive : total },
+      ask === 'all' ? { slip: 'left out the diagonal pairs', value: reflexive } : { slip: 'counted every relation, not only the reflexive ones', value: total },
       { slip: 'used 2 to the power 2n', value: 2 ** (2 * n) },
     ], { digits: 6 });
   }),

@@ -60,7 +60,6 @@ const knowledge: Record<string, Facts> = {
     ],
     links: [
       ['same', 'The composition of functions is associative', 'The composition of functions need not'],
-      ['same', 'Equivalence classes of a relation', 'Equivalence classes split a set'],
       ['same', 'A strictly increasing function', 'A horizontal line meets'],
       ['contrast', 'a reflexive relation', 'a symmetric relation'],
       ['contrast', 'a symmetric relation', 'a transitive relation'],

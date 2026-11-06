@@ -1266,7 +1266,7 @@ const blueprints: Blueprint[] = [
   custom('level-transitions', [8, 'a', 1, 2], { type: 'mcq', format: 'mcq' }, (g) => {
     const n = g.int(3, 6);
     const lines = (n * (n - 1)) / 2;
-    return g.mcqNumber(`A hydrogen atom sits in the n = ${n} level. The largest number of different spectral lines it can emit on falling to the ground state, taking every possible route, is:`, lines, '', [
+    return g.mcqNumber(`A sample of hydrogen atoms is excited to the n = ${n} level. The largest number of different spectral lines the sample can give as its atoms fall to the ground state is:`, lines, '', [
       { slip: 'used n − 1, counting only one route', value: n - 1 },
       { slip: 'forgot to halve n(n − 1)', value: n * (n - 1) },
       { slip: 'used n', value: n },

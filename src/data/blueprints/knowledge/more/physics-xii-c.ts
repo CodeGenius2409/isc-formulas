@@ -407,7 +407,6 @@ const knowledge: Record<string, Facts> = {
     recall: [
       ['In Rutherford’s experiment, alpha particles were fired at a thin foil of:', 'gold', 'iron', 'silver chloride', 'carbon'],
       ['In Rutherford’s experiment, the fraction of alpha particles bent through large angles was:', 'very small', 'about one half', 'about nine tenths', 'all of them'],
-      ['Rutherford’s scattering depends on the angle θ as:', '1/sin⁴(θ/2)', 'sin⁴(θ/2)', '1/sin²θ', 'cos θ'],
       ['An alpha particle fired head-on at a nucleus has an impact parameter of:', 'zero', 'one atomic radius', 'the size of the foil', 'infinity'],
       ['The nucleus of an atom has a size of about:', '10⁻¹⁵ m', '10⁻¹⁰ m', '10⁻⁵ m', '10⁻²⁰ m'],
       ['An atom has a size of about:', '10⁻¹⁰ m', '10⁻¹⁵ m', '10⁻⁵ m', '10⁻²⁰ m'],
@@ -465,12 +464,12 @@ const knowledge: Record<string, Facts> = {
       ['the Lyman series', 'the Balmer series', ['Ends on the first orbit.', 'Ends on the second orbit.'], ['Lies in the ultraviolet.', 'Lies partly in the visible region.']],
     ],
     ar: [
-      ['the nucleus’s small size', 'Most alpha particles pass through a gold foil without turning.', 'Most alpha particles turn back from a gold foil.', 'Most of each atom is empty space.', 'A gold atom has no charge inside it at all.', 'The nucleus holds nearly all of the atom’s mass.'],
+      ['the alpha particles turned back', 'A few alpha particles are turned back by a thin gold foil.', 'No alpha particle is ever turned back by a thin gold foil.', 'A few head almost straight at a nucleus, whose concentrated positive charge repels them.', 'They hit electrons, which are heavy enough to stop them.', 'The nucleus holds nearly all of the atom’s mass.'],
       ['the Bohr orbit and its radiation', 'An electron in a stationary orbit doesn’t radiate.', 'An electron in a stationary orbit always radiates.', 'This is Bohr’s postulate, which allows the atom to be stable.', 'The electron has no acceleration in orbit.', 'The angular momentum in a Bohr orbit is a whole multiple of h/(2π).'],
       ['the wavelengths of series', 'Lyman series lines have shorter wavelengths than Balmer series lines.', 'Lyman series lines have longer wavelengths than Balmer series lines.', 'Falls to the first orbit involve larger energy gaps.', 'Falls to the first orbit involve no energy gap.', 'Balmer lines are partly in the visible region.'],
     ],
     links: [
-      ['cause', 'A Bohr electron radiates only', 'The frequency of a photon'],
+      ['same', 'A Bohr electron radiates only', 'The frequency of a photon'],
       ['cause', 'Spectral lines are sharp', 'The frequency of a photon'],
       ['same', 'Most of an atom is empty', 'Almost all of an atom’s mass'],
       ['same', 'Bohr’s model works well', 'Bohr’s model can’t explain'],

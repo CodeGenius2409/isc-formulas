@@ -267,7 +267,7 @@ const knowledge: Record<string, Facts> = {
       ['Electrolytic conduction involves chemical change at the electrodes.', 'Electrolytic conduction involves no chemical change at the electrodes.'],
       ['Molar conductivity rises on dilution, for all electrolytes.', 'Molar conductivity falls on dilution, for all electrolytes.'],
       ['Conductivity falls on dilution, as there are fewer ions per unit volume.', 'Conductivity rises on dilution, as there are more ions per unit volume.'],
-      ['A weak electrolyte’s limiting molar conductivity can’t be found directly by extrapolation.', 'A weak electrolyte’s limiting molar conductivity is easily found by a straight-line extrapolation.'],
+      ['Conductivity is the reciprocal of resistivity.', 'Conductivity is the same as resistivity.'],
       ['Kohlrausch’s law can find the limiting conductivity of acetic acid from those of strong electrolytes.', 'Kohlrausch’s law can only be applied to strong electrolytes’ own values.'],
       ['Conductivity depends on the concentration, nature of the ions and temperature.', 'Conductivity doesn’t depend on the concentration or temperature.'],
       ['The degree of dissociation of a weak electrolyte rises on dilution.', 'The degree of dissociation of a weak electrolyte falls on dilution.'],
@@ -289,7 +289,7 @@ const knowledge: Record<string, Facts> = {
       ['Give the relation of Kohlrausch’s law for acetic acid.', 'Λ°(CH₃COOH) = Λ°(CH₃COONa) + Λ°(HCl) − Λ°(NaCl).'],
       ['Give the anode and cathode products in the electrolysis of aqueous copper sulphate with copper electrodes.', 'Anode: copper dissolves.', 'Cathode: copper is deposited.'],
       ['Give two uses of electrolysis.', 'Electroplating.', 'Refining metals.'],
-      ['Why does conductivity differ from molar conductivity on dilution?', 'Conductivity counts ions per unit volume, which falls.', 'Molar conductivity counts one mole of electrolyte in whatever volume, which rises.'],
+      ['Write how the molar conductivity of a strong electrolyte changes with concentration.', 'Λm = Λ°m − A√c, where A is a constant for a given solvent and temperature.', 'So a graph of Λm against √c is a nearly straight line.'],
     ],
     compare: [
       ['metallic conduction', 'electrolytic conduction', ['By electrons.', 'By ions.'], ['No chemical change.', 'Chemical change at electrodes.'], ['Falls as temperature rises.', 'Rises as temperature rises.']],
@@ -301,7 +301,7 @@ const knowledge: Record<string, Facts> = {
     ],
     links: [
       ['same', 'Molar conductivity rises on dilution', 'Conductivity falls on dilution'],
-      ['same', 'A weak electrolyte’s limiting', 'The degree of dissociation'],
+      ['same', 'The limiting molar conductivity of a weak', 'The degree of dissociation'],
       ['same', 'Electrolytic conduction is by', 'Electrolytic conduction involves'],
       ['same', 'An inert platinum anode', 'A copper anode in copper sulphate'],
       ['contrast', 'a strong electrolyte', 'a weak electrolyte'],
