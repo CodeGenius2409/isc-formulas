@@ -335,3 +335,6 @@ Work is on a `rebuild` branch. `master` still holds your original files.
 
 - **Task 8, derivations:** a library in `src/data/derivations/`, written from the syllabus's "derive" lines. Each has its assumptions, steps with marks, a result, and where it helps, a figure, a mistake to find, and fresh values for "hence calculate". A bank question asks each one, so they're there at 0%, and blueprints ask it the other ways.
   Most results are checked by mathjs at random values, and with units. What can't be is listed in `reports/derivations.md`. Mock papers give derivations the share they have in the real papers at each mark value. A step left unticked comes back alone in review, as "write the missing step".
+
+- **Task 6, fresher facts:** 2,453 facts became 6,724, written from the syllabus wording, not the papers, with links (same, cause, contrast) that make linked assertion–reason and "distinguish" questions. A history in IndexedDB keeps each fact away for 7 days (a setting), unless spaced repetition has it due; numericals without facts are remembered by blueprint.
+  When everything's resting, the least recently seen come back, with a note, so a paper is never short. Linked teacher papers stay reproducible, so they ignore the history. The history isn't in the progress backup: it's per device. New facts count as reviewed only once Task 2 checks their blueprint.

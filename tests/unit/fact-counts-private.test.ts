@@ -29,4 +29,28 @@ it('writes the counts', async () => {
     }
   }
   writeFileSync(out, JSON.stringify(rows, null, 1));
+  // With a report path too, the before and after table goes into it, between its markers.
+  const report = process.env.WRITE_FACT_REPORT;
+  if (!report) return;
+  const before = JSON.parse(readFileSync('reports/fact-counts-before.json', 'utf8')) as typeof rows;
+  const table: string[] = [];
+  let totalBefore = 0;
+  let totalAfter = 0;
+  for (const subject of ['physics', 'chemistry', 'mathematics', 'computerscience']) {
+    const mine = before.filter((r) => r.key.startsWith(`${subject} `));
+    const top = new Set([...mine].sort((a, b) => b.asked - a.asked).slice(0, 20).map((r) => r.key));
+    table.push('', `### ${{ physics: 'Physics', chemistry: 'Chemistry', mathematics: 'Mathematics', computerscience: 'Computer Science' }[subject]}`, '', '| Topic | Parts asked in the papers | Facts before | Facts after | Needed |', '|---|---:|---:|---:|---:|');
+    for (const r of mine) {
+      const now = rows.find((x) => x.key === r.key)!;
+      const need = top.has(r.key) ? Math.max(40, r.facts * 3) : 15;
+      totalBefore += r.facts;
+      totalAfter += now.facts;
+      table.push(`| ${r.key.split(' ').slice(1).join(' ')} ${r.name}${top.has(r.key) ? ' (most asked)' : ''} | ${r.asked} | ${r.facts} | ${now.facts} | ${need} |`);
+    }
+  }
+  const section = ['<!-- fact-counts -->', '## The knowledge base, before and after Task 6', '', `Facts are the rows a topic’s questions are made from: definitions, recall questions, true and false statements, reasons, comparisons, explanations, long answers, cases, diagrams and assertion–reason concepts. In all: ${totalBefore.toLocaleString('en-GB')} before and ${totalAfter.toLocaleString('en-GB')} after. The 20 most-asked topics in each subject needed at least three times their facts, and at least 40; every other syllabus topic needed at least 15. Links between facts, for assertion–reason and “distinguish between” pairs, aren’t counted here.`, ...table, '<!-- /fact-counts -->'].join('\n');
+  const text = readFileSync(report, 'utf8');
+  const start = text.indexOf('<!-- fact-counts -->');
+  const end = text.indexOf('<!-- /fact-counts -->');
+  writeFileSync(report, start >= 0 ? text.slice(0, start) + section + text.slice(end + '<!-- /fact-counts -->'.length) : `${text.trimEnd()}\n\n${section}\n`);
 }, 300_000);

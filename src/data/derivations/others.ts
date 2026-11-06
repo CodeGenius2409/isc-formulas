@@ -601,7 +601,7 @@ export const MATHEMATICS: Derivation[] = [
       ['With n = (a, b, c) and n · Q = d, this gives |ax₁ + by₁ + cz₁ − d|/√(a² + b² + c²).', 1],
     ],
     result: 'D = |ax₁ + by₁ + cz₁ − d|/√(a² + b² + c²)',
-    hence: { text: 'Calculate the distance of the point ({X}, {Y}, {Z}) from the plane x + 2y + 2z = 3.', vars: { X: [1, 6, 1], Y: [1, 6, 1], Z: [1, 6, 1] }, value: (v) => Math.abs(v.X + 2 * v.Y + 2 * v.Z - 3) / 3, expr: 'abs(X+2*Y+2*Z-3)/3', unit: 'units' },
+    hence: { text: 'Find how far the point ({X}, {Y}, {Z}) lies from the plane x + 2y + 2z = 3.', vars: { X: [1, 6, 1], Y: [1, 6, 1], Z: [1, 6, 1] }, value: (v) => Math.abs(v.X + 2 * v.Y + 2 * v.Z - 3) / 3, expr: 'abs(X+2*Y+2*Z-3)/3', unit: 'units' },
     check: { lhs: 'abs(1*1+2*2+2*3-3)/sqrt(1+4+4)', rhs: '8/3', vars: {} },
     seen: /distance.*(point).*(plane)/i,
   }),

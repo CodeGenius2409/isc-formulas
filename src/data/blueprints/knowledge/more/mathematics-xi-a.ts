@@ -89,7 +89,7 @@ const knowledge: Record<string, Facts> = {
     truths: [
       ['(a, b) and (b, a) are different unless a = b.', '(a, b) and (b, a) are always equal.'],
       ['A × B isn’t usually equal to B × A.', 'A × B is always equal to B × A.'],
-      ['A relation needn’t be a function.', 'Every relation is a function.'],
+      ['A relation needn’t be a function.', 'A relation must always be a function.'],
       ['Each input of a function has one output, though an output may have many inputs.', 'Each output of a function has one input, though an input may have many outputs.'],
       ['The vertical line test checks whether a graph is that of a function.', 'The horizontal line test checks whether a graph is that of a function.'],
       ['The range is a subset of the codomain.', 'The codomain is a subset of the range.'],

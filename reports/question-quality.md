@@ -115,3 +115,181 @@ A spread of the numericals in the samples was also worked by hand, and those all
 ## Reporting a problem
 
 Each generated question has a "Report a problem" action, which saves the question, its seed and your comment on this device. Progress has a button to export them all as a file. Those reports, and the blueprint id in each, are the fastest way to fix a question.
+
+<!-- fact-counts -->
+## The knowledge base, before and after Task 6
+
+Facts are the rows a topic’s questions are made from: definitions, recall questions, true and false statements, reasons, comparisons, explanations, long answers, cases, diagrams and assertion–reason concepts. In all: 2,453 before and 6,724 after. The 20 most-asked topics in each subject needed at least three times their facts, and at least 40; every other syllabus topic needed at least 15. Links between facts, for assertion–reason and “distinguish between” pairs, aren’t counted here.
+
+### Physics
+
+| Topic | Parts asked in the papers | Facts before | Facts after | Needed |
+|---|---:|---:|---:|---:|
+| XI 1a Units and Measurements | 2 | 16 | 16 | 15 |
+| XI 1b Dimensions | 2 | 14 | 16 | 15 |
+| XI 1p Paper II: measuring instruments | 0 | 0 | 15 | 15 |
+| XI 2a Motion in a Straight Line (most asked) | 6 | 19 | 67 | 57 |
+| XI 2b Motion in a Plane | 3 | 18 | 18 | 15 |
+| XI 3a Newton's laws and momentum | 5 | 21 | 21 | 15 |
+| XI 3b Equilibrium and friction | 0 | 18 | 18 | 15 |
+| XI 3c Circular motion | 0 | 14 | 15 | 15 |
+| XI 4a Work, energy and power (most asked) | 8 | 18 | 71 | 54 |
+| XI 4b Collisions | 0 | 14 | 15 | 15 |
+| XI 5a Centre of mass | 2 | 11 | 15 | 15 |
+| XI 5b Torque and angular momentum | 0 | 15 | 15 | 15 |
+| XI 5c Moment of inertia | 1 | 13 | 15 | 15 |
+| XI 6a Gravity and its variation | 2 | 16 | 16 | 15 |
+| XI 6b Potential, escape velocity and satellites | 1 | 18 | 18 | 15 |
+| XI 7a Mechanical Properties of Solids | 3 | 16 | 16 | 15 |
+| XI 7b Mechanical Properties of Fluids | 1 | 20 | 20 | 15 |
+| XI 7c Surface tension | 3 | 15 | 15 | 15 |
+| XI 8a Thermal Properties of Matter | 1 | 19 | 19 | 15 |
+| XI 8b Thermodynamics | 3 | 20 | 20 | 15 |
+| XI 9a Kinetic Theory | 1 | 17 | 17 | 15 |
+| XI 10a Oscillations | 1 | 18 | 18 | 15 |
+| XI 10b Waves (most asked) | 12 | 22 | 92 | 66 |
+| XII 1a Electric Charges and Fields (most asked) | 66 | 32 | 101 | 96 |
+| XII 1b Electrostatic Potential, Potential Energy and Capacitance (most asked) | 74 | 27 | 95 | 81 |
+| XII 2a Conduction, Ohm's law and power (most asked) | 74 | 27 | 90 | 81 |
+| XII 2b Cells, Kirchhoff's laws and bridges (most asked) | 97 | 25 | 86 | 75 |
+| XII 3a Moving charges and magnetism (most asked) | 144 | 30 | 104 | 90 |
+| XII 3b Magnetism and Matter (most asked) | 22 | 20 | 83 | 60 |
+| XII 4a Electromagnetic Induction (most asked) | 24 | 23 | 90 | 69 |
+| XII 4b Alternating Current (most asked) | 121 | 30 | 105 | 90 |
+| XII 5a Electromagnetic Waves (most asked) | 37 | 20 | 84 | 60 |
+| XII 6a Ray Optics (most asked) | 117 | 37 | 137 | 111 |
+| XII 6b Optical instruments (most asked) | 39 | 20 | 74 | 60 |
+| XII 6c Wave Optics (most asked) | 67 | 28 | 93 | 84 |
+| XII 6p Paper II: ray optics experiments | 0 | 0 | 17 | 15 |
+| XII 7a Dual Nature of Radiation and Matter (most asked) | 68 | 24 | 87 | 72 |
+| XII 8a Atoms (most asked) | 52 | 22 | 87 | 66 |
+| XII 8b Nuclei (most asked) | 61 | 28 | 100 | 84 |
+| XII 9a Semiconductor Electronics (most asked) | 27 | 19 | 79 | 57 |
+| XII 9b Semiconductor diode (most asked) | 70 | 26 | 99 | 78 |
+
+### Chemistry
+
+| Topic | Parts asked in the papers | Facts before | Facts after | Needed |
+|---|---:|---:|---:|---:|
+| XI 1a Matter, laws and measurement | 2 | 14 | 15 | 15 |
+| XI 1b Mole concept and stoichiometry | 8 | 15 | 15 | 15 |
+| XI 1c Chemical equivalents and volumetric calculations (most asked) | 11 | 13 | 42 | 40 |
+| XI 2a Particles and atomic models | 3 | 14 | 15 | 15 |
+| XI 2b Quantum numbers and electronic configuration | 7 | 18 | 18 | 15 |
+| XI 3a Periodic law and periodic trends | 3 | 20 | 20 | 15 |
+| XI 4a Ionic and covalent bonding | 5 | 19 | 19 | 15 |
+| XI 4b VSEPR, hybridisation and molecular orbitals | 6 | 17 | 17 | 15 |
+| XI 5a Systems and the First Law | 0 | 16 | 16 | 15 |
+| XI 5b Second and Third Laws | 5 | 14 | 15 | 15 |
+| XI 6a Chemical Equilibrium | 2 | 16 | 16 | 15 |
+| XI 6b Ionic equilibrium (most asked) | 19 | 19 | 76 | 57 |
+| XI 7a Redox Reactions | 4 | 17 | 17 | 15 |
+| XI 8a Classification, nomenclature and isomerism | 11 | 16 | 16 | 15 |
+| XI 8b Purification and analysis | 1 | 13 | 15 | 15 |
+| XI 8c Electronic effects and reaction types | 1 | 18 | 18 | 15 |
+| XI 9a Alkanes | 1 | 13 | 15 | 15 |
+| XI 9b Alkenes | 6 | 14 | 15 | 15 |
+| XI 9c Alkynes | 0 | 12 | 15 | 15 |
+| XI 9d Aromatic Hydrocarbons | 0 | 15 | 15 | 15 |
+| XI 10a Titration | 1 | 10 | 15 | 15 |
+| XI 10b Qualitative analysis | 0 | 0 | 17 | 15 |
+| XI 10c Preparation of inorganic compounds | 0 | 0 | 15 | 15 |
+| XI 10d Paper Chromatography | 0 | 0 | 15 | 15 |
+| XII 1a Solutions and colligative properties (most asked) | 165 | 40 | 156 | 120 |
+| XII 2a Cells and potentials (most asked) | 49 | 21 | 74 | 63 |
+| XII 2b Conductance and electrolysis (most asked) | 54 | 19 | 73 | 57 |
+| XII 2c Batteries and corrosion | 8 | 17 | 17 | 15 |
+| XII 3a Rate, order and integrated rate equations (most asked) | 118 | 26 | 94 | 78 |
+| XII 3b Collision theory and activation energy | 9 | 18 | 18 | 15 |
+| XII 4a Transition elements, lanthanoids and actinoids (most asked) | 66 | 22 | 89 | 66 |
+| XII 4b K2Cr2O7 and KMnO4 (most asked) | 30 | 21 | 87 | 63 |
+| XII 5a Coordination Compounds (most asked) | 79 | 32 | 134 | 96 |
+| XII 6a Haloalkanes (most asked) | 80 | 23 | 102 | 69 |
+| XII 6b Haloarenes (most asked) | 21 | 14 | 52 | 42 |
+| XII 6c Polyhalogen compounds | 1 | 14 | 15 | 15 |
+| XII 7a Alcohols (most asked) | 82 | 21 | 80 | 63 |
+| XII 7b Phenols (most asked) | 39 | 18 | 70 | 54 |
+| XII 7c Ethers (most asked) | 15 | 13 | 50 | 40 |
+| XII 8a Aldehydes and Ketones (most asked) | 48 | 26 | 101 | 78 |
+| XII 8b Carboxylic Acids | 11 | 19 | 19 | 15 |
+| XII 9a Aliphatic Amines and Aniline (most asked) | 32 | 23 | 89 | 69 |
+| XII 9b Cyanides and Isocyanides | 9 | 14 | 15 | 15 |
+| XII 9c Diazonium salts (most asked) | 19 | 13 | 48 | 40 |
+| XII 10a Carbohydrates (most asked) | 15 | 23 | 89 | 69 |
+| XII 10b Proteins (most asked) | 24 | 22 | 86 | 66 |
+| XII 10c Vitamins | 10 | 16 | 16 | 15 |
+| XII 10d Nucleic Acids (most asked) | 17 | 18 | 62 | 54 |
+| XII 11a Titrations | 3 | 0 | 16 | 15 |
+| XII 11b Rate of reaction, pH and cells | 0 | 0 | 16 | 15 |
+| XII 11c Identifying compounds and functional groups | 5 | 0 | 16 | 15 |
+| XII 11d Qualitative analysis | 0 | 0 | 15 | 15 |
+
+### Mathematics
+
+| Topic | Parts asked in the papers | Facts before | Facts after | Needed |
+|---|---:|---:|---:|---:|
+| XI 1a Sets (most asked) | 14 | 14 | 49 | 42 |
+| XI 1b Relations & Functions (most asked) | 30 | 13 | 46 | 40 |
+| XI 1c Trigonometry (most asked) | 114 | 14 | 56 | 42 |
+| XI 2a Complex Numbers | 4 | 12 | 15 | 15 |
+| XI 2b Quadratic Equations | 6 | 10 | 15 | 15 |
+| XI 2c Permutations and Combinations | 8 | 13 | 15 | 15 |
+| XI 2d Binomial Theorem | 3 | 10 | 15 | 15 |
+| XI 2e Sequence and Series | 8 | 13 | 15 | 15 |
+| XI 3a Straight Lines (most asked) | 9 | 10 | 40 | 40 |
+| XI 3b Circles (most asked) | 9 | 9 | 43 | 40 |
+| XI 3c Conic Section (most asked) | 14 | 14 | 50 | 42 |
+| XI 3d Introduction to three-dimensional Geometry | 4 | 9 | 15 | 15 |
+| XI 4a Limits and Derivatives | 6 | 14 | 15 | 15 |
+| XI 5a Statistics | 4 | 14 | 15 | 15 |
+| XI 5b Probability (most asked) | 10 | 12 | 40 | 40 |
+| XII 1a Types of relations and functions (most asked) | 53 | 17 | 60 | 51 |
+| XII 1b Inverse Trigonometric Functions (most asked) | 45 | 13 | 47 | 40 |
+| XII 2a Matrices (most asked) | 44 | 13 | 48 | 40 |
+| XII 2b Determinants (most asked) | 51 | 14 | 46 | 42 |
+| XII 3a Continuity, Differentiability and Differentiation (most asked) | 44 | 14 | 49 | 42 |
+| XII 3b Applications of Derivatives (most asked) | 146 | 13 | 49 | 40 |
+| XII 3c Integrals (most asked) | 104 | 12 | 47 | 40 |
+| XII 3d Application of Integrals (most asked) | 28 | 9 | 40 | 40 |
+| XII 3e Differential Equations (most asked) | 51 | 13 | 45 | 40 |
+| XII 4a Vector Algebra (most asked) | 77 | 15 | 60 | 45 |
+| XII 5a Three-dimensional Geometry (most asked) | 56 | 13 | 47 | 40 |
+| XII 6a Linear Programming (most asked) | 28 | 14 | 50 | 42 |
+| XII 7a Probability (most asked) | 137 | 19 | 67 | 57 |
+
+### Computer Science
+
+| Topic | Parts asked in the papers | Facts before | Facts after | Needed |
+|---|---:|---:|---:|---:|
+| XI 1a System of Numeration (most asked) | 19 | 15 | 56 | 45 |
+| XI 2a Encodings (most asked) | 8 | 15 | 50 | 45 |
+| XI 3a Propositional logic (most asked) | 12 | 12 | 44 | 40 |
+| XI 3b Logic and hardware | 7 | 12 | 15 | 15 |
+| XI 4a Introduction | 0 | 15 | 15 | 15 |
+| XI 5a Objects and the JVM (most asked) | 19 | 11 | 52 | 40 |
+| XI 5b Errors and exceptions | 6 | 15 | 15 | 15 |
+| XI 6a Primitive values, Wrapper classes, Types and casting (most asked) | 15 | 17 | 61 | 51 |
+| XI 7a Variables, Expressions (most asked) | 26 | 16 | 60 | 48 |
+| XI 8a Statements, Scope (most asked) | 46 | 16 | 58 | 48 |
+| XI 9a Methods and Constructors (most asked) | 19 | 16 | 53 | 48 |
+| XI 10a Arrays, Strings | 4 | 14 | 15 | 15 |
+| XI 11a Basic input/output using Scanner class | 2 | 10 | 15 | 15 |
+| XI 11b Data File Handling | 7 | 13 | 15 | 15 |
+| XI 12a Introduction to Python | 5 | 16 | 16 | 15 |
+| XI 13a Trends in computing and ethical issues | 5 | 19 | 19 | 15 |
+| XII 1a Propositional logic (most asked) | 30 | 14 | 48 | 42 |
+| XII 1b Boolean algebra and Karnaugh maps (most asked) | 216 | 20 | 72 | 60 |
+| XII 2a Logic gates (most asked) | 38 | 15 | 54 | 45 |
+| XII 2b Applications (most asked) | 20 | 21 | 66 | 63 |
+| XII 3a Methods (most asked) | 121 | 21 | 67 | 63 |
+| XII 4a Arrays (most asked) | 37 | 16 | 52 | 48 |
+| XII 4b String handling (most asked) | 13 | 14 | 47 | 42 |
+| XII 5a Recursion (most asked) | 13 | 13 | 42 | 40 |
+| XII 6a Inheritance (most asked) | 14 | 18 | 62 | 54 |
+| XII 6b Interfaces in Java (Only Conceptual) (most asked) | 13 | 16 | 48 | 48 |
+| XII 7a Strings | 1 | 11 | 15 | 15 |
+| XII 7b Lists | 0 | 12 | 15 | 15 |
+| XII 7c Tuples | 0 | 11 | 15 | 15 |
+| XII 8a Binary trees [Conceptual] (most asked) | 55 | 17 | 58 | 51 |
+| XII 9a Complexity and Big O notation (most asked) | 20 | 16 | 55 | 48 |
+<!-- /fact-counts -->

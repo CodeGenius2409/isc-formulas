@@ -94,7 +94,7 @@ export const PHYSICS: Derivation[] = [
   d('XI', '3a', 'impulse', {
     what: 'the relation between impulse and change in momentum',
     from: 'Newton’s second law',
-    showThat: 'impulse is equal to the change in momentum',
+    showThat: 'the impulse of a force equals the momentum change it causes',
     assumptions: ['The force is taken as constant during the short time, or as an average.'],
     steps: [
       ['The second law says F = dp/dt, so F dt = dp.', 1],

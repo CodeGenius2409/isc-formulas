@@ -888,7 +888,7 @@ const blueprints: Blueprint[] = [
     ],
     compare: [
       ['in-order traversal', 'pre-order traversal', ['Visits the root between its subtrees.', 'Visits the root before its subtrees.'], ['On a search tree, gives sorted values.', 'Is useful for copying a tree.']],
-      ['a full binary tree', 'a complete binary tree', ['Every node has zero or two children.', 'All levels are filled, except perhaps the last, which fills from the left.']],
+      ['a full binary tree', 'a complete binary tree', ['Every node has zero or two children.', 'All levels are filled, except perhaps the last, which fills from the left.'], ['Its last level may have gaps anywhere.', 'Its last level has no gaps before its rightmost node.']],
     ],
     truths: [
       ['A tree with n nodes has n − 1 edges.', 'A tree with n nodes has n edges.'],

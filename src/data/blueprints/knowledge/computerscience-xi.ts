@@ -1,5 +1,6 @@
 // Computer Science, Class XI: knowledge added to what computerscience-xi.ts holds. Written fresh from the syllabus.
-import type { Facts } from '../dsl';
+import { mergeKnowledge, type Facts } from '../dsl';
+import MORE_A from './more/computerscience-xi-a';
 
 const knowledge: Record<string, Facts> = {
   '1a': {
@@ -116,4 +117,4 @@ const knowledge: Record<string, Facts> = {
   },
 };
 
-export default knowledge;
+export default mergeKnowledge(knowledge, MORE_A);
