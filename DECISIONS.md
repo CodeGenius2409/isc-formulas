@@ -355,3 +355,5 @@ Work is on a `rebuild` branch. `master` still holds your original files.
   The naming MCQ's distractors are now built from slips a student makes, not other complexes' names.
 - **Review batch 7** (Maths XII vectors, Physics XII potential and capacitance; 42 blueprints, 11 fixed). A wrong formula: the dielectric numerical used the n-plate capacitor formula with n = K, so its answers were too small. The solver now has C = Kε₀A/d from the book.
   The syllabus says the parallel plate capacitance and energy stored are "No derivation, formulae only", though its detailed list says "obtain". The explicit note wins, as in Task 8, so those two derivations were replaced.
+- **Review batch 8** (Physics XII conduction, semiconductor diodes; 42 blueprints, 12 fixed, 1 flagged). Logic gates aren't in the 2028 Physics syllabus, so their facts went, and `p12-9b-gates` is flagged for you rather than deleted: it stays in use, marked "Not yet reviewed". Flags have their own table in the report.
+  Also: no bridge rectifier, which the syllabus leaves out; mains supplies of 220 to 240 V.

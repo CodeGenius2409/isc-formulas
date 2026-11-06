@@ -765,9 +765,8 @@ const knowledge: Record<string, Facts> = {
     links: [
       ['same', 'Forward bias lowers', 'Reverse bias raises'],
       ['cause', 'A half-wave rectifier gives', 'A full-wave rectifier uses both'],
-      ['same', 'An LED is more efficient', 'An LED gives out light when'],
+      ['cause', 'An LED is more efficient', 'An LED gives out light when'],
       ['same', 'A solar cell needs no', 'A solar cell’s top layer'],
-      ['same', 'A Zener diode is designed', 'Heavy doping gives a Zener'],
       ['contrast', 'forward bias', 'reverse bias'],
       ['contrast', 'an LED', 'a photodiode'],
       ['contrast', 'a photodiode', 'a solar cell'],

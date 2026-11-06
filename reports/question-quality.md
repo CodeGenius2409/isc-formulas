@@ -313,4 +313,15 @@ Each blueprint’s date and note are in `src/data/blueprints/reviews/`.
 | 5 | Maths XI 1c, Maths XII 3c, Physics XII 2b | 47 | 6 blueprints fixed: fewer problems: Physics XII cells and bridges, Maths XII integrals and Maths XI trigonometry were all correct in substance. Fixed: two near-repeats (a metre bridge’s best balance point, a potentiometer’s longer wire), an 8 V “car battery”, working printed as “+ 0x² + 1x”, and a pair to distinguish that isn’t one (a proper rational function and partial fractions) | 0 | 670 |
 | 6 | Chemistry XII 7a, Chemistry XII 6a, Chemistry XII 5a | 58 | 12 blueprints fixed: IUPAC-name distractors that were the names of other complexes, which nobody would confuse, now come from real slips (the wrong oxidation state, -ate in a cation or missing in an anion, the wrong count); the dehydration mechanism asked twice in one topic; phenol among the alcohols to name; a truth said twice (the e_g set higher), and a false version that repeated another truth; [Cu(H₂O)₄]²⁺ for the hexaaqua ion; a tetrahedral “also true” line that gives the reason; two reasons said twice (Grignard reagents and water, ethanol in water); distractors like “better sight”; and fermentation and esterification as a pair to distinguish | 0 | 728 |
 | 7 | Maths XII 4a, Physics XII 1b | 42 | 11 blueprints fixed: a wrong formula: the dielectric numerical used C = (n − 1)ε₀A/d, the formula for a capacitor of n plates, with n set to the dielectric constant, so every answer was too small; the solver now has the book’s C = Kε₀A/d. Also two derivations the syllabus says are “formulae only” (a parallel plate capacitor and the energy it stores), replaced with ones it asks for; four reasons and truths said twice; two “also true” lines that explain; a distractor whose slip was named wrongly; “+ 0k̂” in a question; a crane pulling with 5 N; and the scalar and vector products as a second “distinguish” of the dot and cross products | 0 | 770 |
+| 8 | Physics XII 2a, Physics XII 9b | 42 | 12 blueprints fixed: logic gates, not in the 2028 Physics syllabus, removed from the facts, and the gates blueprint flagged; a bridge rectifier, which the syllabus leaves out; supplies of 110 to 190 V for an iron, and “1 hours a day”; drift speed as “a millimetre per second”; a link that is cause and effect marked as not, and one that was arguable; and one ampere and one ohm as a pair to distinguish | 1 | 812 |
 <!-- /review-progress -->
+
+### Flagged: can’t be made right yet
+
+These stay in use, marked “Not yet reviewed”, until you decide.
+
+<!-- flagged -->
+| Blueprint | Batch | Why |
+|---|---:|---|
+| `p12-9b-gates` | 8 | Logic gates aren’t in the 2028 ISC Physics syllabus, whose electronics stops at diodes, rectifiers, LEDs, photodiodes, solar cells and Zener diodes. They are in Computer Science. It stays in use, marked “Not yet reviewed”, until you decide whether to remove it. |
+<!-- /flagged -->

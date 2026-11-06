@@ -239,7 +239,8 @@ const blueprints: Blueprint[] = [
   num('ohm-power', [2, 'a', 2, 1], {
     text: '{scene} draws {I} A from a {V} V supply. Find its resistance and the power it uses.',
     scenes: ['An electric iron', 'A room heater', 'A water pump'],
-    vars: { I: [2, 10, 1], V: [110, 240, 10] },
+    // Mains in India is 220 to 240 V.
+    vars: { I: [2, 8, 1], V: [220, 240, 10] },
     parts: [
       { ask: 'Resistance', use: 'p-xii-2-1', find: 'R', given: { V: 'V V', I: 'I A' }, marks: 1 },
       { ask: 'Power used', use: 'p-xii-2-4', find: 'P', given: { V: 'V V', I: 'I A' }, marks: 1 },
@@ -310,7 +311,7 @@ const blueprints: Blueprint[] = [
     style: 'cbq-style',
     text: 'A household {scene} of {P} W runs for {H} hours a day from a {V} V supply.',
     scenes: ['geyser', 'room heater', 'iron'],
-    vars: { P: [500, 2000, 100], H: [1, 4, 1], V: [220, 240, 20] },
+    vars: { P: [500, 2000, 100], H: [2, 6, 1], V: [220, 240, 20] },
     derive: (v) => ({ J: v.P * v.H * 3600, I2: v.P / v.V }),
     parts: [
       { ask: 'Current drawn', use: 'p-xii-2-4', find: 'I', given: { P: 'P W', V: 'V V' }, marks: 1 },
@@ -1391,7 +1392,7 @@ const blueprints: Blueprint[] = [
     ] as const);
     const a = g.int(0, 1);
     const b = g.int(0, 1);
-    return g.theory(`Inputs A = ${a} and B = ${b} go to a ${gate} gate. Write the output, and the truth table for this gate.`, [
+    return g.theory(`Inputs A = ${a} and B = ${b} go to ${gate === 'AND' || gate === 'OR' ? 'an' : 'a'} ${gate} gate. Write the output, and the truth table for this gate.`, [
       [`Output = ${f(a, b)}.`, 1],
       [`Truth table for ${gate}: 00 → ${f(0, 0)}, 01 → ${f(0, 1)}, 10 → ${f(1, 0)}, 11 → ${f(1, 1)}.`, 1],
     ]);
@@ -1431,7 +1432,6 @@ const blueprints: Blueprint[] = [
       ['the depletion region', 'The thin region at a p-n junction, which has no free charge carriers.'],
       ['rectification', 'Changing alternating current into direct current in one direction.'],
       ['Zener breakdown', 'The sudden large rise in reverse current at a sharply defined reverse voltage in a heavily doped diode.'],
-      ['a logic gate', 'A circuit that gives a digital output following a logical rule from one or more digital inputs.'],
     ],
     recall: [
       ['In forward bias, the depletion layer:', 'becomes narrower', 'becomes wider', 'is unchanged', 'disappears completely at any voltage'],
@@ -1439,16 +1439,14 @@ const blueprints: Blueprint[] = [
       ['A full-wave rectifier’s output frequency, for a 50 Hz input, is:', '100 Hz', '50 Hz', '25 Hz', '200 Hz'],
       ['An LED emits light because of:', 'recombination of electrons and holes', 'heating of the junction', 'high resistance of the material', 'reverse breakdown'],
       ['A photodiode is operated in:', 'reverse bias', 'forward bias', 'zero bias only', 'breakdown'],
-      ['A NAND gate gives 0 only when:', 'all its inputs are 1', 'all its inputs are 0', 'any input is 0', 'any input is 1'],
     ],
     reason: [
       ['A solar cell needs no external bias.', 'The junction’s built-in field separates the electrons and holes that light produces.', 'That drives a current on its own.'],
       ['Reverse current in a p-n junction is very small.', 'Only the few minority carriers can cross the barrier.'],
-      ['NAND and NOR are called universal gates.', 'Any other gate can be built using only NAND, or only NOR.'],
     ],
     compare: [
       ['forward bias', 'reverse bias', ['p side connected to positive terminal.', 'p side connected to negative terminal.'], ['Depletion layer narrows.', 'Depletion layer widens.'], ['A large current flows.', 'A very small current flows.']],
-      ['half-wave rectifier', 'full-wave rectifier', ['Uses one diode.', 'Uses two diodes, or four in a bridge.'], ['Conducts for half of each cycle.', 'Conducts for the whole cycle.']],
+      ['half-wave rectifier', 'full-wave rectifier', ['Uses one diode.', 'Uses two diodes, with a centre-tapped transformer.'], ['Conducts for half of each cycle.', 'Conducts for the whole cycle.']],
     ],
     truths: [
       ['A diode conducts well in only one direction.', 'A diode conducts equally well in both directions.'],
@@ -1458,7 +1456,6 @@ const blueprints: Blueprint[] = [
     draw: [
       ['Draw the circuit of a full-wave rectifier using two diodes, and sketch its output.', 'A centre-tapped transformer, two diodes and a load resistor.', 'Output pulses in one direction, for every half cycle of the input.'],
       ['Sketch the V–I characteristic of a p-n junction diode.', 'A small current until the knee voltage in forward bias, then a steep rise.', 'A very small reverse current until breakdown.'],
-      ['Draw the symbol and write the truth table for a NOR gate.', 'The OR symbol with a small circle at its output.', 'Output is 1 only when both inputs are 0.'],
     ],
     cases: [
       {

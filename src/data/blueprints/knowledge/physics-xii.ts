@@ -35,7 +35,7 @@ const knowledge: Record<string, Facts> = {
     ar: [
       ['the resistivity of metals', 'The resistance of a metal rises with temperature.', 'The resistance of a metal falls with temperature.', 'Its ions vibrate more, so electrons collide with them more often.', 'It has fewer free electrons at higher temperatures.', 'The temperature coefficient of a metal is positive.'],
       ['resistance and resistivity', 'Resistivity doesn’t depend on the size of a wire.', 'Resistivity is doubled when a wire’s length is doubled.', 'It is a property of the material at a given temperature.', 'It is a property only of the wire’s shape.', 'The resistance of a wire is proportional to its length.'],
-      ['drift speed', 'A bulb lights almost at once, though electrons drift very slowly.', 'A bulb takes hours to light, as electrons drift very slowly.', 'The electric field travels along the wire at nearly the speed of light.', 'The electrons travel along the wire at nearly the speed of light.', 'Drift speeds are of the order of a millimetre per second.'],
+      ['drift speed', 'A bulb lights almost at once, though electrons drift very slowly.', 'A bulb takes hours to light, as electrons drift very slowly.', 'The electric field travels along the wire at nearly the speed of light.', 'The electrons travel along the wire at nearly the speed of light.', 'Drift speeds are a fraction of a millimetre per second.'],
       ['heating and power', 'In a series circuit, the larger resistance has the larger heating.', 'In a series circuit, the smaller resistance has the larger heating.', 'The current is the same, and P = I²R.', 'The voltage is the same, and P = V²/R.', 'In a parallel circuit, the smaller resistance has the larger heating.'],
     ],
   },

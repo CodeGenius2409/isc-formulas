@@ -273,7 +273,6 @@ const knowledge: Record<string, Facts> = {
       ['same', 'A metal’s resistance rises with', 'Tungsten is used for lamp'],
       ['same', 'Resistivity doesn’t change when', 'Each half of a wire'],
       ['same', 'A diode is an example of a non-ohmic', 'Ohm’s law is not a universal'],
-      ['contrast', 'one ampere', 'one ohm'],
       ['contrast', 'electric current', 'current density'],
     ],
   },
