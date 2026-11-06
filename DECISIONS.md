@@ -387,3 +387,5 @@ Work is on a `rebuild` branch. `master` still holds your original files.
   Bisection stays in Methods, which names "finding roots of algebraic equations". The CS answers themselves (conversions, sums, outputs) all checked.
 - **Review batch 23** (Chemistry XII ethers and carbohydrates, CS XI types and casting; 40 blueprints, 18 fixed). The casting MCQ now uses a negative value, so truncation and Math.floor give different answers.
   Duplicate AR nodes were again the main problem, with three pairs removed.
+- **Review batch 24** (Maths XI sets and conics, CS XII inheritance; 46 blueprints, 13 fixed). AR statements were repeated word for word as truths in all three topics. Every conic, set and Java answer checked.
+  Interfaces aren't in the Inheritance syllabus, so an "also true" line about them was replaced.

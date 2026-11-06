@@ -716,8 +716,6 @@ const blueprints: Blueprint[] = [
     recall: [
       ['Which keyword is used to inherit from a class in Java?', 'extends', 'implements', 'inherits', 'super'],
       ['A call to super() must be:', 'the first statement in a constructor', 'the last statement in a constructor', 'in the main method', 'in a static method'],
-      ['A private member of a base class is:', 'not directly accessible in a derived class', 'accessible everywhere', 'copied as public', 'static'],
-      ['Java doesn’t allow a class to extend:', 'more than one class', 'an abstract class', 'a class with a constructor', 'Object'],
     ],
     reason: [
       ['A protected member is often used in a base class.', 'Derived classes can use it directly.', 'Other unrelated classes can’t.'],
@@ -1092,7 +1090,8 @@ const blueprints: Blueprint[] = [
   custom('output-instanceof', [6, 'a', 3, 2], { type: 'output', format: 'output' }, (g) => {
     const [base, kid, other] = g.pick([['Shape', 'Circle', 'Square'], ['Fruit', 'Apple', 'Mango'], ['Pet', 'Cat', 'Fish']]);
     const code = `class ${base} {\n}\nclass ${kid} extends ${base} {\n}\nclass ${other} extends ${base} {\n}\nclass Test {\n  public static void main(String[] args) {\n    ${base} x = new ${kid}();\n    System.out.println(x instanceof ${base});\n    System.out.println(x instanceof ${kid});\n    System.out.println(x instanceof ${other});\n  }\n}`;
-    return outputOf(g, code, `The object is a ${kid}, which is also a ${base}, and isn't a ${other}.`);
+    const a = (w: string) => (/^[AEIOU]/.test(w) ? `an ${w}` : `a ${w}`);
+    return outputOf(g, code, `The object is ${a(kid)}, which is also ${a(base)}, and isn't ${a(other)}.`);
   }),
   custom('output-abstract', [6, 'a', 3, 2], { type: 'output', format: 'output' }, (g) => {
     const side = g.int(2, 9);

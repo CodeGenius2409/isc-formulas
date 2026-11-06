@@ -62,10 +62,10 @@ const knowledge: Record<string, Facts> = {
   },
   '6a': {
     ar: [
-      ['single inheritance', 'A Java class can extend only one class.', 'A Java class can extend any number of classes.', 'Two parents could otherwise offer two different bodies for one method.', 'Java has no extends keyword.', 'A class can still implement several interfaces.'],
+      ['single inheritance', 'A Java class can extend only one class.', 'A Java class can extend any number of classes.', 'Two parents could otherwise offer two different bodies for one method.', 'Java has no extends keyword.', 'A class can be extended by many subclasses.'],
       ['overriding', 'An overridden method is chosen at run time.', 'An overridden method is chosen at compile time.', 'The object’s runtime class decides which version runs.', 'The variable’s declared type decides which version runs.', 'This is called dynamic binding.'],
-      ['abstract classes', 'An abstract class can’t be created with new.', 'An abstract class can be created with new.', 'It may have methods with no body.', 'It has no methods at all.', 'An abstract class can have constructors.'],
-      ['super', 'A subclass’s constructor calls its parent’s constructor first.', 'A subclass’s constructor calls its parent’s constructor last.', 'The inherited part of the object must be set up first.', 'The new part of the object must be set up first.', 'super(...) must be the constructor’s first statement.'],
+      ['abstract classes', 'An abstract class can’t be created with new.', 'An abstract class can be created with new.', 'It may have methods with no body.', 'It has no methods at all.', 'A class can’t be both abstract and final.'],
+      ['super', 'A subclass’s constructor calls its parent’s constructor first.', 'A subclass’s constructor calls its parent’s constructor last.', 'The inherited part of the object must be set up first.', 'The new part of the object must be set up first.', 'Object’s constructor runs before any other.'],
     ],
   },
   '6b': {

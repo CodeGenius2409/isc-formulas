@@ -93,17 +93,15 @@ const blueprints: Blueprint[] = [
       ['the complement of a set', 'The elements of the universal set that aren’t in the set.'],
     ],
     recall: [
-      ['By De Morgan’s law, (A ∪ B)′ equals:', 'A′ ∩ B′', 'A′ ∪ B′', 'A ∩ B', 'A ∪ B'],
-      ['The empty set is a subset of:', 'every set', 'no set', 'only itself', 'only infinite sets'],
       ['A ∩ A′ is:', 'the empty set', 'the universal set', 'A', 'A′'],
     ],
     truths: [
       ['Every set is a subset of itself.', 'No set is a subset of itself.'],
       ['A ∪ B = B ∪ A.', 'A ∪ B = A only when B is empty, and otherwise never.'],
-      ['A set with n elements has 2ⁿ subsets.', 'A set with n elements has n² subsets.'],
+      ['Two sets with the same number of elements needn’t be equal.', 'Two sets with the same number of elements are always equal.'],
     ],
     compare: [
-      ['a union of sets', 'an intersection of sets', ['Elements in at least one of them.', 'Elements in all of them.'], ['Written with ∪.', 'Written with ∩.']],
+      ['the union of two sets', 'the intersection of two sets', ['Elements in at least one of them.', 'Elements in all of them.'], ['Written with ∪.', 'Written with ∩.']],
     ],
     reason: [
       ['n(A ∪ B) subtracts n(A ∩ B).', 'Elements in both sets are counted twice when the two sets’ sizes are added.'],
@@ -449,8 +447,6 @@ const blueprints: Blueprint[] = [
     ],
     recall: [
       ['The eccentricity of a parabola is:', '1', '0', 'greater than 1', 'less than 1'],
-      ['The eccentricity of an ellipse is:', 'less than 1', '1', 'greater than 1', 'negative'],
-      ['The eccentricity of a hyperbola is:', 'greater than 1', '1', 'less than 1', '0'],
       ['The focus of y² = 4ax is:', '(a, 0)', '(0, a)', '(−a, 0)', '(0, 0)'],
     ],
     compare: [
@@ -458,8 +454,8 @@ const blueprints: Blueprint[] = [
     ],
     truths: [
       ['A circle is an ellipse with an eccentricity of zero.', 'A circle is a hyperbola with an eccentricity of zero.'],
-      ['The sum of a point’s distances from an ellipse’s foci is constant.', 'The product of a point’s distances from an ellipse’s foci is constant.'],
-      ['Parabolic reflectors send light from their focus out in a parallel beam.', 'Parabolic reflectors scatter light from their focus in all directions.'],
+      ['The foci of an ellipse lie on its major axis.', 'The foci of an ellipse lie on its minor axis.'],
+      ['The vertex of y² = 4ax is at the origin.', 'The vertex of y² = 4ax is at (a, 0).'],
     ],
     cases: [
       {

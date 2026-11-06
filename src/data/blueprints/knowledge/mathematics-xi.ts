@@ -5,9 +5,9 @@ import MORE_A from './more/mathematics-xi-a';
 const knowledge: Record<string, Facts> = {
   '1a': {
     ar: [
-      ['subsets', 'A set with n elements has 2ⁿ subsets.', 'A set with n elements has n² subsets.', 'Each element is either in a subset or not, which gives 2 choices for each.', 'Each subset has exactly two elements.', 'The empty set is a subset of every set.'],
-      ['the union of sets', 'n(A ∪ B) = n(A) + n(B) only when A and B are disjoint.', 'n(A ∪ B) = n(A) + n(B) for all sets A and B.', 'Otherwise, the common elements would be counted twice.', 'Otherwise, the common elements wouldn’t be counted at all.', 'In general, n(A ∪ B) = n(A) + n(B) − n(A ∩ B).'],
-      ['De Morgan’s laws', '(A ∪ B)′ = A′ ∩ B′.', '(A ∪ B)′ = A′ ∪ B′.', 'An element outside A ∪ B is outside both A and B.', 'An element outside A ∪ B is inside both A and B.', '(A ∩ B)′ = A′ ∪ B′.'],
+      ['subsets', 'A set with n elements has 2ⁿ subsets.', 'A set with n elements has n² subsets.', 'Each element is either in a subset or not, which gives 2 choices for each.', 'Each subset has exactly two elements.', 'A proper subset leaves out at least one element.'],
+      ['disjoint sets', 'The even and the odd integers are disjoint sets.', 'The even and the odd integers have common elements.', 'No integer is both even and odd.', 'Every even number is also odd.', 'Their union is the set of integers.'],
+      ['De Morgan’s laws', '(A ∪ B)′ = A′ ∩ B′.', '(A ∪ B)′ = A′ ∪ B′.', 'An element outside A ∪ B is outside both A and B.', 'An element outside A ∪ B is inside both A and B.', 'De Morgan’s laws can be checked with a Venn diagram.'],
     ],
   },
   '1b': {
@@ -75,9 +75,9 @@ const knowledge: Record<string, Facts> = {
   },
   '3c': {
     ar: [
-      ['the eccentricity', 'The eccentricity of an ellipse is less than 1.', 'The eccentricity of an ellipse is greater than 1.', 'c = ae is less than a.', 'c = ae is greater than a.', 'A hyperbola has an eccentricity greater than 1.'],
-      ['the focus of an ellipse', 'The sum of a point’s distances from an ellipse’s foci is constant.', 'The difference of a point’s distances from an ellipse’s foci is constant.', 'This is how an ellipse is defined.', 'This is how a parabola is defined.', 'That sum equals the length of the major axis.'],
-      ['the parabola', 'A parabolic mirror sends rays from its focus out in a parallel beam.', 'A parabolic mirror scatters rays from its focus in all directions.', 'Each point on it is the same distance from the focus and the directrix, and reflection follows this shape.', 'It has no focus at all.', 'y² = 4ax has its focus at (a, 0).'],
+      ['the eccentricity', 'The eccentricity of an ellipse is less than 1.', 'The eccentricity of an ellipse is greater than 1.', 'c = ae is less than a.', 'c = ae is greater than a.', 'Eccentricity has no unit.'],
+      ['the asymptotes', 'A hyperbola comes ever closer to two lines without meeting them.', 'A hyperbola crosses its asymptotes at its vertices.', 'As x grows, y/x approaches ±b/a, so the curve nears y = ±(b/a)x.', 'The asymptotes pass through the vertices.', 'A rectangular hyperbola has perpendicular asymptotes.'],
+      ['the parabola', 'A parabolic mirror sends rays from its focus out in a parallel beam.', 'A parabolic mirror scatters rays from its focus in all directions.', 'Each point on it is the same distance from the focus and the directrix, and reflection follows this shape.', 'It has no focus at all.', 'Car headlights use parabolic reflectors.'],
     ],
   },
   '3d': {
