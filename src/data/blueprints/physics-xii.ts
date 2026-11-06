@@ -39,7 +39,7 @@ const blueprints: Blueprint[] = [
   num('coulomb-unknown', [1, 'a', 2, 2], {
     variants: [
       { text: 'Two equal point charges of {Q} µC repel each other with a force of {F} N. How far apart are they?', parts: [{ ask: 'Separation', use: 'p-xii-1-1', find: 'r', given: { q_1: 'Q uC', q_2: 'Q uC', F: 'F N' }, unit: 'cm', marks: 2 }] },
-      { text: 'Two equal point charges are {D} cm apart in air, and each feels a force of {F} N. Find the size of each charge.', parts: [{ ask: 'Each charge', use: 'p-xii-1-1', find: 'q_1', given: { q_2: 'Q uC', F: 'F N', r: 'D cm' }, unit: 'uC', marks: 2 }] },
+      { text: 'A point charge of {Q} µC and an unknown charge are {D} cm apart in air, and repel each other with a force of {F} N. Find the unknown charge.', parts: [{ ask: 'The unknown charge', use: 'p-xii-1-1', find: 'q_1', given: { q_2: 'Q uC', F: 'F N', r: 'D cm' }, unit: 'uC', marks: 2 }] },
     ],
     vars: { Q: [2, 10, 1], F: [1, 9, 1], D: [10, 30, 5] },
   }),

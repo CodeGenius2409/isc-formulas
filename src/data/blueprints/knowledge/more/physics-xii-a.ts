@@ -41,7 +41,7 @@ const knowledge: Record<string, Facts> = {
       ['Coulomb’s force acts along the line joining two point charges.', 'Coulomb’s force acts at right angles to the line joining two point charges.'],
       ['The force on charge A due to B is equal and opposite to the force on B due to A.', 'The larger charge always feels the larger force from a smaller charge.'],
       ['Quantisation of charge means every free charge is a whole-number multiple of e.', 'Quantisation of charge means charge can take any value, however small.'],
-      ['The force between two charges in a medium is less than in air by the factor of its relative permittivity.', 'The force between two charges in a medium is more than in air by the factor of its relative permittivity.'],
+      ['Charge is a scalar quantity.', 'Charge is a vector quantity.'],
       ['The electric field of a positive point charge points away from it.', 'The electric field of a positive point charge points towards it.'],
       ['A negative charge in an electric field feels a force opposite to the field.', 'A negative charge in an electric field feels a force along the field.'],
       ['Field lines never form closed loops in electrostatics.', 'Electrostatic field lines always form closed loops.'],
@@ -64,7 +64,7 @@ const knowledge: Record<string, Facts> = {
       ['The flux through a closed surface doesn’t change when a charge is moved around inside it.', 'Flux depends only on the total charge enclosed, not on where the charge is.'],
       ['A dipole in a non-uniform field generally feels a net force.', 'The field has different values at its two charges, so the two forces no longer cancel.'],
       ['A dipole’s field falls off faster than a single charge’s.', 'At a far point, the fields of its two equal and opposite charges nearly cancel.', 'So only a small difference remains, which falls as 1/r³.'],
-      ['Field lines come out of a charged conductor at right angles to it.', 'A part of the field along the surface would move its free charges.', 'At equilibrium, nothing moves, so no such part exists.'],
+      ['A charged conductor loses charge fastest from its sharp points.', 'Charge density, and so the field, is greatest at a sharp point.', 'The strong field there ionises the air, which carries the charge away.'],
       ['The Gaussian surface for a long charged wire is taken as a cylinder.', 'The wire’s field is radial and has the same size all round it, by symmetry.', 'So the flux through the flat ends is zero, and through the curved part is E × 2πrl.'],
     ],
     explain: [
@@ -82,13 +82,12 @@ const knowledge: Record<string, Facts> = {
     ],
     ar: [
       ['charge from rubbing', 'Two bodies rubbed together get equal and opposite charges.', 'Two bodies rubbed together get equal charges of the same sign.', 'Electrons pass from one body to the other, and the total charge doesn’t change.', 'Friction creates new electrons in both bodies.', 'Charge exists in whole multiples of e.'],
-      ['the flux from outside charges', 'A charge outside a closed surface adds nothing to the net flux through it.', 'A charge outside a closed surface adds to the net flux through it.', 'Every field line that enters from it also leaves.', 'A charge outside a closed surface has no field on the surface.', 'The net flux through a closed surface depends only on the charge enclosed.'],
+      ['the charge on a conductor', 'Excess charge on an isolated conductor rests on its outer surface.', 'Excess charge on an isolated conductor spreads evenly through its volume.', 'Like charges repel and move apart until the field inside is zero, which leaves them all at the surface.', 'The surface pulls charges harder than the inside does.', 'Charge density is greatest at sharp points.'],
       ['the field of a sheet', 'The field near a large charged sheet doesn’t depend on the distance from it.', 'The field near a large charged sheet falls as the square of the distance from it.', 'Its field lines are parallel, so they neither spread out nor crowd together.', 'A sheet carries no net charge.', 'The field near a large charged sheet is proportional to its surface charge density.'],
       ['a stable dipole', 'A dipole set along a uniform field is in stable equilibrium.', 'A dipole set along a uniform field is in unstable equilibrium.', 'If it is turned a little, the torque turns it back.', 'If it is turned a little, the torque turns it further away.', 'A dipole set against the field also feels zero torque.'],
     ],
     links: [
       ['same', 'Coulomb’s force acts along', 'The force on charge A due to B'],
-      ['same', 'The net flux through a closed surface depends only', 'Gauss’s theorem holds for any closed'],
       ['cause', 'Doubling the radius of a sphere around', 'The net flux through a closed surface depends only'],
       ['same', 'A dipole in a uniform field has zero', 'The field in the equatorial plane of a dipole'],
       ['contrast', 'linear charge density', 'surface charge density'],

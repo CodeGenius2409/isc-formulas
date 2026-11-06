@@ -47,7 +47,7 @@ const knowledge: Record<string, Facts> = {
       ['Atomic radii of the 3d series change little from Cr to Cu.', 'Atomic radii of the 3d series fall sharply from Cr to Cu.'],
       ['Transition metals have high densities and high enthalpies of atomisation.', 'Transition metals have very low densities and very low enthalpies of atomisation.'],
       ['Scandium isn’t variable in oxidation state and mostly shows +3.', 'Scandium shows +7 as its most stable state.'],
-      ['Mn²⁺ is more stable than Mn³⁺, as Mn²⁺ has a half-filled d⁵ configuration.', 'Mn³⁺ is more stable than Mn²⁺, as Mn³⁺ has a half-filled d⁵ configuration.'],
+      ['Cr³⁺ is a d³ ion, with three unpaired electrons.', 'Cr³⁺ is a d⁵ ion, with five unpaired electrons.'],
       ['Fe³⁺ is more stable than Fe²⁺ on account of its d⁵ configuration.', 'Fe²⁺ is more stable than Fe³⁺ on account of its d⁵ configuration.'],
       ['Compounds of Sc³⁺ and Ti⁴⁺ are colourless, as they have no d electrons.', 'Compounds of Sc³⁺ and Ti⁴⁺ are strongly coloured, as they have no d electrons.'],
       ['The magnetic moment rises with the number of unpaired electrons.', 'The magnetic moment falls with the number of unpaired electrons.'],

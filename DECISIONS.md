@@ -359,3 +359,5 @@ Work is on a `rebuild` branch. `master` still holds your original files.
   Also: no bridge rectifier, which the syllabus leaves out; mains supplies of 220 to 240 V.
 - **Review batch 9** (Physics XII wave optics, dual nature; 44 blueprints, 14 fixed, 1 flagged). Polarisation isn't in the 2028 Wave Optics syllabus, only named under Dual Nature as evidence of waves, so its facts went, and `p12-6c-malus` is flagged.
   The fringe width in water was worked by applying λ/n to a width; it now gives the slits and screen and uses β = λD/d with the wavelength in water.
+- **Review batch 10** (Chemistry XII transition elements, Physics XII charges and fields; 42 blueprints, 7 fixed). A wrong answer: "two equal charges" was worked with a second charge the question didn't give. It now states that charge. The transition elements were sound throughout.
+  Repeats were the rest: the same fact twice in a topic, which a paper could ask twice.
