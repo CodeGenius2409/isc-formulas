@@ -923,11 +923,11 @@ const blueprints: Blueprint[] = [
     ],
   }),
   num('fringe-water', [6, 'c', 3, 2], {
-    text: 'A double slit set-up has a fringe width of {B} mm in air, with light of wavelength {L} nm. The whole set-up is then immersed in water of refractive index {N}.',
-    vars: { B: [0.4, 2, 0.2], L: [450, 650, 50], N: [1.33] },
+    text: 'In a double slit set-up, the slits are {S} mm apart and the screen is {D} m away. Light of wavelength {L} nm is used. The whole set-up is then immersed in water of refractive index {N}.',
+    vars: { S: [0.2, 1, 0.1], D: [1, 2, 0.5], L: [450, 650, 50], N: [1.33] },
     parts: [
-      { ask: 'Wavelength of the light in water', use: 'p-xii-6-34', find: 'lambda_m', given: { lambda_0: 'L nm', n: 'N' }, unit: 'nm', marks: 2 },
-      { ask: 'New fringe width', use: 'p-xii-6-34', find: 'lambda_m', given: { lambda_0: 'B mm', n: 'N' }, unit: 'mm', marks: 1 },
+      { ask: 'Wavelength of the light in water', use: 'p-xii-6-34', find: 'lambda_m', given: { lambda_0: 'L nm', n: 'N' }, unit: 'nm', marks: 1, save: 'w' },
+      { ask: 'Fringe width in water', use: 'p-xii-6-9', find: 'beta', given: { lambda: 'w', D: 'D m', d: 'S mm' }, unit: 'mm', marks: 2 },
     ],
   }),
   num('malus', [6, 'c', 2, 1], {
@@ -1033,12 +1033,9 @@ const blueprints: Blueprint[] = [
   ...facts(6, 'c', {
     define: [
       ['a wavefront', 'The surface through points of a wave that are all in the same phase.'],
-      ['coherent sources', 'Sources of the same frequency with a constant phase difference.'],
-      ['the Brewster angle', 'The angle of incidence at which the reflected light is completely polarised.', 'At this angle, the reflected and refracted rays are at right angles.'],
-      ['polarisation of light', 'The restriction of the electric vibrations of light to one plane.'],
+      ['coherent sources', 'Sources of the same frequency with a constant phase difference.', 'In practice they are made from one source, as by the two slits in Young’s experiment.'],
     ],
     recall: [
-      ['Which shows that light is a transverse wave?', 'Polarisation', 'Interference', 'Diffraction', 'Reflection'],
       ['If the slit separation in a double slit experiment is doubled, the fringe width:', 'is halved', 'is doubled', 'stays the same', 'is four times as large'],
       ['A bright fringe needs a path difference of:', 'a whole number of wavelengths', 'an odd number of half wavelengths', 'exactly half a wavelength', 'zero only'],
       ['The central fringe with white light in a double slit is:', 'white', 'dark', 'red', 'violet'],
@@ -1048,11 +1045,10 @@ const blueprints: Blueprint[] = [
     reason: [
       ['Two separate lamps don’t give steady interference fringes.', 'They aren’t coherent, as their phase difference keeps changing.', 'So the pattern shifts too fast to see.'],
       ['Diffraction of sound is easily noticed, but that of light isn’t.', 'Sound has wavelengths comparable with everyday openings.', 'Light has a far smaller wavelength.'],
-      ['Polaroid sunglasses cut glare from water.', 'Light reflected from water is partly polarised horizontally.', 'The polaroid’s vertical axis blocks this.'],
+      ['Young’s fringes can’t be seen if the slits are very wide.', 'Each wide slit gives its own spread of fringes, shifted from the others.', 'These overlap, so the pattern blurs into even light.'],
     ],
     compare: [
       ['interference', 'diffraction', ['Superposition of waves from two coherent sources.', 'Superposition of wavelets from one wavefront.'], ['Bright fringes are about equally bright.', 'Brightness of the maxima falls away from the centre.'], ['Fringe widths are about equal.', 'The central maximum is twice as wide as the others.']],
-      ['polarised light', 'unpolarised light', ['Its vibrations are in one plane.', 'Its vibrations are in all planes at right angles to the ray.'], ['Passing a rotating polaroid varies its brightness.', 'Passing a rotating polaroid leaves its brightness unchanged.']],
     ],
     truths: [
       ['Fringe width is directly proportional to wavelength.', 'Fringe width is inversely proportional to wavelength.'],
@@ -1117,7 +1113,7 @@ const blueprints: Blueprint[] = [
   num('debroglie', [7, 'a', 2, 1], {
     variants: [
       { text: 'Find the de Broglie wavelength of an electron travelling at {V} × 10⁶ m/s.', parts: [{ ask: 'de Broglie wavelength', use: 'p-xii-7-2', find: 'lambda', given: { m: '9.11e-31 kg', v: 'V*1e6 m/s' }, unit: 'nm', marks: 2 }] },
-      { text: 'A {M} g ball travels at {S} m/s. Find its de Broglie wavelength, and say why no wave effects are seen.', parts: [{ ask: 'de Broglie wavelength. It is far too small to detect', use: 'p-xii-7-2', find: 'lambda', given: { m: 'M g', v: 'S m/s' }, marks: 2 }] },
+      { text: 'A {M} g ball travels at {S} m/s. Find its de Broglie wavelength.', parts: [{ ask: 'de Broglie wavelength', use: 'p-xii-7-2', find: 'lambda', given: { m: 'M g', v: 'S m/s' }, marks: 2 }] },
     ],
     vars: { V: [1, 9, 1], M: [50, 300, 50], S: [10, 40, 10] },
   }),

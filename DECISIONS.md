@@ -357,3 +357,5 @@ Work is on a `rebuild` branch. `master` still holds your original files.
   The syllabus says the parallel plate capacitance and energy stored are "No derivation, formulae only", though its detailed list says "obtain". The explicit note wins, as in Task 8, so those two derivations were replaced.
 - **Review batch 8** (Physics XII conduction, semiconductor diodes; 42 blueprints, 12 fixed, 1 flagged). Logic gates aren't in the 2028 Physics syllabus, so their facts went, and `p12-9b-gates` is flagged for you rather than deleted: it stays in use, marked "Not yet reviewed". Flags have their own table in the report.
   Also: no bridge rectifier, which the syllabus leaves out; mains supplies of 220 to 240 V.
+- **Review batch 9** (Physics XII wave optics, dual nature; 44 blueprints, 14 fixed, 1 flagged). Polarisation isn't in the 2028 Wave Optics syllabus, only named under Dual Nature as evidence of waves, so its facts went, and `p12-6c-malus` is flagged.
+  The fringe width in water was worked by applying λ/n to a width; it now gives the slits and screen and uses β = λD/d with the wavelength in water.

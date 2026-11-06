@@ -82,7 +82,7 @@ it('dumps blueprints to read', async () => {
     if (process.env.REVIEW_FACTS && !topicsDone.has(topic)) {
       topicsDone.add(topic);
       const f = FACT_BOOK.get(topic);
-      if (f) text.push(`\n######## FACTS ${topic} ${names.topicName}\n${JSON.stringify(f, null, 0).replace(/\],\[/g, '],\n[').replace(/"([a-z]+)":\[\[/g, '\n## $1\n[[')}`);
+      if (f) text.push(`\n######## FACTS ${topic} ${names.topicName}\n${JSON.stringify({ ...f, figures: f.figures && Object.keys(f.figures), answerFigures: f.answerFigures && Object.keys(f.answerFigures) }, null, 0).replace(/\],\[/g, '],\n[').replace(/"([a-z]+)":\[\[/g, '\n## $1\n[[')}`);
     }
     text.push(`\n==== ${bp.id} | ${bp.type} ${bp.format} ${bp.marks}m d${bp.difficulty} | ${names.topicName}`);
     const seen = new Set<string>();

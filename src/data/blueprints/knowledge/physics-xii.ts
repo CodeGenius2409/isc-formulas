@@ -122,9 +122,9 @@ const knowledge: Record<string, Facts> = {
     },
     ar: [
       ['coherent sources', 'Two separate lamps can’t give a steady interference pattern.', 'Two separate lamps always give a steady interference pattern.', 'Their phase difference isn’t constant.', 'They have no wavelength.', 'Young’s experiment gets two coherent sources from one.'],
-      ['fringe width', 'Fringes get wider if the slits are moved closer together.', 'Fringes get narrower if the slits are moved closer together.', 'The fringe width is λD/d.', 'The fringe width is dD/λ.', 'Fringes are narrower in water than in air.'],
+      ['fringe width', 'Fringes get wider if the slits are moved closer together.', 'Fringes get narrower if the slits are moved closer together.', 'The fringe width is λD/d.', 'The fringe width is dD/λ.', 'Fringe width grows with the distance to the screen.'],
       ['diffraction', 'Diffraction is more noticeable through a narrower slit.', 'Diffraction is less noticeable through a narrower slit.', 'The angular width of the central maximum is 2λ/a.', 'The angular width of the central maximum is 2a/λ.', 'The central maximum is twice as wide as the others.'],
-      ['polarisation', 'Only transverse waves can be polarised.', 'Only longitudinal waves can be polarised.', 'A longitudinal wave has just one direction of vibration, along its path.', 'A transverse wave vibrates along its path.', 'Light can be polarised, and sound can’t.'],
+      ['the fringes in water', 'Young’s fringes get narrower when the whole apparatus is put in water.', 'Young’s fringes get wider when the whole apparatus is put in water.', 'The wavelength in water is λ/n, and the fringe width is λD/d.', 'The slits move closer together in water.', 'The frequency of the light doesn’t change in water.'],
     ],
   },
   '7a': {

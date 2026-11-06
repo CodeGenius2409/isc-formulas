@@ -217,7 +217,7 @@ const knowledge: Record<string, Facts> = {
       ['interference of light', 'The change in intensity when two coherent light waves overlap, giving bright and dark fringes.'],
       ['constructive interference', 'Waves meeting in phase, so that they add to give a greater amplitude.'],
       ['destructive interference', 'Waves meeting out of phase by half a cycle, so that they partly or wholly cancel.'],
-      ['fringe width', 'The distance between two consecutive bright fringes or two consecutive dark fringes.'],
+      ['fringe width', 'The distance between two consecutive bright fringes or two consecutive dark fringes.', 'In Young’s experiment, it equals λD/d.'],
       ['path difference', 'The difference in the distances travelled by two waves to reach a point.'],
       ['phase difference', 'The difference in phase between two waves at a point, equal to 2π/λ times the path difference.'],
       ['sustained interference', 'An interference pattern that stays fixed in position for as long as it is observed.'],
@@ -291,7 +291,6 @@ const knowledge: Record<string, Facts> = {
     links: [
       ['cause', 'Sound shows diffraction more easily', 'Diffraction is noticed when'],
       ['same', 'Interference and diffraction both', 'In diffraction, the side maxima'],
-      ['same', 'In Young’s experiment, one source', 'Coherent sources have a constant'],
       ['same', 'In interference, all the bright', 'In diffraction, the side maxima'],
       ['contrast', 'constructive interference', 'destructive interference'],
       ['contrast', 'path difference', 'phase difference'],
@@ -376,11 +375,10 @@ const knowledge: Record<string, Facts> = {
     ],
     ar: [
       ['the kinetic energy and intensity', 'Maximum kinetic energy of photoelectrons doesn’t depend on the light’s intensity.', 'Maximum kinetic energy of photoelectrons is proportional to the light’s intensity.', 'Each electron gets its energy from one photon of energy hf.', 'Each electron gets its energy from a whole wavefront.', 'Saturation current is proportional to the light’s intensity.'],
-      ['the matter wave of heavy bodies', 'A moving car shows no noticeable wave nature.', 'A moving car shows very clear wave behaviour.', 'Its large momentum gives it an extremely small de Broglie wavelength.', 'It has no momentum at all.', 'An electron’s wave nature can be observed in crystals.'],
+      ['the stopping potential', 'Stopping potential rises with the frequency of the light.', 'Stopping potential falls as the frequency of the light rises.', 'eV₀ = hf − φ, which grows with f.', 'Brighter light gives each electron more energy.', 'Stopping potential doesn’t depend on the intensity.'],
       ['the photon and the electron', 'One photon can free at most one electron in the photoelectric effect.', 'One photon can free many electrons in the photoelectric effect.', 'A photon is absorbed as a whole, by one electron.', 'A photon splits equally among many electrons.', 'A photon’s energy depends on its frequency.'],
     ],
     links: [
-      ['cause', 'Below its threshold frequency', 'A photon gives all its energy'],
       ['same', 'A brighter beam has more photons', 'Stopping potential rises with'],
       ['cause', 'Faster electrons have shorter', 'A particle’s de Broglie wavelength depends'],
       ['same', 'Matter waves aren’t electromagnetic', 'A particle’s wave nature is hard'],
@@ -388,7 +386,6 @@ const knowledge: Record<string, Facts> = {
       ['contrast', 'work function', 'threshold frequency'],
       ['contrast', 'threshold frequency', 'threshold wavelength'],
       ['contrast', 'photocurrent', 'saturation current'],
-      ['contrast', 'a photon', 'matter waves'],
     ],
   },
 
