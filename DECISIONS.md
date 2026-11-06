@@ -377,3 +377,5 @@ Work is on a `rebuild` branch. `master` still holds your original files.
   Most problems were facts said twice across a topic's blueprints; the chemistry itself was right.
 - **Review batch 18** (CS XII propositional logic, Maths XI relations and functions, Maths XII areas and linear programming; 43 blueprints, 21 fixed, 1 flagged). LP corner sets are now always convex, and the word problem has realistic profits.
   One-one proofs are Class XII syllabus, so the Class XI one is flagged, not removed. Repeats across a topic's recall, truths and AR were the main problem.
+- **Review batch 19** (Physics XII semiconductors, CS XI variables and expressions, Chemistry XII proteins; 43 blueprints, 15 fixed). Two topics had pairs of AR nodes asking the same thing. A recall with a 2024 board MCQ's exact options was reworded.
+  Java expressions in prose now use the ASCII minus, as in code. The physics, chemistry and Java facts themselves were right.

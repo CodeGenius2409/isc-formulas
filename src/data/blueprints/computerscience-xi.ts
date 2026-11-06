@@ -368,14 +368,14 @@ const blueprints: Blueprint[] = [
       ['Which is a valid identifier?', '_count', '2count', 'class', 'my-count'],
     ],
     compare: [
-      ['= ', '==', ['Assigns a value.', 'Compares two values.'], ['Changes the variable.', 'Gives true or false.']],
+      ['the = operator', 'the == operator', ['Assigns a value.', 'Compares two values.'], ['Changes the variable.', 'Gives true or false.']],
       ['x++', '++x', ['Uses the old value, then raises it.', 'Raises it, then uses the new value.'], ['Called postfix.', 'Called prefix.']],
-      ['&&', '&', ['Stops early if its first operand decides.', 'Always evaluates both operands.'], ['Used for logic.', 'Also used for bit operations.']],
+      ['the && operator', 'the & operator', ['Stops early if its first operand decides.', 'Always evaluates both operands.'], ['Used for logic.', 'Also used for bit operations.']],
     ],
     truths: [
       ['Integer division in Java drops the fractional part.', 'Integer division in Java rounds to the nearest whole number.'],
       ['Java is case-sensitive.', 'Java ignores the case of identifiers.'],
-      ['A constant is declared using final.', 'A constant is declared using static alone.'],
+      ['A long can hold larger whole numbers than an int.', 'An int can hold larger whole numbers than a long.'],
     ],
     reason: [
       ['10 / 4 gives 2 in Java.', 'Both operands are ints.', 'So the result is an int, with the fraction dropped.'],

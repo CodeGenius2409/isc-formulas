@@ -1175,10 +1175,8 @@ const blueprints: Blueprint[] = [
       ['Which is a fibrous protein?', 'Keratin', 'Insulin', 'Albumin', 'Haemoglobin'],
       ['Which is a globular protein?', 'Insulin', 'Keratin', 'Myosin', 'Collagen'],
       ['An α-helix is an example of:', 'secondary structure', 'primary structure', 'quaternary structure', 'denaturation'],
-      ['Which amino acid has no chiral centre?', 'Glycine', 'Alanine', 'Valine', 'Leucine'],
     ],
     reason: [
-      ['Boiling an egg changes it irreversibly.', 'Heat denatures its proteins, which destroys their shape.'],
       ['Amino acids behave like salts, with high melting points.', 'They exist as zwitter ions.', 'So strong electrostatic forces hold them together.'],
       ['Glycine is optically inactive.', 'Its α-carbon carries two hydrogen atoms, so it isn’t chiral.'],
     ],
@@ -1187,7 +1185,7 @@ const blueprints: Blueprint[] = [
     ],
     truths: [
       ['Enzymes are mostly proteins.', 'Enzymes are mostly carbohydrates.'],
-      ['Denaturation doesn’t break peptide bonds.', 'Denaturation breaks all the peptide bonds.'],
+      ['Most enzymes work best near body temperature.', 'Most enzymes work best near 100 °C.'],
       ['Natural amino acids are mostly the L form.', 'Natural amino acids are mostly the D form.'],
     ],
     draw: [

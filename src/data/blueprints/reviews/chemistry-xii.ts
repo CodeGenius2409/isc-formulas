@@ -2,6 +2,22 @@
 import type { Reviews } from '../types';
 
 const reviews: Reviews = {
+  'c12-10b-assertion': ['2026-11-06', 'Two AR nodes were both about a boiled egg, and the zwitter-ion node repeated a 2-mark reason. Now the dipeptide’s loss of water and amino acids’ solubility in water.'],
+  'c12-10b-assertion-linked': ['2026-11-06', 'Its “same” link named a replaced truth; now mild conditions and tiny amounts.'],
+  'c12-10b-case3': ['2026-11-06', 'Read with samples; correct, no change needed.'],
+  'c12-10b-compare-linked': ['2026-11-06', 'A peptide bond and a polypeptide, and an enzyme and its substrate, aren’t pairs; an enzyme and a hormone was already a written comparison. Removed.'],
+  'c12-10b-compare2': ['2026-11-06', 'Read with samples; correct, no change needed.'],
+  'c12-10b-compare3': ['2026-11-06', 'Read with samples; correct, no change needed.'],
+  'c12-10b-define': ['2026-11-06', 'Read with samples; correct, no change needed.'],
+  'c12-10b-draw2': ['2026-11-06', 'Read with samples; correct, no change needed.'],
+  'c12-10b-explain1': ['2026-11-06', 'The glycine–alanine dipeptide was also a 2-mark structure question. Now the products of a protein’s hydrolysis.'],
+  'c12-10b-explain2': ['2026-11-06', 'Read with samples; correct, no change needed.'],
+  'c12-10b-match': ['2026-11-06', 'Read with samples; correct, no change needed.'],
+  'c12-10b-protein-levels': ['2026-11-06', 'Read with samples; correct, no change needed.'],
+  'c12-10b-reason1': ['2026-11-06', 'Boiling an egg was also an AR; removed from the pool.'],
+  'c12-10b-reason2': ['2026-11-06', 'Glycine’s high melting point repeated amino acids’ melting points; removed from the pool.'],
+  'c12-10b-recall': ['2026-11-06', 'What holds the α-helix, keratin in hair, and glycine’s lack of a chiral centre were said elsewhere. Now silk’s β-sheet and collagen.'],
+  'c12-10b-truth': ['2026-11-06', 'Specificity, denaturation keeping peptide bonds and the isoelectric point were said elsewhere. Now tiny amounts of enzyme, enzymes near body temperature, and the hydrolysis of peptide bonds.'],
   'c12-10c-assertion': ['2026-11-05', 'Task 3: rebuilt from concept nodes, so the reason is always about the assertion; every node re-read.'],
   'c12-1a-assertion': ['2026-11-06', 'Three concepts fixed: “also true” lines that explained the assertion, and a second acetic acid concept replaced with reverse osmosis.'],
   'c12-1a-assertion-linked': ['2026-11-06', 'Read with samples; correct, no change needed.'],

@@ -62,7 +62,7 @@ const knowledge: Record<string, Facts> = {
   '7a': {
     ar: [
       ['integer division', '7 / 2 gives 3 in Java.', '7 / 2 gives 3.5 in Java.', 'Dividing two ints drops the fraction.', 'Dividing two ints rounds to the nearest whole number.', '7 % 2 gives 1.'],
-      ['short-circuit evaluation', 'In a && b, b isn’t evaluated if a is false.', 'In a && b, b is always evaluated first.', 'The result is already known to be false.', 'The result depends only on b.', 'In a || b, b isn’t evaluated if a is true.'],
+      ['short-circuit evaluation', 'In a && b, b isn’t evaluated if a is false.', 'In a && b, b is always evaluated first.', 'The result is already known to be false.', 'The result depends only on b.', '&& has higher precedence than ||.'],
       ['the precedence of operators', '2 + 3 * 4 gives 14 in Java.', '2 + 3 * 4 gives 20 in Java.', 'Multiplication comes before addition.', 'Addition comes before multiplication.', 'Brackets can change the order.'],
     ],
   },

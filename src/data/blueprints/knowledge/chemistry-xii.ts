@@ -163,8 +163,8 @@ const knowledge: Record<string, Facts> = {
   },
   '10b': {
     ar: [
-      ['denaturation', 'Boiling an egg can’t be reversed by cooling it.', 'A boiled egg goes back to its raw state on cooling.', 'Heat destroys the protein’s folded shape for good.', 'Heat breaks all its peptide bonds at once.', 'Denaturation leaves the primary structure unchanged.'],
-      ['the zwitter ion', 'An amino acid has a high melting point.', 'An amino acid has a very low melting point.', 'It exists as a dipolar ion in the solid.', 'It exists as an uncharged molecule in the solid.', 'At its isoelectric point, it doesn’t move in an electric field.'],
+      ['denaturation', 'Boiling an egg can’t be reversed by cooling it.', 'A boiled egg goes back to its raw state on cooling.', 'Heat destroys the protein’s folded shape for good.', 'Heat breaks all its peptide bonds at once.', 'Egg albumin is a globular protein.'],
+      ['the solubility of amino acids', 'Amino acids dissolve in water but hardly in benzene.', 'Amino acids dissolve in benzene but hardly in water.', 'As dipolar ions, they are strongly attracted to polar water molecules.', 'They are non-polar molecules.', 'At its isoelectric point, an amino acid doesn’t move in an electric field.'],
       ['the secondary structure', 'An α-helix is held by hydrogen bonds.', 'An α-helix is held by peptide bonds alone.', 'The N–H and C=O groups along the chain link up.', 'Its side chains are bonded by metal ions.', 'A β-pleated sheet is also a secondary structure.'],
     ],
   },

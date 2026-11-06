@@ -1396,8 +1396,8 @@ const blueprints: Blueprint[] = [
     recall: [
       ['An n-type semiconductor is made by adding a:', 'pentavalent impurity', 'trivalent impurity', 'tetravalent impurity', 'divalent impurity'],
       ['A p-type semiconductor is made by adding:', 'boron', 'phosphorus', 'arsenic', 'antimony'],
-      ['The majority carriers in a p-type semiconductor are:', 'holes', 'electrons', 'protons', 'ions'],
-      ['As a semiconductor is heated, its conductivity:', 'rises', 'falls', 'stays the same', 'becomes zero'],
+      ['In a p-type semiconductor, the minority carriers are:', 'free electrons', 'holes', 'acceptor ions', 'donor ions'],
+      ['Which of these is an elemental semiconductor?', 'germanium', 'copper', 'glass', 'rubber'],
       ['Which has the largest band gap?', 'An insulator', 'A conductor', 'A semiconductor', 'They are all the same'],
     ],
     reason: [
