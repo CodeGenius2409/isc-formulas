@@ -329,6 +329,8 @@ const blueprints: Blueprint[] = [
     define: [
       ['an arithmetic progression', 'A sequence in which each term differs from the one before by a fixed amount.'],
       ['a geometric progression', 'A sequence in which each term is a fixed multiple of the one before.'],
+      ['the common ratio of a GP', 'The fixed number by which each term is multiplied to give the next.'],
+      ['a series', 'The sum of the terms of a sequence.'],
     ],
     recall: [
       ['The sum of an infinite GP with |r| < 1 is:', 'a/(1 − r)', 'a/(1 + r)', 'a r', 'infinite'],
@@ -336,9 +338,10 @@ const blueprints: Blueprint[] = [
       ['The geometric mean of a and b is:', '√(ab)', '(a + b)/2', 'ab', 'a/b'],
     ],
     truths: [
-      ['For positive numbers, the arithmetic mean is at least the geometric mean.', 'For positive numbers, the arithmetic mean is always less than the geometric mean.'],
+      ['Inserting n arithmetic means between a and b gives an AP of n + 2 terms.', 'Inserting n arithmetic means between a and b gives an AP of n terms.'],
       ['The nth term of a GP is ar^(n−1).', 'The nth term of a GP is ar^n.'],
       ['An AP’s common difference can be negative.', 'An AP’s common difference can never be negative.'],
+      ['The sum of n terms of an AP is n/2 times the sum of its first and last terms.', 'The sum of n terms of an AP is n times the sum of its first and last terms.'],
     ],
     compare: [
       ['an AP', 'a GP', ['A fixed difference.', 'A fixed ratio.'], ['Grows steadily.', 'Can grow very quickly.']],
@@ -691,17 +694,17 @@ const blueprints: Blueprint[] = [
   }),
   // ---- Real-life and data-based questions.
   custom('cbq-savings', [2, 'e', 3, 1], { type: 'numerical', format: 'cbq', style: 'cbq-style' }, (g) => {
-    const first = g.pick([100, 200, 300, 500]);
-    const rise = g.pick([50, 100, 150]);
-    const months = g.pick([6, 8, 10, 12]);
+    const first = g.pick([12, 15, 20, 24]);
+    const rise = g.pick([2, 3, 4]);
+    const months = g.pick([8, 10, 12, 15]);
     const last = first + (months - 1) * rise;
     const total = (months * (first + last)) / 2;
     return {
       form: 'numeric',
-      text: `A student saves ₹${first} in the first month, and ₹${rise} more each month after that.`,
+      text: `A hall has ${first} seats in its front row, and ${rise} more in each row behind it.`,
       parts: [
-        g.answerPart(`Savings in month ${months}, in rupees`, last, 1, [step('Use $a_n = a + (n - 1)d$', `${first} + ${months - 1} \\times ${rise} = ${last}`)]),
-        g.answerPart(`Total saved over ${months} months, in rupees`, total, 2, [step('Use $S_n = \\dfrac{n}{2}(a + l)$', `\\dfrac{${months}}{2}(${first} + ${last}) = ${total}`)]),
+        g.answerPart(`Seats in row ${months}`, last, 1, [step('Use $a_n = a + (n - 1)d$', `${first} + ${months - 1} \\times ${rise} = ${last}`)]),
+        g.answerPart(`Seats in the first ${months} rows`, total, 2, [step('Use $S_n = \\dfrac{n}{2}(a + l)$', `\\dfrac{${months}}{2}(${first} + ${last}) = ${total}`)]),
       ],
     };
   }),

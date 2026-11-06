@@ -4,7 +4,12 @@ import type { Reviews } from '../types';
 const reviews: Reviews = {
   'k11-10a-assertion': ['2026-11-05', 'Task 3: rebuilt from concept nodes, so the reason is always about the assertion; every node re-read.'],
   'k11-11a-assertion': ['2026-11-05', 'Task 3: rebuilt from concept nodes, so the reason is always about the assertion; every node re-read.'],
-  'k11-11b-assertion': ['2026-11-05', 'Task 3: rebuilt from concept nodes, so the reason is always about the assertion; every node re-read.'],
+  'k11-11b-assertion': ['2026-11-06', 'Read again: the closing node was a reason word for word, so it is now output streams.'],
+  'k11-11b-compare2': ['2026-11-06', 'Read with samples; correct, no change needed.'],
+  'k11-11b-define': ['2026-11-06', 'Only two definitions; added a stream and a buffer, both in the syllabus’s stream wording.'],
+  'k11-11b-reason2': ['2026-11-06', 'Closing a file was also an AR word for word; that AR is now FileWriter as an output stream.'],
+  'k11-11b-recall': ['2026-11-06', 'Read with samples; correct, no change needed.'],
+  'k11-11b-truth': ['2026-11-06', 'readLine’s null and closing a file repeated the AR and the reason. Now opening by name and character streams.'],
   'k11-12a-assertion': ['2026-11-05', 'Task 3: rebuilt from concept nodes, so the reason is always about the assertion; every node re-read.'],
   'k11-13a-assertion': ['2026-11-05', 'Task 3: rebuilt from concept nodes, so the reason is always about the assertion; every node re-read.'],
   'k11-1a-assertion': ['2026-11-06', 'Read again: the hexadecimal node repeated a reason, so it is now octal digits; an “also true” line no longer repeats a truth.'],

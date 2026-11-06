@@ -67,8 +67,8 @@ const knowledge: Record<string, Facts> = {
   '4a': {
     ar: [
       ['work by a perpendicular force', 'The tension in a string does no work on a stone in uniform circular motion.', 'The tension in a string does positive work on a stone in uniform circular motion.', 'The force is perpendicular to the displacement at every instant.', 'The force is parallel to the displacement at every instant.', 'The stone’s kinetic energy stays constant.'],
-      ['conservative forces', 'The work done by gravity depends only on the start and end heights.', 'The work done by gravity depends on the path taken.', 'Gravity is a conservative force.', 'Gravity is a non-conservative force.', 'Friction is a non-conservative force.'],
-      ['the work-energy theorem', 'A heavier and a lighter body with equal momentum have different kinetic energies.', 'Two bodies with equal momentum always have equal kinetic energies.', 'Kinetic energy is p²/2m, which depends on the mass.', 'Kinetic energy is p/2m, which doesn’t depend on the mass.', 'The net work done on a body is equal to its change in kinetic energy.'],
+      ['conservative forces', 'The work done by gravity depends only on the start and end heights.', 'The work done by gravity depends on the path taken.', 'Gravity is a conservative force.', 'Gravity is a non-conservative force.', 'The spring force is also conservative.'],
+      ['friction on a slope', 'A block reaches the bottom of a rough slope with less kinetic energy than on a smooth one.', 'A block reaches the bottom of a rough slope with more kinetic energy than on a smooth one.', 'Friction turns part of its energy into heat.', 'Friction adds energy to the block.', 'The block loses the same potential energy on both slopes.'],
     ],
   },
   '4b': {

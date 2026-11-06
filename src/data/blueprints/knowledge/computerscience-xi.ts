@@ -97,7 +97,7 @@ const knowledge: Record<string, Facts> = {
   '11b': {
     ar: [
       ['text and binary files', 'A binary file is usually smaller than a text file of the same numbers.', 'A binary file is usually larger than a text file of the same numbers.', 'It stores values in their compact internal form.', 'It stores each digit as a separate character.', 'A text file can be read in a plain editor.'],
-      ['closing a file', 'A file should be closed after writing.', 'A file never needs to be closed.', 'Closing writes out any buffered data.', 'Closing deletes the file.', 'FileWriter writes characters.'],
+      ['output streams', 'A FileWriter can’t read a file.', 'A FileWriter can read a file.', 'It is an output stream, so data flows only from the program to the file.', 'It is an input stream.', 'FileReader is an input stream.'],
       ['the end of a file', 'BufferedReader’s readLine() returns null at the end of a file.', 'BufferedReader’s readLine() returns 0 at the end of a file.', 'null shows there are no more lines.', 'null shows that the line was empty.', 'A loop can read until it gets null.'],
     ],
   },

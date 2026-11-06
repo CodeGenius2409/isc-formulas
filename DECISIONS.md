@@ -396,4 +396,6 @@ Work is on a `rebuild` branch. `master` still holds your original files.
 - **Review batch 27** (Chemistry XII kinetics, cyanides and vitamins, Maths XI lines and probability; 40 blueprints, 20 fixed). Small topics often had AR nodes that repeated their only reasons. Several had just three truths, giving three-option MCQs, so facts were added.
   Coordinates in Maths questions are now in maths mode, so negative values show a proper minus sign.
 - **Review batch 28** (Chemistry corrosion and moles, Maths XI P&C and circles, CS XI encodings; 43 blueprints, 17 fixed, 1 flagged). This corrects batch 22: the 2028 XI Encodings wording dropped integer encodings, so 2's complement is probably out. The complements question is flagged, and section A now subtracts in binary.
-  The complement facts in the 2a pool stay until the user decides. Derived amounts in numericals are now rounded to 3 figures before use.
+  The complement facts in the 2a pool stay until the user decides. The moles numerical now rounds its derived amount to 3 figures before use.
+- **Review batch 29** (Physics XI work and energy, Chemistry XI quantum numbers, Maths XI sequences, CS XI files; 42 blueprints, 11 fixed). The second savings question became seats in a hall, so two of the same story can't share a paper.
+  Thin topics got the definitions and truths they lacked.

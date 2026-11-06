@@ -568,6 +568,8 @@ const blueprints: Blueprint[] = [
     define: [
       ['a text file', 'A file that stores characters that can be read by people.'],
       ['a binary file', 'A file that stores data in the same form as it’s held in memory.'],
+      ['a stream', 'A flow of data between a program and a source or destination, such as a file.'],
+      ['a buffer', 'A block of memory that holds data for a while, so it can be read or written in larger pieces.'],
     ],
     recall: [
       ['Which class writes characters to a file?', 'FileWriter', 'FileReader', 'Scanner', 'String'],
@@ -578,9 +580,9 @@ const blueprints: Blueprint[] = [
       ['a text file', 'a binary file', ['Readable by people.', 'Not readable by people.'], ['Often larger for numbers.', 'Often smaller for numbers.']],
     ],
     truths: [
-      ['A file must be closed to make sure its data is saved.', 'A file doesn’t need closing for its data to be saved.'],
+      ['A character stream reads or writes text one character at a time.', 'A character stream works only on whole files at once.'],
       ['IOException is raised for many file errors.', 'ArithmeticException is raised for most file errors.'],
-      ['readLine() returns null at the end of a file.', 'readLine() returns 0 at the end of a file.'],
+      ['A file’s name, and its path if needed, are given when it is opened.', 'A file can be opened without any name.'],
     ],
     reason: [
       ['A program should close a file when it has finished.', 'Buffered data might not be written otherwise.', 'It also frees the resource for others.'],

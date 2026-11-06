@@ -215,7 +215,6 @@ const blueprints: Blueprint[] = [
       ['The shape of a p orbital is:', 'dumb-bell', 'spherical', 'double dumb-bell', 'ring'],
       ['Which orbital is filled first?', '4s', '3d', '4p', '4d'],
       ['The value of l for a p orbital is:', '1', '0', '2', '3'],
-      ['Chromium’s configuration ends in 3d⁵ 4s¹ because:', 'half-filled subshells are especially stable', 'the 4s orbital is full', 'it has no 3d electrons', 'it is a noble gas'],
     ],
     reason: [
       ['Copper’s configuration ends in 3d¹⁰ 4s¹.', 'A completely filled d subshell is especially stable.'],
@@ -223,8 +222,9 @@ const blueprints: Blueprint[] = [
     ],
     truths: [
       ['The s orbital is spherical.', 'The s orbital is dumb-bell shaped.'],
-      ['Each orbital holds at most two electrons.', 'Each orbital holds at most four electrons.'],
+      ['The principal quantum number fixes an orbital’s size and energy.', 'The principal quantum number fixes an orbital’s orientation.'],
       ['The magnetic quantum number shows the orientation of an orbital.', 'The magnetic quantum number shows the size of an orbital.'],
+      ['A p subshell has three orbitals.', 'A p subshell has five orbitals.'],
     ],
     compare: [
       ['an orbit', 'an orbital', ['A definite circular path in Bohr’s model.', 'A region of probability.'], ['Can hold 2n² electrons.', 'Can hold at most two electrons.']],

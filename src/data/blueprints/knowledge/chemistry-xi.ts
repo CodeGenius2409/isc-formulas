@@ -33,8 +33,8 @@ const knowledge: Record<string, Facts> = {
   },
   '2b': {
     ar: [
-      ['the orbital’s capacity', 'An orbital can hold at most two electrons.', 'An orbital can hold at most four electrons.', 'Two electrons in one orbital must have opposite spins, by Pauli’s principle.', 'Electrons in one orbital must have the same spin.', 'The p subshell has three orbitals.'],
-      ['the stability of half-filled subshells', 'Chromium has the configuration [Ar] 3d⁵ 4s¹.', 'Chromium has the configuration [Ar] 3d⁴ 4s².', 'A half-filled d subshell is especially stable.', 'A full 4s orbital is always unstable.', 'Copper’s configuration ends in 3d¹⁰ 4s¹.'],
+      ['the orbital’s capacity', 'An orbital can hold at most two electrons.', 'An orbital can hold at most four electrons.', 'Two electrons in one orbital must have opposite spins, by Pauli’s principle.', 'Electrons in one orbital must have the same spin.', 'An electron’s spin quantum number is +½ or −½.'],
+      ['the stability of half-filled subshells', 'Chromium has the configuration [Ar] 3d⁵ 4s¹.', 'Chromium has the configuration [Ar] 3d⁴ 4s².', 'A half-filled d subshell is especially stable.', 'A full 4s orbital is always unstable.', 'Chromium is a d-block element.'],
       ['Hund’s rule', 'Nitrogen’s three 2p electrons occupy separate orbitals.', 'Nitrogen’s three 2p electrons pair up in the same orbitals.', 'Electrons in a subshell stay unpaired for as long as they can.', 'Electrons in a subshell pair up as soon as they can.', 'These electrons have parallel spins.'],
     ],
   },
