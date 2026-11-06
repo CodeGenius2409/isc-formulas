@@ -358,14 +358,14 @@ const knowledge: Record<string, Facts> = {
       ['A secondary aliphatic amine with nitrous acid gives:', 'a yellow oil', 'nitrogen gas', 'a stable diazonium salt', 'hydrogen'],
       ['A tertiary amine with Hinsberg’s reagent gives:', 'no reaction', 'a solid soluble in alkali', 'a solid insoluble in alkali', 'nitrogen gas'],
       ['A primary amine with Hinsberg’s reagent gives a product:', 'soluble in alkali', 'insoluble in alkali', 'that doesn’t form', 'that is a gas'],
-      ['Of these, which is the strongest base in water?', '(CH₃)₂NH', 'NH₃', 'C₆H₅NH₂', 'CH₃CONH₂'],
+      ['At room temperature, methanamine is a:', 'gas', 'liquid', 'solid', 'liquid that sets on standing'],
       ['Which order of basicity in the gas phase is right?', 'tertiary > secondary > primary > NH₃', 'NH₃ > primary > secondary > tertiary', 'primary > NH₃ > tertiary > secondary', 'secondary > tertiary > NH₃ > primary'],
       ['Aniline is made in industry from:', 'nitrobenzene', 'ethanol', 'phenol alone', 'ammonia alone'],
       ['Aniline with bromine water gives:', '2,4,6-tribromoaniline', '4-bromoaniline alone', 'no change', 'benzene'],
       ['Aniline with ethanoyl chloride gives:', 'acetanilide', 'phenol', 'benzene', 'nitrobenzene'],
       ['Aniline with concentrated H₂SO₄ on heating gives:', 'sulphanilic acid', 'benzene', 'benzoic acid', 'phenol'],
       ['Aniline with HNO₂ at 273–278 K gives:', 'a diazonium salt', 'a nitrile', 'an alcohol', 'a nitro compound'],
-      ['Which compound gives the carbylamine test?', 'aniline', 'N-methylaniline', 'triethylamine', 'acetamide'],
+      ['An orange dye with β-naphthol, after nitrous acid in the cold, is a test for:', 'primary aromatic amines', 'primary aliphatic amines', 'secondary amines', 'tertiary amines'],
       ['Which is used to make dyes and drugs?', 'aniline', 'ethane', 'methanol', 'propanone'],
     ],
     truths: [
@@ -393,7 +393,7 @@ const knowledge: Record<string, Facts> = {
       ['Primary amines form stable diazonium salts only if aromatic.', 'An aryl diazonium ion is stabilised by resonance with the ring.'],
       ['Ethanamine dissolves in water, but aniline dissolves only slightly.', 'Ethanamine forms hydrogen bonds with water.', 'Aniline’s large phenyl group resists this.'],
       ['Gabriel synthesis isn’t used for aromatic amines.', 'Aryl halides don’t undergo substitution with phthalimide’s anion.'],
-      ['Tertiary amines have lower boiling points than primary amines of the same mass.', 'They have no N–H bond, so they form no hydrogen bonds among themselves.'],
+      ['Ethanamide is a much weaker base than ethanamine.', 'The nitrogen’s lone pair in an amide is delocalised onto the C=O group.'],
     ],
     explain: [
       ['Write the Hoffmann bromamide reaction of ethanamide.', 'CH₃CONH₂ + Br₂ + 4NaOH → CH₃NH₂ + Na₂CO₃ + 2NaBr + 2H₂O.'],
@@ -409,7 +409,7 @@ const knowledge: Record<string, Facts> = {
       ['aniline', 'acetanilide', ['Strongly activates the ring.', 'Moderately activates the ring.'], ['Gives a tribromo product at once.', 'Gives mainly a monobromo product.']],
     ],
     ar: [
-      ['the anilinium ion', 'Aniline dissolves in dilute acid.', 'Aniline doesn’t dissolve in dilute acid.', 'Its nitrogen takes up a proton to give a soluble salt.', 'It releases a proton to form a soluble salt.', 'Aniline is a weak base.'],
+      ['the anilinium ion', 'Aniline dissolves in dilute acid.', 'Aniline doesn’t dissolve in dilute acid.', 'Its nitrogen takes up a proton to give a soluble salt.', 'It releases a proton to form a soluble salt.', 'Aniline darkens in air on standing.'],
       ['the nitrous acid test', 'A primary aliphatic amine gives nitrogen gas with nitrous acid.', 'A primary aliphatic amine gives no gas with nitrous acid.', 'Its diazonium ion breaks down at once.', 'Its diazonium ion is very stable in water at room temperature.', 'Aromatic amines give more stable diazonium salts.'],
     ],
     links: [

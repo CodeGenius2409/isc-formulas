@@ -174,7 +174,7 @@ const knowledge: Record<string, Facts> = {
       ['KMnO₄ in acid', 'KMnO₄ in neutral solution', ['Reduced to Mn²⁺.', 'Reduced to MnO₂.'], ['Takes 5 electrons.', 'Takes 3 electrons.'], ['Colourless product.', 'Brown precipitate.']],
     ],
     ar: [
-      ['the KMnO₄ titration', 'KMnO₄ titrations aren’t done in HCl.', 'KMnO₄ titrations are best done in HCl.', 'Permanganate would oxidise chloride as well.', 'HCl is too weak an acid to make any difference.', 'Sulphuric acid is used instead.'],
+      ['autocatalysis by Mn²⁺', 'In the oxalate titration, KMnO₄ is decolourised slowly at first and then quickly.', 'In the oxalate titration, KMnO₄ is decolourised quickly at first and then slowly.', 'The Mn²⁺ formed catalyses the reaction.', 'The solution cools as the titration goes on.', 'The titration is done at about 60 °C.'],
       ['the green manganate', 'Manganate ion is paramagnetic.', 'Manganate ion is diamagnetic.', 'Manganese(VI) has one unpaired d electron.', 'Manganese(VI) has no d electrons.', 'Manganate ion is green.'],
       ['K₂Cr₂O₇ as a standard', 'K₂Cr₂O₇ is a good primary standard.', 'K₂Cr₂O₇ is useless as a primary standard.', 'It is pure, and not hygroscopic.', 'It absorbs a lot of water from the air.', 'It is orange.'],
     ],
@@ -183,7 +183,6 @@ const knowledge: Record<string, Facts> = {
       ['same', 'K₂Cr₂O₇ is an orange', 'KMnO₄ is a dark'],
       ['same', 'KMnO₄ is diamagnetic', 'K₂MnO₄ is paramagnetic'],
       ['cause', 'A standard KMnO₄', 'KMnO₄ decomposes slowly'],
-      ['contrast', 'potassium dichromate', 'potassium permanganate'],
       ['contrast', 'chromate ion', 'dichromate ion'],
       ['contrast', 'chrome iron ore', 'pyrolusite'],
       ['contrast', 'potassium manganate', 'potassium permanganate'],

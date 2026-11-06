@@ -373,3 +373,5 @@ Work is on a `rebuild` branch. `master` still holds your original files.
   Matrices and differentiation were right throughout; Phenols had facts said twice.
 - **Review batch 16** (Physics XII optical instruments, CS XII logic gates and arrays; 43 blueprints, 10 fixed). The eye's accommodation isn't in the Optical Instruments syllabus. Repeats were the main problem in Physics.
   CS was sound: every gate count, address and program output checks. "A AND gate" now reads "an AND gate", in Class XI too.
+- **Review batch 17** (Physics XII EM waves, Chemistry XII K₂Cr₂O₇/KMnO₄ and amines; 46 blueprints, 10 fixed). Name-it answers now say "Kolbe's reaction", "esterification" and "the Sandmeyer reaction", and keep the capital in N-phenylethanamide.
+  Most problems were facts said twice across a topic's blueprints; the chemistry itself was right.

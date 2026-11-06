@@ -93,6 +93,12 @@ function predict(r: Reaction, g: Gen) {
   return g.mcq(`${nameOf(r.from)} is treated with ${r.reagent}. Which is the main organic product?`, nameOf(r.to), r.wrong.map(nameOf), { why: `${r.name ? `${r.name}. ` : ''}${r.because}`, structure: { list: [r.from] } });
 }
 
+/** A compound's name inside a sentence: lower case, keeping a leading N- or N,N-. */
+const inSentence = (name: string) => name.toLowerCase().replace(/^n(,n)?-/, (m) => m.toUpperCase());
+/** A reaction's name after "This is": "the Sandmeyer reaction", "Kolbe’s reaction", "esterification". */
+const PROCESS = new Set(['Esterification', 'Diazotisation', 'Decarboxylation', 'Acylation', 'Aldol condensation']);
+const reactionName = (name: string) => (name.includes('’s ') ? name : PROCESS.has(name) ? name.toLowerCase() : `the ${/^(Coupling reaction|Carbylamine test)$/.test(name) ? name.toLowerCase() : name}`);
+
 function reactionsOf(unit: number, topic: string) {
   return REACTIONS.filter((r) => r.unit === unit && r.topic === topic);
 }
@@ -105,7 +111,7 @@ function reactionBlueprints(unit: number, topic: string): Blueprint[] {
     custom(`predict-${topic}`, [unit, topic, 1, 2], { type: 'mcq', format: 'mcq' }, (g) => predict(g.pick(list), g)),
     custom(`name-it-${topic}`, [unit, topic, 2, 2], { type: 'reaction', format: 'short' }, (g) => {
       const r = g.pick(list);
-      return g.theory(`What happens when ${nameOf(r.from).toLowerCase()} is treated with ${r.reagent}? Name the product${r.name ? ', and name the reaction' : ''}.`, [`The product is ${nameOf(r.to).toLowerCase()}.`, r.name ? `This is the ${r.name}. ${r.because}` : r.because]);
+      return g.theory(`What happens when ${inSentence(nameOf(r.from))} is treated with ${r.reagent}? Name the product${r.name ? ', and name the reaction' : ''}.`, [`The product is ${inSentence(nameOf(r.to))}.`, r.name ? `This is ${reactionName(r.name)}. ${r.because}` : r.because]);
     }),
   ];
 }
@@ -1061,7 +1067,7 @@ const blueprints: Blueprint[] = [
     ],
     truths: [
       ['Alkylamines are stronger bases than ammonia.', 'Alkylamines are weaker bases than ammonia.'],
-      ['Tertiary amines have the lowest boiling points of the three classes.', 'Tertiary amines have the highest boiling points of the three classes.'],
+      ['Aniline is less basic than ammonia.', 'Aniline is more basic than ammonia.'],
       ['Electron-withdrawing groups on the ring weaken the basicity of aniline.', 'Electron-withdrawing groups on the ring strengthen the basicity of aniline.'],
     ],
     explain: [
