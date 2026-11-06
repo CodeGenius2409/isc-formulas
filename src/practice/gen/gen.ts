@@ -170,7 +170,9 @@ export class Gen {
    */
   mcqNumber(text: string, value: number, unit: string, mistakes: Mistake[], extras: Partial<McqBody> & { digits?: number; working?: string } = {}): McqBody {
     const { digits = 3, working, ...rest } = extras;
-    const show = (v: number) => `${tidy(v, digits)}${unit ? `${unit === '°' ? '' : ' '}${unit}` : ''}`;
+    // A true minus sign in options, except in Computer Science, where a value is what Java prints.
+    const sign = (s: string) => (this.subject === 'computerscience' ? s : s.replace(/^-/, '−'));
+    const show = (v: number) => `${sign(tidy(v, digits))}${unit ? `${unit === '°' ? '' : ' '}${unit}` : ''}`;
     const right = show(value);
     const seen = new Set([right]);
     const usable: Mistake[] = [];
@@ -198,7 +200,9 @@ export function toPoints(list: (string | [string, number])[]): MarkPoint[] {
 }
 
 export function fillIn(text: string, values: Record<string, number | string>): string {
-  return text.replace(/\{([A-Za-z]\w*)\}/g, (whole, name: string) => (name in values ? String(values[name]) : whole));
+  // A negative number reads with a true minus sign, −60, not -60.
+  const shown = (v: number | string) => (typeof v === 'number' ? String(v).replace(/^-/, '−') : v);
+  return text.replace(/\{([A-Za-z]\w*)\}/g, (whole, name: string) => (name in values ? shown(values[name]) : whole));
 }
 
 /** The whole question and answer as text, for checks and for a question with parts. */

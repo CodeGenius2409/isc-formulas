@@ -28,8 +28,8 @@ const knowledge: Record<string, Facts> = {
       'Sketch the velocity–time graph': { kind: 'graph', x: 'Time', y: 'Velocity', lines: [{ points: [[0, 2], [4, -2]] }], ticksY: [[2, 'u'], [-2, '−u']], ticksX: [[2, 'top'], [4, 'return']] },
     },
     ar: [
-      ['velocity and acceleration', 'A body can have zero velocity and non-zero acceleration at the same instant.', 'A body with zero velocity must also have zero acceleration.', 'Acceleration depends on how velocity is changing, not on its value at that instant.', 'Acceleration is equal to velocity divided by distance.', 'At the top of its flight, a ball thrown upwards is momentarily at rest.'],
-      ['the area under a graph', 'The area under a velocity–time graph gives the displacement.', 'The area under a velocity–time graph gives the acceleration.', 'Velocity multiplied by time is displacement.', 'Velocity divided by time is displacement.', 'The slope of a velocity–time graph gives the acceleration.'],
+      ['relative velocity', 'Two trains going the same way at 50 km/h and 40 km/h see each other move at 10 km/h.', 'Two trains going the same way at 50 km/h and 40 km/h see each other move at 90 km/h.', 'The relative velocity is the difference of their velocities.', 'The relative velocity is the sum of their speeds.', 'Trains going opposite ways approach at the sum of their speeds.'],
+      ['the area under a graph', 'The area under a velocity–time graph gives the displacement.', 'The area under a velocity–time graph gives the acceleration.', 'Velocity multiplied by time is displacement.', 'Velocity divided by time is displacement.', 'A v–t graph below the time axis shows motion in the negative direction.'],
       ['distance and displacement', 'The magnitude of the displacement can never exceed the distance travelled.', 'The magnitude of the displacement can exceed the distance travelled.', 'The straight line between two points is the shortest path between them.', 'A curved path is the shortest path between two points.', 'Distance is a scalar, and displacement is a vector.'],
     ],
   },

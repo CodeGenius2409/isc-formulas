@@ -107,6 +107,10 @@ export interface NumericPartDef {
   marks: number;
   /** Lets later parts use this result. */
   save?: string;
+  /** Keep only positive roots, as for a speed found from v² = u² + 2as. */
+  positive?: boolean;
+  /** Show the answer exactly, as for a count such as a formal charge. */
+  exact?: boolean;
 }
 
 export interface NumericDef extends Tags {

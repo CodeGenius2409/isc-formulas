@@ -290,13 +290,13 @@ const blueprints: Blueprint[] = [
     text: 'A molecule has {B} electrons in bonding orbitals, and {A} in antibonding orbitals. Find its bond order.',
     vars: { B: [4, 10, 2], A: [0, 4, 2] },
     when: (v) => v.B > v.A,
-    parts: [{ ask: 'Bond order', use: 'c-xi-4-2', find: 'BO', given: { N_b: 'B', N_a: 'A' }, marks: 2 }],
+    parts: [{ ask: 'Bond order', use: 'c-xi-4-2', find: 'BO', given: { N_b: 'B', N_a: 'A' }, marks: 2, exact: true }],
   }),
   num('formal-charge', [4, 'a', 2, 2], {
     text: 'An atom with {V} valence electrons has {L} non-bonding electrons, and {S} bonding electrons, in a Lewis structure. Find its formal charge.',
     vars: { V: [4, 5, 6, 7], L: [0, 2, 4, 6], S: [2, 4, 6, 8] },
     when: (v) => v.V - v.L - v.S / 2 !== 0 && Math.abs(v.V - v.L - v.S / 2) <= 2,
-    parts: [{ ask: 'Formal charge', use: 'c-xi-4-1', find: 'FC', given: { V_e: 'V', N_e: 'L', B_e: 'S' }, marks: 2 }],
+    parts: [{ ask: 'Formal charge', use: 'c-xi-4-1', find: 'FC', given: { V_e: 'V', N_e: 'L', B_e: 'S' }, marks: 2, exact: true }],
   }),
   ...facts(4, 'a', {
     define: [
@@ -321,8 +321,9 @@ const blueprints: Blueprint[] = [
     ],
     truths: [
       ['A double bond has one sigma and one pi bond.', 'A double bond has two pi bonds.'],
-      ['Dipole moment of CO₂ is zero.', 'Dipole moment of H₂O is zero.'],
-      ['Hydrogen bonding raises the boiling point of water.', 'Hydrogen bonding lowers the boiling point of water.'],
+      ['BF₃ has no dipole moment.', 'BF₃ has a large dipole moment.'],
+      ['A triple bond has one sigma and two pi bonds.', 'A triple bond has three sigma bonds.'],
+      ['Lattice enthalpy is larger for ions with higher charges.', 'Lattice enthalpy is smaller for ions with higher charges.'],
     ],
     draw: [
       ['Draw the Lewis dot structure of ammonia.', 'Three N–H shared pairs.', 'One lone pair on nitrogen.'],
@@ -413,10 +414,11 @@ const blueprints: Blueprint[] = [
     define: [
       ['entropy', 'A measure of how many ways a system’s energy can be spread out, often seen as its disorder.'],
       ['Gibbs free energy', 'The quantity G = H − TS, whose decrease shows that a change is spontaneous at constant T and P.'],
+      ['a spontaneous process', 'A process that goes on by itself, without outside help, once started.'],
     ],
     recall: [
       ['A reaction is spontaneous at constant temperature and pressure if:', 'ΔG is negative', 'ΔG is positive', 'ΔH is positive', 'ΔS is negative'],
-      ['Entropy is highest in the:', 'gaseous state', 'solid state', 'liquid state', 'crystal state'],
+      ['A reaction with ΔH > 0 and ΔS < 0 is:', 'never spontaneous', 'always spontaneous', 'spontaneous only at high temperature', 'spontaneous only at low temperature'],
       ['At equilibrium, ΔG is:', 'zero', 'positive', 'negative', 'infinite'],
       ['If ΔH is negative and ΔS is positive, a reaction is:', 'spontaneous at every temperature', 'never spontaneous', 'spontaneous only at low temperature', 'spontaneous only at high temperature'],
     ],
@@ -425,7 +427,7 @@ const blueprints: Blueprint[] = [
     ],
     truths: [
       ['Entropy rises when a solid melts.', 'Entropy falls when a solid melts.'],
-      ['The third law says a perfect crystal has zero entropy at absolute zero.', 'The third law says every substance has zero entropy at 0 °C.'],
+      ['By the second law, heat can’t flow by itself from a cold body to a hot one.', 'By the second law, heat can’t flow by itself from a hot body to a cold one.'],
       ['ΔG° = −RT ln K.', 'ΔG° = RT ln K.'],
     ],
     cases: [

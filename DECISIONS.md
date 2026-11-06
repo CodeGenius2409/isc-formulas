@@ -399,5 +399,7 @@ Work is on a `rebuild` branch. `master` still holds your original files.
   The complement facts in the 2a pool stay until the user decides. The moles numerical now rounds its derived amount to 3 figures before use.
 - **Review batch 29** (Physics XI work and energy, Chemistry XI quantum numbers, Maths XI sequences, CS XI files; 42 blueprints, 11 fixed). The second savings question became seats in a hall, so two of the same story can't share a paper.
   Thin topics got the definitions and truths they lacked.
-- **Review batch 30** (six small Class XI topics; 46 blueprints, 21 fixed). The Class XI gate MCQ had only the options 0 and 1. It now asks for a whole output column, with four options.
+- **Review batch 30** (six small Class XI topics; 47 blueprints, 21 fixed). The Class XI gate MCQ had only the options 0 and 1. It now asks for a whole output column, with four options.
   In small topics, AR nodes were again often a reason word for word, so new facts were written in their place.
+- **Review batch 31** (Physics XI motion, Chemistry XI bonding and thermodynamics, Chemistry XII tests; 40 blueprints, 15 fixed). Four shared generator fixes: a carried value is rounded to 3 figures, a part can keep only its positive root, a count can be shown exactly, and question numbers use a true minus (not in CS, where values are what Java prints).
+  A conics pair removed in batch 24 left a ten-question paper short, which check.sh didn't run; it now runs the paper-size test too. Covered in tests/unit/solver-display.test.ts.

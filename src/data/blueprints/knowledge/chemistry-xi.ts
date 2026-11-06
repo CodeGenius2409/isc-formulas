@@ -47,7 +47,7 @@ const knowledge: Record<string, Facts> = {
   },
   '4a': {
     ar: [
-      ['the properties of ionic compounds', 'Ionic compounds have high melting points.', 'Ionic compounds have low melting points.', 'Strong electrostatic forces hold their ions in the lattice.', 'Weak forces hold their molecules together.', 'Ionic compounds conduct when molten.'],
+      ['Fajans’ rules', 'LiCl is more covalent than NaCl.', 'NaCl is more covalent than LiCl.', 'The smaller Li⁺ ion distorts the chloride ion more.', 'Li⁺ is larger than Na⁺.', 'Both are chlorides of group 1 metals.'],
       ['the dipole moment', 'CO₂ has no dipole moment, although its bonds are polar.', 'CO₂ has a large dipole moment.', 'It is linear, so its bond dipoles cancel.', 'It is bent, so its bond dipoles add.', 'Water has a dipole moment, as it is bent.'],
       ['the hydrogen bond', 'Water has a much higher boiling point than H₂S.', 'H₂S has a much higher boiling point than water.', 'Water molecules are linked by hydrogen bonds.', 'H₂S molecules are linked by hydrogen bonds.', 'A hydrogen bond needs F, O or N.'],
     ],
@@ -55,7 +55,7 @@ const knowledge: Record<string, Facts> = {
   '4b': {
     ar: [
       ['VSEPR and shape', 'The bond angle in water is less than the tetrahedral angle.', 'The bond angle in water is greater than the tetrahedral angle.', 'Lone pairs repel bond pairs more than bond pairs repel each other.', 'Bond pairs repel more than lone pairs do.', 'Oxygen in water is sp³ hybridised.'],
-      ['hydrogen bonding', 'Water boils far higher than H₂S.', 'H₂S boils far higher than water.', 'Water molecules are held together by hydrogen bonds.', 'H₂S has stronger hydrogen bonds.', 'H₂S is a gas at room temperature.'],
+      ['the shape of BF₃', 'BF₃ is trigonal planar.', 'BF₃ is pyramidal.', 'Boron has three bond pairs and no lone pair.', 'Boron has a lone pair.', 'BF₃ accepts a lone pair from NH₃.'],
       ['bond order', 'He₂ doesn’t exist as a stable molecule.', 'He₂ is a stable molecule with a bond order of 2.', 'Its bond order is zero.', 'Its bond order is 3.', 'He₂⁺ has a bond order of ½.'],
     ],
   },
@@ -68,7 +68,7 @@ const knowledge: Record<string, Facts> = {
   },
   '5b': {
     ar: [
-      ['spontaneity', 'An endothermic change can be spontaneous.', 'An endothermic change can never be spontaneous.', 'A large enough rise in entropy can make ΔG negative.', 'ΔG depends only on ΔH.', 'Ice melts spontaneously above 0 °C.'],
+      ['spontaneity', 'An endothermic change can be spontaneous.', 'An endothermic change can never be spontaneous.', 'A large enough rise in entropy can make ΔG negative.', 'ΔG depends only on ΔH.', 'The unit of entropy is J K⁻¹ mol⁻¹.'],
       ['entropy', 'A gas has more entropy than the same amount of its liquid.', 'A liquid has more entropy than the same amount of its gas.', 'Gas molecules are much more disordered.', 'Liquid molecules are much more disordered.', 'Entropy is a measure of disorder.'],
       ['the third law', 'A perfect crystal has zero entropy at 0 K.', 'A perfect crystal has its greatest entropy at 0 K.', 'Its particles have only one possible arrangement there.', 'Its particles are moving fastest there.', 'This is the third law of thermodynamics.'],
     ],

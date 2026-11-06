@@ -329,6 +329,7 @@ const knowledge: Record<string, Facts> = {
       ['the major axis of an ellipse', 'The longest chord through its centre, of length 2a.'],
       ['the minor axis of an ellipse', 'The shortest chord through its centre, of length 2b.'],
       ['the transverse axis of a hyperbola', 'The line segment of length 2a joining its vertices.'],
+      ['the conjugate axis of a hyperbola', 'The line segment of length 2b through its centre, at right angles to the transverse axis.'],
     ],
     recall: [
       ['The directrix of y² = 4ax is:', 'x = −a', 'x = a', 'y = −a', 'y = a'],
@@ -368,6 +369,7 @@ const knowledge: Record<string, Facts> = {
       ['contrast', 'an ellipse', 'a hyperbola'],
       ['contrast', 'the focus of a conic', 'the directrix of a conic'],
       ['contrast', 'the major axis of an ellipse', 'the minor axis of an ellipse'],
+      ['contrast', 'the transverse axis of a hyperbola', 'the conjugate axis of a hyperbola'],
     ],
   },
 

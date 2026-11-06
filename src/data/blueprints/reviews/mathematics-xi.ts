@@ -118,7 +118,7 @@ const reviews: Reviews = {
   'm11-3c-assertion': ['2026-11-06', 'Read again: the focal-sum node’s reason was “this is how an ellipse is defined”, so it is now the asymptotes; two “also true” lines no longer repeat recalls.'],
   'm11-3c-assertion-linked': ['2026-11-06', 'Read with samples; correct, no change needed.'],
   'm11-3c-case3': ['2026-11-06', 'Read with samples; correct, no change needed.'],
-  'm11-3c-compare-linked': ['2026-11-06', 'A conic section and a degenerate conic aren’t a pair; one is a kind of the other. Removed.'],
+  'm11-3c-compare-linked': ['2026-11-06', 'Read again: removing a non-pair in batch 24 left too few pairs for a paper of ten “distinguish” questions. The transverse and conjugate axes of a hyperbola are now a pair.'],
   'm11-3c-compare2': ['2026-11-06', 'Read with samples; correct, no change needed.'],
   'm11-3c-define': ['2026-11-06', 'Read with samples; correct, no change needed.'],
   'm11-3c-ellipse': ['2026-11-06', 'Read with samples; correct, no change needed.'],

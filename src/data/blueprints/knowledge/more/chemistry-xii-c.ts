@@ -793,6 +793,7 @@ const knowledge: Record<string, Facts> = {
       ['Carbylamine has a foul smell, which identifies a primary amine.', 'Carbylamine has a sweet smell, which identifies a tertiary amine.'],
       ['Acetone gives a positive iodoform test.', 'Acetone gives a silver mirror with Tollens’ reagent.'],
       ['Glucose gives a silver mirror with Tollens’ reagent.', 'Glucose gives no change with Tollens’ reagent.'],
+      ['Phenol gives a violet colour with neutral FeCl₃.', 'Phenol gives a red precipitate with Fehling’s solution.'],
     ],
     explain: [
       ['Name two tests for an aldehyde group.', 'Tollens’ test.', 'Fehling’s test.'],

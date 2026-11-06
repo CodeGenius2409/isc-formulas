@@ -48,7 +48,6 @@ const knowledge: Record<string, Facts> = {
       ['free fall', 'Motion under gravity alone, with air resistance neglected.'],
     ],
     recall: [
-      ['The instantaneous velocity is:', 'dx/dt', 'dv/dt', 'x/t always', 'd²v/dt²'],
       ['The acceleration of a body is:', 'dv/dt', 'dx/dt', 'x/t² always', 'v × t'],
       ['The slope of a position–time graph gives the:', 'velocity', 'acceleration', 'distance', 'displacement'],
       ['A horizontal line on a position–time graph shows a body:', 'at rest', 'with a steady velocity', 'with a steady acceleration', 'in free fall'],
@@ -60,12 +59,11 @@ const knowledge: Record<string, Facts> = {
       ['For a body starting from rest with constant acceleration, distances covered in successive seconds are in the ratio:', '1 : 3 : 5 : 7', '1 : 2 : 3 : 4', '1 : 4 : 9 : 16', '1 : 1 : 1 : 1'],
       ['A ball is thrown up and returns to the thrower. Its total displacement is:', 'zero', 'twice the height', 'the height', 'negative of the height'],
       ['A ball is thrown straight up. Its acceleration throughout, ignoring air, is:', 'g downward', 'g upward', 'zero', 'g upward at first, then g downward'],
-      ['Two cars move the same way at 60 km/h and 40 km/h. The speed of one relative to the other is:', '20 km/h', '100 km/h', '50 km/h', '40 km/h'],
       ['The distance covered by a body in the nth second is:', 'u + a(2n − 1)/2', 'ut + ½at²', 'u + at', 'u + an/2'],
       ['Which can’t be negative?', 'speed', 'velocity', 'displacement', 'acceleration'],
     ],
     truths: [
-      ['The size of displacement can never exceed the distance travelled.', 'The size of displacement always exceeds the distance travelled.'],
+      ['A body moving along a straight line without turning back has a displacement equal in size to its distance.', 'A body moving along a straight line without turning back always has more distance than displacement.'],
       ['A body’s velocity and acceleration can point in opposite directions.', 'A body’s velocity and acceleration must always point in the same direction.'],
       ['A negative acceleration need not mean a body is slowing down.', 'A negative acceleration always means a body is slowing down.'],
       ['Motion and rest are relative to a frame of reference.', 'A body’s motion is the same in every frame of reference.'],
@@ -97,7 +95,7 @@ const knowledge: Record<string, Facts> = {
       ['uniform motion', 'uniformly accelerated motion', ['Velocity stays constant.', 'Velocity changes steadily.'], ['Zero acceleration.', 'Constant acceleration.'], ['x–t graph is a straight line.', 'x–t graph is a parabola.']],
     ],
     links: [
-      ['same', 'The size of displacement can never', 'Average velocity can be zero'],
+      ['same', 'A body moving along a straight line without', 'Average velocity can be zero'],
       ['same', 'A body thrown up takes as long', 'A body thrown up has the same speed'],
       ['same', 'A body’s velocity and acceleration', 'A negative acceleration need not'],
       ['contrast', 'average speed', 'average velocity'],

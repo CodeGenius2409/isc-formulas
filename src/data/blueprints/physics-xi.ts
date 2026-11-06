@@ -72,7 +72,7 @@ const blueprints: Blueprint[] = [
   num('uniform', [2, 'a', 2, 1], {
     variants: [
       { text: '{scene} starts from rest and accelerates uniformly at {A} m/s² for {T} s. How far does it travel?', parts: [{ ask: 'Distance', use: 'p-xi-2-5', find: 's', given: { u: '0 m/s', a: 'A m/s^2', t: 'T s' }, marks: 2 }] },
-      { text: '{scene} starts at {U} m/s and accelerates uniformly at {A} m/s² over {S} m. Find its final speed.', parts: [{ ask: 'Final speed', use: 'p-xi-2-6', find: 'v', given: { u: 'U m/s', a: 'A m/s^2', s: 'S m' }, marks: 2 }] },
+      { text: '{scene} starts at {U} m/s and accelerates uniformly at {A} m/s² over {S} m. Find its final speed.', parts: [{ ask: 'Final speed', use: 'p-xi-2-6', find: 'v', given: { u: 'U m/s', a: 'A m/s^2', s: 'S m' }, positive: true, marks: 2 }] },
     ],
     scenes: ['A scooter', 'A train leaving a station', 'A cyclist'],
     vars: { A: [1, 4, 1], T: [2, 10, 2], U: [2, 12, 2], S: [10, 60, 10] },
@@ -146,8 +146,6 @@ const blueprints: Blueprint[] = [
     ],
     recall: [
       ['The slope of a velocity–time graph gives:', 'acceleration', 'displacement', 'speed', 'distance'],
-      ['The area under a velocity–time graph gives:', 'displacement', 'acceleration', 'force', 'time'],
-      ['An object thrown straight up, at its highest point, has:', 'zero velocity and acceleration g', 'zero velocity and zero acceleration', 'zero acceleration only', 'its greatest speed'],
       ['In free fall, ignoring air, all bodies have the same:', 'acceleration', 'mass', 'momentum', 'weight'],
     ],
     reason: [
