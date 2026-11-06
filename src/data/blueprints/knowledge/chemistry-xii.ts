@@ -45,9 +45,9 @@ const knowledge: Record<string, Facts> = {
   },
   '3b': {
     ar: [
-      ['temperature and rate', 'A small rise in temperature can greatly raise a reaction’s rate.', 'A small rise in temperature has no effect on a reaction’s rate.', 'Many more molecules then have at least the activation energy.', 'The activation energy falls sharply with temperature.', 'The Arrhenius equation links k with temperature.'],
-      ['the catalyst', 'A catalyst raises the rate of a reaction.', 'A catalyst lowers the rate of a reaction.', 'It offers a path of lower activation energy.', 'It raises the activation energy.', 'A catalyst doesn’t change ΔH.'],
-      ['collisions', 'Not every collision between reactant molecules gives products.', 'Every collision between reactant molecules gives products.', 'Molecules need enough energy and the right orientation.', 'Molecules only need the right colour.', 'Rate constants depend on how often molecules collide.'],
+      ['the Arrhenius plot', 'A plot of log k against 1/T is a straight line.', 'A plot of log k against T is a straight line.', 'log k = log A − Ea/(2.303RT), which is linear in 1/T.', 'k rises in direct proportion to T.', 'A is called the frequency factor.'],
+      ['the catalyst', 'A catalyst raises the rate of a reaction.', 'A catalyst lowers the rate of a reaction.', 'It offers a path of lower activation energy.', 'It raises the activation energy.', 'Enzymes are biological catalysts.'],
+      ['a catalyst and ΔH', 'A catalyst doesn’t change the enthalpy change of a reaction.', 'A catalyst lowers the enthalpy change of a reaction.', 'It changes only the path, not the energies of the reactants and products.', 'It is used up in the reaction.', 'A catalyst has the same mass at the end of the reaction.'],
     ],
   },
   '4a': {
@@ -142,8 +142,8 @@ const knowledge: Record<string, Facts> = {
   '9b': {
     ar: [
       ['the reduction of cyanides', 'Reducing a nitrile gives a primary amine.', 'Reducing a nitrile gives a secondary amine.', 'The –C≡N group becomes –CH₂NH₂.', 'The –C≡N group loses its carbon atom.', 'LiAlH₄ can carry out this reduction.'],
-      ['the hydrolysis of cyanides', 'Hydrolysing a nitrile gives a carboxylic acid.', 'Hydrolysing a nitrile gives an alcohol.', 'The carbon of the –CN group becomes that of a –COOH group.', 'The carbon of the –CN group is lost.', 'This adds one carbon atom to a chain from a haloalkane.'],
-      ['cyanide and isocyanide formation', 'AgCN gives mostly an isocyanide with a haloalkane.', 'AgCN gives mostly a cyanide with a haloalkane.', 'The silver–carbon bond is covalent, so nitrogen attacks.', 'The silver–carbon bond is fully ionic, so carbon attacks.', 'KCN gives mostly a cyanide.'],
+      ['the hydrolysis of cyanides', 'Hydrolysing a nitrile gives a carboxylic acid.', 'Hydrolysing a nitrile gives an alcohol.', 'The carbon of the –CN group becomes that of a –COOH group.', 'The carbon of the –CN group is lost.', 'Under mild conditions, hydrolysis can stop at the amide.'],
+      ['isomeric cyanides', 'Ethanenitrile and methyl isocyanide are isomers.', 'Ethanenitrile and methyl isocyanide have different molecular formulae.', 'Both are C₂H₃N, with the CN group joined in different ways.', 'One has an extra hydrogen atom.', 'Isocyanides have a foul smell.'],
     ],
   },
   '9c': {
@@ -168,9 +168,9 @@ const knowledge: Record<string, Facts> = {
   },
   '10c': {
     ar: [
-      ['fat-soluble vitamins', 'Vitamins A and D can build up in the body.', 'Vitamins A and D are quickly lost in urine.', 'They are stored in the liver and fat, as they are fat-soluble.', 'They dissolve in water.', 'Vitamins E and K are also fat-soluble.'],
-      ['water-soluble vitamins', 'Vitamin C must be taken in regularly.', 'Vitamin C is stored for years in the body.', 'It is water-soluble, so it is lost in urine.', 'It is fat-soluble, so it is lost in urine.', 'A lack of vitamin C causes scurvy.'],
-      ['the need for vitamins', 'A deficiency of vitamin D causes rickets.', 'A deficiency of vitamin D causes scurvy.', 'It is needed for the body to take up calcium.', 'It is needed for the blood to clot.', 'Skin can make vitamin D in sunlight.'],
+      ['fat-soluble vitamins', 'Vitamins A and D can build up in the body.', 'Vitamins A and D are quickly lost in urine.', 'They are stored in the liver and fat, as they are fat-soluble.', 'They dissolve in water.', 'Too much vitamin A can be harmful.'],
+      ['cooking and vitamin C', 'Overcooking vegetables can destroy much of their vitamin C.', 'Cooking makes vitamin C more plentiful in vegetables.', 'Vitamin C is easily destroyed by heat and dissolves in cooking water.', 'Heat turns other vitamins into vitamin C.', 'Amla is rich in vitamin C.'],
+      ['the need for vitamins', 'A deficiency of vitamin D causes rickets.', 'A deficiency of vitamin D causes scurvy.', 'It is needed for the body to take up calcium.', 'It is needed for the blood to clot.', 'Milk and eggs contain vitamin D.'],
     ],
   },
   '10d': {

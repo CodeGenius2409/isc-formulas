@@ -393,3 +393,5 @@ Work is on a `rebuild` branch. `master` still holds your original files.
   Interfaces' new facts follow the syllabus's one stated emphasis: the construct interface against a class's interface in the wider sense.
 - **Review batch 26** (Physics XI waves, Chemistry XI volumetric analysis and isomerism, Chemistry XII carboxylic acids; 45 blueprints, 17 fixed). The Doppler effect left the Waves pool: the 2028 unit ends at beats, and no blueprint was wholly about it.
   The dilution numerical now asks for the volume to dilute to, which is what its answer gives.
+- **Review batch 27** (Chemistry XII kinetics, cyanides and vitamins, Maths XI lines and probability; 40 blueprints, 20 fixed). Small topics often had AR nodes that repeated their only reasons. Several had just three truths, giving three-option MCQs, so facts were added.
+  Coordinates in Maths questions are now in maths mode, so negative values show a proper minus sign.

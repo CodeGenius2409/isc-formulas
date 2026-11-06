@@ -553,7 +553,7 @@ const blueprints: Blueprint[] = [
     ],
     recall: [
       ['A rise of 10 °C often makes a reaction go about:', 'twice as fast', 'ten times as fast', 'the same speed', 'half as fast'],
-      ['A catalyst works by:', 'lowering the activation energy', 'raising the temperature', 'raising the activation energy', 'changing the equilibrium constant'],
+      ['For a first-order reaction, the Arrhenius factor A has the unit:', 's⁻¹', 'mol L⁻¹', 'J mol⁻¹', 'no unit'],
       ['A catalyst does not change:', 'ΔG of the reaction', 'the activation energy', 'the rate constant', 'the mechanism'],
       ['A graph of ln k against 1/T has a slope of:', '−Ea/R', 'Ea/R', '−R/Ea', 'A'],
     ],
@@ -568,6 +568,7 @@ const blueprints: Blueprint[] = [
       ['A catalyst affects forward and backward reactions equally.', 'A catalyst speeds up only the forward reaction.'],
       ['The Arrhenius factor A relates to the collision frequency.', 'The Arrhenius factor A relates to the activation energy.'],
       ['Reactions with low activation energy are usually faster.', 'Reactions with low activation energy are usually slower.'],
+      ['A catalyst doesn’t change the position of an equilibrium.', 'A catalyst shifts an equilibrium towards the products.'],
     ],
     draw: [
       ['Sketch an energy profile for a reaction with and without a catalyst.', 'Reactants, a peak for the activated complex, and products, for one curve.', 'A second, lower peak for the catalysed path, with the same reactants and products.'],
@@ -1084,9 +1085,9 @@ const blueprints: Blueprint[] = [
       ['an isocyanide', 'An organic compound with an –N≡C group, which has a foul smell.'],
     ],
     recall: [
-      ['A nitrile on complete hydrolysis gives:', 'a carboxylic acid', 'an alcohol', 'an amine', 'an aldehyde'],
+      ['Ethanenitrile has this many carbon atoms:', '2', '1', '3', '4'],
       ['An isocyanide on hydrolysis gives:', 'a primary amine and formic acid', 'a carboxylic acid and ammonia', 'an alcohol and ammonia', 'an aldehyde and water'],
-      ['Reducing ethanenitrile with LiAlH₄ gives:', 'ethanamine', 'ethanol', 'methanamine', 'ethanoic acid'],
+      ['The C≡N bond is made up of:', 'one σ bond and two π bonds', 'three σ bonds', 'two σ bonds and one π bond', 'three π bonds'],
     ],
     reason: [
       ['A cyanide ion is ambident.', 'It can attack through carbon or nitrogen, as both carry a lone pair.'],
@@ -1190,10 +1191,11 @@ const blueprints: Blueprint[] = [
   ...facts(10, 'c', {
     define: [
       ['a vitamin', 'An organic compound needed in small amounts in the diet for normal health.'],
+      ['a fat-soluble vitamin', 'A vitamin that dissolves in fat and can be stored in the body, such as A, D, E or K.'],
+      ['a deficiency disease', 'A disease caused by a lack of a vitamin or another nutrient in the diet.'],
     ],
     recall: [
       ['A lack of vitamin C causes:', 'scurvy', 'rickets', 'night blindness', 'beriberi'],
-      ['A lack of vitamin D causes:', 'rickets', 'scurvy', 'night blindness', 'beriberi'],
       ['A lack of vitamin A causes:', 'night blindness', 'scurvy', 'rickets', 'anaemia'],
       ['A lack of vitamin B₁ causes:', 'beriberi', 'scurvy', 'rickets', 'night blindness'],
       ['Which vitamin is water-soluble?', 'Vitamin C', 'Vitamin A', 'Vitamin D', 'Vitamin E'],
@@ -1201,7 +1203,7 @@ const blueprints: Blueprint[] = [
     ],
     reason: [
       ['Water-soluble vitamins must be taken regularly in the diet.', 'They’re passed out in urine and aren’t stored in the body.'],
-      ['Vitamin C can’t be stored in large amounts.', 'It’s water-soluble, so any excess is excreted.'],
+      ['Babies kept indoors for long may need vitamin D drops.', 'Skin makes vitamin D only in sunlight.'],
     ],
     compare: [
       ['fat-soluble vitamins', 'water-soluble vitamins', ['A, D, E and K.', 'B group and C.'], ['Stored in the liver and fat tissue.', 'Not stored much, and excreted.']],
@@ -1210,6 +1212,7 @@ const blueprints: Blueprint[] = [
       ['Vitamin K helps blood to clot.', 'Vitamin K helps vision in dim light.'],
       ['Vitamin B₁₂ deficiency causes pernicious anaemia.', 'Vitamin B₁₂ deficiency causes rickets.'],
       ['Vitamin D helps the body absorb calcium.', 'Vitamin D prevents the body absorbing calcium.'],
+      ['Citrus fruits are a good source of vitamin C.', 'Citrus fruits are the main source of vitamin D.'],
     ],
   }),
   ...facts(10, 'd', {

@@ -360,14 +360,14 @@ const blueprints: Blueprint[] = [
     const [x1, y1, dx, dy] = [g.int(-4, 4), g.int(-4, 4), g.int(1, 6), g.int(1, 6)];
     const s = frac(dy, dx);
     const others = [frac(dx, dy), frac(-dy, dx), frac(dy + dx, dx), frac(dy, dx + 1)].filter((f) => f.text() !== s.text());
-    return g.mcq(`The slope of the line through (${x1}, ${y1}) and (${x1 + dx}, ${y1 + dy}) is:`, $(s.tex()), [...new Set(others.map((f) => $(f.tex())))].slice(0, 3));
+    return g.mcq(`The slope of the line through ${$(`(${x1}, ${y1})`)} and ${$(`(${x1 + dx}, ${y1 + dy})`)} is:`, $(s.tex()), [...new Set(others.map((f) => $(f.tex())))].slice(0, 3));
   }),
   custom('line-eq', [3, 'a', 2, 1], { type: 'short', format: 'short' }, (g) => {
     const m = g.int(-4, 4);
     const x = g.int(-3, 4);
     const y = g.int(-3, 4);
     if (!m) g.retry();
-    return g.theory(`Find the equation of the line through (${x}, ${y}) with a slope of ${m}.`, [`Use ${$('y - y_1 = m(x - x_1)')}.`, `So ${$(`y = ${polyTex([[m, 1], [y - m * x, 0]])}`)}.`]);
+    return g.theory(`Find the equation of the line through ${$(`(${x}, ${y})`)} with a slope of ${$(String(m))}.`, [`Use ${$('y - y_1 = m(x - x_1)')}.`, `So ${$(`y = ${polyTex([[m, 1], [y - m * x, 0]])}`)}.`]);
   }),
   custom('point-line', [3, 'a', 2, 2], { type: 'numerical', format: 'numerical' }, (g) => {
     const [a, b, r] = g.pick([[3, 4, 5], [5, 12, 13], [6, 8, 10], [8, 15, 17]]);
@@ -416,9 +416,7 @@ const blueprints: Blueprint[] = [
       ['the slope of a line', 'The tangent of the angle it makes with the positive x-axis.'],
     ],
     recall: [
-      ['Two lines are perpendicular if the product of their slopes is:', '−1', '1', '0', '2'],
       ['Two lines are parallel if their slopes are:', 'equal', 'negative reciprocals', 'both zero', 'both one'],
-      ['The slope of a vertical line is:', 'not defined', '0', '1', '−1'],
     ],
     truths: [
       ['The intercept form of a line is x/a + y/b = 1.', 'The intercept form of a line is ax + by = 1.'],
@@ -617,8 +615,8 @@ const blueprints: Blueprint[] = [
       ['If P(A) = 0.3, then P(not A) is:', '0.7', '0.3', '1.3', '0'],
     ],
     truths: [
-      ['For mutually exclusive events, P(A ∪ B) = P(A) + P(B).', 'For mutually exclusive events, P(A ∪ B) = P(A)P(B).'],
-      ['A probability is between 0 and 1.', 'A probability can be greater than 1.'],
+      ['Two events can be exhaustive without being mutually exclusive.', 'Exhaustive events are always mutually exclusive.'],
+      ['Each of n equally likely outcomes has a probability of 1/n.', 'Each of n equally likely outcomes has a probability of n.'],
       ['The probabilities of all the outcomes add up to 1.', 'The probabilities of all the outcomes add up to 100.'],
     ],
   }),
@@ -788,7 +786,7 @@ const blueprints: Blueprint[] = [
     return {
       form: 'numeric',
       text: `At a school fair, a player draws one card from a well-shuffled pack of 52, and wins by drawing ${what}.`,
-      parts: [g.answerPart('The probability of winning', p.value, 2, [step('Favourable over total', `\\dfrac{${count}}{52} = ${p.tex()}`)], '', p.text())],
+      parts: [g.answerPart('The probability of winning', p.value, 2, [step('Favourable over total', p.d === 52 ? `\\dfrac{${count}}{52}` : `\\dfrac{${count}}{52} = ${p.tex()}`)], '', p.text())],
     };
   }),
   custom('cbq-limit-speed', [4, 'a', 2, 2], { type: 'numerical', format: 'cbq', style: 'cbq-style' }, (g) => {
