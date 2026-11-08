@@ -507,7 +507,7 @@ const blueprints: Blueprint[] = [
   num('inertia-ring', [5, 'c', 2, 1], {
     variants: [
       { text: 'Find the moment of inertia of a uniform rod of mass {M} kg and length {L} m, about an axis through its centre at right angles to it.', parts: [{ ask: 'Moment of inertia', use: 'p-xi-5-5', find: 'I', given: { M: 'M kg', L: 'L m' }, marks: 2 }] },
-      { text: 'Find the moment of inertia of a thin ring of mass {M} kg and radius {R} cm, about an axis through its centre at right angles to its plane.', parts: [{ ask: 'Moment of inertia', use: 'p-xi-5-6', find: 'I', given: { M: 'M kg', R: 'R cm' }, marks: 2 }] },
+      { text: 'Find the moment of inertia of a thin ring of mass {M} kg and radius {R} cm, about an axis through its centre at right angles to its plane.', parts: [{ ask: 'Moment of inertia', use: 'p-xi-5-12', find: 'I', given: { M: 'M kg', R: 'R cm' }, marks: 2 }] },
     ],
     vars: { M: [0.5, 5, 0.5], L: [1, 3, 0.5], R: [10, 50, 10] },
   }),
@@ -574,7 +574,7 @@ const blueprints: Blueprint[] = [
       ['radius of gyration', 'The distance from the axis at which the whole mass could sit, giving the same moment of inertia.'],
     ],
     recall: [
-      ['A ring and a disc of the same mass and radius: which has the larger moment of inertia about its axis?', 'The ring', 'The disc', 'They’re equal', 'It depends on speed'],
+      ['The moment of inertia of a thin ring about its axis is:', 'MR²', 'MR²/2', '2MR²/5', 'MR²/4'],
       ['A ring and a disc roll down a slope together. Which reaches the bottom first?', 'The disc', 'The ring', 'They tie', 'Neither moves'],
       ['The theorem of parallel axes relates I about any axis to I about:', 'a parallel axis through the centre of mass', 'any other axis', 'a perpendicular axis only', 'the edge only'],
     ],
@@ -583,8 +583,9 @@ const blueprints: Blueprint[] = [
     ],
     truths: [
       ['Moment of inertia depends on the axis chosen.', 'Moment of inertia doesn’t depend on the axis chosen.'],
-      ['The perpendicular axes theorem applies only to flat bodies.', 'The perpendicular axes theorem applies to all bodies.'],
-      ['A rolling body has both translational and rotational energy.', 'A rolling body has only rotational energy.'],
+      ['The SI unit of moment of inertia is kg m².', 'The SI unit of moment of inertia is kg m.'],
+      ['Torque equals moment of inertia times angular acceleration.', 'Torque equals moment of inertia times angular velocity.'],
+      ['Angular momentum equals Iω.', 'Angular momentum equals Iω².'],
     ],
     long: [
       ['Show that the kinetic energy of a rotating rigid body is ½Iω².', 'Each particle has speed v = rω.', 'Its kinetic energy is ½m r²ω².', 'Adding over all particles gives ½(Σmr²)ω².', 'Since I = Σmr², K = ½Iω².'],
@@ -665,8 +666,8 @@ const blueprints: Blueprint[] = [
     ],
     recall: [
       ['The Earth’s escape velocity is about:', '11.2 km/s', '7.9 km/s', '3 km/s', '340 m/s'],
-      ['Escape velocity doesn’t depend on the:', 'mass of the projectile', 'mass of the planet', 'radius of the planet', 'g of the planet'],
-      ['The total energy of a satellite in orbit is:', 'negative', 'positive', 'zero', 'infinite'],
+      ['The gravitational potential at infinity is taken as:', 'zero', 'GM', 'one', 'g'],
+      ['A satellite’s kinetic energy, compared with the size of its potential energy, is:', 'half', 'equal', 'twice', 'a quarter'],
       ['The period of a geostationary satellite is:', '24 hours', '12 hours', '1 hour', '365 days'],
     ],
     reason: [
@@ -679,7 +680,8 @@ const blueprints: Blueprint[] = [
     truths: [
       ['Escape velocity is √2 times the orbital velocity near the surface.', 'Escape velocity equals the orbital velocity near the surface.'],
       ['Higher orbits have longer periods.', 'Higher orbits have shorter periods.'],
-      ['Orbital speed falls as the orbit gets larger.', 'Orbital speed rises as the orbit gets larger.'],
+      ['A satellite’s orbital speed doesn’t depend on its mass.', 'A satellite’s orbital speed is greater for a heavier satellite.'],
+      ['Gravitational potential energy is negative, with zero taken at infinity.', 'Gravitational potential energy is positive, with zero taken at infinity.'],
     ],
     long: [
       ['Derive an expression for the escape velocity from a planet.', 'A body at the surface has potential energy −GMm/R.', 'To just escape, its total energy must be zero at infinity.', 'So ½mv² = GMm/R.', 'This gives v = √(2GM/R).'],
@@ -707,7 +709,7 @@ const blueprints: Blueprint[] = [
     ],
   }),
   mcqNum('pressure-depth', [7, 'b', 1, 1], {
-    text: 'What is the gauge pressure from water at a depth of {H} m? Take the density of water as 1000 kg/m³.',
+    text: 'What is the gauge pressure at a depth of {H} m in water? Take the density of water as 1000 kg/m³.',
     vars: { H: [2, 20, 2] },
     use: 'p-xi-7-5',
     find: 'P',
@@ -780,7 +782,7 @@ const blueprints: Blueprint[] = [
     ],
     recall: [
       ['A hydraulic lift works on:', 'Pascal’s law', 'Bernoulli’s principle', 'Hooke’s law', 'Stokes’ law'],
-      ['Where a pipe narrows, the speed of the fluid:', 'increases', 'decreases', 'stays the same', 'becomes zero'],
+      ['The SI unit of viscosity is:', 'Pa s', 'N/m', 'Pa', 'J s'],
       ['Stokes’ law gives the:', 'viscous force on a small sphere', 'pressure in a fluid', 'upthrust', 'surface tension'],
       ['A low Reynolds number means the flow is:', 'smooth, or streamlined', 'turbulent', 'at the speed of sound', 'static'],
     ],
@@ -796,6 +798,7 @@ const blueprints: Blueprint[] = [
       ['Viscosity of a liquid falls as it’s heated.', 'Viscosity of a liquid rises as it’s heated.'],
       ['Pressure in a liquid rises with depth.', 'Pressure in a liquid falls with depth.'],
       ['Buoyant force equals the weight of the fluid displaced.', 'Buoyant force equals the weight of the body.'],
+      ['The pressure at a point in a fluid acts equally in all directions.', 'The pressure at a point in a fluid acts only downwards.'],
     ],
     long: [
       ['State and prove Bernoulli’s principle for steady, non-viscous flow.', 'Consider a tube of flow with two sections at different heights.', 'Work done by the pressure difference is (P₁ − P₂)V.', 'That equals the gain in kinetic and potential energy.', 'So P + ½ρv² + ρgh is constant.'],
@@ -838,10 +841,9 @@ const blueprints: Blueprint[] = [
   // ---- Unit 8: Heat and thermodynamics
   num('calorimetry', [8, 'a', 3, 2], {
     variants: [
-      { text: '{A} kg of water at {T} °C is mixed with {B} kg of water at {U} °C. Find the final temperature.', parts: [{ ask: 'Final temperature', use: 'p-xi-8-50', find: 'T', given: { m_1: 'A kg', c_1: '4200 J/(kg*K)', T_1: 'T1 K', m_2: 'B kg', c_2: '4200 J/(kg*K)', T_2: 'T2 K' }, marks: 3 }] },
+      { text: '{A} kg of water at {T} °C is mixed with {B} kg of water at {U} °C. Find the final temperature.', parts: [{ ask: 'Final temperature', use: 'p-xi-8-50', find: 'T', given: { m_1: 'A kg', c_1: '4200 J/(kg*K)', T_1: 'T degC', m_2: 'B kg', c_2: '4200 J/(kg*K)', T_2: 'U degC' }, unit: 'degC', marks: 3 }] },
     ],
     vars: { A: [1, 4, 1], B: [1, 4, 1], T: [20, 40, 5], U: [60, 90, 10] },
-    derive: (v) => ({ T1: v.T + 273, T2: v.U + 273 }),
   }),
   num('heat-melt', [8, 'a', 2, 1], {
     text: 'How much heat is needed to melt {M} kg of ice at 0 °C? The latent heat of fusion of ice is 3.34 × 10⁵ J/kg.',
@@ -913,6 +915,7 @@ const blueprints: Blueprint[] = [
     ],
     truths: [
       ['A black surface absorbs and emits radiation well.', 'A black surface reflects radiation well.'],
+      ['Copper has a higher thermal conductivity than glass.', 'Copper has a lower thermal conductivity than glass.'],
       ['Water expands on freezing.', 'Water contracts on freezing.'],
       ['Temperature stays constant while a pure substance melts.', 'Temperature rises steadily while a pure substance melts.'],
     ],
@@ -956,12 +959,12 @@ const blueprints: Blueprint[] = [
   num('gas-law', [9, 'a', 2, 1], {
     text: '{N} mol of an ideal gas is kept in a {V} L flask at {T} K. Find its pressure.',
     vars: { N: [1, 5, 1], V: [10, 50, 10], T: [273, 400, 10] },
-    parts: [{ ask: 'Pressure', use: 'p-xi-8-6', find: 'P', given: { V: 'V L', n: 'N mol', T: 'T K' }, unit: 'atm', marks: 2 }],
+    parts: [{ ask: 'Pressure', use: 'p-xi-8-6', find: 'P', given: { V: 'V L', n: 'N mol', T: 'T K' }, marks: 2 }],
   }),
-  num('rms-speed', [9, 'a', 3, 2], {
+  num('rms-speed', [9, 'a', 2, 2], {
     text: 'A gas has a pressure of {P} × 10⁵ Pa, and a density of {D} kg/m³.',
     vars: { P: [1, 3, 1], D: [1, 2, 0.5] },
-    parts: [{ ask: 'rms speed of its molecules', use: 'p-xi-9-37', find: 'c_rms', given: { P: 'P*1e5 Pa', rho: 'D kg/m^3' }, marks: 3 }],
+    parts: [{ ask: 'rms speed of its molecules', use: 'p-xi-9-37', find: 'c_rms', given: { P: 'P*1e5 Pa', rho: 'D kg/m^3' }, marks: 2 }],
   }),
   ...facts(9, 'a', {
     define: [
@@ -970,7 +973,7 @@ const blueprints: Blueprint[] = [
       ['degrees of freedom', 'The number of independent ways in which a molecule can have energy.'],
     ],
     recall: [
-      ['The average kinetic energy of a gas molecule depends only on its:', 'temperature', 'pressure', 'volume', 'mass'],
+      ['At one temperature, the rms speed is larger for:', 'lighter molecules', 'heavier molecules', 'neither', 'molecules in a larger container'],
       ['A monatomic gas has how many degrees of freedom?', '3', '5', '6', '1'],
       ['The rms speed of a gas molecule is proportional to:', '√T', 'T', 'T²', '1/T'],
       ['Gases behave most like ideal gases at:', 'low pressure and high temperature', 'high pressure and low temperature', 'high pressure and high temperature', 'low pressure and low temperature'],
@@ -986,6 +989,7 @@ const blueprints: Blueprint[] = [
       ['Absolute zero is the temperature at which an ideal gas’s pressure would fall to zero.', 'Absolute zero is the freezing point of water.'],
       ['Doubling the kelvin temperature doubles the mean kinetic energy.', 'Doubling the kelvin temperature doesn’t change the mean kinetic energy.'],
       ['Equipartition gives ½kT per degree of freedom.', 'Equipartition gives 2kT per degree of freedom.'],
+      ['A diatomic gas has five degrees of freedom at room temperature.', 'A diatomic gas has three degrees of freedom at room temperature.'],
     ],
     long: [
       ['Derive the expression P = ⅓ρc² from the kinetic theory of gases.', 'A molecule of speed c_x hitting a wall changes its momentum by 2mc_x.', 'The rate of hits on a wall gives a force of mc_x²/L.', 'Adding all molecules gives a pressure of Nmc̄²/(3V).', 'With ρ = Nm/V, P = ⅓ρc².'],

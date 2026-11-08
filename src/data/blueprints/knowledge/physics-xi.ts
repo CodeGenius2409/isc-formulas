@@ -94,7 +94,7 @@ const knowledge: Record<string, Facts> = {
   },
   '5c': {
     ar: [
-      ['the distribution of mass', 'A ring has a larger moment of inertia than a disc of the same mass and radius.', 'A ring has a smaller moment of inertia than a disc of the same mass and radius.', 'All of the ring’s mass is at the greatest distance from the axis.', 'All of the disc’s mass is at the greatest distance from the axis.', 'Moment of inertia depends on the axis chosen.'],
+      ['the distribution of mass', 'A ring has a larger moment of inertia than a disc of the same mass and radius.', 'A ring has a smaller moment of inertia than a disc of the same mass and radius.', 'All of the ring’s mass is at the greatest distance from the axis.', 'All of the disc’s mass is at the greatest distance from the axis.', 'Flywheels are used in engines.'],
       ['rolling', 'A solid sphere reaches the foot of a slope before a hollow sphere of the same size.', 'A hollow sphere reaches the foot of a slope before a solid sphere of the same size.', 'Less of the solid sphere’s energy goes into rotation.', 'More of the solid sphere’s energy goes into rotation.', 'A rolling body has both translational and rotational kinetic energy.'],
       ['the theorems of inertia', 'The perpendicular axes theorem applies only to flat bodies.', 'The perpendicular axes theorem applies to all bodies.', 'Its proof needs all the mass to lie in a single plane.', 'Its proof needs the mass to be a point.', 'The parallel axes theorem applies to any body.'],
     ],
@@ -109,7 +109,7 @@ const knowledge: Record<string, Facts> = {
   '6b': {
     ar: [
       ['escape velocity', 'The escape velocity from a place doesn’t depend on the mass of the body.', 'The escape velocity is larger for a heavier body.', 'The mass cancels from ½mv² = GMm/R.', 'The mass of the body adds to the planet’s gravity.', 'The escape velocity from the Earth’s surface is about 11.2 km/s.'],
-      ['the energy of a satellite', 'A satellite’s total energy is negative.', 'A satellite’s total energy is positive.', 'It is bound to the Earth, as its potential energy is twice its kinetic energy in size.', 'Its kinetic energy is twice its potential energy in size.', 'A satellite’s kinetic energy is half the size of its potential energy.'],
+      ['geostationary orbits', 'A geostationary satellite must orbit above the equator.', 'A geostationary satellite can orbit over the poles.', 'It must turn in the plane of the Earth’s rotation, to stay over one spot.', 'It must stay close to the Earth’s surface.', 'Its height is about 36 000 km.'],
       ['orbits', 'A satellite’s orbital speed falls as its orbit gets larger.', 'A satellite’s orbital speed rises as its orbit gets larger.', 'v = √(GM/r), so v falls as r rises.', 'v = √(GMr), so v rises with r.', 'A geostationary satellite has a period of 24 hours.'],
     ],
   },
@@ -157,8 +157,8 @@ const knowledge: Record<string, Facts> = {
   '9a': {
     ar: [
       ['degrees of freedom', 'Cₚ of a diatomic gas is larger than that of a monatomic gas.', 'Cₚ of a diatomic gas is smaller than that of a monatomic gas.', 'Its molecules also store energy in rotation.', 'Its molecules are lighter.', 'A monatomic gas has three degrees of freedom.'],
-      ['the meaning of temperature', 'All ideal gases at one temperature have the same mean kinetic energy per molecule.', 'A heavier gas at one temperature has a greater mean kinetic energy per molecule.', 'The mean kinetic energy per molecule is 3kT/2, which depends only on T.', 'The mean kinetic energy per molecule is 3kT/2m, which depends on the mass.', 'Lighter molecules have a larger rms speed at the same temperature.'],
-      ['the pressure of a gas', 'A gas exerts pressure on the walls of its container.', 'A gas exerts pressure only on the base of its container.', 'Its molecules collide with the walls and change momentum.', 'Its molecules repel the walls from a distance.', 'P = ⅓ρc² for an ideal gas.'],
+      ['the meaning of temperature', 'All ideal gases at one temperature have the same mean kinetic energy per molecule.', 'A heavier gas at one temperature has a greater mean kinetic energy per molecule.', 'The mean kinetic energy per molecule is 3kT/2, which depends only on T.', 'The mean kinetic energy per molecule is 3kT/2m, which depends on the mass.', 'The gas constant R is about 8.314 J/(mol K).'],
+      ['mean free path', 'The mean free path of a gas falls as its pressure rises.', 'The mean free path of a gas rises as its pressure rises.', 'Its molecules are closer together, so they collide more often.', 'Its molecules grow larger under pressure.', 'P = ⅓ρc² for an ideal gas.'],
     ],
   },
   '10a': {

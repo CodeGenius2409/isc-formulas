@@ -413,3 +413,5 @@ Work is on a `rebuild` branch. `master` still holds your original files.
   Silly distractors (a ring’s “one end”) and AR nodes that named a law as its own reason were replaced.
 - **Review batch 36** (Physics XI oscillations, Chemistry XI organic basics and titration, Chemistry XII polyhalogens, CS XII strings; 40 blueprints, 12 fixed). A spring’s greatest speed no longer leans on an unexplained ω; a new registry entry works it from A, k and m.
   An output question’s explanation now matches its code in every form, and truths that repeated AR nodes were replaced.
+- **Review batch 37** (Physics XI rotation, satellites, fluids, heat and kinetic theory; 47 blueprints, 14 fixed). A thin ring used a disc’s formula, so every answer was half what it should be; it now uses I = MR².
+  Mixing water is answered in °C, an ideal gas’s pressure in pascals, and a one-step rms speed is worth 2 marks.
