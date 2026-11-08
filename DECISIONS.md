@@ -407,3 +407,5 @@ Work is on a `rebuild` branch. `master` still holds your original files.
   Four topics had three-option truth MCQs, so each gained a fourth truth, and AR nodes that copied reasons were rewritten.
 - **Review batch 33** (Maths XI complex numbers, 3D and statistics, Chemistry XI atoms and periodic trends, Chemistry XII titrations; 45 blueprints, 17 fixed). Complex answers printed “+ −4/13 i” and “1i”, 3D points printed “(2,-2,-3)”, and a variance printed 16 digits; all three now read as a teacher would write them.
   Argon was dropped as a “smaller than Cl⁻” option, since its radius is a van der Waals radius and the comparison isn’t safe.
+- **Review batch 34** (Maths XI binomial, Physics XI projectiles, solids, surface tension and thermodynamics; 45 blueprints, 11 fixed). Stress now has its own σ = F/A entry rather than borrowing pressure’s P, and binomial questions no longer print x¹ or (1x).
+  Entropy left the truths as it isn’t safely in the syllabus; silly distractors and copied AR nodes were replaced.

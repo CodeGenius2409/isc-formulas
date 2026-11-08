@@ -35,7 +35,7 @@ const knowledge: Record<string, Facts> = {
   },
   '2b': {
     ar: [
-      ['the independence of horizontal and vertical motion', 'The horizontal speed of a projectile stays constant, if air resistance is ignored.', 'The horizontal speed of a projectile falls steadily, even with no air resistance.', 'Gravity acts only vertically, so nothing changes the horizontal motion.', 'Gravity acts horizontally on a projectile.', 'The path of a projectile is a parabola.'],
+      ['the speed at the top', 'A projectile has its least speed at its highest point.', 'A projectile has zero speed at its highest point.', 'Its vertical velocity is zero there, leaving only the horizontal part.', 'Both parts of its velocity are zero there.', 'Its acceleration is g throughout its flight.'],
       ['the range of a projectile', 'Launch angles of 30° and 60° give the same range at the same speed.', 'Launch angles of 30° and 60° give ranges in the ratio 1 : 2 at the same speed.', 'The range depends on sin 2θ, which is the same for both.', 'The range depends on tan θ, which is the same for both.', 'The range is greatest at a launch angle of 45°.'],
       ['vector addition', 'Two equal vectors at 120° have a resultant equal to either of them.', 'Two equal vectors at 120° have a resultant twice as large as either of them.', 'R² = 2A² + 2A² cos 120° = A².', 'R² = 2A² − 2A² cos 120° = A².', 'The resultant of two vectors depends on the angle between them.'],
     ],
@@ -118,8 +118,8 @@ const knowledge: Record<string, Facts> = {
       'Sketch a stress–strain graph': { kind: 'graph', x: 'Strain', y: 'Stress', lines: [{ points: [[0, 0], [2, 4], [3, 4.5], [4, 4.8], [6, 5.2], [7, 4.8]] }], ticksX: [[2, 'Elastic limit'], [7, 'Breaking']] },
     },
     ar: [
-      ['elastic behaviour', 'Steel is more elastic than rubber.', 'Rubber is more elastic than steel.', 'For the same stress, steel shows much the smaller strain.', 'For the same stress, steel shows much the larger strain.', 'Young’s modulus has the same unit as stress.'],
-      ['stress and strain', 'Up to the elastic limit, stress is proportional to strain.', 'Up to the elastic limit, stress is proportional to the square of the strain.', 'This is Hooke’s law.', 'This is Bernoulli’s principle.', 'Beyond the elastic limit, a wire keeps some permanent stretch.'],
+      ['a thicker wire', 'A wire of twice the radius stretches a quarter as much under the same load.', 'A wire of twice the radius stretches half as much under the same load.', 'Its extension is inversely proportional to its area, which goes with r².', 'Its extension is inversely proportional to its radius.', 'Young’s modulus has the same unit as stress.'],
+      ['ductile materials', 'Copper can be drawn into thin wires.', 'Copper snaps at once when drawn into thin wires.', 'It has a long plastic range before it breaks.', 'It breaks as soon as it passes its elastic limit.', 'Glass is a brittle material.'],
       ['the wire under load', 'Doubling a wire’s length doubles its extension under the same load.', 'Doubling a wire’s length halves its extension under the same load.', 'The extension is FL/AY, which is proportional to L.', 'The extension is FA/LY, which is inversely proportional to L.', 'Young’s modulus depends on the material, not on the size of the wire.'],
     ],
   },
@@ -132,7 +132,7 @@ const knowledge: Record<string, Facts> = {
   },
   '7c': {
     ar: [
-      ['the shape of drops', 'Small liquid drops are nearly spherical.', 'Small liquid drops are nearly flat.', 'Surface tension pulls a drop to the smallest area for its volume.', 'Gravity pulls a small drop into a sphere.', 'Surface tension is the force per unit length on a line in the surface.'],
+      ['a floating needle', 'A greased needle can float on still water.', 'A greased needle always sinks in still water.', 'The surface film of the water supports its weight.', 'Its density is less than that of water.', 'Steel is denser than water.'],
       ['capillary rise', 'Water rises higher in a thinner capillary tube.', 'Water rises lower in a thinner capillary tube.', 'h = 2S cos θ/(ρgr), so h is larger for smaller r.', 'h = 2Sr cos θ/(ρg), so h is larger for larger r.', 'Mercury is depressed in a glass capillary.'],
       ['the angle of contact', 'Mercury doesn’t wet glass.', 'Mercury wets glass.', 'Its angle of contact with glass is greater than 90°.', 'Its angle of contact with glass is 0°.', 'Water wets clean glass.'],
     ],

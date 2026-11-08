@@ -179,7 +179,7 @@ const blueprints: Blueprint[] = [
       ['The range of a projectile is greatest at a launch angle of:', '45°', '30°', '60°', '90°'],
       ['At the highest point of its path, a projectile’s velocity is:', 'horizontal', 'vertical', 'zero', 'at 45° to the ground'],
       ['The path of a projectile, ignoring air, is a:', 'parabola', 'circle', 'straight line', 'hyperbola'],
-      ['Complementary launch angles, such as 30° and 60°, give the same:', 'range', 'height', 'time of flight', 'final direction'],
+      ['At the highest point of its path, the angle between a projectile’s velocity and acceleration is:', '90°', '0°', '45°', '180°'],
     ],
     reason: [
       ['A projectile’s horizontal speed stays constant.', 'No force acts horizontally, ignoring air.'],
@@ -192,6 +192,7 @@ const blueprints: Blueprint[] = [
       ['Vertical and horizontal motions of a projectile are independent.', 'Vertical and horizontal motions of a projectile always affect each other.'],
       ['The time of flight doubles if the launch speed doubles at the same angle.', 'The time of flight is four times as long if the launch speed doubles at the same angle.'],
       ['The range is proportional to the square of the launch speed.', 'The range is proportional to the launch speed.'],
+      ['Two vectors are equal only if they have the same size and direction.', 'Two vectors are equal if they have the same size, whatever their directions.'],
     ],
     figures: { 'Show that the path of a projectile is a parabola.': { kind: 'projectile', v: 'u', angle: 'θ' } },
     long: [
@@ -698,7 +699,7 @@ const blueprints: Blueprint[] = [
     text: 'A wire {L} m long with a cross-section of {A} mm² stretches by {E} mm under a load of {F} N.',
     vars: { L: [1, 4, 1], A: [1, 4, 1], E: [0.5, 2, 0.5], F: [50, 200, 50] },
     parts: [
-      { ask: 'Stress', use: 'p-xi-7-67', find: 'P', given: { F: 'F N', A: 'A mm^2' }, marks: 1 },
+      { ask: 'Stress', use: 'p-xi-7-9', find: 'sigma', given: { F: 'F N', A: 'A mm^2' }, marks: 1 },
       { ask: 'Young’s modulus', use: 'p-xi-7-1', find: 'Y', given: { F: 'F N', L: 'L m', A: 'A mm^2', DeltaL: 'E mm' }, marks: 2 },
     ],
   }),
@@ -761,6 +762,7 @@ const blueprints: Blueprint[] = [
       ['Young’s modulus is a property of the material.', 'Young’s modulus depends on the wire’s length.'],
       ['Beyond the yield point, a wire doesn’t return to its original length.', 'Beyond the yield point, a wire always returns to its original length.'],
       ['Stress and pressure have the same unit.', 'Stress and strain have the same unit.'],
+      ['The first slope of a stress–strain graph gives Young’s modulus.', 'The first slope of a stress–strain graph gives the breaking stress.'],
     ],
     draw: [
       ['Sketch a stress–strain graph for a metal wire, and mark the elastic limit and the breaking point.', 'A straight rise to the elastic limit, then a curve to the yield point.', 'The curve reaches a maximum, and ends at the breaking point.'],
@@ -813,8 +815,8 @@ const blueprints: Blueprint[] = [
       ['capillarity', 'The rise or fall of a liquid in a narrow tube.'],
     ],
     recall: [
-      ['Surface tension of a liquid, as temperature rises:', 'falls', 'rises', 'stays the same', 'first doubles'],
-      ['Mercury in a glass capillary tube:', 'falls', 'rises', 'stays level', 'vanishes'],
+      ['Surface tension of a liquid, as temperature rises:', 'falls', 'rises', 'stays the same', 'first rises, then falls'],
+      ['Mercury in a glass capillary tube:', 'falls', 'rises', 'stays level', 'rises, then falls'],
       ['Detergents help cleaning because they:', 'lower water’s surface tension', 'raise water’s surface tension', 'heat the water', 'remove its viscosity'],
       ['Excess pressure inside a soap bubble is:', '4S/r', '2S/r', 'S/r', 'S/2r'],
     ],
@@ -824,8 +826,9 @@ const blueprints: Blueprint[] = [
     ],
     truths: [
       ['Soap bubbles have two surfaces.', 'Soap bubbles have one surface.'],
-      ['Water rises more in a narrower tube.', 'Water rises less in a narrower tube.'],
+      ['The excess pressure in a liquid drop is 2S/r.', 'The excess pressure in a liquid drop is 4S/r.'],
       ['Adding a soap to water reduces its surface tension.', 'Adding a soap to water increases its surface tension.'],
+      ['Surface tension has the unit N/m.', 'Surface tension has the unit N/m².'],
     ],
   }),
 
@@ -919,8 +922,8 @@ const blueprints: Blueprint[] = [
       ['the second law of thermodynamics', 'No engine working in a cycle can turn all the heat it takes in into work.'],
     ],
     recall: [
-      ['In an isothermal change of an ideal gas, the change in internal energy is:', 'zero', 'positive', 'negative', 'equal to the heat added twice'],
-      ['In an adiabatic expansion, the temperature of a gas:', 'falls', 'rises', 'stays the same', 'goes to zero'],
+      ['In an isothermal change of an ideal gas, the change in internal energy is:', 'zero', 'positive', 'negative', 'equal to the heat added'],
+      ['In a reversible adiabatic change of an ideal gas, this stays constant:', 'PVᵞ', 'PV', 'V/T', 'P/T'],
       ['On a P–V diagram, the area under the curve gives:', 'work done', 'heat', 'temperature', 'internal energy'],
       ['Efficiency of a Carnot engine depends on:', 'the two temperatures only', 'the working substance only', 'the size of the engine', 'the speed of the engine'],
     ],
@@ -935,7 +938,8 @@ const blueprints: Blueprint[] = [
     truths: [
       ['C_P is greater than C_V for a gas.', 'C_P is less than C_V for a gas.'],
       ['Work done in a cycle equals the area enclosed on a P–V diagram.', 'Work done in a cycle is always zero.'],
-      ['Entropy of an isolated system doesn’t fall.', 'Entropy of an isolated system always falls.'],
+      ['In a change at constant volume, a gas does no work.', 'In a change at constant volume, a gas does the most work.'],
+      ['For a monatomic ideal gas, γ is 5/3.', 'For a monatomic ideal gas, γ is 7/5.'],
     ],
     long: [
       ['Show that C_P − C_V = R for an ideal gas.', 'At constant volume, heat raises only the internal energy, so dU = nC_V dT.', 'At constant pressure, nC_P dT = dU + P dV.', 'For an ideal gas, P dV = nR dT.', 'Substituting gives C_P − C_V = R.'],

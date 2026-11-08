@@ -47,7 +47,7 @@ const knowledge: Record<string, Facts> = {
   },
   '2d': {
     ar: [
-      ['the number of terms', '(a + b)ⁿ has n + 1 terms.', '(a + b)ⁿ has n terms.', 'The power of a takes each value from n down to 0.', 'The power of a takes each value from n down to 1.', 'The sum of the indices in each term is n.'],
+      ['the number of terms', '(a + b)ⁿ has n + 1 terms.', '(a + b)ⁿ has n terms.', 'The power of a takes each value from n down to 0.', 'The power of a takes each value from n down to 1.', 'The first term of the expansion is aⁿ.'],
       ['the sum of the coefficients', 'The coefficients in the expansion of (1 + x)ⁿ add up to 2ⁿ.', 'The coefficients in the expansion of (1 + x)ⁿ add up to n².', 'Putting x = 1 gives this sum.', 'Putting x = 0 gives this sum.', 'The coefficients are symmetric.'],
       ['the middle term', '(a + b)⁶ has one middle term.', '(a + b)⁶ has two middle terms.', 'It has seven terms, an odd number.', 'It has six terms, an even number.', 'The middle term has the largest coefficient.'],
     ],

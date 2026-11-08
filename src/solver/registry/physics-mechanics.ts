@@ -156,6 +156,7 @@ export const MECHANICS: SolverEntry[] = [
   { id: 'p-xi-7-6', topic: B, eq: 'DeltaP = 4*S/r', vars: { DeltaP: 'excess pressure|pressure', S: 'surface tension|tension', r: 'bubble radius|smallLength' } },
   { id: 'p-xi-7-10', topic: B, eq: 'v = sqrt(2*g*h)', vars: { v: 'speed of efflux|speed', g: 'c:g', h: 'depth of the hole|distance' } },
   { id: 'p-xi-7-37', topic: B, eq: 'DeltaL = F*L/(A*Y)', vars: { DeltaL: 'extension|distance', F: 'force|force', L: 'length|length', A: ['cross-section area', 'area', { gen: [1e-6, 1e-4] }], Y: "Young's modulus|modulus" } },
+  { id: 'p-xi-7-9', topic: B, eq: 'sigma = F/A', vars: { sigma: 'stress|pressure', F: 'force|force', A: 'area|area' } },
   { id: 'p-xi-7-67', topic: B, eq: 'P = F/A', vars: { P: 'pressure|pressure', F: 'force|force', A: 'area|area' } },
   { id: 'p-xi-7-92', topic: B, eq: 'Q = A*v', vars: { Q: 'volume flow rate|flow', A: 'area|area', v: 'speed|speed' } },
   { id: 'p-xi-7-98', topic: B, eq: 'P_1 - P_2 = (1/2)*rho*(v_2^2 - v_1^2)', ask: 'P_1', vars: { P_1: 'first pressure|pressure', P_2: 'second pressure|pressure', rho: 'density|density', v_2: 'second speed|speed', v_1: 'first speed|speed' } },

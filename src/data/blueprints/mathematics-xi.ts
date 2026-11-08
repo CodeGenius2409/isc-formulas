@@ -221,10 +221,10 @@ const blueprints: Blueprint[] = [
   }),
   custom('binomial-term', [2, 'd', 3, 2], { type: 'numerical', format: 'numerical' }, (g) => {
     const n = g.int(4, 8);
-    const r = g.int(1, n - 1);
+    const r = g.int(2, n - 1);
     const a = g.int(1, 3);
     const coefficient = nCr(n, r) * a ** r;
-    return { form: 'numeric', text: `Find the coefficient of ${$(`x^{${r}}`)} in the expansion of ${$(`(1 + ${a === 1 ? '' : a}x)^{${n}}`)}.`, parts: [g.answerPart('The coefficient', coefficient, 3, [step('Use the general term', `T_{r+1} = \\binom{${n}}{${r}}(${a}x)^{${r}}`, `\\text{Coefficient} = ${nCr(n, r)}\\cdot${a ** r} = ${coefficient}`)])] };
+    return { form: 'numeric', text: `Find the coefficient of ${$(`x^{${r}}`)} in the expansion of ${$(`(1 + ${a === 1 ? '' : a}x)^{${n}}`)}.`, parts: [g.answerPart('The coefficient', coefficient, 3, [step('Use the general term', `T_{r+1} = \\binom{${n}}{${r}}(${a === 1 ? '' : a}x)^{${r}}`, a === 1 ? `\\text{Coefficient} = ${coefficient}` : `\\text{Coefficient} = ${nCr(n, r)}\\cdot${a ** r} = ${coefficient}`)])] };
   }),
   custom('middle-term', [2, 'd', 2, 2], { type: 'short', format: 'short' }, (g) => {
     const n = 2 * g.int(2, 4);
@@ -321,14 +321,15 @@ const blueprints: Blueprint[] = [
   }),
   ...facts(2, 'd', {
     recall: [
-      ['The number of terms in (a + b)ⁿ is:', 'n + 1', 'n', 'n − 1', '2n'],
-      ['The sum of the binomial coefficients in (1 + x)ⁿ is:', '2ⁿ', 'n', 'n²', '2n'],
+      ['The number of terms in (a + b)¹⁰ is:', '11', '10', '9', '12'],
+      ['The sum of the coefficients in (1 + x)⁴ is:', '16', '8', '4', '32'],
       ['The general term of (a + b)ⁿ is:', 'ⁿCᵣ aⁿ⁻ʳ bʳ', 'ⁿCᵣ aʳ bⁿ', 'ⁿCᵣ aⁿ bʳ', 'aⁿ⁻ʳ bʳ'],
     ],
     truths: [
       ['Coefficients equally far from the two ends of an expansion are equal.', 'Coefficients equally far from the two ends of an expansion are never equal.'],
-      ['(a + b)ⁿ with an even n has one middle term.', '(a + b)ⁿ with an even n has two middle terms.'],
+      ['In each term of (a + b)ⁿ, the indices add up to n.', 'In each term of (a + b)ⁿ, the indices add up to 2n.'],
       ['Pascal’s triangle gives the binomial coefficients.', 'Pascal’s triangle gives the prime numbers.'],
+      ['ⁿC₀ and ⁿCₙ both equal 1.', 'ⁿC₀ and ⁿCₙ both equal n.'],
     ],
     long: [
       ['Using the binomial theorem, show that 1.01⁵ is about 1.051.', 'Write 1.01 as 1 + 0.01.', 'The expansion is 1 + 5(0.01) + 10(0.01)² + …', 'The sum of the first three terms is 1 + 0.05 + 0.001.', 'So it’s about 1.051, as later terms are tiny.'],
