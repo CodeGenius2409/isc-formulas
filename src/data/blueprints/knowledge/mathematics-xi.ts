@@ -84,7 +84,7 @@ const knowledge: Record<string, Facts> = {
     ar: [
       ['the distance from the origin', 'The distance of (x, y, z) from the origin is √(x² + y² + z²).', 'The distance of (x, y, z) from the origin is x + y + z.', 'Pythagoras’ theorem is applied twice.', 'The three values are simply added.', 'In two dimensions, the distance is √(x² + y²).'],
       ['the coordinate planes', 'A point on the xy-plane has z = 0.', 'A point on the xy-plane has x = 0.', 'Its height above that plane is zero.', 'Its distance from the y-axis is zero.', 'A point on the x-axis has y = 0 and z = 0.'],
-      ['the section formula', 'The midpoint of two points in space is found by averaging each coordinate.', 'The midpoint of two points in space is found by multiplying the coordinates.', 'It divides the line in the ratio 1 : 1.', 'It divides the line in the ratio 1 : 2.', 'The section formula also works for external division, with a sign change.'],
+      ['the section formula', 'The midpoint of two points in space is found by averaging each coordinate.', 'The midpoint of two points in space is found by multiplying the coordinates.', 'It divides the line in the ratio 1 : 1.', 'It divides the line in the ratio 1 : 2.', 'The midpoint of a line in space lies on that line.'],
     ],
   },
   '4a': {
@@ -97,8 +97,8 @@ const knowledge: Record<string, Facts> = {
   '5a': {
     ar: [
       ['the effect of shifting data', 'Adding 5 to every value leaves the standard deviation unchanged.', 'Adding 5 to every value raises the standard deviation by 5.', 'It only shifts the data, without changing how spread out they are.', 'It makes the data more spread out.', 'Adding 5 raises the mean by 5.'],
-      ['the effect of scaling data', 'Doubling every value doubles the standard deviation.', 'Doubling every value leaves the standard deviation unchanged.', 'Each deviation from the mean is doubled.', 'Each deviation from the mean stays the same.', 'Doubling every value makes the variance four times as large.'],
-      ['the squares in variance', 'Variance is found from the squares of the deviations.', 'Variance is found by simply adding the deviations.', 'Without squares, positive and negative deviations would cancel.', 'Without squares, the deviations would all be equal.', 'The sum of the deviations from the mean is zero.'],
+      ['the effect of scaling data', 'Doubling every value doubles the standard deviation.', 'Doubling every value leaves the standard deviation unchanged.', 'Each deviation from the mean is doubled.', 'Each deviation from the mean stays the same.', 'Doubling every value doubles the mean.'],
+      ['comparing spread', 'Two sets of data with the same mean can have different variances.', 'Two sets of data with the same mean must have the same variance.', 'Variance depends on how far the values lie from the mean.', 'Variance depends only on the size of the mean.', 'The mean of 1, 2, 3 is 2.'],
     ],
   },
   '5b': {

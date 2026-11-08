@@ -737,6 +737,7 @@ const knowledge: Record<string, Facts> = {
       ['A KMnO₄ burette is read at the top of its meniscus, as the colour is so dark.', 'A KMnO₄ burette is read at the bottom of its meniscus, in every case.'],
       ['Oxalic acid is warmed to about 60 °C before a titration with KMnO₄.', 'Mohr’s salt is warmed to about 90 °C before a titration with KMnO₄.'],
       ['A titration flask is rinsed only with water.', 'A titration flask is rinsed with the solution that goes in the burette.'],
+      ['A burette is rinsed with the solution it will hold.', 'A burette is rinsed only with water before it is filled.'],
     ],
     explain: [
       ['Write the ionic equation of KMnO₄ with Fe²⁺.', 'MnO₄⁻ + 5Fe²⁺ + 8H⁺ → Mn²⁺ + 5Fe³⁺ + 4H₂O.'],

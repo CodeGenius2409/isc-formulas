@@ -405,3 +405,5 @@ Work is on a `rebuild` branch. `master` still holds your original files.
   A conics pair removed in batch 24 left a ten-question paper short, which check.sh didn't run; it now runs the paper-size test too. Covered in tests/unit/solver-display.test.ts.
 - **Review batch 32** (Physics XI Newton's laws, Chemistry XI redox, CS XI arrays, Python and ethics; 48 blueprints, 8 fixed). A gun's recoil used the embedded-bullet formula; a new registry entry works it from conservation of momentum.
   Four topics had three-option truth MCQs, so each gained a fourth truth, and AR nodes that copied reasons were rewritten.
+- **Review batch 33** (Maths XI complex numbers, 3D and statistics, Chemistry XI atoms and periodic trends, Chemistry XII titrations; 45 blueprints, 17 fixed). Complex answers printed “+ −4/13 i” and “1i”, 3D points printed “(2,-2,-3)”, and a variance printed 16 digits; all three now read as a teacher would write them.
+  Argon was dropped as a “smaller than Cl⁻” option, since its radius is a van der Waals radius and the comparison isn’t safe.

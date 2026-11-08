@@ -4,6 +4,7 @@ import { LEWIS } from '../lewis/figures';
 import { formulaText } from '../lewis/check';
 import { derivationBlueprints } from '../derivations';
 import KNOWLEDGE from './knowledge/chemistry-xi';
+import { tidy } from '../../practice/gen/gen';
 import { blueprintsFor } from './dsl';
 import type { Blueprint } from './types';
 
@@ -172,7 +173,8 @@ const blueprints: Blueprint[] = [
   custom('uncertainty', [2, 'a', 2, 2], { type: 'numerical', format: 'numerical' }, (g) => {
     const dx = g.pick([0.1, 0.2, 0.5, 1]);
     const dv = 6.626e-34 / (4 * Math.PI * 9.11e-31 * dx * 1e-9);
-    return { form: 'numeric', text: `An electron’s position is known to within ${dx} nm. Find the least uncertainty in its velocity.`, parts: [g.answerPart('Least uncertainty in velocity', dv, 2, [{ label: 'Use Heisenberg’s principle', math: ['\\Delta v = \\dfrac{h}{4\\pi m\\,\\Delta x}'] }], 'm/s')] };
+    const [lead, power] = dv.toExponential(2).split('e');
+    return { form: 'numeric', text: `An electron’s position is known to within ${dx} nm. Find the least uncertainty in its velocity.`, parts: [g.answerPart('Least uncertainty in velocity', dv, 2, [{ label: 'Use Heisenberg’s principle', math: ['\\Delta v = \\dfrac{h}{4\\pi m\\,\\Delta x}', `\\Delta v = \\dfrac{6.626\\times10^{-34}}{4\\pi\\times(9.11\\times10^{-31})\\times(${dx}\\times10^{-9})} = ${lead}\\times10^{${Number(power)}}\\,\\mathrm{m/s}`] }], 'm/s', tidy(dv))] };
   }),
   custom('configuration', [2, 'b', 1, 1], { type: 'mcq', format: 'mcq' }, (g) => {
     const [atom, config] = g.pick(ATOMS);
@@ -201,6 +203,7 @@ const blueprints: Blueprint[] = [
       ['Energy levels in a hydrogen atom get closer together as n rises.', 'Energy levels in a hydrogen atom get further apart as n rises.'],
       ['The Bohr radius of hydrogen’s first orbit is about 52.9 pm.', 'The Bohr radius of hydrogen’s first orbit is about 52.9 nm.'],
       ['Electrons have a wave nature as well as a particle nature.', 'Electrons have only a particle nature.'],
+      ['The energy of a photon is proportional to its frequency.', 'The energy of a photon is inversely proportional to its frequency.'],
     ],
   }),
   ...facts(2, 'b', {
@@ -240,12 +243,12 @@ const blueprints: Blueprint[] = [
       ['the modern periodic law', 'Properties of the elements repeat periodically with increasing atomic number.'],
     ],
     recall: [
-      ['Across a period, atomic radius generally:', 'decreases', 'increases', 'stays the same', 'first doubles'],
+      ['Across a period, atomic radius generally:', 'decreases', 'increases', 'stays the same', 'first rises, then falls'],
       ['Down a group, ionisation enthalpy generally:', 'decreases', 'increases', 'stays the same', 'jumps irregularly'],
       ['Which element has the highest electronegativity?', 'Fluorine', 'Oxygen', 'Chlorine', 'Nitrogen'],
-      ['Which has a higher first ionisation enthalpy, N or O?', 'N', 'O', 'They’re equal', 'It can’t be known'],
-      ['A cation, compared with its parent atom, is:', 'smaller', 'larger', 'the same size', 'heavier by far'],
-      ['Which is the largest of these?', 'Cl⁻', 'Cl', 'K⁺', 'Ar'],
+      ['Which has the larger atomic radius, Na or Mg?', 'Na', 'Mg', 'They’re equal', 'It can’t be known'],
+      ['Elements in the same group have the same number of:', 'valence electrons', 'shells', 'neutrons', 'protons'],
+      ['Which is the largest of these?', 'Cl⁻', 'Cl', 'K⁺', 'Ca²⁺'],
     ],
     reason: [
       ['Nitrogen has a higher first ionisation enthalpy than oxygen.', 'Nitrogen’s half-filled p subshell is especially stable.'],
@@ -259,6 +262,7 @@ const blueprints: Blueprint[] = [
       ['Noble gases have the highest ionisation enthalpies in their periods.', 'Noble gases have the lowest ionisation enthalpies in their periods.'],
       ['Metallic character rises down a group.', 'Metallic character falls down a group.'],
       ['Second ionisation enthalpy is always larger than the first.', 'Second ionisation enthalpy is always smaller than the first.'],
+      ['Oxides of metals are generally basic.', 'Oxides of metals are generally acidic.'],
     ],
   }),
 

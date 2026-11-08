@@ -41,8 +41,8 @@ const knowledge: Record<string, Facts> = {
   '3a': {
     ar: [
       ['the size of ions', 'A cation is smaller than its parent atom.', 'A cation is larger than its parent atom.', 'It has lost electrons, so the nucleus holds the rest more tightly.', 'It has gained electrons.', 'An anion is larger than its parent atom.'],
-      ['ionisation enthalpy', 'Nitrogen has a higher first ionisation enthalpy than oxygen.', 'Oxygen has a higher first ionisation enthalpy than nitrogen.', 'Nitrogen has a stable half-filled 2p subshell.', 'Nitrogen has a full 2p subshell.', 'Ionisation enthalpy generally rises across a period.'],
-      ['electron gain enthalpy', 'Chlorine has a more negative electron gain enthalpy than fluorine.', 'Fluorine has a more negative electron gain enthalpy than chlorine.', 'Fluorine’s small 2p shell repels the extra electron strongly.', 'Chlorine’s atom is smaller than fluorine’s.', 'Fluorine is the most electronegative element.'],
+      ['ionisation enthalpy', 'Beryllium has a higher first ionisation enthalpy than boron.', 'Boron has a higher first ionisation enthalpy than beryllium.', 'Boron’s outer electron is in a 2p subshell, held less tightly than a 2s electron.', 'Boron has a full 2p subshell.', 'Ionisation enthalpy generally rises across a period.'],
+      ['electron gain enthalpy', 'Noble gases have positive electron gain enthalpies.', 'Noble gases have large negative electron gain enthalpies.', 'An added electron must enter a new, higher shell.', 'An added electron enters a half-filled subshell.', 'Halogens have large negative electron gain enthalpies.'],
     ],
   },
   '4a': {
