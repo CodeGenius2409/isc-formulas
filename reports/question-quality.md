@@ -107,9 +107,9 @@ A spread of the numericals in the samples was also worked by hand, and those all
 - **Assertion and reason pairs can feel unrelated.** A false or unrelated reason is taken from the same topic, so the logic is right, but the pair can read as artificial, in a way a person writing one by hand would avoid.
 - **Self-marked answers.** Theory, derivations and programs are marked by the student against the marking points. There's no way to check the wording of an answer offline.
 - **The analysis is automatic.** Types and topics come from rules, checked by sampling. See `reports/question-analysis.md` for its limits.
-- **The facts are written by me, not checked against a textbook line by line.** The spot check read about 320 of the 1,484 blueprints. Definitions and reasons outside that sample were written from the syllabus and haven't been read a second time. Chemistry reactions and compounds come from verified data where the drawings are involved, but statements of fact are not machine-checkable. This is the main reason for the notice on every generated question.
-- **A few MCQs have fewer than four options,** where only two or three make sense (a gate's output is 0 or 1).
-- **Some content in the registry is beyond the usual ISC level.** For example, reduced mass appears in `p11-4b-collision`, because it's in the formula book.
+- **The facts are written by me, not checked against a textbook line by line.** Every blueprint has now been read as a teacher would (see Task 2 below), with sample instances, but a reading can still miss a mistake.
+- **One MCQ has fewer than four options,** `k12-2a-gate-output`, as a gate’s output can only be 0 or 1.
+- **Some content in the registry is beyond the usual ISC level,** because it’s in the formula book. No question asks for reduced mass now.
 - **No questions on the practical papers.** Those 11 files are set as experiments or programming tasks, and were recorded but not turned into blueprints.
 
 ## Reporting a problem
@@ -369,3 +369,24 @@ These stay in use, marked “Not yet reviewed”, until you decide.
 | `m11-1b-one-one-proof` | 18 | One-one functions are in the Class XII syllabus (Relations and Functions), not Class XI 1b, which lists only kinds of real functions and their algebra. The proof itself is right. |
 | `k11-2a-complements` | 28 | The 2028 Class XI Encodings wording is only “Characters and their encodings (e.g. ASCII, ISCII, Unicode)”; the earlier wording’s “binary encodings for integers … sign-magnitude, twos complement” has gone. The working is right. Its pool facts (1’s and 2’s complement, sign and magnitude, parity) are left in place until you decide. |
 <!-- /flagged -->
+
+### The most common kinds of mistake
+
+All 2,211 blueprints have now been read: 1,782 in these batches and 429 in Tasks 3 and 8. 2,198 count as reviewed, and the 13 above are flagged. The batches recorded fixes to 543 blueprints, not counting the shared generator fixes, which reached many more.
+
+The list runs roughly from most to least common. That order comes from reading the batches, not from an exact count.
+
+1. **One fact asked several ways.** The same sentence appeared as a recall, a reason, a truth and an assertion–reason statement, so a paper could ask it twice. This was by far the most common. In particular, assertion–reason nodes often copied a reason word for word.
+2. **Too few options or facts.** “Which of these is correct?” often had only three options, because the topic had only three truths. Thin topics also had too few definitions or pairs. Only `k12-2a-gate-output` now has fewer than four options, because a gate’s output can only be 0 or 1.
+3. **Faulty assertion–reason logic.** Examples are “also true” lines that really did explain the assertion, a law named as its own reason (“this is Hooke’s law”), arguable cause links, and “distinguish” pairs that weren’t real pairs.
+4. **Printing slips.** Examples are “1x”, “0 + 24i”, “+ −4/13 i”, “(2,-2,-3)”, ASCII minus signs, “(−P)ΔV”, “Append():”, a value in standard form with no brackets before its power, and a count shown as “−2.00”.
+5. **Outside the syllabus.** Examples are reduced mass, entropy in Physics, Rolle’s theorem and logic gates in Physics. Some are flagged above instead of removed.
+6. **Weak distractors.** Some were silly (a ring’s “one end”, “vanishes”, “first doubles”). Some weren’t definitely wrong (argon against Cl⁻). Some slips were mislabelled in the explanation.
+7. **Floating-point and rounding noise.** Examples are a variance of 0.6666666666666666, a working step with “5.773502692 rad/s”, a pH given to 5 figures, and carried values with 10 digits.
+8. **Incomplete working.** Some answers had no substitution or no final line, or used a value that appeared from nowhere.
+9. **The wrong formula or model.** These were the most serious, though the fewest. A thin ring used a disc’s ½MR², a gun’s recoil used the embedded-bullet formula, g at hundreds of kilometres used the small-height approximation, and a final speed had two answers.
+10. **Answers that don’t fit the question.** Temperatures given in °C were answered in kelvin, a pressure worked in pascals was answered in atmospheres, and an explanation about slices was attached to code with none.
+11. **Unrealistic values or wrong marks.** A bat’s contact lasted half a second, and a single substitution was worth 3 marks.
+12. **A bug in how values were drawn.** A list of three angles was read as a range, so the angle was always 30°. Separately, two blueprints in one topic could tell the same story on one paper.
+
+`tests/unit/question-answers.test.ts` works out the corrected physics answers from each question’s own numbers, so they can’t drift back.
