@@ -58,6 +58,7 @@ export const MECHANICS: SolverEntry[] = [
   { id: 'p-xi-3-24', topic: D, eq: 'a = F_net/m', vars: { a: 'acceleration|acceleration', F_net: 'net force|force', m: 'mass|mass' } },
   { id: 'p-xi-3-25', topic: D, eq: 'F = m*(v - u)/t', vars: { F: 'force|force', m: 'mass|mass', v: 'final velocity|velocity', u: 'initial velocity|velocity', t: ['time', 'period', {}] } },
   { id: 'p-xi-3-27', topic: D, eq: 'T = m*(g + a)', vars: { T: 'tension|force', m: 'mass|mass', g: 'c:g', a: 'upward acceleration|acceleration' } },
+  { id: 'p-xi-3-36', topic: D, eq: 'V = m*v/M', vars: { V: 'recoil speed of the gun|speed', m: 'bullet mass|mass', v: 'bullet speed|speed', M: 'gun mass|mass' } },
   { id: 'p-xi-3-39', topic: D, eq: 'v = m*u/(m + M)', ask: 'v', vars: { v: 'common velocity|velocity', m: 'bullet mass|mass', u: 'bullet speed|velocity', M: 'block mass|mass' } },
   { id: 'p-xi-3-60', topic: D, eq: 'f_max = mu_s*N', vars: { f_max: 'limiting friction|force', mu_s: 'coefficient of static friction|ratio', N: 'normal reaction|force' } },
   { id: 'p-xi-3-64', topic: D, eq: 'N = m*g*cos(theta)', vars: { N: 'normal reaction|force', m: 'mass|mass', g: 'c:g', theta: ['angle of incline', 'angle', { max: Math.PI / 2 }] } },

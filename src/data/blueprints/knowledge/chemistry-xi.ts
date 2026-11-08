@@ -89,8 +89,8 @@ const knowledge: Record<string, Facts> = {
   },
   '7a': {
     ar: [
-      ['oxidation and reduction', 'Oxidation and reduction always occur together.', 'Oxidation can occur with no reduction.', 'Electrons lost by one species must be gained by another.', 'Electrons can be lost into empty space.', 'A reducing agent is itself oxidised.'],
-      ['hydrogen peroxide', 'H₂O₂ can act as both an oxidising and a reducing agent.', 'H₂O₂ can act only as an oxidising agent.', 'Oxygen in it has −1, between −2 and 0.', 'Oxygen in it has its lowest possible oxidation number.', 'H₂O₂ can decompose into water and oxygen.'],
+      ['oxygen in OF₂', 'Oxygen has an oxidation number of +2 in OF₂.', 'Oxygen has an oxidation number of −2 in OF₂.', 'Fluorine is more electronegative than oxygen.', 'Oxygen is more electronegative than fluorine.', 'A reducing agent is itself oxidised.'],
+      ['KMnO₄', 'KMnO₄ acts only as an oxidising agent, through its manganese.', 'KMnO₄ acts only as a reducing agent, through its manganese.', 'Mn in it has its highest oxidation number, +7.', 'Mn in it has its lowest oxidation number.', 'KMnO₄ gives a purple solution.'],
       ['disproportionation', 'Cl₂ with cold NaOH is a disproportionation.', 'Cl₂ with cold NaOH isn’t a redox reaction.', 'Chlorine is both oxidised and reduced in it.', 'Chlorine’s oxidation number stays the same in it.', 'The products of the reaction include NaCl and NaClO.'],
     ],
   },

@@ -569,7 +569,7 @@ const blueprints: Blueprint[] = [
       ['The oxidation number of an element in its free state is:', '0', '+1', '−1', '+2'],
       ['In most of its compounds, oxygen has an oxidation number of:', '−2', '−1', '+2', '0'],
       ['A substance that gives away electrons is a:', 'reducing agent', 'oxidising agent', 'catalyst', 'solvent'],
-      ['H₂O₂ can act as:', 'both an oxidising and a reducing agent', 'only an oxidising agent', 'only a reducing agent', 'neither'],
+      ['The oxidation number of oxygen in Na₂O₂ is:', '−1', '−2', '+1', '0'],
     ],
     reason: [
       ['Oxidation and reduction always happen together.', 'Electrons lost by one species must be gained by another.'],
@@ -582,6 +582,7 @@ const blueprints: Blueprint[] = [
       ['Fluorine is always −1 in its compounds.', 'Fluorine is always +1 in its compounds.'],
       ['The sum of oxidation numbers in a neutral compound is zero.', 'The sum of oxidation numbers in a neutral compound is one.'],
       ['Hydrogen is +1 in most of its compounds, and −1 in metal hydrides.', 'Hydrogen is −1 in most of its compounds, and +1 in metal hydrides.'],
+      ['The oxidation number of a simple ion equals its charge.', 'The oxidation number of a simple ion is always zero.'],
     ],
   }),
 

@@ -46,8 +46,8 @@ const knowledge: Record<string, Facts> = {
     },
     ar: [
       ['the third law', 'Action and reaction don’t cancel each other.', 'Action and reaction cancel each other, as they are equal and opposite.', 'They act on different bodies.', 'They act on the same body.', 'Action and reaction forces are always equal in size.'],
-      ['impulse', 'A cricketer draws the hands back when catching a fast ball.', 'A cricketer pushes the hands forward when catching a fast ball, to reduce the force.', 'A longer contact time means a smaller force for the same change in momentum.', 'A longer contact time means a larger change in momentum.', 'Impulse is equal to the change in momentum.'],
-      ['the first law and inertia', 'A passenger lurches forward when a bus brakes suddenly.', 'A passenger lurches backward when a bus brakes suddenly.', 'The passenger’s body tends to keep moving by its inertia.', 'The brakes push the passenger forward with a real force.', 'Mass is a measure of inertia.'],
+      ['stopping time', 'A person jumping onto sand is hurt less than one jumping onto concrete.', 'A person jumping onto sand is hurt more than one jumping onto concrete.', 'Sand makes the stopping time longer, so the force is smaller for the same change of momentum.', 'Sand makes the change of momentum larger.', 'Impulse has the unit N s.'],
+      ['the first law and inertia', 'A coin on a card drops into a glass when the card is flicked away quickly.', 'A coin on a card flies off with the card when the card is flicked away quickly.', 'The coin tends to stay at rest, because of its inertia.', 'The flick pushes the coin downwards.', 'Mass is a measure of inertia.'],
     ],
   },
   '3b': {

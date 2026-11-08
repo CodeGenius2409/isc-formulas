@@ -403,3 +403,5 @@ Work is on a `rebuild` branch. `master` still holds your original files.
   In small topics, AR nodes were again often a reason word for word, so new facts were written in their place.
 - **Review batch 31** (Physics XI motion, Chemistry XI bonding and thermodynamics, Chemistry XII tests; 40 blueprints, 15 fixed). Four shared generator fixes: a carried value is rounded to 3 figures, a part can keep only its positive root, a count can be shown exactly, and question numbers use a true minus (not in CS, where values are what Java prints).
   A conics pair removed in batch 24 left a ten-question paper short, which check.sh didn't run; it now runs the paper-size test too. Covered in tests/unit/solver-display.test.ts.
+- **Review batch 32** (Physics XI Newton's laws, Chemistry XI redox, CS XI arrays, Python and ethics; 48 blueprints, 8 fixed). A gun's recoil used the embedded-bullet formula; a new registry entry works it from conservation of momentum.
+  Four topics had three-option truth MCQs, so each gained a fourth truth, and AR nodes that copied reasons were rewritten.

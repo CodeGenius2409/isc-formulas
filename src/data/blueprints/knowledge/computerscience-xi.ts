@@ -83,7 +83,7 @@ const knowledge: Record<string, Facts> = {
   '10a': {
     ar: [
       ['string immutability', 'Strings in Java can’t be changed once they’re made.', 'Strings in Java can be changed in place by toUpperCase().', 'Methods such as toUpperCase() return a new String.', 'Methods such as toUpperCase() change the original String.', 'StringBuffer can be changed in place.'],
-      ['comparing strings', 'Strings should be compared with equals(), not ==.', 'Strings should be compared with ==, not equals().', '== compares references, and equals() compares the characters.', '== compares the characters, and equals() compares references.', 'compareTo gives their dictionary order.'],
+      ['compareTo', '"apple".compareTo("mango") gives a negative number.', '"apple".compareTo("mango") gives a positive number.', 'At the first characters that differ, it gives the first string’s code minus the second’s.', 'At the first characters that differ, it gives the second string’s code minus the first’s.', 'equals() gives true or false.'],
       ['array bounds', 'The last element of an array a is a[a.length - 1].', 'The last element of an array a is a[a.length].', 'Indexes start at 0.', 'Indexes start at 1.', 'Going past the end throws an exception.'],
     ],
   },
@@ -103,9 +103,9 @@ const knowledge: Record<string, Facts> = {
   },
   '12a': {
     ar: [
-      ['Python’s blocks', 'A wrongly indented line in Python causes an error.', 'Indentation makes no difference in Python.', 'Indentation shows which block a line belongs to.', 'Braces show which block a line belongs to.', 'A colon ends the line that starts a block.'],
+      ['Python’s floor division', 'In Python, 7 // 2 gives 3.', 'In Python, 7 // 2 gives 3.5.', '// rounds the quotient down to a whole number.', '// always gives a float.', '7 % 2 gives 1.'],
       ['Python’s types', 'A Python variable can hold values of different types over time.', 'A Python variable must keep one type for its whole life.', 'Python is dynamically typed.', 'Python needs a type in each declaration.', 'type() tells a value’s type.'],
-      ['Python and execution', 'Python is called an interpreted language.', 'Python can’t be run without first compiling it to machine code by hand.', 'Its code is run by an interpreter, step by step.', 'Its code runs only on one operating system.', 'Python can be used interactively.'],
+      ['Python and execution', 'Python is called an interpreted language.', 'Python code must be compiled to machine code by hand before it runs.', 'Its code is run by an interpreter, step by step.', 'Its code runs only on one operating system.', 'Python can be used interactively.'],
     ],
   },
   '13a': {

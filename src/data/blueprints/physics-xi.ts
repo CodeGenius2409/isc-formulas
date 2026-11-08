@@ -226,13 +226,13 @@ const blueprints: Blueprint[] = [
   }),
   num('impulse', [3, 'a', 2, 2], {
     text: 'A {M} kg ball moving at {U} m/s is hit, and leaves at {V} m/s in the same direction. The contact lasts {T} s. Find the average force.',
-    vars: { M: [0.2, 0.5, 0.1], U: [5, 15, 5], V: [20, 40, 5], T: [0.1, 0.5, 0.1] },
+    vars: { M: [0.2, 0.5, 0.1], U: [5, 15, 5], V: [20, 40, 5], T: [0.02, 0.1, 0.02] },
     parts: [{ ask: 'Average force', use: 'p-xi-3-25', find: 'F', given: { m: 'M kg', v: 'V m/s', u: 'U m/s', t: 'T s' }, marks: 2 }],
   }),
   num('recoil', [3, 'a', 2, 2], {
     text: 'A {B} g bullet leaves a {G} kg gun at {V} m/s. Find the recoil speed of the gun.',
     vars: { B: [10, 50, 10], G: [2, 6, 1], V: [200, 800, 100] },
-    parts: [{ ask: 'Recoil speed', use: 'p-xi-3-39', find: 'v', given: { m: 'B g', u: 'V m/s', M: 'G kg' }, marks: 2 }],
+    parts: [{ ask: 'Recoil speed', use: 'p-xi-3-36', find: 'V', given: { m: 'B g', v: 'V m/s', M: 'G kg' }, marks: 2 }],
   }),
   num('friction-block', [3, 'b', 3, 2], {
     text: 'A {M} kg box is pushed with a force of {F} N across a floor, with a coefficient of kinetic friction of {U}.',
@@ -315,6 +315,7 @@ const blueprints: Blueprint[] = [
       ['Momentum is conserved when no external force acts.', 'Momentum is conserved only when no internal force acts.'],
       ['Impulse has the same unit as momentum.', 'Impulse has the same unit as energy.'],
       ['A greater mass has a greater inertia.', 'A greater mass has a smaller inertia.'],
+      ['The SI unit of force is the newton, equal to 1 kg m/s².', 'The SI unit of force is the newton, equal to 1 kg m/s.'],
     ],
     long: [
       ['Show that Newton’s second law leads to F = ma for a body of constant mass.', 'The law says that force is proportional to the rate of change of momentum.', 'So F = k d(mv)/dt.', 'With constant mass, this is k m dv/dt = kma.', 'Choosing units so that k = 1 gives F = ma.'],
