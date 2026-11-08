@@ -293,6 +293,7 @@ function pythonOutput(g: Gen): Body {
   const form = g.int(0, 3);
   const a = g.int(1, 3);
   const b = g.int(a + 1, 5);
+  const whys = ['A slice stops one short of its second index, and [::-1] reverses.', 'A negative index counts from the end, and a slice stops one short of its second index.', 'A slice stops one short of its second index, and + joins the two parts.', 'count finds every match, and an index counts from 0.'];
   const lines: Record<number, [string, string]> = {
     0: [`s = "${word}"\nprint(s[${a}:${b}])\nprint(s[::-1])`, `${pySlice(word, a, b)}\n${pySlice(word, undefined, undefined, -1)}`],
     1: [`s = "${word}"\nprint(s[-${a}])\nprint(s[:${b}].upper())`, `${word[word.length - a]}\n${pySlice(word, undefined, b).toUpperCase()}`],
@@ -300,7 +301,7 @@ function pythonOutput(g: Gen): Body {
     3: [`s = "${word}"\nprint(s.count("${word[a]}"))\nprint(s[${a}])`, `${[...word].filter((c) => c === word[a]).length}\n${word[a]}`],
   };
   const [code, expected] = lines[form];
-  return { form: 'output', text: 'Write the output of the following Python code.', code, expected, python: 1, why: 'Slices stop one short of the second index, and negative indexes count from the end.' };
+  return { form: 'output', text: 'Write the output of the following Python code.', code, expected, python: 1, why: whys[form] };
 }
 
 function pythonList(g: Gen): Body {
@@ -779,14 +780,14 @@ const blueprints: Blueprint[] = [
   }),
   ...facts(7, 'a', {
     recall: [
-      ['Strings in Python are:', 'immutable', 'changed in place by every method', 'always numbers', 'arrays of bytes only'],
+      ['"AB".lower() gives:', '"ab"', '"AB"', '"aB"', 'an error'],
       ['s[-1] gives:', 'the last character', 'the first character', 'an error', 'the whole string'],
       ['s[::-1] gives:', 'the string reversed', 'the first character', 'the last character', 'an error'],
       ['Which method changes a string to capitals?', 'upper()', 'capital()', 'toUpper()', 'big()'],
     ],
     truths: [
-      ['s[a:b] stops before index b.', 's[a:b] includes the character at index b.'],
-      ['A slice beyond the end of a string gives no error.', 'A slice beyond the end of a string always gives an error.'],
+      ['"abc" + "d" gives "abcd".', '"abc" + "d" gives an error.'],
+      ['s.find("z") gives -1 if "z" isn’t in s.', 's.find("z") gives an error if "z" isn’t in s.'],
       ['Python blocks are marked by indentation.', 'Python blocks are marked by braces.'],
     ],
     reason: [

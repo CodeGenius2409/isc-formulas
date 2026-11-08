@@ -411,3 +411,5 @@ Work is on a `rebuild` branch. `master` still holds your original files.
   Entropy left the truths as it isn’t safely in the syllabus; silly distractors and copied AR nodes were replaced.
 - **Review batch 35** (Physics XI measurement, dimensions, centre of mass and gravity, Chemistry XI laws and equilibrium, CS XI input; 40 blueprints, 10 fixed). g at a height of hundreds of kilometres now uses the exact formula, as h is not small against R; a new registry entry holds it.
   Silly distractors (a ring’s “one end”) and AR nodes that named a law as its own reason were replaced.
+- **Review batch 36** (Physics XI oscillations, Chemistry XI organic basics and titration, Chemistry XII polyhalogens, CS XII strings; 40 blueprints, 12 fixed). A spring’s greatest speed no longer leans on an unexplained ω; a new registry entry works it from A, k and m.
+  An output question’s explanation now matches its code in every form, and truths that repeated AR nodes were replaced.

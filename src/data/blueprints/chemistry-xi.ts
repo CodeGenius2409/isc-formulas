@@ -653,7 +653,7 @@ const blueprints: Blueprint[] = [
     recall: [
       ['Which is an electrophile?', 'NO₂⁺', 'OH⁻', 'NH₃', 'CN⁻'],
       ['Which is a nucleophile?', 'OH⁻', 'H⁺', 'NO₂⁺', 'AlCl₃'],
-      ['The order of stability of carbocations is:', 'tertiary > secondary > primary', 'primary > secondary > tertiary', 'secondary > tertiary > primary', 'they’re all equal'],
+      ['The hybridisation of carbon in a carbocation is:', 'sp²', 'sp³', 'sp', 'dsp²'],
       ['Hyperconjugation involves:', 'C–H sigma electrons and an empty p orbital', 'only lone pairs', 'only ionic bonds', 'only pi bonds'],
     ],
     reason: [
@@ -666,6 +666,7 @@ const blueprints: Blueprint[] = [
     ],
     truths: [
       ['−I groups pull electrons towards themselves.', '−I groups push electrons away from themselves.'],
+      ['Alkyl groups have a +I effect.', 'Alkyl groups have a −I effect.'],
       ['Free radicals have an unpaired electron.', 'Free radicals have no electrons in their outer shell.'],
       ['Resonance lowers the energy of a molecule.', 'Resonance raises the energy of a molecule.'],
     ],
@@ -696,9 +697,10 @@ const blueprints: Blueprint[] = [
       ['Branched alkanes boil lower than straight ones.', 'They’re more compact, with less surface area.', 'So their dispersion forces are weaker.'],
     ],
     truths: [
-      ['Alkanes are fairly unreactive.', 'Alkanes are highly reactive with all reagents.'],
-      ['Alkanes have a general formula of CₙH₂ₙ₊₂.', 'Alkanes have a general formula of CₙH₂ₙ.'],
+      ['All the carbon–carbon bonds in an alkane are single bonds.', 'An alkane has at least one carbon–carbon double bond.'],
+      ['Alkanes are non-polar, and don’t dissolve in water.', 'Alkanes are polar, and dissolve freely in water.'],
       ['The carbon in methane is sp³ hybridised.', 'The carbon in methane is sp hybridised.'],
+      ['Cracking breaks long alkanes into shorter ones.', 'Cracking joins short alkanes into longer ones.'],
     ],
   }),
   ...facts(9, 'b', {
@@ -773,14 +775,15 @@ const blueprints: Blueprint[] = [
   // ---- Unit 10: Practical work
   ...facts(10, 'a', {
     recall: [
-      ['A burette is read from the:', 'bottom of the meniscus', 'top of the meniscus', 'side of the glass', 'top of the liquid’s drop'],
+      ['Added to an acid, a base turns phenolphthalein from:', 'colourless to pink', 'pink to colourless', 'yellow to red', 'blue to red'],
       ['A pipette is used to:', 'measure a fixed volume of liquid', 'heat a liquid', 'mix solutions', 'filter a solid'],
       ['A titration should be repeated until:', 'readings agree closely', 'the burette is empty', 'the colour is very dark', 'the flask is full'],
     ],
     truths: [
       ['A conical flask is rinsed only with distilled water before a titration.', 'A conical flask is rinsed with the solution to be titrated before a titration.'],
-      ['A burette is rinsed with the solution it will hold.', 'A burette is rinsed only with distilled water, and used wet.'],
+      ['The last drop in a pipette’s tip isn’t blown out.', 'The last drop in a pipette’s tip is always blown out.'],
       ['Air bubbles in a burette’s tip cause a wrong reading.', 'Air bubbles in a burette’s tip never affect the reading.'],
+      ['A white tile under the flask helps to show the colour change.', 'A white tile under the flask speeds up the reaction.'],
     ],
     reason: [
       ['A burette is rinsed with the solution it will hold.', 'Any water left inside would dilute that solution.'],

@@ -825,10 +825,10 @@ const blueprints: Blueprint[] = [
       ['a freon', 'A chlorofluorocarbon of methane or ethane, once widely used in refrigeration.'],
     ],
     recall: [
-      ['Chloroform slowly oxidises in air and light to give:', 'phosgene', 'methanol', 'carbon tetrachloride', 'formic acid'],
-      ['Iodoform is used as:', 'an antiseptic', 'an anaesthetic', 'a solvent for paints', 'a refrigerant'],
+      ['Chloroform was once widely used as:', 'an anaesthetic', 'an antiseptic', 'a fire extinguisher', 'a refrigerant'],
+      ['The formula of iodoform is:', 'CHI₃', 'CH₃I', 'CI₄', 'CH₂I₂'],
       ['Freons are harmful because they:', 'destroy the ozone layer', 'are highly flammable', 'are strongly acidic', 'are strongly basic'],
-      ['DDT has been restricted because it:', 'isn’t broken down, and it builds up in food chains', 'is too expensive', 'has no effect on insects', 'evaporates too quickly'],
+      ['The IUPAC name of chloroform is:', 'trichloromethane', 'tetrachloromethane', 'dichloromethane', 'chloromethane'],
     ],
     reason: [
       ['Chloroform is stored in dark bottles, filled to the brim.', 'Light and air oxidise it to poisonous phosgene.'],

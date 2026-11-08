@@ -57,6 +57,7 @@ export const PHYSICS_OTHER: SolverEntry[] = [
   { id: 'p-xi-10-24', topic: S, eq: 'v = sqrt(T/mu)', vars: { v: 'wave speed|speed', T: 'tension|force', mu: 'mass per unit length|lineardensity' } },
   { id: 'p-xi-10-50', topic: S, eq: 'U = (1/2)*k*y^2', vars: { U: 'potential energy|energy', k: 'spring constant|springk', y: ['displacement', 'distance', { gen: [0.01, 0.5] }] } },
   { id: 'p-xi-10-53', topic: S, eq: 'E = 2*pi^2*m*f^2*A^2', vars: { E: 'total energy|energy', m: 'mass|mass', f: ['frequency', 'frequency', { gen: [1, 20] }], A: ['amplitude', 'length', { gen: [0.01, 0.5] }] } },
+  { id: 'p-xi-10-36', topic: S, eq: 'v_max = A*sqrt(k/m)', ask: 'v_max', vars: { v_max: 'maximum speed|speed', A: ['amplitude', 'length', {}], k: 'spring constant|springk', m: 'mass|mass' } },
   { id: 'p-xi-10-78', topic: S, eq: 'v_max = omega*A', vars: { v_max: 'maximum speed|speed', omega: 'angular frequency|angvel', A: ['amplitude', 'length', { gen: [0.01, 0.5] }] } },
   { id: 'p-xi-10-82', topic: S, eq: 'g = 4*pi^2*l/T^2', ask: 'g', vars: { g: 'gravity from the pendulum|gravity', l: ['pendulum length', 'length', { gen: [0.2, 3] }], T: ['period', 'period', { gen: [0.9, 3.5] }] } },
 

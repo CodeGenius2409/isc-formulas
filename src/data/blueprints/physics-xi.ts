@@ -1010,10 +1010,9 @@ const blueprints: Blueprint[] = [
     sim: (v) => ({ id: 'spring', preset: { k: v.K, x: v.A / 100 } }),
     text: 'A {M} kg mass on a spring of constant {K} N/m oscillates with an amplitude of {A} cm.',
     vars: { M: [0.2, 2, 0.2], K: [20, 200, 20], A: [2, 10, 2] },
-    derive: (v) => ({ W: Math.sqrt(v.K / v.M) }),
     parts: [
       { ask: 'Period', use: 'p-xi-10-4', find: 'T', given: { m: 'M kg', k: 'K N/m' }, marks: 1 },
-      { ask: 'Greatest speed', use: 'p-xi-10-78', find: 'v_max', given: { omega: 'W rad/s', A: 'A cm' }, marks: 1 },
+      { ask: 'Greatest speed', use: 'p-xi-10-36', find: 'v_max', given: { A: 'A cm', k: 'K N/m', m: 'M kg' }, marks: 1 },
       { ask: 'Total energy', use: 'p-xi-10-6', find: 'E', given: { k: 'K N/m', A: 'A cm' }, marks: 1 },
     ],
     diagram: (v) => ({ kind: 'spring', k: `${v.K} N/m`, m: `${v.M} kg`, a: `${v.A} cm` }),
@@ -1047,8 +1046,8 @@ const blueprints: Blueprint[] = [
       ['the period of an oscillation', 'The time for one complete oscillation.'],
     ],
     recall: [
-      ['In SHM, the speed is greatest at the:', 'mean position', 'extreme position', 'halfway point', 'same everywhere'],
-      ['In SHM, the acceleration is greatest at the:', 'extreme position', 'mean position', 'halfway point', 'same everywhere'],
+      ['In SHM, the speed is greatest at the:', 'mean position', 'extreme position', 'halfway point', 'same at all points'],
+      ['In SHM, the acceleration is greatest at the:', 'extreme position', 'mean position', 'halfway point', 'same at all points'],
       ['The period of a simple pendulum doesn’t depend on its:', 'mass', 'length', 'location', 'g value'],
       ['On the Moon, a pendulum’s period is:', 'longer', 'shorter', 'the same', 'zero'],
     ],
@@ -1061,6 +1060,7 @@ const blueprints: Blueprint[] = [
     ],
     truths: [
       ['The total energy in SHM is proportional to the square of the amplitude.', 'The total energy in SHM is proportional to the amplitude.'],
+      ['The period of a mass on a spring doesn’t depend on the amplitude.', 'The period of a mass on a spring doubles if the amplitude doubles.'],
       ['In SHM, velocity and displacement are 90° out of phase.', 'In SHM, velocity and displacement are in phase.'],
       ['Resonance happens when the driving frequency matches the natural frequency.', 'Resonance happens when the driving frequency is twice the natural frequency.'],
     ],

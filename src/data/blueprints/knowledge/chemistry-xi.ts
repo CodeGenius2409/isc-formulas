@@ -110,15 +110,15 @@ const knowledge: Record<string, Facts> = {
   },
   '8c': {
     ar: [
-      ['the stability of carbocations', 'A tertiary carbocation is more stable than a primary one.', 'A primary carbocation is more stable than a tertiary one.', 'Alkyl groups push electrons towards the positive carbon.', 'Alkyl groups pull electrons away from the positive carbon.', 'Carbocations have sp² carbon atoms.'],
-      ['the inductive effect', 'Chloroethanoic acid is stronger than ethanoic acid.', 'Ethanoic acid is stronger than chloroethanoic acid.', 'Chlorine’s −I effect stabilises the anion.', 'Chlorine’s +I effect destabilises the anion.', 'The inductive effect falls off along a chain.'],
+      ['electrophiles', 'AlCl₃ acts as an electrophile.', 'AlCl₃ acts as a nucleophile.', 'Its aluminium atom is short of electrons.', 'Its aluminium atom has a lone pair.', 'NH₃ acts as a nucleophile.'],
+      ['the inductive effect', 'Fluoroethanoic acid is stronger than chloroethanoic acid.', 'Chloroethanoic acid is stronger than fluoroethanoic acid.', 'Fluorine has the stronger −I effect.', 'Fluorine has a +I effect.', 'The inductive effect falls off along a chain.'],
       ['resonance', 'All the carbon–oxygen bonds in a carbonate ion are the same length.', 'The carbon–oxygen bonds in a carbonate ion have three different lengths.', 'The ion is a resonance hybrid.', 'One bond is a true double bond at all times.', 'Resonance structures differ only in where electrons are.'],
     ],
   },
   '9a': {
     ar: [
       ['the reactivity of alkanes', 'Alkanes are fairly unreactive.', 'Alkanes are highly reactive with most reagents.', 'They have only strong, non-polar C–C and C–H bonds.', 'They have many weak, polar bonds.', 'Alkanes burn in plenty of oxygen to form carbon dioxide and water.'],
-      ['boiling points of alkanes', 'Neopentane boils lower than n-pentane.', 'Neopentane boils higher than n-pentane.', 'Its more nearly spherical shape has less surface for van der Waals forces.', 'Its molecules form hydrogen bonds with each other.', 'These two compounds are isomers.'],
+      ['the Wurtz reaction', 'The Wurtz reaction on one alkyl halide gives an alkane with an even number of carbon atoms.', 'The Wurtz reaction on one alkyl halide gives an alkane with an odd number of carbon atoms.', 'Two identical alkyl groups join together.', 'Three identical alkyl groups join together.', 'Dry ether is the solvent.'],
       ['the halogenation of alkanes', 'Chlorination of methane needs light.', 'Chlorination of methane needs no light or heat.', 'Light breaks Cl₂ into free radicals, which start the chain.', 'Light breaks methane into ions.', 'A mixture of products forms if chlorine is in excess.'],
     ],
   },
@@ -145,7 +145,7 @@ const knowledge: Record<string, Facts> = {
   },
   '10a': {
     ar: [
-      ['rinsing the burette', 'A burette is rinsed with the solution it will hold.', 'A burette is rinsed with water last of all, just before filling.', 'Water left inside would dilute the solution.', 'Rinsing with the solution dilutes it.', 'A conical flask is rinsed with distilled water only.'],
+      ['using an indicator', 'Only a few drops of indicator are used.', 'A large volume of indicator is used.', 'An indicator is itself a weak acid or base, and would use up some of the solution.', 'An indicator makes the solution more concentrated.', 'A conical flask is rinsed with distilled water only.'],
       ['reading the burette', 'The lower meniscus is read for a colourless solution in a burette.', 'The upper meniscus is read for a colourless solution in a burette.', 'A colourless solution’s lower curve is the clearest line to see.', 'A colourless solution has no lower curve.', 'A dark solution, like KMnO₄, is read at the upper meniscus.'],
       ['the self-indicator', 'A KMnO₄ titration needs no separate indicator.', 'A KMnO₄ titration needs methyl orange.', 'One extra drop of KMnO₄ turns the solution pink.', 'KMnO₄ is colourless in water.', 'It is carried out in dilute sulphuric acid.'],
     ],

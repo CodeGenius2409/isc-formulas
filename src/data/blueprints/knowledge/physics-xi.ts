@@ -166,9 +166,9 @@ const knowledge: Record<string, Facts> = {
       'Sketch how kinetic and potential energy vary': { kind: 'graph', x: 'Displacement', y: 'Energy', lines: [{ label: 'Potential', points: curve((x) => x * x, -2, 2) }, { label: 'Kinetic', points: curve((x) => 4 - x * x, -2, 2) }], ticksX: [[-2, '−A'], [2, 'A']] },
     },
     ar: [
-      ['the period of a pendulum', 'A pendulum clock runs slow on a mountain.', 'A pendulum clock runs fast on a mountain.', 'The value of g is smaller there, so the period is longer.', 'The value of g is greater there, so the period is longer.', 'A pendulum’s period doesn’t depend on the mass of its bob.'],
+      ['a pendulum in a lift', 'A pendulum’s period is shorter in a lift accelerating upwards.', 'A pendulum’s period is longer in a lift accelerating upwards.', 'The effective value of g is larger there.', 'The effective value of g is smaller there.', 'A pendulum’s period doesn’t depend on the mass of its bob.'],
       ['energy in SHM', 'In SHM, the kinetic energy is greatest at the mean position.', 'In SHM, the kinetic energy is greatest at the extreme positions.', 'The speed is greatest there.', 'The speed is zero there.', 'The total energy stays constant in undamped SHM.'],
-      ['resonance', 'Soldiers break step when crossing a bridge.', 'Soldiers march in step when crossing a bridge, to make it safer.', 'Their steady steps could match the bridge’s natural frequency.', 'Their steady steps reduce the weight on the bridge.', 'At resonance, the amplitude of forced oscillation is at its largest.'],
+      ['damping', 'The amplitude of a damped oscillation falls with time.', 'The amplitude of a damped oscillation rises with time.', 'Energy is lost to friction or air resistance.', 'Energy is added in every cycle.', 'At resonance, the amplitude of a forced oscillation is at its largest.'],
     ],
   },
   '10b': {
