@@ -766,6 +766,7 @@ const knowledge: Record<string, Facts> = {
       ['A strip of filter paper soaked in KNO₃ can act as a salt bridge.', 'A strip of copper wire can act as a salt bridge.'],
       ['The reciprocal of the time for a cross to vanish gives a measure of rate.', 'The time for a cross to vanish gives a direct measure of rate, the larger the faster.'],
       ['Magnesium reacts faster with more concentrated acid.', 'Magnesium reacts more slowly with more concentrated acid.'],
+      ['A salt bridge keeps the two half-cells electrically neutral.', 'A salt bridge carries electrons between the two half-cells.'],
     ],
     explain: [
       ['Name the products of the reaction of sodium thiosulphate with hydrochloric acid.', 'Sulphur, sulphur dioxide, sodium chloride and water.'],

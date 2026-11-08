@@ -410,8 +410,9 @@ const blueprints: Blueprint[] = [
     ],
     truths: [
       ['ΔU equals the heat absorbed at constant volume.', 'ΔU equals the heat absorbed at constant pressure.'],
-      ['ΔH = ΔU + Δn_g RT for reactions of gases.', 'ΔH = ΔU − 2Δn_g RT for reactions of gases.'],
+      ['In an adiabatic process, q is zero.', 'In an adiabatic process, w is zero.'],
       ['Internal energy is an extensive property.', 'Internal energy is an intensive property.'],
+      ['Work done on a system is taken as positive.', 'Work done on a system is taken as negative.'],
     ],
   }),
   ...facts(5, 'b', {
@@ -736,14 +737,14 @@ const blueprints: Blueprint[] = [
       ['Ethyne is made from calcium carbide with:', 'water', 'hydrogen', 'chlorine', 'an alkali'],
       ['Terminal alkynes are:', 'weakly acidic', 'strongly basic', 'neutral with sodium', 'strongly acidic'],
       ['Which test separates but-1-yne from but-2-yne?', 'Ammoniacal silver nitrate', 'Bromine water', 'Baeyer’s reagent', 'Lucas reagent'],
-      ['The hydration of ethyne with dilute H₂SO₄ and HgSO₄ gives:', 'ethanal', 'ethanol', 'ethanoic acid', 'ethene'],
+      ['Ethyne passed through a red-hot iron tube gives:', 'benzene', 'ethene', 'ethane', 'butane'],
     ],
     reason: [
       ['Ethyne is more acidic than ethene.', 'Its sp carbon has more s character.', 'So it holds the C–H electrons more tightly.'],
     ],
     truths: [
-      ['Ethyne is a linear molecule.', 'Ethyne is a bent molecule.'],
-      ['A triple bond is one sigma and two pi bonds.', 'A triple bond is three sigma bonds.'],
+      ['Ethyne decolourises cold alkaline KMnO₄.', 'Ethyne has no effect on cold alkaline KMnO₄.'],
+      ['Alkynes are less reactive than alkenes towards electrophilic addition.', 'Alkynes are more reactive than alkenes towards electrophilic addition.'],
       ['Terminal alkynes give a white precipitate with ammoniacal silver nitrate.', 'Internal alkynes give a white precipitate with ammoniacal silver nitrate.'],
     ],
   }),
@@ -766,9 +767,10 @@ const blueprints: Blueprint[] = [
       ['activating groups', 'deactivating groups', ['Make the ring react faster.', 'Make the ring react slower.'], ['Usually direct ortho and para.', 'Usually direct meta.']],
     ],
     truths: [
-      ['All carbon–carbon bonds in benzene have the same length.', 'Benzene has three short and three long carbon–carbon bonds.'],
+      ['Benzene has six π electrons.', 'Benzene has twelve π electrons.'],
       ['Nitration uses NO₂⁺ as its electrophile.', 'Nitration uses NO₂⁻ as its electrophile.'],
       ['Hückel’s rule requires 4n + 2 pi electrons.', 'Hückel’s rule requires 4n pi electrons.'],
+      ['Benzene doesn’t decolourise bromine water without a catalyst.', 'Benzene decolourises bromine water at once.'],
     ],
   }),
 

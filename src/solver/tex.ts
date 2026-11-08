@@ -54,6 +54,11 @@ export function numberTex(v: number): string {
   return String(Number(v.toPrecision(10)));
 }
 
+/** a − −b needs brackets: a − (−b). */
+function noLeadingMinus(tex: string): string {
+  return tex.startsWith('-') ? parens(tex) : tex;
+}
+
 function wrap(child: Expr, parent: number, texOf: (n: string) => string, strict = false): string {
   const tex = toTex(child, texOf);
   const p = child.k === 'num' && child.v < 0 ? PRECEDENCE.neg : PRECEDENCE[child.k];
@@ -83,11 +88,11 @@ export function toTex(e: Expr, texOf: (n: string) => string = symbolTex): string
     case 'neg':
       return `-${wrap(e.a, PRECEDENCE.neg, texOf)}`;
     case 'add':
-      return `${wrap(e.a, 1, texOf)}+${wrap(e.b, 1, texOf)}`;
+      return `${wrap(e.a, 1, texOf)}+${noLeadingMinus(wrap(e.b, 1, texOf))}`;
     case 'sub':
-      return `${wrap(e.a, 1, texOf)}-${wrap(e.b, 1, texOf, true)}`;
+      return `${wrap(e.a, 1, texOf)}-${noLeadingMinus(wrap(e.b, 1, texOf, true))}`;
     case 'mul': {
-      const a = wrap(e.a, PRECEDENCE.mul, texOf);
+      const a = e.a.k === 'neg' ? `-${wrap(e.a.a, PRECEDENCE.mul, texOf)}` : wrap(e.a, PRECEDENCE.mul, texOf);
       const b = wrap(e.b, PRECEDENCE.mul, texOf);
       return needsTimes(e.a, e.b) ? `${a}\\times ${b}` : `${a}\\,${b}`;
     }

@@ -62,7 +62,7 @@ const knowledge: Record<string, Facts> = {
   '5a': {
     ar: [
       ['state functions', 'Enthalpy change doesn’t depend on the path taken.', 'Enthalpy change depends on the path taken.', 'Enthalpy is a state function.', 'Enthalpy is a path function.', 'Heat and work are path functions.'],
-      ['Hess’s law', 'An enthalpy of reaction can be found from others that add up to it.', 'An enthalpy of reaction can’t be found from others that add up to it.', 'Enthalpy depends only on the initial and final states.', 'Enthalpy depends on the time taken.', 'This is Hess’s law of constant heat summation.'],
+      ['Hess’s law', 'An enthalpy of reaction can be found from others that add up to it.', 'An enthalpy of reaction can’t be found from others that add up to it.', 'Enthalpy depends only on the initial and final states.', 'Enthalpy depends on the time taken.', 'Standard enthalpies are usually quoted at 298 K.'],
       ['enthalpy and internal energy', 'ΔH and ΔU are equal for a reaction with no change in the number of moles of gas.', 'ΔH and ΔU are never equal.', 'ΔH = ΔU + Δn_g RT, and Δn_g is zero here.', 'ΔH = ΔU × Δn_g RT, and Δn_g is one here.', 'ΔH is the heat change at constant pressure.'],
     ],
   },
@@ -131,14 +131,14 @@ const knowledge: Record<string, Facts> = {
   },
   '9c': {
     ar: [
-      ['the acidity of alkynes', 'Ethyne is acidic, compared with ethene.', 'Ethene is more acidic than ethyne.', 'The sp carbon has more s character, so it holds the electrons closer.', 'The sp carbon has less s character than sp².', 'Ethyne reacts with sodamide.'],
+      ['addition to alkynes', 'Propyne with excess HBr gives 2,2-dibromopropane.', 'Propyne with excess HBr gives 1,2-dibromopropane.', 'Both additions follow Markovnikov’s rule.', 'Both additions go against Markovnikov’s rule.', 'Ethyne decolourises bromine water.'],
       ['the structure of ethyne', 'Ethyne is linear.', 'Ethyne is bent at each carbon.', 'Its carbon atoms are sp hybridised.', 'Its carbon atoms are sp³ hybridised.', 'A triple bond has one σ and two π bonds.'],
       ['the hydration of alkynes', 'Ethyne gives ethanal with dilute H₂SO₄ and HgSO₄.', 'Ethyne gives ethanol with dilute H₂SO₄ and HgSO₄.', 'The first product, an enol, rearranges into the aldehyde.', 'The first product loses a carbon atom.', 'Other alkynes give ketones this way.'],
     ],
   },
   '9d': {
     ar: [
-      ['aromatic substitution', 'Benzene prefers substitution to addition.', 'Benzene prefers addition to substitution.', 'Substitution keeps its stable aromatic ring.', 'Addition makes its ring more stable.', 'Its six π electrons are delocalised.'],
+      ['deactivated rings', 'Nitrobenzene doesn’t undergo Friedel–Crafts reactions.', 'Nitrobenzene undergoes Friedel–Crafts reactions faster than benzene.', 'Its nitro group strongly deactivates the ring.', 'Its nitro group strongly activates the ring.', 'Phenol is nitrated more easily than benzene.'],
       ['the carbon–carbon bonds in benzene', 'All the carbon–carbon bonds in benzene have the same length.', 'Benzene has three short and three long carbon–carbon bonds.', 'Its π electrons are spread evenly around the ring.', 'Its π electrons stay between pairs of carbon atoms.', 'Its ring is flat, with each carbon sp² hybridised.'],
       ['directing groups', 'A methyl group directs an incoming group to the ortho and para positions.', 'A methyl group directs an incoming group to the meta position.', 'It pushes electrons into those positions.', 'It pulls electrons out of those positions.', 'A nitro group directs to the meta position.'],
     ],

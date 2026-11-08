@@ -415,3 +415,5 @@ Work is on a `rebuild` branch. `master` still holds your original files.
   An output question’s explanation now matches its code in every form, and truths that repeated AR nodes were replaced.
 - **Review batch 37** (Physics XI rotation, satellites, fluids, heat and kinetic theory; 47 blueprints, 14 fixed). A thin ring used a disc’s formula, so every answer was half what it should be; it now uses I = MR².
   Mixing water is answered in °C, an ideal gas’s pressure in pascals, and a one-step rms speed is worth 2 marks.
+- **Review batch 38** (Practical chemistry, Chemistry XI first law, alkynes and aromatics; 41 blueprints, 10 fixed). A formula now prints −PΔV rather than (−P)ΔV, and a term starting with a minus sign gets brackets after + or −.
+  This batch’s practical chemistry was mostly right; three-option MCQs and copied AR nodes were the main faults.
