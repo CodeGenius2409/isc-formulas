@@ -286,11 +286,11 @@ const blueprints: Blueprint[] = [
     vars: { M: [0.2, 1, 0.2], R: [0.5, 2, 0.5], V: [2, 8, 1] },
     parts: [{ ask: 'Tension', use: 'p-xi-3-5', find: 'F_c', given: { m: 'M kg', v: 'V m/s', r: 'R m' }, marks: 2 }],
   }),
-  num('banking', [3, 'c', 3, 2], {
+  num('banking', [3, 'c', 2, 2], {
     style: 'cbq-style',
     variants: [
-      { text: 'A highway curve has a radius of {R} m and is banked at {T}°. Find the speed at which a car needs no friction to take it.', parts: [{ ask: 'Best speed', use: 'p-xi-3-6', find: 'v', given: { r: 'R m', theta: 'T deg' }, marks: 3 }] },
-      { text: 'A level curve has a radius of {R} m, and the tyres have a coefficient of static friction of {U}. Find the highest safe speed.', parts: [{ ask: 'Highest safe speed', use: 'p-xi-3-120', find: 'v_max', given: { mu_s: 'U', r: 'R m' }, marks: 3 }] },
+      { text: 'A highway curve has a radius of {R} m and is banked at {T}°. Find the speed at which a car needs no friction to take it.', parts: [{ ask: 'Best speed', use: 'p-xi-3-6', find: 'v', given: { r: 'R m', theta: 'T deg' }, marks: 2 }] },
+      { text: 'A level curve has a radius of {R} m, and the tyres have a coefficient of static friction of {U}. Find the highest safe speed.', parts: [{ ask: 'Highest safe speed', use: 'p-xi-3-120', find: 'v_max', given: { mu_s: 'U', r: 'R m' }, marks: 2 }] },
     ],
     vars: { R: [50, 300, 50], T: [5, 20, 5], U: [0.2, 0.8, 0.1] },
   }),
@@ -345,9 +345,9 @@ const blueprints: Blueprint[] = [
       ['the angle of repose', 'The steepest slope on which a body stays at rest without sliding.'],
     ],
     recall: [
-      ['Kinetic friction, compared with limiting static friction, is usually:', 'smaller', 'larger', 'exactly equal', 'zero'],
+      ['The coefficient of friction has:', 'no unit', 'the unit N', 'the unit N/m', 'the unit kg'],
       ['Friction doesn’t depend, to a good approximation, on the:', 'area of contact', 'normal reaction', 'surfaces', 'roughness'],
-      ['tan of the angle of repose equals the:', 'coefficient of static friction', 'normal reaction', 'weight', 'acceleration'],
+      ['The tangent of the angle of repose equals the:', 'coefficient of static friction', 'normal reaction', 'weight', 'acceleration'],
       ['Rolling friction, compared with sliding friction, is usually:', 'much smaller', 'much larger', 'the same', 'zero always'],
     ],
     reason: [
@@ -360,8 +360,9 @@ const blueprints: Blueprint[] = [
     ],
     truths: [
       ['Limiting friction is proportional to the normal reaction.', 'Limiting friction is proportional to the area of contact.'],
-      ['Static friction can be less than its limiting value.', 'Static friction always equals its limiting value.'],
+      ['For equilibrium, the net force on a body must be zero.', 'For equilibrium, the net force on a body must equal its weight.'],
       ['Three forces in equilibrium can be drawn as a closed triangle.', 'Three forces in equilibrium can never be drawn as a closed triangle.'],
+      ['Lubricants reduce the friction between surfaces.', 'Lubricants increase the friction between surfaces.'],
     ],
     draw: [
       ['Draw a free-body diagram of a block at rest on a rough slope.', 'Weight downwards, and a normal reaction at right angles to the slope.', 'Friction acting up the slope.'],
@@ -375,7 +376,7 @@ const blueprints: Blueprint[] = [
     recall: [
       ['For a car on a level curve, the centripetal force comes from:', 'friction', 'the engine', 'air resistance', 'the weight'],
       ['Centripetal acceleration is directed:', 'towards the centre', 'away from the centre', 'along the tangent', 'along the velocity'],
-      ['If the speed in a circle doubles, the centripetal force becomes:', 'four times', 'twice', 'half', 'the same'],
+      ['The SI unit of angular velocity is:', 'rad/s', 'rad', 'm/s', 'rad/s²'],
     ],
     reason: [
       ['Roads are banked on curves.', 'Part of the normal reaction then provides the centripetal force.', 'So less friction is needed.'],
@@ -385,6 +386,7 @@ const blueprints: Blueprint[] = [
       ['Uniform circular motion has a constant speed, but a changing velocity.', 'Uniform circular motion has a constant velocity.'],
       ['Centripetal force does no work on a body in a circle.', 'Centripetal force does positive work on a body in a circle.'],
       ['Tension in a string is greatest at the bottom of a vertical circle.', 'Tension in a string is greatest at the top of a vertical circle.'],
+      ['In a circle, speed equals angular velocity times the radius.', 'In a circle, speed equals angular velocity divided by the radius.'],
     ],
     long: [
       ['Derive an expression for the best speed on a banked road, with no friction.', 'Resolve the normal reaction: N cos θ balances the weight mg.', 'N sin θ provides the centripetal force mv²/r.', 'Dividing the two gives tan θ = v²/(rg).', 'So v = √(rg tan θ).'],
@@ -435,7 +437,7 @@ const blueprints: Blueprint[] = [
     vars: { A: [1, 6, 1], U: [2, 10, 2], B: [1, 6, 1] },
     parts: [
       { ask: 'Speed after the collision', use: 'p-xi-4-96', find: 'v', given: { m_1: 'A kg', u_1: 'U m/s', m_2: 'B kg', u_2: '0 m/s' }, marks: 2, save: 'v' },
-      { ask: 'Reduced mass of the pair', use: 'p-xi-4-101', find: 'mu', given: { m_1: 'A kg', m_2: 'B kg' }, marks: 1 },
+      { ask: 'Kinetic energy lost', use: 'p-xi-4-97', find: 'DeltaK', given: { m_1: 'A kg', m_2: 'B kg', u_1: 'U m/s', u_2: '0 m/s' }, marks: 1 },
     ],
   }),
   num('restitution', [4, 'b', 2, 2], {
@@ -482,7 +484,7 @@ const blueprints: Blueprint[] = [
       ['In a perfectly inelastic collision, the bodies:', 'stick together', 'bounce apart', 'keep all their kinetic energy', 'stop'],
       ['For a perfectly elastic collision, the coefficient of restitution is:', '1', '0', '0.5', 'infinite'],
       ['In every collision without outside forces, what is conserved?', 'Momentum', 'Kinetic energy', 'Speed', 'Velocity'],
-      ['If a body hits an equal one at rest in an elastic, head-on collision:', 'they exchange velocities', 'both stop', 'they stick together', 'both speed up'],
+      ['In a perfectly elastic head-on collision, the speed of separation is:', 'equal to the speed of approach', 'zero', 'half the speed of approach', 'twice the speed of approach'],
     ],
     reason: [
       ['Kinetic energy is lost in an inelastic collision, though momentum isn’t.', 'Some kinetic energy goes into heat, sound and changing shape.', 'Momentum has no other form to change into.'],
@@ -491,7 +493,7 @@ const blueprints: Blueprint[] = [
       ['elastic collisions', 'inelastic collisions', ['Kinetic energy is conserved.', 'Kinetic energy isn’t conserved.'], ['Coefficient of restitution is 1.', 'Coefficient of restitution is below 1.']],
     ],
     truths: [
-      ['Momentum is conserved in an inelastic collision.', 'Momentum is lost in an inelastic collision.'],
+      ['In a perfectly inelastic collision, e is 0.', 'In a perfectly inelastic collision, e is 1.'],
       ['Kinetic energy falls in a perfectly inelastic collision.', 'Kinetic energy rises in a perfectly inelastic collision.'],
       ['Coefficient of restitution is at most 1 for ordinary collisions.', 'Coefficient of restitution is at least 1 for ordinary collisions.'],
     ],

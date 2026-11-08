@@ -59,9 +59,9 @@ const knowledge: Record<string, Facts> = {
   },
   '3c': {
     ar: [
-      ['banking a road', 'Roads are banked on curves.', 'Roads are banked on curves to increase friction.', 'A part of the normal reaction then provides the centripetal force.', 'A banked road makes the car’s weight smaller.', 'A banked road has a best speed at which no friction is needed.'],
+      ['the vertical circle', 'A stone on a string needs a least speed at the top of a vertical circle.', 'A stone on a string can pass the top of a vertical circle at any speed.', 'Below √(gr) there, the string would go slack.', 'Below √(gr) there, gravity would stop acting.', 'Centripetal force acts towards the centre.'],
       ['centripetal force', 'A body moving in a circle at a steady speed is accelerating.', 'A body moving in a circle at a steady speed has no acceleration.', 'The direction of its velocity keeps changing.', 'The size of its velocity keeps changing.', 'This acceleration is directed towards the centre of the circle.'],
-      ['the size of the centripetal force', 'Doubling the speed in a circle makes the centripetal force four times as large.', 'Doubling the speed in a circle makes the centripetal force twice as large.', 'The force is proportional to the square of the speed.', 'The force is proportional to the speed itself.', 'A centripetal force does no work on the moving body.'],
+      ['the size of the centripetal force', 'Doubling the speed in a circle makes the centripetal force four times as large.', 'Doubling the speed in a circle makes the centripetal force twice as large.', 'The force is proportional to the square of the speed.', 'The force is proportional to the speed itself.', 'One revolution is 2π radians.'],
     ],
   },
   '4a': {
@@ -73,7 +73,7 @@ const knowledge: Record<string, Facts> = {
   },
   '4b': {
     ar: [
-      ['inelastic collisions', 'Momentum is conserved in an inelastic collision.', 'Momentum isn’t conserved in an inelastic collision.', 'No external force acts on the colliding bodies during the collision.', 'The kinetic energy of the bodies stays constant.', 'Kinetic energy isn’t conserved in an inelastic collision.'],
+      ['a heavy body and a light one', 'A heavy body hitting a light one at rest, elastically and head-on, carries on at almost the same velocity.', 'A heavy body hitting a light one at rest, elastically and head-on, stops dead.', 'Very little of its momentum passes to the light body.', 'All of its momentum passes to the light body.', 'The light body moves off at nearly twice that speed.'],
       ['the elastic collision of equal masses', 'Two equal masses exchange velocities in a head-on elastic collision.', 'Two equal masses stop dead in a head-on elastic collision.', 'Both momentum and kinetic energy are conserved, which together require this.', 'Kinetic energy is lost entirely in the collision.', 'The coefficient of restitution is 1 in an elastic collision.'],
       ['the coefficient of restitution', 'A ball that rebounds to a quarter of its height has e = 0.5.', 'A ball that rebounds to a quarter of its height has e = 0.25.', 'e is the square root of the ratio of the heights.', 'e is the ratio of the heights itself.', 'The coefficient of restitution lies between 0 and 1.'],
     ],

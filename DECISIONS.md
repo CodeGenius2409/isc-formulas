@@ -417,3 +417,5 @@ Work is on a `rebuild` branch. `master` still holds your original files.
   Mixing water is answered in °C, an ideal gas’s pressure in pascals, and a one-step rms speed is worth 2 marks.
 - **Review batch 38** (Practical chemistry, Chemistry XI first law, alkynes and aromatics; 41 blueprints, 10 fixed). A formula now prints −PΔV rather than (−P)ΔV, and a term starting with a minus sign gets brackets after + or −.
   This batch’s practical chemistry was mostly right; three-option MCQs and copied AR nodes were the main faults.
+- **Review batch 39** (Physics XI friction, circular motion, collisions and instruments, CS lists, tuples and OOP; 46 blueprints, 14 fixed). A collision question asked for the reduced mass, out of syllabus and off the story; it now asks for the kinetic energy lost.
+  Method names keep their small letter in “distinguish” answers, and copied AR nodes were replaced.

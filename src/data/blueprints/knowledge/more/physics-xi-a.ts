@@ -28,9 +28,10 @@ const knowledge: Record<string, Facts> = {
       ['A positive zero error is subtracted from a reading to correct it.', 'A positive zero error is added to a reading to correct it.'],
       ['A smaller least count gives a more precise instrument.', 'A larger least count gives a more precise instrument.'],
       ['Backlash is avoided by always turning a screw gauge in one direction.', 'Backlash is avoided by turning a screw gauge to and fro.'],
+      ['A negative zero error is added to a reading to correct it.', 'A negative zero error is subtracted from a reading to correct it.'],
     ],
     explain: [
-      ['What is the correct way of holding the screw gauge’s ratchet?', 'Turn the ratchet until it slips, so the object isn’t pressed too hard.'],
+      ['What is the correct way of using the screw gauge’s ratchet?', 'Turn the ratchet until it slips, so the object isn’t pressed too hard.'],
       ['How is the radius of a spherical surface found from a spherometer?', 'R = l²/(6h) + h/2, using the mean distance l between its legs and the height h.'],
     ],
   },

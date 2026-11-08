@@ -246,6 +246,7 @@ const blueprints: Blueprint[] = [
       ['An object is an instance of a class.', 'A class is an instance of an object.'],
       ['Java programs run on the JVM.', 'Java programs run only on one kind of processor.'],
       ['Data hiding is supported by the keyword private.', 'Data hiding is supported by the keyword public.'],
+      ['Two methods with one name and different parameters are overloaded.', 'Two methods with one name and different parameters are overridden.'],
     ],
     compare: [
       ['a class', 'an object', ['A template.', 'A real instance made from it.'], ['Takes no memory for its data until instances are made.', 'Takes memory for its data.']],

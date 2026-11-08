@@ -805,9 +805,9 @@ const blueprints: Blueprint[] = [
       ['Which removes and returns the last item of a list?', 'pop()', 'remove()', 'del()', 'cut()'],
     ],
     truths: [
-      ['A list can hold items of different types.', 'A list can hold items of one type only.'],
+      ['a.insert(0, x) puts x at the start of a.', 'a.insert(0, x) puts x at the end of a.'],
       ['a.reverse() changes the list in place.', 'a.reverse() returns a new list, and leaves a unchanged.'],
-      ['Assigning b = a makes both names refer to the one list.', 'Assigning b = a always makes a full copy of the list.'],
+      ['a.remove(x) removes the first x it finds.', 'a.remove(x) removes every x it finds.'],
     ],
     compare: [
       ['append()', 'extend()', ['Adds its argument as one item.', 'Adds each item from a sequence.'], ['The list grows by one.', 'The list grows by the sequence’s length.']],
@@ -815,8 +815,8 @@ const blueprints: Blueprint[] = [
   }),
   ...facts(7, 'c', {
     recall: [
-      ['Tuples in Python are:', 'immutable', 'mutable', 'always sorted', 'dictionaries'],
-      ['Which one creates a tuple with one item?', '(5,)', '(5)', '[5]', '{5}'],
+      ['tuple([1, 2]) gives:', '(1, 2)', '[1, 2]', 'an error', '{1, 2}'],
+      ['max((3, 9, 2)) gives:', '9', '3', '2', 'an error'],
       ['t[0] = 1 on a tuple gives:', 'a TypeError', 'a new tuple', 'no effect, silently', 'a list'],
     ],
     truths: [

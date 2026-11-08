@@ -33,7 +33,7 @@ const knowledge: Record<string, Facts> = {
   },
   '4a': {
     ar: [
-      ['bytecode', 'Java is called platform independent.', 'Java runs only on one kind of machine.', 'Its compiler makes bytecode, which any JVM can run.', 'Its compiler makes machine code for every computer at once.', 'Java source files end in .java.'],
+      ['inheritance', 'A subclass can reuse the code of its superclass.', 'A subclass must rewrite all the code of its superclass.', 'It inherits the superclass’s non-private members.', 'It inherits only the superclass’s private members.', 'The keyword extends marks a subclass.'],
       ['encapsulation', 'Fields are often made private.', 'Fields should always be public.', 'A class then controls how its data is changed.', 'Other classes can then change them more easily.', 'Encapsulation joins data and methods in one unit.'],
       ['classes and objects', 'One class can have many objects.', 'One class can have only one object.', 'A class is the template from which objects are made.', 'An object is the template from which classes are made.', 'Each object has its own copy of the instance variables.'],
     ],
