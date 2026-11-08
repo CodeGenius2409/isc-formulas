@@ -88,7 +88,11 @@ test('a mock paper has the switch, numbers its figures, and offers a simulator o
     await expect(page.getByRole('heading', { name: 'Mark your paper' })).toBeVisible();
     found = (await page.getByTestId('sim-panel').count()) > 0;
     if (found) await expect(page.getByRole('button', { name: 'Show in simulator' }).first()).toBeVisible();
-    else await page.getByRole('button', { name: 'Finish marking' }).click();
+    else {
+      // Back to the setup screen, ready for the next seed's link.
+      await page.getByRole('button', { name: 'Finish marking' }).click();
+      await page.getByRole('button', { name: 'Build another paper' }).click();
+    }
   }
   expect(found).toBe(true);
   expect(problems).toEqual([]);

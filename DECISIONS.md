@@ -421,3 +421,5 @@ Work is on a `rebuild` branch. `master` still holds your original files.
   Method names keep their small letter in “distinguish” answers, and copied AR nodes were replaced.
 - **Review batch 40** (Physics XI torque, Physics XII ray optics practicals; 16 blueprints, 4 fixed). The last batch: AR nodes and a truth that repeated a recall or reason were rewritten, and the numericals were right.
   All blueprints have now been read; the common mistakes are listed in reports/question-quality.md.
+- **Three browser tests corrected at the end of the review.** They depended on chance or timing: a random paper’s line count, a figure still loading, and a seed that happened to have a simulator question.
+  The app didn’t change for these. Each now checks the same behaviour without relying on luck, and the complete run passes.
