@@ -11,14 +11,14 @@ const curve = (f: (x: number) => number, from: number, to: number, steps = 24): 
 const knowledge: Record<string, Facts> = {
   '1a': {
     ar: [
-      ['random and systematic error', 'Taking the mean of many readings reduces random error.', 'Taking the mean of many readings removes systematic error.', 'Random errors are as likely to be high as low, so they tend to cancel.', 'Every reading has the same error, so averaging cancels it.', 'A random error changes unpredictably from one reading to the next.'],
+      ['zero error', 'A screw gauge’s zero error must be corrected in every reading.', 'A screw gauge’s zero error goes away if many readings are taken.', 'It shifts all the readings by the same amount.', 'It changes at random from one reading to the next.', 'A screw gauge has a circular scale.'],
       ['significant figures', 'A result found by multiplying can’t have more significant figures than the least precise value used.', 'A product always has as many significant figures as the most precise value used.', 'A result can’t be more precise than the least precise value that went into it.', 'Multiplying always makes a measurement more precise.', 'Zeros between non-zero digits are significant.'],
       ['least count', 'A vernier calliper measures length more precisely than a metre rule.', 'A metre rule measures length more precisely than a vernier calliper.', 'The vernier calliper has the smaller least count.', 'A metre rule has the smaller least count.', 'The least count is the smallest value an instrument can measure directly.'],
     ],
   },
   '1b': {
     ar: [
-      ['the limits of dimensional analysis', 'Dimensional analysis can’t find a number like ½ in a formula.', 'Dimensional analysis can find a number like ½ in a formula.', 'Pure numbers have no dimensions.', 'Pure numbers have the dimensions of length.', 'Dimensional analysis can show that a formula is wrong, but not that it is right.'],
+      ['checking a formula', 'v = u + at is dimensionally correct.', 'v = u + at is dimensionally wrong.', 'Each term has the dimensions [L T⁻¹].', 'Each term has the dimensions [L T⁻²].', 'Dimensional analysis can show that a formula is wrong, but not that it is right.'],
       ['homogeneity of dimensions', 'Force and energy can’t be added together.', 'Force and energy can be added together.', 'Only quantities with the same dimensions can be added.', 'Only quantities with different dimensions can be added.', 'Each term of a correct equation has the same dimensions.'],
       ['dimensionless quantities', 'Strain has no dimensions.', 'Strain has the dimensions of length.', 'It is a ratio of two lengths.', 'It is a product of two lengths.', 'Angle, too, is a dimensionless quantity.'],
     ],
@@ -35,7 +35,7 @@ const knowledge: Record<string, Facts> = {
   },
   '2b': {
     ar: [
-      ['the independence of horizontal and vertical motion', 'The horizontal speed of a projectile stays constant, if air resistance is ignored.', 'The horizontal speed of a projectile falls steadily, even with no air resistance.', 'Gravity acts only vertically, so nothing changes the horizontal motion.', 'Gravity acts horizontally on a projectile.', 'The path of a projectile is a parabola.'],
+      ['the speed at the top', 'A projectile has its least speed at its highest point.', 'A projectile has zero speed at its highest point.', 'Its vertical velocity is zero there, leaving only the horizontal part.', 'Both parts of its velocity are zero there.', 'Its acceleration is g throughout its flight.'],
       ['the range of a projectile', 'Launch angles of 30° and 60° give the same range at the same speed.', 'Launch angles of 30° and 60° give ranges in the ratio 1 : 2 at the same speed.', 'The range depends on sin 2θ, which is the same for both.', 'The range depends on tan θ, which is the same for both.', 'The range is greatest at a launch angle of 45°.'],
       ['vector addition', 'Two equal vectors at 120° have a resultant equal to either of them.', 'Two equal vectors at 120° have a resultant twice as large as either of them.', 'R² = 2A² + 2A² cos 120° = A².', 'R² = 2A² − 2A² cos 120° = A².', 'The resultant of two vectors depends on the angle between them.'],
     ],
@@ -46,8 +46,8 @@ const knowledge: Record<string, Facts> = {
     },
     ar: [
       ['the third law', 'Action and reaction don’t cancel each other.', 'Action and reaction cancel each other, as they are equal and opposite.', 'They act on different bodies.', 'They act on the same body.', 'Action and reaction forces are always equal in size.'],
-      ['impulse', 'A cricketer draws the hands back when catching a fast ball.', 'A cricketer pushes the hands forward when catching a fast ball, to reduce the force.', 'A longer contact time means a smaller force for the same change in momentum.', 'A longer contact time means a larger change in momentum.', 'Impulse is equal to the change in momentum.'],
-      ['the first law and inertia', 'A passenger lurches forward when a bus brakes suddenly.', 'A passenger lurches backward when a bus brakes suddenly.', 'The passenger’s body tends to keep moving by its inertia.', 'The brakes push the passenger forward with a real force.', 'Mass is a measure of inertia.'],
+      ['stopping time', 'A person jumping onto sand is hurt less than one jumping onto concrete.', 'A person jumping onto sand is hurt more than one jumping onto concrete.', 'Sand makes the stopping time longer, so the force is smaller for the same change of momentum.', 'Sand makes the change of momentum larger.', 'Impulse has the unit N s.'],
+      ['the first law and inertia', 'A coin on a card drops into a glass when the card is flicked away quickly.', 'A coin on a card flies off with the card when the card is flicked away quickly.', 'The coin tends to stay at rest, because of its inertia.', 'The flick pushes the coin downwards.', 'Mass is a measure of inertia.'],
     ],
   },
   '3b': {
@@ -59,9 +59,9 @@ const knowledge: Record<string, Facts> = {
   },
   '3c': {
     ar: [
-      ['banking a road', 'Roads are banked on curves.', 'Roads are banked on curves to increase friction.', 'A part of the normal reaction then provides the centripetal force.', 'A banked road makes the car’s weight smaller.', 'A banked road has a best speed at which no friction is needed.'],
+      ['the vertical circle', 'A stone on a string needs a least speed at the top of a vertical circle.', 'A stone on a string can pass the top of a vertical circle at any speed.', 'Below √(gr) there, the string would go slack.', 'Below √(gr) there, gravity would stop acting.', 'Centripetal force acts towards the centre.'],
       ['centripetal force', 'A body moving in a circle at a steady speed is accelerating.', 'A body moving in a circle at a steady speed has no acceleration.', 'The direction of its velocity keeps changing.', 'The size of its velocity keeps changing.', 'This acceleration is directed towards the centre of the circle.'],
-      ['the size of the centripetal force', 'Doubling the speed in a circle makes the centripetal force four times as large.', 'Doubling the speed in a circle makes the centripetal force twice as large.', 'The force is proportional to the square of the speed.', 'The force is proportional to the speed itself.', 'A centripetal force does no work on the moving body.'],
+      ['the size of the centripetal force', 'Doubling the speed in a circle makes the centripetal force four times as large.', 'Doubling the speed in a circle makes the centripetal force twice as large.', 'The force is proportional to the square of the speed.', 'The force is proportional to the speed itself.', 'One revolution is 2π radians.'],
     ],
   },
   '4a': {
@@ -73,7 +73,7 @@ const knowledge: Record<string, Facts> = {
   },
   '4b': {
     ar: [
-      ['inelastic collisions', 'Momentum is conserved in an inelastic collision.', 'Momentum isn’t conserved in an inelastic collision.', 'No external force acts on the colliding bodies during the collision.', 'The kinetic energy of the bodies stays constant.', 'Kinetic energy isn’t conserved in an inelastic collision.'],
+      ['a heavy body and a light one', 'A heavy body hitting a light one at rest, elastically and head-on, carries on at almost the same velocity.', 'A heavy body hitting a light one at rest, elastically and head-on, stops dead.', 'Very little of its momentum passes to the light body.', 'All of its momentum passes to the light body.', 'The light body moves off at nearly twice that speed.'],
       ['the elastic collision of equal masses', 'Two equal masses exchange velocities in a head-on elastic collision.', 'Two equal masses stop dead in a head-on elastic collision.', 'Both momentum and kinetic energy are conserved, which together require this.', 'Kinetic energy is lost entirely in the collision.', 'The coefficient of restitution is 1 in an elastic collision.'],
       ['the coefficient of restitution', 'A ball that rebounds to a quarter of its height has e = 0.5.', 'A ball that rebounds to a quarter of its height has e = 0.25.', 'e is the square root of the ratio of the heights.', 'e is the ratio of the heights itself.', 'The coefficient of restitution lies between 0 and 1.'],
     ],
@@ -81,27 +81,27 @@ const knowledge: Record<string, Facts> = {
   '5a': {
     ar: [
       ['the centre of mass in a body', 'The centre of mass of a ring lies at a point with no mass.', 'The centre of mass of a ring lies on the ring.', 'By symmetry it must be at the ring’s centre, which is empty.', 'The ring’s mass is concentrated at its centre.', 'A centre of mass need not lie within the material of a body.'],
-      ['the motion of the centre of mass', 'The centre of mass of a shell moves on along its path after the shell explodes in mid-air.', 'The centre of mass of a shell stops after the shell explodes in mid-air.', 'The explosion is due to internal forces, which don’t change its motion.', 'The explosion is due to an external force.', 'The total momentum of the fragments is the same just after the explosion.'],
+      ['the motion of the centre of mass', 'A system’s centre of mass accelerates only when a net external force acts.', 'A system’s centre of mass accelerates even with no net external force.', 'The net external force equals the total mass times the centre of mass’s acceleration.', 'The net internal force equals the total mass times the centre of mass’s acceleration.', 'The centre of mass of a uniform rod is at its middle.'],
       ['position of the centre of mass', 'The centre of mass of two unequal masses lies nearer the heavier one.', 'The centre of mass of two unequal masses lies nearer the lighter one.', 'm₁r₁ = m₂r₂ about the centre of mass.', 'm₁r₂ = m₂r₁ about the centre of mass, and nothing else holds.', 'For two equal masses, it lies half-way between them.'],
     ],
   },
   '5b': {
     ar: [
-      ['the conservation of angular momentum', 'A skater spins faster on pulling in the arms.', 'A skater spins slower on pulling in the arms.', 'The moment of inertia falls while the angular momentum stays the same.', 'The angular momentum rises when the arms are pulled in.', 'No external torque acts on the skater about the vertical axis.'],
-      ['torque', 'A door handle is placed far from the hinges.', 'A door handle is placed near the hinges, to increase the torque.', 'The same force then gives a larger torque.', 'The same force then gives a smaller torque.', 'Torque is the force multiplied by its perpendicular distance from the axis.'],
+      ['the conservation of angular momentum', 'A planet moves faster when it is nearer the Sun.', 'A planet moves slower when it is nearer the Sun.', 'The Sun’s pull exerts no torque on it about the Sun, so its angular momentum stays the same.', 'The Sun’s pull exerts a large torque on it about the Sun.', 'Planets move in ellipses.'],
+      ['a couple', 'A couple turns a steering wheel without moving it sideways.', 'A couple moves a steering wheel sideways without turning it.', 'Its two equal and opposite forces have different lines of action, so the net force is zero.', 'Its two forces act along the same line.', 'Torque is a vector.'],
       ['the equilibrium of a rigid body', 'A rigid body in equilibrium has no net force and no net torque on it.', 'A rigid body in equilibrium needs only no net force on it.', 'A body could rotate under a couple even with no net force.', 'A couple always moves a body in a straight line.', 'A couple is two equal and opposite forces with different lines of action.'],
     ],
   },
   '5c': {
     ar: [
-      ['the distribution of mass', 'A ring has a larger moment of inertia than a disc of the same mass and radius.', 'A ring has a smaller moment of inertia than a disc of the same mass and radius.', 'All of the ring’s mass is at the greatest distance from the axis.', 'All of the disc’s mass is at the greatest distance from the axis.', 'Moment of inertia depends on the axis chosen.'],
+      ['the distribution of mass', 'A ring has a larger moment of inertia than a disc of the same mass and radius.', 'A ring has a smaller moment of inertia than a disc of the same mass and radius.', 'All of the ring’s mass is at the greatest distance from the axis.', 'All of the disc’s mass is at the greatest distance from the axis.', 'Flywheels are used in engines.'],
       ['rolling', 'A solid sphere reaches the foot of a slope before a hollow sphere of the same size.', 'A hollow sphere reaches the foot of a slope before a solid sphere of the same size.', 'Less of the solid sphere’s energy goes into rotation.', 'More of the solid sphere’s energy goes into rotation.', 'A rolling body has both translational and rotational kinetic energy.'],
       ['the theorems of inertia', 'The perpendicular axes theorem applies only to flat bodies.', 'The perpendicular axes theorem applies to all bodies.', 'Its proof needs all the mass to lie in a single plane.', 'Its proof needs the mass to be a point.', 'The parallel axes theorem applies to any body.'],
     ],
   },
   '6a': {
     ar: [
-      ['g with latitude', 'The value of g is greater at the poles than at the equator.', 'The value of g is smaller at the poles than at the equator.', 'The Earth’s rotation and its bulge at the equator both reduce g there.', 'The Earth is nearer the Sun at the poles.', 'The value of g also falls with height above the surface.'],
+      ['orbital speed', 'A satellite nearer the Earth moves faster than one further away.', 'A satellite nearer the Earth moves slower than one further away.', 'Orbital speed is √(GM/r), which rises as r falls.', 'Orbital speed is √(GMr), which rises as r rises.', 'A geostationary satellite has a period of 24 hours.'],
       ['g inside the Earth', 'The value of g is zero at the centre of the Earth.', 'The value of g is greatest at the centre of the Earth.', 'The pull of the mass around the centre cancels in every direction.', 'There is no matter at the centre of the Earth.', 'The value of g falls steadily with depth, if the density is taken as uniform.'],
       ['universal gravitation', 'The gravitational force between two bodies acts even with nothing between them.', 'The gravitational force between two bodies needs a medium between them.', 'Gravity doesn’t depend on the medium between the masses.', 'Gravity acts only through air.', 'The force falls off as the square of the distance.'],
     ],
@@ -109,7 +109,7 @@ const knowledge: Record<string, Facts> = {
   '6b': {
     ar: [
       ['escape velocity', 'The escape velocity from a place doesn’t depend on the mass of the body.', 'The escape velocity is larger for a heavier body.', 'The mass cancels from ½mv² = GMm/R.', 'The mass of the body adds to the planet’s gravity.', 'The escape velocity from the Earth’s surface is about 11.2 km/s.'],
-      ['the energy of a satellite', 'A satellite’s total energy is negative.', 'A satellite’s total energy is positive.', 'It is bound to the Earth, as its potential energy is twice its kinetic energy in size.', 'Its kinetic energy is twice its potential energy in size.', 'A satellite’s kinetic energy is half the size of its potential energy.'],
+      ['geostationary orbits', 'A geostationary satellite must orbit above the equator.', 'A geostationary satellite can orbit over the poles.', 'It must turn in the plane of the Earth’s rotation, to stay over one spot.', 'It must stay close to the Earth’s surface.', 'Its height is about 36 000 km.'],
       ['orbits', 'A satellite’s orbital speed falls as its orbit gets larger.', 'A satellite’s orbital speed rises as its orbit gets larger.', 'v = √(GM/r), so v falls as r rises.', 'v = √(GMr), so v rises with r.', 'A geostationary satellite has a period of 24 hours.'],
     ],
   },
@@ -118,8 +118,8 @@ const knowledge: Record<string, Facts> = {
       'Sketch a stress–strain graph': { kind: 'graph', x: 'Strain', y: 'Stress', lines: [{ points: [[0, 0], [2, 4], [3, 4.5], [4, 4.8], [6, 5.2], [7, 4.8]] }], ticksX: [[2, 'Elastic limit'], [7, 'Breaking']] },
     },
     ar: [
-      ['elastic behaviour', 'Steel is more elastic than rubber.', 'Rubber is more elastic than steel.', 'For the same stress, steel shows much the smaller strain.', 'For the same stress, steel shows much the larger strain.', 'Young’s modulus has the same unit as stress.'],
-      ['stress and strain', 'Up to the elastic limit, stress is proportional to strain.', 'Up to the elastic limit, stress is proportional to the square of the strain.', 'This is Hooke’s law.', 'This is Bernoulli’s principle.', 'Beyond the elastic limit, a wire keeps some permanent stretch.'],
+      ['a thicker wire', 'A wire of twice the radius stretches a quarter as much under the same load.', 'A wire of twice the radius stretches half as much under the same load.', 'Its extension is inversely proportional to its area, which goes with r².', 'Its extension is inversely proportional to its radius.', 'Young’s modulus has the same unit as stress.'],
+      ['ductile materials', 'Copper can be drawn into thin wires.', 'Copper snaps at once when drawn into thin wires.', 'It has a long plastic range before it breaks.', 'It breaks as soon as it passes its elastic limit.', 'Glass is a brittle material.'],
       ['the wire under load', 'Doubling a wire’s length doubles its extension under the same load.', 'Doubling a wire’s length halves its extension under the same load.', 'The extension is FL/AY, which is proportional to L.', 'The extension is FA/LY, which is inversely proportional to L.', 'Young’s modulus depends on the material, not on the size of the wire.'],
     ],
   },
@@ -132,7 +132,7 @@ const knowledge: Record<string, Facts> = {
   },
   '7c': {
     ar: [
-      ['the shape of drops', 'Small liquid drops are nearly spherical.', 'Small liquid drops are nearly flat.', 'Surface tension pulls a drop to the smallest area for its volume.', 'Gravity pulls a small drop into a sphere.', 'Surface tension is the force per unit length on a line in the surface.'],
+      ['a floating needle', 'A greased needle can float on still water.', 'A greased needle always sinks in still water.', 'The surface film of the water supports its weight.', 'Its density is less than that of water.', 'Steel is denser than water.'],
       ['capillary rise', 'Water rises higher in a thinner capillary tube.', 'Water rises lower in a thinner capillary tube.', 'h = 2S cos θ/(ρgr), so h is larger for smaller r.', 'h = 2Sr cos θ/(ρg), so h is larger for larger r.', 'Mercury is depressed in a glass capillary.'],
       ['the angle of contact', 'Mercury doesn’t wet glass.', 'Mercury wets glass.', 'Its angle of contact with glass is greater than 90°.', 'Its angle of contact with glass is 0°.', 'Water wets clean glass.'],
     ],
@@ -157,8 +157,8 @@ const knowledge: Record<string, Facts> = {
   '9a': {
     ar: [
       ['degrees of freedom', 'Cₚ of a diatomic gas is larger than that of a monatomic gas.', 'Cₚ of a diatomic gas is smaller than that of a monatomic gas.', 'Its molecules also store energy in rotation.', 'Its molecules are lighter.', 'A monatomic gas has three degrees of freedom.'],
-      ['the meaning of temperature', 'All ideal gases at one temperature have the same mean kinetic energy per molecule.', 'A heavier gas at one temperature has a greater mean kinetic energy per molecule.', 'The mean kinetic energy per molecule is 3kT/2, which depends only on T.', 'The mean kinetic energy per molecule is 3kT/2m, which depends on the mass.', 'Lighter molecules have a larger rms speed at the same temperature.'],
-      ['the pressure of a gas', 'A gas exerts pressure on the walls of its container.', 'A gas exerts pressure only on the base of its container.', 'Its molecules collide with the walls and change momentum.', 'Its molecules repel the walls from a distance.', 'P = ⅓ρc² for an ideal gas.'],
+      ['the meaning of temperature', 'All ideal gases at one temperature have the same mean kinetic energy per molecule.', 'A heavier gas at one temperature has a greater mean kinetic energy per molecule.', 'The mean kinetic energy per molecule is 3kT/2, which depends only on T.', 'The mean kinetic energy per molecule is 3kT/2m, which depends on the mass.', 'The gas constant R is about 8.314 J/(mol K).'],
+      ['mean free path', 'The mean free path of a gas falls as its pressure rises.', 'The mean free path of a gas rises as its pressure rises.', 'Its molecules are closer together, so they collide more often.', 'Its molecules grow larger under pressure.', 'P = ⅓ρc² for an ideal gas.'],
     ],
   },
   '10a': {
@@ -166,9 +166,9 @@ const knowledge: Record<string, Facts> = {
       'Sketch how kinetic and potential energy vary': { kind: 'graph', x: 'Displacement', y: 'Energy', lines: [{ label: 'Potential', points: curve((x) => x * x, -2, 2) }, { label: 'Kinetic', points: curve((x) => 4 - x * x, -2, 2) }], ticksX: [[-2, '−A'], [2, 'A']] },
     },
     ar: [
-      ['the period of a pendulum', 'A pendulum clock runs slow on a mountain.', 'A pendulum clock runs fast on a mountain.', 'The value of g is smaller there, so the period is longer.', 'The value of g is greater there, so the period is longer.', 'A pendulum’s period doesn’t depend on the mass of its bob.'],
+      ['a pendulum in a lift', 'A pendulum’s period is shorter in a lift accelerating upwards.', 'A pendulum’s period is longer in a lift accelerating upwards.', 'The effective value of g is larger there.', 'The effective value of g is smaller there.', 'A pendulum’s period doesn’t depend on the mass of its bob.'],
       ['energy in SHM', 'In SHM, the kinetic energy is greatest at the mean position.', 'In SHM, the kinetic energy is greatest at the extreme positions.', 'The speed is greatest there.', 'The speed is zero there.', 'The total energy stays constant in undamped SHM.'],
-      ['resonance', 'Soldiers break step when crossing a bridge.', 'Soldiers march in step when crossing a bridge, to make it safer.', 'Their steady steps could match the bridge’s natural frequency.', 'Their steady steps reduce the weight on the bridge.', 'At resonance, the amplitude of forced oscillation is at its largest.'],
+      ['damping', 'The amplitude of a damped oscillation falls with time.', 'The amplitude of a damped oscillation rises with time.', 'Energy is lost to friction or air resistance.', 'Energy is added in every cycle.', 'At resonance, the amplitude of a forced oscillation is at its largest.'],
     ],
   },
   '10b': {

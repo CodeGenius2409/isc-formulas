@@ -4,6 +4,7 @@ import { LEWIS } from '../lewis/figures';
 import { formulaText } from '../lewis/check';
 import { derivationBlueprints } from '../derivations';
 import KNOWLEDGE from './knowledge/chemistry-xi';
+import { tidy } from '../../practice/gen/gen';
 import { blueprintsFor } from './dsl';
 import type { Blueprint } from './types';
 
@@ -172,7 +173,8 @@ const blueprints: Blueprint[] = [
   custom('uncertainty', [2, 'a', 2, 2], { type: 'numerical', format: 'numerical' }, (g) => {
     const dx = g.pick([0.1, 0.2, 0.5, 1]);
     const dv = 6.626e-34 / (4 * Math.PI * 9.11e-31 * dx * 1e-9);
-    return { form: 'numeric', text: `An electron’s position is known to within ${dx} nm. Find the least uncertainty in its velocity.`, parts: [g.answerPart('Least uncertainty in velocity', dv, 2, [{ label: 'Use Heisenberg’s principle', math: ['\\Delta v = \\dfrac{h}{4\\pi m\\,\\Delta x}'] }], 'm/s')] };
+    const [lead, power] = dv.toExponential(2).split('e');
+    return { form: 'numeric', text: `An electron’s position is known to within ${dx} nm. Find the least uncertainty in its velocity.`, parts: [g.answerPart('Least uncertainty in velocity', dv, 2, [{ label: 'Use Heisenberg’s principle', math: ['\\Delta v = \\dfrac{h}{4\\pi m\\,\\Delta x}', `\\Delta v = \\dfrac{6.626\\times10^{-34}}{4\\pi\\times(9.11\\times10^{-31})\\times(${dx}\\times10^{-9})} = ${lead}\\times10^{${Number(power)}}\\,\\mathrm{m/s}`] }], 'm/s', tidy(dv))] };
   }),
   custom('configuration', [2, 'b', 1, 1], { type: 'mcq', format: 'mcq' }, (g) => {
     const [atom, config] = g.pick(ATOMS);
@@ -201,6 +203,7 @@ const blueprints: Blueprint[] = [
       ['Energy levels in a hydrogen atom get closer together as n rises.', 'Energy levels in a hydrogen atom get further apart as n rises.'],
       ['The Bohr radius of hydrogen’s first orbit is about 52.9 pm.', 'The Bohr radius of hydrogen’s first orbit is about 52.9 nm.'],
       ['Electrons have a wave nature as well as a particle nature.', 'Electrons have only a particle nature.'],
+      ['The energy of a photon is proportional to its frequency.', 'The energy of a photon is inversely proportional to its frequency.'],
     ],
   }),
   ...facts(2, 'b', {
@@ -240,12 +243,12 @@ const blueprints: Blueprint[] = [
       ['the modern periodic law', 'Properties of the elements repeat periodically with increasing atomic number.'],
     ],
     recall: [
-      ['Across a period, atomic radius generally:', 'decreases', 'increases', 'stays the same', 'first doubles'],
+      ['Across a period, atomic radius generally:', 'decreases', 'increases', 'stays the same', 'first rises, then falls'],
       ['Down a group, ionisation enthalpy generally:', 'decreases', 'increases', 'stays the same', 'jumps irregularly'],
       ['Which element has the highest electronegativity?', 'Fluorine', 'Oxygen', 'Chlorine', 'Nitrogen'],
-      ['Which has a higher first ionisation enthalpy, N or O?', 'N', 'O', 'They’re equal', 'It can’t be known'],
-      ['A cation, compared with its parent atom, is:', 'smaller', 'larger', 'the same size', 'heavier by far'],
-      ['Which is the largest of these?', 'Cl⁻', 'Cl', 'K⁺', 'Ar'],
+      ['Which has the larger atomic radius, Na or Mg?', 'Na', 'Mg', 'They’re equal', 'It can’t be known'],
+      ['Elements in the same group have the same number of:', 'valence electrons', 'shells', 'neutrons', 'protons'],
+      ['Which is the largest of these?', 'Cl⁻', 'Cl', 'K⁺', 'Ca²⁺'],
     ],
     reason: [
       ['Nitrogen has a higher first ionisation enthalpy than oxygen.', 'Nitrogen’s half-filled p subshell is especially stable.'],
@@ -259,6 +262,7 @@ const blueprints: Blueprint[] = [
       ['Noble gases have the highest ionisation enthalpies in their periods.', 'Noble gases have the lowest ionisation enthalpies in their periods.'],
       ['Metallic character rises down a group.', 'Metallic character falls down a group.'],
       ['Second ionisation enthalpy is always larger than the first.', 'Second ionisation enthalpy is always smaller than the first.'],
+      ['Oxides of metals are generally basic.', 'Oxides of metals are generally acidic.'],
     ],
   }),
 
@@ -406,8 +410,9 @@ const blueprints: Blueprint[] = [
     ],
     truths: [
       ['ΔU equals the heat absorbed at constant volume.', 'ΔU equals the heat absorbed at constant pressure.'],
-      ['ΔH = ΔU + Δn_g RT for reactions of gases.', 'ΔH = ΔU − 2Δn_g RT for reactions of gases.'],
+      ['In an adiabatic process, q is zero.', 'In an adiabatic process, w is zero.'],
       ['Internal energy is an extensive property.', 'Internal energy is an intensive property.'],
+      ['Work done on a system is taken as positive.', 'Work done on a system is taken as negative.'],
     ],
   }),
   ...facts(5, 'b', {
@@ -488,7 +493,7 @@ const blueprints: Blueprint[] = [
       ['the reaction quotient', 'The same ratio as the equilibrium constant, at any moment in the reaction.'],
     ],
     recall: [
-      ['A catalyst at equilibrium:', 'speeds up both reactions equally', 'changes K', 'shifts it to the products', 'stops the reaction'],
+      ['For N₂ + 3H₂ ⇌ 2NH₃, the unit of Kc is:', 'mol⁻² L²', 'mol L⁻¹', 'mol² L⁻²', 'no unit'],
       ['Raising the pressure on N₂ + 3H₂ ⇌ 2NH₃ shifts it towards:', 'ammonia', 'nitrogen and hydrogen', 'neither', 'the side with more gas'],
       ['K for a reaction changes only with:', 'temperature', 'pressure', 'concentration', 'a catalyst'],
       ['If Q < K, the reaction moves:', 'forward', 'backward', 'neither way', 'to a stop'],
@@ -499,8 +504,9 @@ const blueprints: Blueprint[] = [
     ],
     truths: [
       ['K doesn’t depend on the starting concentrations.', 'K depends on the starting concentrations.'],
-      ['For an exothermic reaction, K falls as temperature rises.', 'For an exothermic reaction, K rises as temperature rises.'],
+      ['At equilibrium, Q equals K.', 'At equilibrium, Q is always zero.'],
       ['Solids and pure liquids don’t appear in the expression for K.', 'Solids and pure liquids always appear in the expression for K.'],
+      ['K for the reverse reaction is 1/K.', 'K for the reverse reaction is −K.'],
     ],
     cases: [
       {
@@ -569,7 +575,7 @@ const blueprints: Blueprint[] = [
       ['The oxidation number of an element in its free state is:', '0', '+1', '−1', '+2'],
       ['In most of its compounds, oxygen has an oxidation number of:', '−2', '−1', '+2', '0'],
       ['A substance that gives away electrons is a:', 'reducing agent', 'oxidising agent', 'catalyst', 'solvent'],
-      ['H₂O₂ can act as:', 'both an oxidising and a reducing agent', 'only an oxidising agent', 'only a reducing agent', 'neither'],
+      ['The oxidation number of oxygen in Na₂O₂ is:', '−1', '−2', '+1', '0'],
     ],
     reason: [
       ['Oxidation and reduction always happen together.', 'Electrons lost by one species must be gained by another.'],
@@ -582,6 +588,7 @@ const blueprints: Blueprint[] = [
       ['Fluorine is always −1 in its compounds.', 'Fluorine is always +1 in its compounds.'],
       ['The sum of oxidation numbers in a neutral compound is zero.', 'The sum of oxidation numbers in a neutral compound is one.'],
       ['Hydrogen is +1 in most of its compounds, and −1 in metal hydrides.', 'Hydrogen is −1 in most of its compounds, and +1 in metal hydrides.'],
+      ['The oxidation number of a simple ion equals its charge.', 'The oxidation number of a simple ion is always zero.'],
     ],
   }),
 
@@ -647,7 +654,7 @@ const blueprints: Blueprint[] = [
     recall: [
       ['Which is an electrophile?', 'NO₂⁺', 'OH⁻', 'NH₃', 'CN⁻'],
       ['Which is a nucleophile?', 'OH⁻', 'H⁺', 'NO₂⁺', 'AlCl₃'],
-      ['The order of stability of carbocations is:', 'tertiary > secondary > primary', 'primary > secondary > tertiary', 'secondary > tertiary > primary', 'they’re all equal'],
+      ['The hybridisation of carbon in a carbocation is:', 'sp²', 'sp³', 'sp', 'dsp²'],
       ['Hyperconjugation involves:', 'C–H sigma electrons and an empty p orbital', 'only lone pairs', 'only ionic bonds', 'only pi bonds'],
     ],
     reason: [
@@ -660,6 +667,7 @@ const blueprints: Blueprint[] = [
     ],
     truths: [
       ['−I groups pull electrons towards themselves.', '−I groups push electrons away from themselves.'],
+      ['Alkyl groups have a +I effect.', 'Alkyl groups have a −I effect.'],
       ['Free radicals have an unpaired electron.', 'Free radicals have no electrons in their outer shell.'],
       ['Resonance lowers the energy of a molecule.', 'Resonance raises the energy of a molecule.'],
     ],
@@ -690,9 +698,10 @@ const blueprints: Blueprint[] = [
       ['Branched alkanes boil lower than straight ones.', 'They’re more compact, with less surface area.', 'So their dispersion forces are weaker.'],
     ],
     truths: [
-      ['Alkanes are fairly unreactive.', 'Alkanes are highly reactive with all reagents.'],
-      ['Alkanes have a general formula of CₙH₂ₙ₊₂.', 'Alkanes have a general formula of CₙH₂ₙ.'],
+      ['All the carbon–carbon bonds in an alkane are single bonds.', 'An alkane has at least one carbon–carbon double bond.'],
+      ['Alkanes are non-polar, and don’t dissolve in water.', 'Alkanes are polar, and dissolve freely in water.'],
       ['The carbon in methane is sp³ hybridised.', 'The carbon in methane is sp hybridised.'],
+      ['Cracking breaks long alkanes into shorter ones.', 'Cracking joins short alkanes into longer ones.'],
     ],
   }),
   ...facts(9, 'b', {
@@ -728,14 +737,14 @@ const blueprints: Blueprint[] = [
       ['Ethyne is made from calcium carbide with:', 'water', 'hydrogen', 'chlorine', 'an alkali'],
       ['Terminal alkynes are:', 'weakly acidic', 'strongly basic', 'neutral with sodium', 'strongly acidic'],
       ['Which test separates but-1-yne from but-2-yne?', 'Ammoniacal silver nitrate', 'Bromine water', 'Baeyer’s reagent', 'Lucas reagent'],
-      ['The hydration of ethyne with dilute H₂SO₄ and HgSO₄ gives:', 'ethanal', 'ethanol', 'ethanoic acid', 'ethene'],
+      ['Ethyne passed through a red-hot iron tube gives:', 'benzene', 'ethene', 'ethane', 'butane'],
     ],
     reason: [
       ['Ethyne is more acidic than ethene.', 'Its sp carbon has more s character.', 'So it holds the C–H electrons more tightly.'],
     ],
     truths: [
-      ['Ethyne is a linear molecule.', 'Ethyne is a bent molecule.'],
-      ['A triple bond is one sigma and two pi bonds.', 'A triple bond is three sigma bonds.'],
+      ['Ethyne decolourises cold alkaline KMnO₄.', 'Ethyne has no effect on cold alkaline KMnO₄.'],
+      ['Alkynes are less reactive than alkenes towards electrophilic addition.', 'Alkynes are more reactive than alkenes towards electrophilic addition.'],
       ['Terminal alkynes give a white precipitate with ammoniacal silver nitrate.', 'Internal alkynes give a white precipitate with ammoniacal silver nitrate.'],
     ],
   }),
@@ -758,23 +767,25 @@ const blueprints: Blueprint[] = [
       ['activating groups', 'deactivating groups', ['Make the ring react faster.', 'Make the ring react slower.'], ['Usually direct ortho and para.', 'Usually direct meta.']],
     ],
     truths: [
-      ['All carbon–carbon bonds in benzene have the same length.', 'Benzene has three short and three long carbon–carbon bonds.'],
+      ['Benzene has six π electrons.', 'Benzene has twelve π electrons.'],
       ['Nitration uses NO₂⁺ as its electrophile.', 'Nitration uses NO₂⁻ as its electrophile.'],
       ['Hückel’s rule requires 4n + 2 pi electrons.', 'Hückel’s rule requires 4n pi electrons.'],
+      ['Benzene doesn’t decolourise bromine water without a catalyst.', 'Benzene decolourises bromine water at once.'],
     ],
   }),
 
   // ---- Unit 10: Practical work
   ...facts(10, 'a', {
     recall: [
-      ['A burette is read from the:', 'bottom of the meniscus', 'top of the meniscus', 'side of the glass', 'top of the liquid’s drop'],
+      ['Added to an acid, a base turns phenolphthalein from:', 'colourless to pink', 'pink to colourless', 'yellow to red', 'blue to red'],
       ['A pipette is used to:', 'measure a fixed volume of liquid', 'heat a liquid', 'mix solutions', 'filter a solid'],
       ['A titration should be repeated until:', 'readings agree closely', 'the burette is empty', 'the colour is very dark', 'the flask is full'],
     ],
     truths: [
       ['A conical flask is rinsed only with distilled water before a titration.', 'A conical flask is rinsed with the solution to be titrated before a titration.'],
-      ['A burette is rinsed with the solution it will hold.', 'A burette is rinsed only with distilled water, and used wet.'],
+      ['The last drop in a pipette’s tip isn’t blown out.', 'The last drop in a pipette’s tip is always blown out.'],
       ['Air bubbles in a burette’s tip cause a wrong reading.', 'Air bubbles in a burette’s tip never affect the reading.'],
+      ['A white tile under the flask helps to show the colour change.', 'A white tile under the flask speeds up the reaction.'],
     ],
     reason: [
       ['A burette is rinsed with the solution it will hold.', 'Any water left inside would dilute that solution.'],

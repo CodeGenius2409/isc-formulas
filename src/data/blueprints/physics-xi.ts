@@ -18,7 +18,7 @@ const blueprints: Blueprint[] = [
       ['The number of significant figures in 0.00450 is:', '3', '2', '5', '6'],
       ['Which is an SI base unit?', 'kilogram', 'gram', 'newton', 'joule'],
       ['A vernier calliper has a least count of 0.1 mm. This means it can measure to:', 'one tenth of a millimetre', 'one millimetre', 'one hundredth of a millimetre', 'one centimetre'],
-      ['Multiplying measured values, the answer keeps as many significant figures as:', 'the value with the fewest', 'the value with the most', 'the total of them all', 'the first value'],
+      ['The number of significant figures in 2.050 × 10³ is:', '4', '3', '2', '7'],
     ],
     reason: [
       ['Taking the mean of many readings improves a result.', 'Random errors tend to cancel out when averaged.'],
@@ -29,6 +29,7 @@ const blueprints: Blueprint[] = [
     ],
     truths: [
       ['Percentage errors add when quantities are multiplied.', 'Percentage errors cancel when quantities are multiplied.'],
+      ['The SI unit of luminous intensity is the candela.', 'The SI unit of luminous intensity is the lumen.'],
       ['Trailing zeros after a decimal point are significant.', 'Trailing zeros after a decimal point are never significant.'],
       ['A larger number of divisions on a vernier scale gives a smaller least count.', 'A larger number of divisions on a vernier scale gives a larger least count.'],
     ],
@@ -50,6 +51,7 @@ const blueprints: Blueprint[] = [
     ],
     truths: [
       ['An angle has no dimensions.', 'An angle has dimensions of length.'],
+      ['Momentum and impulse have the same dimensions.', 'Momentum and force have the same dimensions.'],
       ['A dimensionally correct equation might still be wrong.', 'A dimensionally correct equation must always be right.'],
       ['Stress and pressure have the same dimensions.', 'Stress and strain have the same dimensions.'],
     ],
@@ -179,7 +181,7 @@ const blueprints: Blueprint[] = [
       ['The range of a projectile is greatest at a launch angle of:', '45°', '30°', '60°', '90°'],
       ['At the highest point of its path, a projectile’s velocity is:', 'horizontal', 'vertical', 'zero', 'at 45° to the ground'],
       ['The path of a projectile, ignoring air, is a:', 'parabola', 'circle', 'straight line', 'hyperbola'],
-      ['Complementary launch angles, such as 30° and 60°, give the same:', 'range', 'height', 'time of flight', 'final direction'],
+      ['At the highest point of its path, the angle between a projectile’s velocity and acceleration is:', '90°', '0°', '45°', '180°'],
     ],
     reason: [
       ['A projectile’s horizontal speed stays constant.', 'No force acts horizontally, ignoring air.'],
@@ -192,6 +194,7 @@ const blueprints: Blueprint[] = [
       ['Vertical and horizontal motions of a projectile are independent.', 'Vertical and horizontal motions of a projectile always affect each other.'],
       ['The time of flight doubles if the launch speed doubles at the same angle.', 'The time of flight is four times as long if the launch speed doubles at the same angle.'],
       ['The range is proportional to the square of the launch speed.', 'The range is proportional to the launch speed.'],
+      ['Two vectors are equal only if they have the same size and direction.', 'Two vectors are equal if they have the same size, whatever their directions.'],
     ],
     figures: { 'Show that the path of a projectile is a parabola.': { kind: 'projectile', v: 'u', angle: 'θ' } },
     long: [
@@ -226,13 +229,13 @@ const blueprints: Blueprint[] = [
   }),
   num('impulse', [3, 'a', 2, 2], {
     text: 'A {M} kg ball moving at {U} m/s is hit, and leaves at {V} m/s in the same direction. The contact lasts {T} s. Find the average force.',
-    vars: { M: [0.2, 0.5, 0.1], U: [5, 15, 5], V: [20, 40, 5], T: [0.1, 0.5, 0.1] },
+    vars: { M: [0.2, 0.5, 0.1], U: [5, 15, 5], V: [20, 40, 5], T: [0.02, 0.1, 0.02] },
     parts: [{ ask: 'Average force', use: 'p-xi-3-25', find: 'F', given: { m: 'M kg', v: 'V m/s', u: 'U m/s', t: 'T s' }, marks: 2 }],
   }),
   num('recoil', [3, 'a', 2, 2], {
     text: 'A {B} g bullet leaves a {G} kg gun at {V} m/s. Find the recoil speed of the gun.',
     vars: { B: [10, 50, 10], G: [2, 6, 1], V: [200, 800, 100] },
-    parts: [{ ask: 'Recoil speed', use: 'p-xi-3-39', find: 'v', given: { m: 'B g', u: 'V m/s', M: 'G kg' }, marks: 2 }],
+    parts: [{ ask: 'Recoil speed', use: 'p-xi-3-36', find: 'V', given: { m: 'B g', v: 'V m/s', M: 'G kg' }, marks: 2 }],
   }),
   num('friction-block', [3, 'b', 3, 2], {
     text: 'A {M} kg box is pushed with a force of {F} N across a floor, with a coefficient of kinetic friction of {U}.',
@@ -283,11 +286,11 @@ const blueprints: Blueprint[] = [
     vars: { M: [0.2, 1, 0.2], R: [0.5, 2, 0.5], V: [2, 8, 1] },
     parts: [{ ask: 'Tension', use: 'p-xi-3-5', find: 'F_c', given: { m: 'M kg', v: 'V m/s', r: 'R m' }, marks: 2 }],
   }),
-  num('banking', [3, 'c', 3, 2], {
+  num('banking', [3, 'c', 2, 2], {
     style: 'cbq-style',
     variants: [
-      { text: 'A highway curve has a radius of {R} m and is banked at {T}°. Find the speed at which a car needs no friction to take it.', parts: [{ ask: 'Best speed', use: 'p-xi-3-6', find: 'v', given: { r: 'R m', theta: 'T deg' }, marks: 3 }] },
-      { text: 'A level curve has a radius of {R} m, and the tyres have a coefficient of static friction of {U}. Find the highest safe speed.', parts: [{ ask: 'Highest safe speed', use: 'p-xi-3-120', find: 'v_max', given: { mu_s: 'U', r: 'R m' }, marks: 3 }] },
+      { text: 'A highway curve has a radius of {R} m and is banked at {T}°. Find the speed at which a car needs no friction to take it.', parts: [{ ask: 'Best speed', use: 'p-xi-3-6', find: 'v', given: { r: 'R m', theta: 'T deg' }, marks: 2 }] },
+      { text: 'A level curve has a radius of {R} m, and the tyres have a coefficient of static friction of {U}. Find the highest safe speed.', parts: [{ ask: 'Highest safe speed', use: 'p-xi-3-120', find: 'v_max', given: { mu_s: 'U', r: 'R m' }, marks: 2 }] },
     ],
     vars: { R: [50, 300, 50], T: [5, 20, 5], U: [0.2, 0.8, 0.1] },
   }),
@@ -315,6 +318,7 @@ const blueprints: Blueprint[] = [
       ['Momentum is conserved when no external force acts.', 'Momentum is conserved only when no internal force acts.'],
       ['Impulse has the same unit as momentum.', 'Impulse has the same unit as energy.'],
       ['A greater mass has a greater inertia.', 'A greater mass has a smaller inertia.'],
+      ['The SI unit of force is the newton, equal to 1 kg m/s².', 'The SI unit of force is the newton, equal to 1 kg m/s.'],
     ],
     long: [
       ['Show that Newton’s second law leads to F = ma for a body of constant mass.', 'The law says that force is proportional to the rate of change of momentum.', 'So F = k d(mv)/dt.', 'With constant mass, this is k m dv/dt = kma.', 'Choosing units so that k = 1 gives F = ma.'],
@@ -341,9 +345,9 @@ const blueprints: Blueprint[] = [
       ['the angle of repose', 'The steepest slope on which a body stays at rest without sliding.'],
     ],
     recall: [
-      ['Kinetic friction, compared with limiting static friction, is usually:', 'smaller', 'larger', 'exactly equal', 'zero'],
+      ['The coefficient of friction has:', 'no unit', 'the unit N', 'the unit N/m', 'the unit kg'],
       ['Friction doesn’t depend, to a good approximation, on the:', 'area of contact', 'normal reaction', 'surfaces', 'roughness'],
-      ['tan of the angle of repose equals the:', 'coefficient of static friction', 'normal reaction', 'weight', 'acceleration'],
+      ['The tangent of the angle of repose equals the:', 'coefficient of static friction', 'normal reaction', 'weight', 'acceleration'],
       ['Rolling friction, compared with sliding friction, is usually:', 'much smaller', 'much larger', 'the same', 'zero always'],
     ],
     reason: [
@@ -356,8 +360,9 @@ const blueprints: Blueprint[] = [
     ],
     truths: [
       ['Limiting friction is proportional to the normal reaction.', 'Limiting friction is proportional to the area of contact.'],
-      ['Static friction can be less than its limiting value.', 'Static friction always equals its limiting value.'],
+      ['For equilibrium, the net force on a body must be zero.', 'For equilibrium, the net force on a body must equal its weight.'],
       ['Three forces in equilibrium can be drawn as a closed triangle.', 'Three forces in equilibrium can never be drawn as a closed triangle.'],
+      ['Lubricants reduce the friction between surfaces.', 'Lubricants increase the friction between surfaces.'],
     ],
     draw: [
       ['Draw a free-body diagram of a block at rest on a rough slope.', 'Weight downwards, and a normal reaction at right angles to the slope.', 'Friction acting up the slope.'],
@@ -371,7 +376,7 @@ const blueprints: Blueprint[] = [
     recall: [
       ['For a car on a level curve, the centripetal force comes from:', 'friction', 'the engine', 'air resistance', 'the weight'],
       ['Centripetal acceleration is directed:', 'towards the centre', 'away from the centre', 'along the tangent', 'along the velocity'],
-      ['If the speed in a circle doubles, the centripetal force becomes:', 'four times', 'twice', 'half', 'the same'],
+      ['The SI unit of angular velocity is:', 'rad/s', 'rad', 'm/s', 'rad/s²'],
     ],
     reason: [
       ['Roads are banked on curves.', 'Part of the normal reaction then provides the centripetal force.', 'So less friction is needed.'],
@@ -381,6 +386,7 @@ const blueprints: Blueprint[] = [
       ['Uniform circular motion has a constant speed, but a changing velocity.', 'Uniform circular motion has a constant velocity.'],
       ['Centripetal force does no work on a body in a circle.', 'Centripetal force does positive work on a body in a circle.'],
       ['Tension in a string is greatest at the bottom of a vertical circle.', 'Tension in a string is greatest at the top of a vertical circle.'],
+      ['In a circle, speed equals angular velocity times the radius.', 'In a circle, speed equals angular velocity divided by the radius.'],
     ],
     long: [
       ['Derive an expression for the best speed on a banked road, with no friction.', 'Resolve the normal reaction: N cos θ balances the weight mg.', 'N sin θ provides the centripetal force mv²/r.', 'Dividing the two gives tan θ = v²/(rg).', 'So v = √(rg tan θ).'],
@@ -431,7 +437,7 @@ const blueprints: Blueprint[] = [
     vars: { A: [1, 6, 1], U: [2, 10, 2], B: [1, 6, 1] },
     parts: [
       { ask: 'Speed after the collision', use: 'p-xi-4-96', find: 'v', given: { m_1: 'A kg', u_1: 'U m/s', m_2: 'B kg', u_2: '0 m/s' }, marks: 2, save: 'v' },
-      { ask: 'Reduced mass of the pair', use: 'p-xi-4-101', find: 'mu', given: { m_1: 'A kg', m_2: 'B kg' }, marks: 1 },
+      { ask: 'Kinetic energy lost', use: 'p-xi-4-97', find: 'DeltaK', given: { m_1: 'A kg', m_2: 'B kg', u_1: 'U m/s', u_2: '0 m/s' }, marks: 1 },
     ],
   }),
   num('restitution', [4, 'b', 2, 2], {
@@ -478,7 +484,7 @@ const blueprints: Blueprint[] = [
       ['In a perfectly inelastic collision, the bodies:', 'stick together', 'bounce apart', 'keep all their kinetic energy', 'stop'],
       ['For a perfectly elastic collision, the coefficient of restitution is:', '1', '0', '0.5', 'infinite'],
       ['In every collision without outside forces, what is conserved?', 'Momentum', 'Kinetic energy', 'Speed', 'Velocity'],
-      ['If a body hits an equal one at rest in an elastic, head-on collision:', 'they exchange velocities', 'both stop', 'they stick together', 'both speed up'],
+      ['In a perfectly elastic head-on collision, the speed of separation is:', 'equal to the speed of approach', 'zero', 'half the speed of approach', 'twice the speed of approach'],
     ],
     reason: [
       ['Kinetic energy is lost in an inelastic collision, though momentum isn’t.', 'Some kinetic energy goes into heat, sound and changing shape.', 'Momentum has no other form to change into.'],
@@ -487,7 +493,7 @@ const blueprints: Blueprint[] = [
       ['elastic collisions', 'inelastic collisions', ['Kinetic energy is conserved.', 'Kinetic energy isn’t conserved.'], ['Coefficient of restitution is 1.', 'Coefficient of restitution is below 1.']],
     ],
     truths: [
-      ['Momentum is conserved in an inelastic collision.', 'Momentum is lost in an inelastic collision.'],
+      ['In a perfectly inelastic collision, e is 0.', 'In a perfectly inelastic collision, e is 1.'],
       ['Kinetic energy falls in a perfectly inelastic collision.', 'Kinetic energy rises in a perfectly inelastic collision.'],
       ['Coefficient of restitution is at most 1 for ordinary collisions.', 'Coefficient of restitution is at least 1 for ordinary collisions.'],
     ],
@@ -503,7 +509,7 @@ const blueprints: Blueprint[] = [
   num('inertia-ring', [5, 'c', 2, 1], {
     variants: [
       { text: 'Find the moment of inertia of a uniform rod of mass {M} kg and length {L} m, about an axis through its centre at right angles to it.', parts: [{ ask: 'Moment of inertia', use: 'p-xi-5-5', find: 'I', given: { M: 'M kg', L: 'L m' }, marks: 2 }] },
-      { text: 'Find the moment of inertia of a thin ring of mass {M} kg and radius {R} cm, about an axis through its centre at right angles to its plane.', parts: [{ ask: 'Moment of inertia', use: 'p-xi-5-6', find: 'I', given: { M: 'M kg', R: 'R cm' }, marks: 2 }] },
+      { text: 'Find the moment of inertia of a thin ring of mass {M} kg and radius {R} cm, about an axis through its centre at right angles to its plane.', parts: [{ ask: 'Moment of inertia', use: 'p-xi-5-12', find: 'I', given: { M: 'M kg', R: 'R cm' }, marks: 2 }] },
     ],
     vars: { M: [0.5, 5, 0.5], L: [1, 3, 0.5], R: [10, 50, 10] },
   }),
@@ -527,8 +533,8 @@ const blueprints: Blueprint[] = [
       ['the centre of mass', 'The point at which the whole mass of a body can be taken to act, for the study of its motion.'],
     ],
     recall: [
-      ['The centre of mass of a uniform ring lies:', 'at its centre, with no mass there', 'on the rim', 'nowhere', 'at one end'],
-      ['An exploding firework’s centre of mass, ignoring air, follows:', 'the same parabola', 'a straight vertical path', 'a circle', 'no path'],
+      ['The centre of mass of a uniform disc lies:', 'at its centre', 'on the rim', 'halfway between the centre and the rim', 'outside the disc'],
+      ['An exploding firework’s centre of mass, ignoring air, follows:', 'the same parabola', 'a straight vertical path', 'a circle', 'a horizontal straight line'],
       ['Internal forces in a system:', 'don’t change the motion of its centre of mass', 'always stop it', 'always speed it up', 'change its mass'],
     ],
     reason: [
@@ -548,7 +554,7 @@ const blueprints: Blueprint[] = [
     ],
     recall: [
       ['The SI unit of torque is:', 'N m', 'N', 'J/s', 'kg m/s'],
-      ['A skater who pulls in the arms:', 'spins faster', 'spins slower', 'stops', 'loses angular momentum'],
+      ['Angular momentum equals the moment of inertia times:', 'angular velocity', 'angular acceleration', 'torque', 'mass'],
       ['The rotational analogue of force is:', 'torque', 'moment of inertia', 'angular velocity', 'angular momentum'],
     ],
     reason: [
@@ -561,7 +567,8 @@ const blueprints: Blueprint[] = [
     truths: [
       ['Torque is zero when the force passes through the axis.', 'Torque is greatest when the force passes through the axis.'],
       ['Angular momentum is a vector.', 'Angular momentum is a scalar.'],
-      ['A body in equilibrium has no net force and no net torque.', 'A body in equilibrium has no net force, but must have a net torque.'],
+      ['Torque is the rate of change of angular momentum.', 'Torque is the rate of change of angular velocity.'],
+      ['A force at right angles to the lever arm gives the largest torque.', 'A force along the lever arm gives the largest torque.'],
     ],
   }),
   ...facts(5, 'c', {
@@ -570,7 +577,7 @@ const blueprints: Blueprint[] = [
       ['radius of gyration', 'The distance from the axis at which the whole mass could sit, giving the same moment of inertia.'],
     ],
     recall: [
-      ['A ring and a disc of the same mass and radius: which has the larger moment of inertia about its axis?', 'The ring', 'The disc', 'They’re equal', 'It depends on speed'],
+      ['The moment of inertia of a thin ring about its axis is:', 'MR²', 'MR²/2', '2MR²/5', 'MR²/4'],
       ['A ring and a disc roll down a slope together. Which reaches the bottom first?', 'The disc', 'The ring', 'They tie', 'Neither moves'],
       ['The theorem of parallel axes relates I about any axis to I about:', 'a parallel axis through the centre of mass', 'any other axis', 'a perpendicular axis only', 'the edge only'],
     ],
@@ -579,8 +586,9 @@ const blueprints: Blueprint[] = [
     ],
     truths: [
       ['Moment of inertia depends on the axis chosen.', 'Moment of inertia doesn’t depend on the axis chosen.'],
-      ['The perpendicular axes theorem applies only to flat bodies.', 'The perpendicular axes theorem applies to all bodies.'],
-      ['A rolling body has both translational and rotational energy.', 'A rolling body has only rotational energy.'],
+      ['The SI unit of moment of inertia is kg m².', 'The SI unit of moment of inertia is kg m.'],
+      ['Torque equals moment of inertia times angular acceleration.', 'Torque equals moment of inertia times angular velocity.'],
+      ['Angular momentum equals Iω.', 'Angular momentum equals Iω².'],
     ],
     long: [
       ['Show that the kinetic energy of a rotating rigid body is ½Iω².', 'Each particle has speed v = rω.', 'Its kinetic energy is ½m r²ω².', 'Adding over all particles gives ½(Σmr²)ω².', 'Since I = Σmr², K = ½Iω².'],
@@ -603,7 +611,7 @@ const blueprints: Blueprint[] = [
   }),
   num('g-height', [6, 'a', 2, 2], {
     variants: [
-      { diagram: (v) => ({ kind: 'orbit', height: `${v.H} km`, mass: 'Earth' }), text: 'Find g at a height of {H} km above the Earth’s surface. Take the Earth’s radius to be 6400 km.', parts: [{ ask: 'g at that height', use: 'p-xi-6-7', find: 'g_h', given: { h: 'H km', R: '6400 km' }, marks: 2 }] },
+      { diagram: (v) => ({ kind: 'orbit', height: `${v.H} km`, mass: 'Earth' }), text: 'Find g at a height of {H} km above the Earth’s surface. Take the Earth’s radius to be 6400 km.', parts: [{ ask: 'g at that height', use: 'p-xi-6-27', find: 'g_h', given: { h: 'H km', R: '6400 km' }, marks: 2 }] },
       { text: 'Find g at a depth of {D} km below the Earth’s surface. Take the Earth’s radius to be 6400 km.', parts: [{ ask: 'g at that depth', use: 'p-xi-6-32', find: 'g_d', given: { d: 'D km', R: '6400 km' }, marks: 2 }] },
     ],
     vars: { H: [100, 900, 100], D: [100, 3000, 100] },
@@ -630,9 +638,9 @@ const blueprints: Blueprint[] = [
       ['acceleration due to gravity', 'The acceleration of a freely falling body, caused by the Earth’s pull.'],
     ],
     recall: [
-      ['As you go deeper into the Earth, g:', 'decreases', 'increases', 'stays the same', 'first rises steeply, then jumps'],
-      ['At the centre of the Earth, g is:', 'zero', '9.8 m/s²', 'infinite', 'negative'],
-      ['g is greatest at the:', 'poles', 'equator', 'mid-latitudes', 'centre of the Earth'],
+      ['As you go deeper into a uniform Earth, g:', 'decreases', 'increases', 'stays the same', 'becomes negative'],
+      ['The SI unit of G is:', 'N m² kg⁻²', 'N m kg⁻¹', 'N kg⁻²', 'N m² kg⁻¹'],
+      ['Kepler’s first law says that planets move in:', 'ellipses', 'circles', 'parabolas', 'straight lines'],
       ['Kepler’s third law says that T² is proportional to:', 'r³', 'r²', 'r', '1/r'],
     ],
     reason: [
@@ -646,6 +654,7 @@ const blueprints: Blueprint[] = [
       ['The value of G is the same everywhere in the universe.', 'The value of G changes from planet to planet.'],
       ['A planet moves fastest when closest to the Sun.', 'A planet moves slowest when closest to the Sun.'],
       ['Gravity is always attractive.', 'Gravity can be attractive or repulsive.'],
+      ['Escape speed from the Earth doesn’t depend on the mass of the body.', 'Escape speed from the Earth is greater for a heavier body.'],
     ],
     figures: { 'Derive an expression for g at a height h above the Earth’s surface, and approximate it for small h.': { kind: 'orbit', height: 'h', mass: 'M' } },
     long: [
@@ -660,8 +669,8 @@ const blueprints: Blueprint[] = [
     ],
     recall: [
       ['The Earth’s escape velocity is about:', '11.2 km/s', '7.9 km/s', '3 km/s', '340 m/s'],
-      ['Escape velocity doesn’t depend on the:', 'mass of the projectile', 'mass of the planet', 'radius of the planet', 'g of the planet'],
-      ['The total energy of a satellite in orbit is:', 'negative', 'positive', 'zero', 'infinite'],
+      ['The gravitational potential at infinity is taken as:', 'zero', 'GM', 'one', 'g'],
+      ['A satellite’s kinetic energy, compared with the size of its potential energy, is:', 'half', 'equal', 'twice', 'a quarter'],
       ['The period of a geostationary satellite is:', '24 hours', '12 hours', '1 hour', '365 days'],
     ],
     reason: [
@@ -674,7 +683,8 @@ const blueprints: Blueprint[] = [
     truths: [
       ['Escape velocity is √2 times the orbital velocity near the surface.', 'Escape velocity equals the orbital velocity near the surface.'],
       ['Higher orbits have longer periods.', 'Higher orbits have shorter periods.'],
-      ['Orbital speed falls as the orbit gets larger.', 'Orbital speed rises as the orbit gets larger.'],
+      ['A satellite’s orbital speed doesn’t depend on its mass.', 'A satellite’s orbital speed is greater for a heavier satellite.'],
+      ['Gravitational potential energy is negative, with zero taken at infinity.', 'Gravitational potential energy is positive, with zero taken at infinity.'],
     ],
     long: [
       ['Derive an expression for the escape velocity from a planet.', 'A body at the surface has potential energy −GMm/R.', 'To just escape, its total energy must be zero at infinity.', 'So ½mv² = GMm/R.', 'This gives v = √(2GM/R).'],
@@ -697,12 +707,12 @@ const blueprints: Blueprint[] = [
     text: 'A wire {L} m long with a cross-section of {A} mm² stretches by {E} mm under a load of {F} N.',
     vars: { L: [1, 4, 1], A: [1, 4, 1], E: [0.5, 2, 0.5], F: [50, 200, 50] },
     parts: [
-      { ask: 'Stress', use: 'p-xi-7-67', find: 'P', given: { F: 'F N', A: 'A mm^2' }, marks: 1 },
+      { ask: 'Stress', use: 'p-xi-7-9', find: 'sigma', given: { F: 'F N', A: 'A mm^2' }, marks: 1 },
       { ask: 'Young’s modulus', use: 'p-xi-7-1', find: 'Y', given: { F: 'F N', L: 'L m', A: 'A mm^2', DeltaL: 'E mm' }, marks: 2 },
     ],
   }),
   mcqNum('pressure-depth', [7, 'b', 1, 1], {
-    text: 'What is the gauge pressure from water at a depth of {H} m? Take the density of water as 1000 kg/m³.',
+    text: 'What is the gauge pressure at a depth of {H} m in water? Take the density of water as 1000 kg/m³.',
     vars: { H: [2, 20, 2] },
     use: 'p-xi-7-5',
     find: 'P',
@@ -760,6 +770,7 @@ const blueprints: Blueprint[] = [
       ['Young’s modulus is a property of the material.', 'Young’s modulus depends on the wire’s length.'],
       ['Beyond the yield point, a wire doesn’t return to its original length.', 'Beyond the yield point, a wire always returns to its original length.'],
       ['Stress and pressure have the same unit.', 'Stress and strain have the same unit.'],
+      ['The first slope of a stress–strain graph gives Young’s modulus.', 'The first slope of a stress–strain graph gives the breaking stress.'],
     ],
     draw: [
       ['Sketch a stress–strain graph for a metal wire, and mark the elastic limit and the breaking point.', 'A straight rise to the elastic limit, then a curve to the yield point.', 'The curve reaches a maximum, and ends at the breaking point.'],
@@ -774,7 +785,7 @@ const blueprints: Blueprint[] = [
     ],
     recall: [
       ['A hydraulic lift works on:', 'Pascal’s law', 'Bernoulli’s principle', 'Hooke’s law', 'Stokes’ law'],
-      ['Where a pipe narrows, the speed of the fluid:', 'increases', 'decreases', 'stays the same', 'becomes zero'],
+      ['The SI unit of viscosity is:', 'Pa s', 'N/m', 'Pa', 'J s'],
       ['Stokes’ law gives the:', 'viscous force on a small sphere', 'pressure in a fluid', 'upthrust', 'surface tension'],
       ['A low Reynolds number means the flow is:', 'smooth, or streamlined', 'turbulent', 'at the speed of sound', 'static'],
     ],
@@ -790,6 +801,7 @@ const blueprints: Blueprint[] = [
       ['Viscosity of a liquid falls as it’s heated.', 'Viscosity of a liquid rises as it’s heated.'],
       ['Pressure in a liquid rises with depth.', 'Pressure in a liquid falls with depth.'],
       ['Buoyant force equals the weight of the fluid displaced.', 'Buoyant force equals the weight of the body.'],
+      ['The pressure at a point in a fluid acts equally in all directions.', 'The pressure at a point in a fluid acts only downwards.'],
     ],
     long: [
       ['State and prove Bernoulli’s principle for steady, non-viscous flow.', 'Consider a tube of flow with two sections at different heights.', 'Work done by the pressure difference is (P₁ − P₂)V.', 'That equals the gain in kinetic and potential energy.', 'So P + ½ρv² + ρgh is constant.'],
@@ -812,8 +824,8 @@ const blueprints: Blueprint[] = [
       ['capillarity', 'The rise or fall of a liquid in a narrow tube.'],
     ],
     recall: [
-      ['Surface tension of a liquid, as temperature rises:', 'falls', 'rises', 'stays the same', 'first doubles'],
-      ['Mercury in a glass capillary tube:', 'falls', 'rises', 'stays level', 'vanishes'],
+      ['Surface tension of a liquid, as temperature rises:', 'falls', 'rises', 'stays the same', 'first rises, then falls'],
+      ['Mercury in a glass capillary tube:', 'falls', 'rises', 'stays level', 'rises, then falls'],
       ['Detergents help cleaning because they:', 'lower water’s surface tension', 'raise water’s surface tension', 'heat the water', 'remove its viscosity'],
       ['Excess pressure inside a soap bubble is:', '4S/r', '2S/r', 'S/r', 'S/2r'],
     ],
@@ -823,18 +835,18 @@ const blueprints: Blueprint[] = [
     ],
     truths: [
       ['Soap bubbles have two surfaces.', 'Soap bubbles have one surface.'],
-      ['Water rises more in a narrower tube.', 'Water rises less in a narrower tube.'],
+      ['The excess pressure in a liquid drop is 2S/r.', 'The excess pressure in a liquid drop is 4S/r.'],
       ['Adding a soap to water reduces its surface tension.', 'Adding a soap to water increases its surface tension.'],
+      ['Surface tension has the unit N/m.', 'Surface tension has the unit N/m².'],
     ],
   }),
 
   // ---- Unit 8: Heat and thermodynamics
   num('calorimetry', [8, 'a', 3, 2], {
     variants: [
-      { text: '{A} kg of water at {T} °C is mixed with {B} kg of water at {U} °C. Find the final temperature.', parts: [{ ask: 'Final temperature', use: 'p-xi-8-50', find: 'T', given: { m_1: 'A kg', c_1: '4200 J/(kg*K)', T_1: 'T1 K', m_2: 'B kg', c_2: '4200 J/(kg*K)', T_2: 'T2 K' }, marks: 3 }] },
+      { text: '{A} kg of water at {T} °C is mixed with {B} kg of water at {U} °C. Find the final temperature.', parts: [{ ask: 'Final temperature', use: 'p-xi-8-50', find: 'T', given: { m_1: 'A kg', c_1: '4200 J/(kg*K)', T_1: 'T degC', m_2: 'B kg', c_2: '4200 J/(kg*K)', T_2: 'U degC' }, unit: 'degC', marks: 3 }] },
     ],
     vars: { A: [1, 4, 1], B: [1, 4, 1], T: [20, 40, 5], U: [60, 90, 10] },
-    derive: (v) => ({ T1: v.T + 273, T2: v.U + 273 }),
   }),
   num('heat-melt', [8, 'a', 2, 1], {
     text: 'How much heat is needed to melt {M} kg of ice at 0 °C? The latent heat of fusion of ice is 3.34 × 10⁵ J/kg.',
@@ -906,6 +918,7 @@ const blueprints: Blueprint[] = [
     ],
     truths: [
       ['A black surface absorbs and emits radiation well.', 'A black surface reflects radiation well.'],
+      ['Copper has a higher thermal conductivity than glass.', 'Copper has a lower thermal conductivity than glass.'],
       ['Water expands on freezing.', 'Water contracts on freezing.'],
       ['Temperature stays constant while a pure substance melts.', 'Temperature rises steadily while a pure substance melts.'],
     ],
@@ -918,8 +931,8 @@ const blueprints: Blueprint[] = [
       ['the second law of thermodynamics', 'No engine working in a cycle can turn all the heat it takes in into work.'],
     ],
     recall: [
-      ['In an isothermal change of an ideal gas, the change in internal energy is:', 'zero', 'positive', 'negative', 'equal to the heat added twice'],
-      ['In an adiabatic expansion, the temperature of a gas:', 'falls', 'rises', 'stays the same', 'goes to zero'],
+      ['In an isothermal change of an ideal gas, the change in internal energy is:', 'zero', 'positive', 'negative', 'equal to the heat added'],
+      ['In a reversible adiabatic change of an ideal gas, this stays constant:', 'PVᵞ', 'PV', 'V/T', 'P/T'],
       ['On a P–V diagram, the area under the curve gives:', 'work done', 'heat', 'temperature', 'internal energy'],
       ['Efficiency of a Carnot engine depends on:', 'the two temperatures only', 'the working substance only', 'the size of the engine', 'the speed of the engine'],
     ],
@@ -934,7 +947,8 @@ const blueprints: Blueprint[] = [
     truths: [
       ['C_P is greater than C_V for a gas.', 'C_P is less than C_V for a gas.'],
       ['Work done in a cycle equals the area enclosed on a P–V diagram.', 'Work done in a cycle is always zero.'],
-      ['Entropy of an isolated system doesn’t fall.', 'Entropy of an isolated system always falls.'],
+      ['In a change at constant volume, a gas does no work.', 'In a change at constant volume, a gas does the most work.'],
+      ['For a monatomic ideal gas, γ is 5/3.', 'For a monatomic ideal gas, γ is 7/5.'],
     ],
     long: [
       ['Show that C_P − C_V = R for an ideal gas.', 'At constant volume, heat raises only the internal energy, so dU = nC_V dT.', 'At constant pressure, nC_P dT = dU + P dV.', 'For an ideal gas, P dV = nR dT.', 'Substituting gives C_P − C_V = R.'],
@@ -948,12 +962,12 @@ const blueprints: Blueprint[] = [
   num('gas-law', [9, 'a', 2, 1], {
     text: '{N} mol of an ideal gas is kept in a {V} L flask at {T} K. Find its pressure.',
     vars: { N: [1, 5, 1], V: [10, 50, 10], T: [273, 400, 10] },
-    parts: [{ ask: 'Pressure', use: 'p-xi-8-6', find: 'P', given: { V: 'V L', n: 'N mol', T: 'T K' }, unit: 'atm', marks: 2 }],
+    parts: [{ ask: 'Pressure', use: 'p-xi-8-6', find: 'P', given: { V: 'V L', n: 'N mol', T: 'T K' }, marks: 2 }],
   }),
-  num('rms-speed', [9, 'a', 3, 2], {
+  num('rms-speed', [9, 'a', 2, 2], {
     text: 'A gas has a pressure of {P} × 10⁵ Pa, and a density of {D} kg/m³.',
     vars: { P: [1, 3, 1], D: [1, 2, 0.5] },
-    parts: [{ ask: 'rms speed of its molecules', use: 'p-xi-9-37', find: 'c_rms', given: { P: 'P*1e5 Pa', rho: 'D kg/m^3' }, marks: 3 }],
+    parts: [{ ask: 'rms speed of its molecules', use: 'p-xi-9-37', find: 'c_rms', given: { P: 'P*1e5 Pa', rho: 'D kg/m^3' }, marks: 2 }],
   }),
   ...facts(9, 'a', {
     define: [
@@ -962,7 +976,7 @@ const blueprints: Blueprint[] = [
       ['degrees of freedom', 'The number of independent ways in which a molecule can have energy.'],
     ],
     recall: [
-      ['The average kinetic energy of a gas molecule depends only on its:', 'temperature', 'pressure', 'volume', 'mass'],
+      ['At one temperature, the rms speed is larger for:', 'lighter molecules', 'heavier molecules', 'neither', 'molecules in a larger container'],
       ['A monatomic gas has how many degrees of freedom?', '3', '5', '6', '1'],
       ['The rms speed of a gas molecule is proportional to:', '√T', 'T', 'T²', '1/T'],
       ['Gases behave most like ideal gases at:', 'low pressure and high temperature', 'high pressure and low temperature', 'high pressure and high temperature', 'low pressure and low temperature'],
@@ -978,6 +992,7 @@ const blueprints: Blueprint[] = [
       ['Absolute zero is the temperature at which an ideal gas’s pressure would fall to zero.', 'Absolute zero is the freezing point of water.'],
       ['Doubling the kelvin temperature doubles the mean kinetic energy.', 'Doubling the kelvin temperature doesn’t change the mean kinetic energy.'],
       ['Equipartition gives ½kT per degree of freedom.', 'Equipartition gives 2kT per degree of freedom.'],
+      ['A diatomic gas has five degrees of freedom at room temperature.', 'A diatomic gas has three degrees of freedom at room temperature.'],
     ],
     long: [
       ['Derive the expression P = ⅓ρc² from the kinetic theory of gases.', 'A molecule of speed c_x hitting a wall changes its momentum by 2mc_x.', 'The rate of hits on a wall gives a force of mc_x²/L.', 'Adding all molecules gives a pressure of Nmc̄²/(3V).', 'With ρ = Nm/V, P = ⅓ρc².'],
@@ -1002,10 +1017,9 @@ const blueprints: Blueprint[] = [
     sim: (v) => ({ id: 'spring', preset: { k: v.K, x: v.A / 100 } }),
     text: 'A {M} kg mass on a spring of constant {K} N/m oscillates with an amplitude of {A} cm.',
     vars: { M: [0.2, 2, 0.2], K: [20, 200, 20], A: [2, 10, 2] },
-    derive: (v) => ({ W: Math.sqrt(v.K / v.M) }),
     parts: [
       { ask: 'Period', use: 'p-xi-10-4', find: 'T', given: { m: 'M kg', k: 'K N/m' }, marks: 1 },
-      { ask: 'Greatest speed', use: 'p-xi-10-78', find: 'v_max', given: { omega: 'W rad/s', A: 'A cm' }, marks: 1 },
+      { ask: 'Greatest speed', use: 'p-xi-10-36', find: 'v_max', given: { A: 'A cm', k: 'K N/m', m: 'M kg' }, marks: 1 },
       { ask: 'Total energy', use: 'p-xi-10-6', find: 'E', given: { k: 'K N/m', A: 'A cm' }, marks: 1 },
     ],
     diagram: (v) => ({ kind: 'spring', k: `${v.K} N/m`, m: `${v.M} kg`, a: `${v.A} cm` }),
@@ -1039,8 +1053,8 @@ const blueprints: Blueprint[] = [
       ['the period of an oscillation', 'The time for one complete oscillation.'],
     ],
     recall: [
-      ['In SHM, the speed is greatest at the:', 'mean position', 'extreme position', 'halfway point', 'same everywhere'],
-      ['In SHM, the acceleration is greatest at the:', 'extreme position', 'mean position', 'halfway point', 'same everywhere'],
+      ['In SHM, the speed is greatest at the:', 'mean position', 'extreme position', 'halfway point', 'same at all points'],
+      ['In SHM, the acceleration is greatest at the:', 'extreme position', 'mean position', 'halfway point', 'same at all points'],
       ['The period of a simple pendulum doesn’t depend on its:', 'mass', 'length', 'location', 'g value'],
       ['On the Moon, a pendulum’s period is:', 'longer', 'shorter', 'the same', 'zero'],
     ],
@@ -1053,6 +1067,7 @@ const blueprints: Blueprint[] = [
     ],
     truths: [
       ['The total energy in SHM is proportional to the square of the amplitude.', 'The total energy in SHM is proportional to the amplitude.'],
+      ['The period of a mass on a spring doesn’t depend on the amplitude.', 'The period of a mass on a spring doubles if the amplitude doubles.'],
       ['In SHM, velocity and displacement are 90° out of phase.', 'In SHM, velocity and displacement are in phase.'],
       ['Resonance happens when the driving frequency matches the natural frequency.', 'Resonance happens when the driving frequency is twice the natural frequency.'],
     ],

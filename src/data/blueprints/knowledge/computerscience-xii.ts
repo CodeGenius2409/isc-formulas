@@ -91,7 +91,7 @@ const knowledge: Record<string, Facts> = {
   },
   '7c': {
     ar: [
-      ['tuples are immutable', 't[0] = 5 causes an error for a tuple.', 't[0] = 5 changes the first item of a tuple.', 'Tuples are immutable.', 'Tuples are the same as lists.', 'A tuple is written in round brackets.'],
+      ['tuple unpacking', 'a, b = b, a swaps two values in Python.', 'a, b = b, a sets both values to b.', 'The right side is packed into a tuple first.', 'The left side is worked out first.', 'Tuples can be nested.'],
       ['the one-item tuple', '(5,) is a tuple, and (5) isn’t.', '(5) is a tuple, and (5,) isn’t.', 'The comma makes the tuple.', 'The round brackets alone make the tuple.', 'An empty tuple is written ().'],
       ['tuple operations', 'Tuples can be joined with +.', 'Tuples can’t be joined with +.', 'This makes a new tuple, without changing the originals.', 'This changes the first tuple in place.', 'len() works on a tuple.'],
     ],

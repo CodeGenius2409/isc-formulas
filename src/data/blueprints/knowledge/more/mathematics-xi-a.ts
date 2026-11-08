@@ -379,7 +379,7 @@ const knowledge: Record<string, Facts> = {
     ],
     recall: [
       ['The distance between (1, 2, 3) and (4, 6, 3) is:', '5', '7', '25', '√7'],
-      ['The coordinates of a point on the xy-plane have:', 'z = 0', 'x = 0', 'y = 0', 'x = y'],
+      ['The distance of (3, 4, 12) from the origin is:', '13', '19', '√19', '169'],
       ['The point (−1, 2, 3) lies in the octant with signs:', '−, +, +', '+, +, +', '−, −, +', '+, −, +'],
     ],
     explain: [

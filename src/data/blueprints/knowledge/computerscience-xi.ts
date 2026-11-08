@@ -33,7 +33,7 @@ const knowledge: Record<string, Facts> = {
   },
   '4a': {
     ar: [
-      ['bytecode', 'Java is called platform independent.', 'Java runs only on one kind of machine.', 'Its compiler makes bytecode, which any JVM can run.', 'Its compiler makes machine code for every computer at once.', 'Java source files end in .java.'],
+      ['inheritance', 'A subclass can reuse the code of its superclass.', 'A subclass must rewrite all the code of its superclass.', 'It inherits the superclass’s non-private members.', 'It inherits only the superclass’s private members.', 'The keyword extends marks a subclass.'],
       ['encapsulation', 'Fields are often made private.', 'Fields should always be public.', 'A class then controls how its data is changed.', 'Other classes can then change them more easily.', 'Encapsulation joins data and methods in one unit.'],
       ['classes and objects', 'One class can have many objects.', 'One class can have only one object.', 'A class is the template from which objects are made.', 'An object is the template from which classes are made.', 'Each object has its own copy of the instance variables.'],
     ],
@@ -83,15 +83,15 @@ const knowledge: Record<string, Facts> = {
   '10a': {
     ar: [
       ['string immutability', 'Strings in Java can’t be changed once they’re made.', 'Strings in Java can be changed in place by toUpperCase().', 'Methods such as toUpperCase() return a new String.', 'Methods such as toUpperCase() change the original String.', 'StringBuffer can be changed in place.'],
-      ['comparing strings', 'Strings should be compared with equals(), not ==.', 'Strings should be compared with ==, not equals().', '== compares references, and equals() compares the characters.', '== compares the characters, and equals() compares references.', 'compareTo gives their dictionary order.'],
+      ['compareTo', '"apple".compareTo("mango") gives a negative number.', '"apple".compareTo("mango") gives a positive number.', 'At the first characters that differ, it gives the first string’s code minus the second’s.', 'At the first characters that differ, it gives the second string’s code minus the first’s.', 'equals() gives true or false.'],
       ['array bounds', 'The last element of an array a is a[a.length - 1].', 'The last element of an array a is a[a.length].', 'Indexes start at 0.', 'Indexes start at 1.', 'Going past the end throws an exception.'],
     ],
   },
   '11a': {
     ar: [
       ['Scanner’s methods', 'nextInt() leaves the newline behind.', 'nextInt() always reads the newline as well.', 'It reads only the number’s characters.', 'It reads the entire rest of the line.', 'nextLine() reads up to the end of the line.'],
-      ['Scanner and imports', 'A program using Scanner needs an import.', 'A program using Scanner needs no import.', 'Scanner is in the package java.util.', 'Scanner is in the package java.lang.', 'System.in stands for the keyboard.'],
-      ['wrong input', 'nextInt() can throw an exception for the input “abc”.', 'nextInt() returns 0 for the input “abc”.', 'The input can’t be read as an int.', 'The input is treated as 0 by default.', 'hasNextInt() can check before reading.'],
+      ['Scanner and imports', 'A program using Scanner needs an import.', 'A program using Scanner needs no import.', 'Scanner is in the package java.util.', 'Scanner is in the package java.lang.', 'import java.util.*; imports all the classes of that package.'],
+      ['wrong input', 'nextInt() can throw an exception for the input “abc”.', 'nextInt() returns 0 for the input “abc”.', 'The input can’t be read as an int.', 'The input is treated as 0 by default.', 'nextDouble() reads a double.'],
     ],
   },
   '11b': {
@@ -103,9 +103,9 @@ const knowledge: Record<string, Facts> = {
   },
   '12a': {
     ar: [
-      ['Python’s blocks', 'A wrongly indented line in Python causes an error.', 'Indentation makes no difference in Python.', 'Indentation shows which block a line belongs to.', 'Braces show which block a line belongs to.', 'A colon ends the line that starts a block.'],
+      ['Python’s floor division', 'In Python, 7 // 2 gives 3.', 'In Python, 7 // 2 gives 3.5.', '// rounds the quotient down to a whole number.', '// always gives a float.', '7 % 2 gives 1.'],
       ['Python’s types', 'A Python variable can hold values of different types over time.', 'A Python variable must keep one type for its whole life.', 'Python is dynamically typed.', 'Python needs a type in each declaration.', 'type() tells a value’s type.'],
-      ['Python and execution', 'Python is called an interpreted language.', 'Python can’t be run without first compiling it to machine code by hand.', 'Its code is run by an interpreter, step by step.', 'Its code runs only on one operating system.', 'Python can be used interactively.'],
+      ['Python and execution', 'Python is called an interpreted language.', 'Python code must be compiled to machine code by hand before it runs.', 'Its code is run by an interpreter, step by step.', 'Its code runs only on one operating system.', 'Python can be used interactively.'],
     ],
   },
   '13a': {

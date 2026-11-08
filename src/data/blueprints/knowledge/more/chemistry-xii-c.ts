@@ -737,6 +737,7 @@ const knowledge: Record<string, Facts> = {
       ['A KMnO₄ burette is read at the top of its meniscus, as the colour is so dark.', 'A KMnO₄ burette is read at the bottom of its meniscus, in every case.'],
       ['Oxalic acid is warmed to about 60 °C before a titration with KMnO₄.', 'Mohr’s salt is warmed to about 90 °C before a titration with KMnO₄.'],
       ['A titration flask is rinsed only with water.', 'A titration flask is rinsed with the solution that goes in the burette.'],
+      ['A burette is rinsed with the solution it will hold.', 'A burette is rinsed only with water before it is filled.'],
     ],
     explain: [
       ['Write the ionic equation of KMnO₄ with Fe²⁺.', 'MnO₄⁻ + 5Fe²⁺ + 8H⁺ → Mn²⁺ + 5Fe³⁺ + 4H₂O.'],
@@ -765,6 +766,7 @@ const knowledge: Record<string, Facts> = {
       ['A strip of filter paper soaked in KNO₃ can act as a salt bridge.', 'A strip of copper wire can act as a salt bridge.'],
       ['The reciprocal of the time for a cross to vanish gives a measure of rate.', 'The time for a cross to vanish gives a direct measure of rate, the larger the faster.'],
       ['Magnesium reacts faster with more concentrated acid.', 'Magnesium reacts more slowly with more concentrated acid.'],
+      ['A salt bridge keeps the two half-cells electrically neutral.', 'A salt bridge carries electrons between the two half-cells.'],
     ],
     explain: [
       ['Name the products of the reaction of sodium thiosulphate with hydrochloric acid.', 'Sulphur, sulphur dioxide, sodium chloride and water.'],

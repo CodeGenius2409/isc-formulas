@@ -128,7 +128,7 @@ const ASK_REASON = ['Give a reason: {x}', 'Explain why: {x}', 'Account for the f
 const ASK_DEFINE = ['Define {x}.', 'What is meant by {x}?', 'State what is meant by {x}.'];
 const ASK_COMPARE = ['Distinguish between {a} and {b}.', 'State the differences between {a} and {b}.', 'Give the difference between {a} and {b}.'];
 
-const capital = (text: string) => text.charAt(0).toUpperCase() + text.slice(1);
+const capital = (text: string) => (/^\w+\(\)/.test(text) ? text : text.charAt(0).toUpperCase() + text.slice(1));
 
 /** Adds a topic's extra knowledge to what its file already says. */
 function mergeFacts(a: Facts, b: Facts | undefined): Facts {

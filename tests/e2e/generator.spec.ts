@@ -215,7 +215,10 @@ test('it prints: marks, legend and footer, in black and white, and an answer key
   await expect(sheet.getByTestId('generated-mark')).toHaveCount(3);
   await expect(sheet.locator('.gen-legend')).toContainText('not official ISC questions');
   await expect(sheet.locator('.gen-print-footer')).toContainText('may contain mistakes');
-  await expect(sheet.locator('.gen-answer-line')).toHaveCount(12);
+  // Two lines each, as chosen. A derivation drawn by this random seed gets more (see answerSpace).
+  const lines = await sheet.getByTestId('print-question').evaluateAll((list) => list.map((q) => q.querySelectorAll('.gen-answer-line').length));
+  expect(lines).toHaveLength(6);
+  expect(lines.every((n) => n >= 2)).toBe(true);
   const marked = sheet.locator('[data-generated]').first();
   await expect(marked).toHaveCSS('border-left-style', 'dotted');
   await expect(marked).toHaveCSS('border-left-color', 'rgb(0, 0, 0)');
@@ -364,7 +367,15 @@ test('mock paper: off uses only the bank, on shows the slider, and generated que
 });
 
 test('the same seed reopens the same paper from a link', async ({ page }) => {
-  const read = () => page.locator('.paper-question').evaluateAll((list) => list.map((q) => q.querySelector('.bank-prompt')?.textContent ?? ''));
+  // The wording alone: a figure loads in its own time, and its text may or may not be there yet.
+  const read = () =>
+    page.locator('.paper-question').evaluateAll((list) =>
+      list.map((q) => {
+        const prompt = q.querySelector('.bank-prompt')?.cloneNode(true) as Element | undefined;
+        prompt?.querySelectorAll('[data-testid="paper-figure"], figure, table').forEach((f) => f.remove());
+        return prompt?.textContent ?? '';
+      }),
+    );
   await page.goto('/#/paper?subject=chemistry&level=XII&seed=12345&share=50');
   await page.getByRole('button', { name: 'Open the linked paper' }).click();
   await expect(page.locator('.paper-question')).toHaveCount(34);

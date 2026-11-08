@@ -403,3 +403,23 @@ Work is on a `rebuild` branch. `master` still holds your original files.
   In small topics, AR nodes were again often a reason word for word, so new facts were written in their place.
 - **Review batch 31** (Physics XI motion, Chemistry XI bonding and thermodynamics, Chemistry XII tests; 40 blueprints, 15 fixed). Four shared generator fixes: a carried value is rounded to 3 figures, a part can keep only its positive root, a count can be shown exactly, and question numbers use a true minus (not in CS, where values are what Java prints).
   A conics pair removed in batch 24 left a ten-question paper short, which check.sh didn't run; it now runs the paper-size test too. Covered in tests/unit/solver-display.test.ts.
+- **Review batch 32** (Physics XI Newton's laws, Chemistry XI redox, CS XI arrays, Python and ethics; 48 blueprints, 8 fixed). A gun's recoil used the embedded-bullet formula; a new registry entry works it from conservation of momentum.
+  Four topics had three-option truth MCQs, so each gained a fourth truth, and AR nodes that copied reasons were rewritten.
+- **Review batch 33** (Maths XI complex numbers, 3D and statistics, Chemistry XI atoms and periodic trends, Chemistry XII titrations; 45 blueprints, 17 fixed). Complex answers printed “+ −4/13 i” and “1i”, 3D points printed “(2,-2,-3)”, and a variance printed 16 digits; all three now read as a teacher would write them.
+  Argon was dropped as a “smaller than Cl⁻” option, since its radius is a van der Waals radius and the comparison isn’t safe.
+- **Review batch 34** (Maths XI binomial, Physics XI projectiles, solids, surface tension and thermodynamics; 45 blueprints, 11 fixed). Stress now has its own σ = F/A entry rather than borrowing pressure’s P, and binomial questions no longer print x¹ or (1x).
+  Entropy left the truths as it isn’t safely in the syllabus; silly distractors and copied AR nodes were replaced.
+- **Review batch 35** (Physics XI measurement, dimensions, centre of mass and gravity, Chemistry XI laws and equilibrium, CS XI input; 40 blueprints, 10 fixed). g at a height of hundreds of kilometres now uses the exact formula, as h is not small against R; a new registry entry holds it.
+  Silly distractors (a ring’s “one end”) and AR nodes that named a law as its own reason were replaced.
+- **Review batch 36** (Physics XI oscillations, Chemistry XI organic basics and titration, Chemistry XII polyhalogens, CS XII strings; 40 blueprints, 12 fixed). A spring’s greatest speed no longer leans on an unexplained ω; a new registry entry works it from A, k and m.
+  An output question’s explanation now matches its code in every form, and truths that repeated AR nodes were replaced.
+- **Review batch 37** (Physics XI rotation, satellites, fluids, heat and kinetic theory; 47 blueprints, 14 fixed). A thin ring used a disc’s formula, so every answer was half what it should be; it now uses I = MR².
+  Mixing water is answered in °C, an ideal gas’s pressure in pascals, and a one-step rms speed is worth 2 marks.
+- **Review batch 38** (Practical chemistry, Chemistry XI first law, alkynes and aromatics; 41 blueprints, 10 fixed). A formula now prints −PΔV rather than (−P)ΔV, and a term starting with a minus sign gets brackets after + or −.
+  This batch’s practical chemistry was mostly right; three-option MCQs and copied AR nodes were the main faults.
+- **Review batch 39** (Physics XI friction, circular motion, collisions and instruments, CS lists, tuples and OOP; 46 blueprints, 14 fixed). A collision question asked for the reduced mass, out of syllabus and off the story; it now asks for the kinetic energy lost.
+  Method names keep their small letter in “distinguish” answers, and copied AR nodes were replaced.
+- **Review batch 40** (Physics XI torque, Physics XII ray optics practicals; 16 blueprints, 4 fixed). The last batch: AR nodes and a truth that repeated a recall or reason were rewritten, and the numericals were right.
+  All blueprints have now been read; the common mistakes are listed in reports/question-quality.md.
+- **Three browser tests corrected at the end of the review.** They depended on chance or timing: a random paper’s line count, a figure still loading, and a seed that happened to have a simulator question.
+  The app didn’t change for these. Each now checks the same behaviour without relying on luck, and the complete run passes.

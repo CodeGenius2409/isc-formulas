@@ -19,6 +19,10 @@ describe('how worked answers are written', () => {
     expect(shown).not.toMatch(/\}\^\{-5\}\^/);
   });
 
+  it('writes a leading minus sign without brackets', () => {
+    expect(lines('c-xi-6-28', 'w', { P: '101325', DeltaV: '0.004' })).toContain('w=-P\\,\\Delta V');
+  });
+
   it('writes [H⁺] in the pH formula', () => {
     expect(lines('c-xi-7-3', 'pH', { H: '0.0006' })).toContain('[\\mathrm{H^+}]');
   });

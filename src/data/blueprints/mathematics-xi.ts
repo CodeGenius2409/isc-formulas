@@ -10,6 +10,12 @@ const { custom, facts, rest } = blueprintsFor('mathematics', 'XI', KNOWLEDGE);
 
 const step = (label: string, ...math: string[]): Step => ({ label, math });
 const $ = (tex: string) => `$${tex}$`;
+/** i with its coefficient, so 1i reads as i. */
+const iTerm = (n: number) => `${n === 1 ? '' : n}i`;
+/** A point as a question prints it: (2, −3, 1). */
+const point = (p: number[]) => `(${p.map((n) => String(n).replace('-', '−')).join(', ')})`;
+/** A deviation in a sum of squares: 2, or (−1) in brackets. */
+const dev = (d: number) => (d < 0 ? `(${d})` : String(d));
 
 const TRIG: [string, string][] = [
   ['\\sin 30^\\circ', '\\dfrac12'], ['\\cos 60^\\circ', '\\dfrac12'], ['\\tan 45^\\circ', '1'], ['\\sin 90^\\circ', '1'], ['\\cos 0^\\circ', '1'], ['\\sin 45^\\circ', '\\dfrac{1}{\\sqrt2}'], ['\\cos 45^\\circ', '\\dfrac{1}{\\sqrt2}'], ['\\tan 60^\\circ', '\\sqrt3'], ['\\sin 60^\\circ', '\\dfrac{\\sqrt3}{2}'], ['\\cos 30^\\circ', '\\dfrac{\\sqrt3}{2}'], ['\\tan 30^\\circ', '\\dfrac{1}{\\sqrt3}'], ['\\sin 120^\\circ', '\\dfrac{\\sqrt3}{2}'], ['\\cos 120^\\circ', '-\\dfrac12'], ['\\tan 135^\\circ', '-1'], ['\\sin 210^\\circ', '-\\dfrac12'],
@@ -163,15 +169,17 @@ const blueprints: Blueprint[] = [
   }),
   custom('complex-product', [2, 'a', 2, 1], { type: 'short', format: 'short' }, (g) => {
     const [a, b, c, d] = [g.int(1, 6), g.int(1, 6), g.int(1, 6), g.int(1, 6)];
-    return g.theory(`Express ${$(`(${a} + ${b}i)(${c} + ${d}i)`)} in the form ${$('x + iy')}.`, [[`Expand, using ${$('i^2 = -1')}.`, 1], [`The answer is ${$(`${a * c - b * d} ${signed(a * d + b * c)}i`)}.`, 1]]);
+    return g.theory(`Express ${$(`(${a} + ${iTerm(b)})(${c} + ${iTerm(d)})`)} in the form ${$('x + iy')}.`, [[`Expand, using ${$('i^2 = -1')}.`, 1], [`The answer is ${$(a * c === b * d ? `${a * d + b * c}i` : `${a * c - b * d} ${signed(a * d + b * c)}i`)}.`, 1]]);
   }),
   custom('complex-divide', [2, 'a', 3, 2], { type: 'short', format: 'short' }, (g) => {
     const [a, b, c, d] = [g.int(1, 6), g.int(1, 6), g.int(1, 4), g.int(1, 4)];
+    if (b * c === a * d) g.retry('the quotient is real');
     const denom = c * c + d * d;
-    return g.theory(`Express ${$(`\\dfrac{${a} + ${b}i}{${c} + ${d}i}`)} in the form ${$('x + iy')}.`, [
-      [`Multiply top and bottom by the conjugate, ${$(`${c} - ${d}i`)}.`, 1],
+    const im = frac(Math.abs(b * c - a * d), denom).tex();
+    return g.theory(`Express ${$(`\\dfrac{${a} + ${iTerm(b)}}{${c} + ${iTerm(d)}}`)} in the form ${$('x + iy')}.`, [
+      [`Multiply top and bottom by the conjugate, ${$(`${c} - ${iTerm(d)}`)}.`, 1],
       [`The denominator becomes ${denom}.`, 1],
-      [`The answer is ${$(`${frac(a * c + b * d, denom).tex()} + ${frac(b * c - a * d, denom).tex()}i`)}.`, 1],
+      [`The answer is ${$(`${frac(a * c + b * d, denom).tex()} ${b * c > a * d ? '+' : '-'} ${im === '1' ? '' : im}i`)}.`, 1],
     ]);
   }),
   custom('quadratic-roots', [2, 'b', 2, 1], { type: 'numerical', format: 'numerical' }, (g) => {
@@ -213,10 +221,10 @@ const blueprints: Blueprint[] = [
   }),
   custom('binomial-term', [2, 'd', 3, 2], { type: 'numerical', format: 'numerical' }, (g) => {
     const n = g.int(4, 8);
-    const r = g.int(1, n - 1);
+    const r = g.int(2, n - 1);
     const a = g.int(1, 3);
     const coefficient = nCr(n, r) * a ** r;
-    return { form: 'numeric', text: `Find the coefficient of ${$(`x^{${r}}`)} in the expansion of ${$(`(1 + ${a === 1 ? '' : a}x)^{${n}}`)}.`, parts: [g.answerPart('The coefficient', coefficient, 3, [step('Use the general term', `T_{r+1} = \\binom{${n}}{${r}}(${a}x)^{${r}}`, `\\text{Coefficient} = ${nCr(n, r)}\\cdot${a ** r} = ${coefficient}`)])] };
+    return { form: 'numeric', text: `Find the coefficient of ${$(`x^{${r}}`)} in the expansion of ${$(`(1 + ${a === 1 ? '' : a}x)^{${n}}`)}.`, parts: [g.answerPart('The coefficient', coefficient, 3, [step('Use the general term', `T_{r+1} = \\binom{${n}}{${r}}(${a === 1 ? '' : a}x)^{${r}}`, a === 1 ? `\\text{Coefficient} = ${coefficient}` : `\\text{Coefficient} = ${nCr(n, r)}\\cdot${a ** r} = ${coefficient}`)])] };
   }),
   custom('middle-term', [2, 'd', 2, 2], { type: 'short', format: 'short' }, (g) => {
     const n = 2 * g.int(2, 4);
@@ -263,13 +271,13 @@ const blueprints: Blueprint[] = [
     ],
     recall: [
       ['i² equals:', '−1', '1', 'i', '−i'],
-      ['i⁴ equals:', '1', '−1', 'i', '−i'],
+      ['i³ equals:', '−i', 'i', '1', '−1'],
       ['A complex number multiplied by its conjugate is:', 'real', 'always zero', 'purely imaginary', 'always negative'],
     ],
     truths: [
       ['Two complex numbers are equal only if their real and imaginary parts are equal.', 'Two complex numbers are equal whenever their moduli are equal.'],
       ['The modulus of a product equals the product of the moduli.', 'The modulus of a product equals the sum of the moduli.'],
-      ['Non-real roots of a real quadratic come in conjugate pairs.', 'Non-real roots of a real quadratic never come in conjugate pairs.'],
+      ['The conjugate of a sum equals the sum of the conjugates.', 'The conjugate of a sum equals the difference of the conjugates.'],
     ],
     reason: [
       ['Complex numbers aren’t ordered like real numbers.', 'There’s no consistent way to say which is greater, one that still works with multiplication.'],
@@ -313,14 +321,15 @@ const blueprints: Blueprint[] = [
   }),
   ...facts(2, 'd', {
     recall: [
-      ['The number of terms in (a + b)ⁿ is:', 'n + 1', 'n', 'n − 1', '2n'],
-      ['The sum of the binomial coefficients in (1 + x)ⁿ is:', '2ⁿ', 'n', 'n²', '2n'],
+      ['The number of terms in (a + b)¹⁰ is:', '11', '10', '9', '12'],
+      ['The sum of the coefficients in (1 + x)⁴ is:', '16', '8', '4', '32'],
       ['The general term of (a + b)ⁿ is:', 'ⁿCᵣ aⁿ⁻ʳ bʳ', 'ⁿCᵣ aʳ bⁿ', 'ⁿCᵣ aⁿ bʳ', 'aⁿ⁻ʳ bʳ'],
     ],
     truths: [
       ['Coefficients equally far from the two ends of an expansion are equal.', 'Coefficients equally far from the two ends of an expansion are never equal.'],
-      ['(a + b)ⁿ with an even n has one middle term.', '(a + b)ⁿ with an even n has two middle terms.'],
+      ['In each term of (a + b)ⁿ, the indices add up to n.', 'In each term of (a + b)ⁿ, the indices add up to 2n.'],
       ['Pascal’s triangle gives the binomial coefficients.', 'Pascal’s triangle gives the prime numbers.'],
+      ['ⁿC₀ and ⁿCₙ both equal 1.', 'ⁿC₀ and ⁿCₙ both equal n.'],
     ],
     long: [
       ['Using the binomial theorem, show that 1.01⁵ is about 1.051.', 'Write 1.01 as 1 + 0.01.', 'The expansion is 1 + 5(0.01) + 10(0.01)² + …', 'The sum of the first three terms is 1 + 0.05 + 0.001.', 'So it’s about 1.051, as later terms are tiny.'],
@@ -405,15 +414,16 @@ const blueprints: Blueprint[] = [
     const [dx, dy, dz, r] = g.pick([[1, 2, 2, 3], [2, 3, 6, 7], [1, 4, 8, 9], [2, 6, 9, 11], [4, 4, 7, 9]]);
     const p = [g.int(-3, 3), g.int(-3, 3), g.int(-3, 3)];
     const q = [p[0] + dx, p[1] + dy, p[2] + dz];
-    return { form: 'numeric', text: `Find the distance between the points (${p}) and (${q}).`, parts: [g.answerPart('The distance', r, 2, [step('Use the distance formula', `\\sqrt{${dx}^2 + ${dy}^2 + ${dz}^2} = ${r}`)], 'units')] };
+    return { form: 'numeric', text: `Find the distance between the points ${point(p)} and ${point(q)}.`, parts: [g.answerPart('The distance', r, 2, [step('Use the distance formula', `\\sqrt{${dx}^2 + ${dy}^2 + ${dz}^2} = ${r}`)], 'units')] };
   }),
   custom('section-3d', [3, 'd', 2, 2], { type: 'numerical', format: 'numerical' }, (g) => {
     const m = g.int(1, 3);
     const n = g.int(1, 3);
     const a = [g.int(-3, 3), g.int(-3, 3), g.int(-3, 3)];
     const b = [g.int(-3, 3), g.int(-3, 3), g.int(-3, 3)];
+    if (a[0] === b[0]) g.retry('the x-coordinate would not change');
     const x = frac(m * b[0] + n * a[0], m + n);
-    return { form: 'numeric', text: `A point divides the line joining (${a}) and (${b}) internally, in the ratio ${m} : ${n}. Find its x-coordinate.`, parts: [g.answerPart('x-coordinate', x.value, 2, [step('Use the section formula', `x = \\dfrac{${m}(${b[0]}) + ${n}(${a[0]})}{${m + n}} = ${x.tex()}`)], '', x.text())] };
+    return { form: 'numeric', text: `A point divides the line joining ${point(a)} and ${point(b)} internally, in the ratio ${m} : ${n}. Find its x-coordinate.`, parts: [g.answerPart('x-coordinate', x.value, 2, [step('Use the section formula', `x = \\dfrac{${m}(${b[0]}) + ${n}(${a[0]})}{${m + n}} = ${x.tex()}`)], '', x.text())] };
   }),
   ...facts(3, 'a', {
     define: [
@@ -478,8 +488,9 @@ const blueprints: Blueprint[] = [
     ],
     truths: [
       ['A point on the x-axis has y = 0 and z = 0.', 'A point on the x-axis has x = 0 and y = 0.'],
-      ['The distance of (x, y, z) from the origin is √(x² + y² + z²).', 'The distance of (x, y, z) from the origin is x + y + z.'],
+      ['The three coordinate axes are mutually perpendicular.', 'The three coordinate axes all lie in one plane.'],
       ['The section formula works for external division, with a sign change.', 'The section formula can’t be used for external division.'],
+      ['The z-axis meets the xy-plane at the origin.', 'The z-axis lies in the xy-plane.'],
     ],
   }),
 
@@ -558,15 +569,16 @@ const blueprints: Blueprint[] = [
     const m = g.int(4, 12);
     const devs = g.pick([[-2, 0, 2], [-3, 0, 3], [-1, 0, 1], [-4, -2, 0, 2, 4], [-3, -1, 1, 3], [-2, -1, 0, 1, 2]]);
     const list = devs.map((d) => m + d);
-    const variance = devs.reduce((a, d) => a + d * d, 0) / devs.length;
-    return { form: 'numeric', text: `Find the mean and the variance of ${list.join(', ')}.`, parts: [g.answerPart('The mean', m, 1, [step('Add and divide', `\\bar x = ${m}`)]), g.answerPart('The variance', variance, 2, [step('Use the deviations from the mean', `\\sigma^2 = \\dfrac{\\sum(x - \\bar x)^2}{n} = ${variance}`)])] };
+    const squares = devs.reduce((a, d) => a + d * d, 0);
+    const variance = frac(squares, devs.length);
+    return { form: 'numeric', text: `Find the mean and the variance of ${list.join(', ')}.`, parts: [g.answerPart('The mean', m, 1, [step('Add and divide', `\\bar x = \\dfrac{${list.join(' + ')}}{${list.length}} = ${m}`)]), g.answerPart('The variance', variance.value, 2, [step('Use the deviations from the mean', `\\sigma^2 = \\dfrac{\\sum(x - \\bar x)^2}{n} = \\dfrac{${devs.map((d) => `${dev(d)}^2`).join(' + ')}}{${devs.length}} = ${variance.tex()}`)], '', variance.text())] };
   }),
   custom('mean-dev', [5, 'a', 3, 2], { type: 'numerical', format: 'cbq', style: 'cbq-style' }, (g) => {
     const m = g.int(50, 80);
     const devs = g.pick([[-10, -5, 0, 5, 10], [-8, -4, 0, 4, 8], [-6, -2, 2, 6], [-9, -3, 3, 9]]);
     const list = devs.map((d) => m + d);
     const md = devs.reduce((a, d) => a + Math.abs(d), 0) / devs.length;
-    return { form: 'numeric', text: `A student’s marks in ${list.length} tests were ${list.join(', ')}. Find the mean mark, and the mean deviation about the mean.`, parts: [g.answerPart('The mean mark', m, 1, [step('Add and divide', `\\bar x = ${m}`)]), g.answerPart('The mean deviation', md, 2, [step('Average the sizes of the deviations', `\\dfrac{\\sum|x - \\bar x|}{n} = ${md}`)])] };
+    return { form: 'numeric', text: `A student’s marks in ${list.length} tests were ${list.join(', ')}. Find the mean mark, and the mean deviation about the mean.`, parts: [g.answerPart('The mean mark', m, 1, [step('Add and divide', `\\bar x = \\dfrac{${list.join(' + ')}}{${list.length}} = ${m}`)]), g.answerPart('The mean deviation', md, 2, [step('Average the sizes of the deviations', `\\dfrac{\\sum|x - \\bar x|}{n} = \\dfrac{${devs.map(Math.abs).join(' + ')}}{${devs.length}} = ${md}`)])] };
   }),
   custom('coin-dice', [5, 'b', 1, 1], { type: 'mcq', format: 'mcq' }, (g) => {
     const [q, right, wrong] = g.pick([
@@ -592,7 +604,7 @@ const blueprints: Blueprint[] = [
       ['mean deviation', 'The mean of the sizes of the deviations from a central value.'],
     ],
     recall: [
-      ['If every value is increased by 5, the standard deviation:', 'stays the same', 'rises by 5', 'falls by 5', 'doubles'],
+      ['The mode of 2, 3, 3, 5, 7 is:', '3', '2', '5', '4'],
       ['If every value is doubled, the variance:', 'becomes four times as large', 'doubles', 'stays the same', 'halves'],
       ['The median of 2, 5, 7, 9, 11 is:', '7', '5', '9', '6.8'],
     ],
@@ -600,6 +612,7 @@ const blueprints: Blueprint[] = [
       ['The sum of deviations from the mean is zero.', 'The sum of deviations from the mean is one.'],
       ['Standard deviation has the same units as the data.', 'Standard deviation has the square of the units of the data.'],
       ['Variance can’t be negative.', 'Variance is usually negative.'],
+      ['If all the values are equal, the standard deviation is zero.', 'If all the values are equal, the standard deviation is one.'],
     ],
     reason: [
       ['Squares are used in variance.', 'Without them, positive and negative deviations would cancel out.'],

@@ -491,7 +491,7 @@ const knowledge: Record<string, Facts> = {
 
   '10a': {
     truths: [
-      ['Arrays in Java start at index 0.', 'Arrays in Java start at index 1.'],
+      ['a.length gives the size of an array, with no brackets.', 'a.length() gives the size of an array, with brackets.'],
     ],
   },
 

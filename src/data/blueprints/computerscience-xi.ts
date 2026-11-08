@@ -246,6 +246,7 @@ const blueprints: Blueprint[] = [
       ['An object is an instance of a class.', 'A class is an instance of an object.'],
       ['Java programs run on the JVM.', 'Java programs run only on one kind of processor.'],
       ['Data hiding is supported by the keyword private.', 'Data hiding is supported by the keyword public.'],
+      ['Two methods with one name and different parameters are overloaded.', 'Two methods with one name and different parameters are overridden.'],
     ],
     compare: [
       ['a class', 'an object', ['A template.', 'A real instance made from it.'], ['Takes no memory for its data until instances are made.', 'Takes memory for its data.']],
@@ -541,7 +542,7 @@ const blueprints: Blueprint[] = [
       ['linear search', 'binary search', ['Works on any list.', 'Needs a sorted list.'], ['Slower on long lists.', 'Faster on long lists.']],
     ],
     truths: [
-      ['Strings in Java can’t be changed once they’re made.', 'Strings in Java are changed in place by their methods.'],
+      ['s.length() gives the number of characters in s.', 's.length() gives the number of words in s.'],
       ['Arrays in Java have a fixed size once created.', 'Arrays in Java grow automatically when needed.'],
       ['s.charAt(0) gives the first character of s.', 's.charAt(1) gives the first character of s.'],
     ],
@@ -564,6 +565,7 @@ const blueprints: Blueprint[] = [
       ['next() reads one word at a time.', 'next() always reads a whole line.'],
       ['System.in stands for the standard input.', 'System.in stands for the standard output.'],
       ['java.lang is imported automatically.', 'java.util is imported automatically.'],
+      ['hasNextInt() tells whether the next token is an int.', 'hasNextInt() reads the next int and returns it.'],
     ],
   }),
   ...facts(11, 'b', {
@@ -623,9 +625,10 @@ const blueprints: Blueprint[] = [
       ['a list', 'a tuple', ['Mutable.', 'Immutable.'], ['Square brackets.', 'Round brackets.']],
     ],
     truths: [
-      ['Python is an interpreted language.', 'Python must be compiled to machine code before every run.'],
-      ['A Python variable can later hold a value of another type.', 'A Python variable must keep one type for its whole life.'],
+      ['Strings in Python can’t be changed in place.', 'Strings in Python can be changed in place, as in s[0] = "x".'],
+      ['A Python list can hold values of different types.', 'A Python list can hold values of one type only.'],
       ['Python’s / always gives a float.', 'Python’s / always gives an int.'],
+      ['len() gives the number of items in a list.', 'len() gives the last item of a list.'],
     ],
     reason: [
       ['A wrongly indented line in Python causes an error.', 'Indentation is part of the language’s syntax.', 'It shows which block a line belongs to.'],
@@ -650,8 +653,9 @@ const blueprints: Blueprint[] = [
     ],
     truths: [
       ['A strong password mixes letters, digits and symbols.', 'A strong password is a common dictionary word.'],
-      ['Two-factor authentication adds a second check.', 'Two-factor authentication removes the need for a password check.'],
+      ['Regular backups reduce the harm of losing data.', 'Regular backups make losing data more likely.'],
       ['Data on a public network can be intercepted.', 'Data on a public network can never be intercepted.'],
+      ['A firewall filters traffic between a network and the outside.', 'A firewall speeds up traffic between a network and the outside.'],
     ],
     reason: [
       ['Software should be kept up to date.', 'Updates often fix security holes.'],

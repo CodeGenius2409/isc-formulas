@@ -211,16 +211,17 @@ const knowledge: Record<string, Facts> = {
       ['A blood-red colour with KSCN shows:', 'Fe³⁺', 'Cu²⁺', 'Ni²⁺', 'Mn²⁺'],
       ['A yellow precipitate with potassium chromate in acetic acid shows:', 'Ba²⁺', 'Mg²⁺', 'Zn²⁺', 'Ni²⁺'],
       ['A red precipitate with dimethylglyoxime shows:', 'Ni²⁺', 'Co²⁺', 'Cu²⁺', 'Zn²⁺'],
-      ['A yellow precipitate with KI in hot water shows:', 'Pb²⁺', 'Cu²⁺', 'Zn²⁺', 'Al³⁺'],
+      ['A yellow precipitate with KI, which dissolves in hot water, shows:', 'Pb²⁺', 'Cu²⁺', 'Zn²⁺', 'Al³⁺'],
       ['A white precipitate of aluminium hydroxide dissolves in excess of:', 'NaOH', 'NH₄OH', 'water', 'CO₂'],
     ],
     truths: [
       ['Group reagents are used in a fixed order of groups.', 'Group reagents can be used in any order at all.'],
       ['Dilute acid is added to the original solution in small amounts, to look for a gas.', 'A large amount of concentrated acid is always poured in first.'],
       ['A flame test uses a clean platinum or nichrome wire.', 'A flame test uses a dirty iron wire.'],
+      ['A dry test is done on the solid salt.', 'A dry test is done on a solution of the salt.'],
     ],
     explain: [
-      ['How is a salt’s acid radical usually tried first?', 'Add dilute HCl or H₂SO₄ and look for a gas.'],
+      ['What is usually tried first to find a salt’s acid radical?', 'Add dilute HCl or H₂SO₄ and look for a gas.'],
     ],
   },
 
@@ -267,6 +268,7 @@ const knowledge: Record<string, Facts> = {
       ['The Rf value has no units.', 'The Rf value is in centimetres.'],
       ['The Rf value can’t be more than 1.', 'The Rf value is always more than 1.'],
       ['Paper chromatography separates by partition between the two phases.', 'Paper chromatography separates by particle size alone.'],
+      ['In a given solvent, each substance has its own Rf value.', 'In a given solvent, all substances have the same Rf value.'],
     ],
     explain: [
       ['Why is the chromatography jar covered?', 'To keep its air saturated with solvent vapour.'],

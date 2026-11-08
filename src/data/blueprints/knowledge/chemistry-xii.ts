@@ -89,7 +89,7 @@ const knowledge: Record<string, Facts> = {
   },
   '6c': {
     ar: [
-      ['chloroform storage', 'Chloroform is kept in dark, full bottles.', 'Chloroform is kept in clear bottles, half full.', 'Air and light slowly turn it into poisonous phosgene.', 'Darkness keeps it from freezing.', 'A little ethanol is added to it.'],
+      ['CFCs and ozone', 'One CFC molecule can destroy many ozone molecules.', 'One CFC molecule can destroy only one ozone molecule.', 'The chlorine atom it releases is regenerated in a chain.', 'The chlorine atom it releases is used up at once.', 'CFCs are very unreactive in the lower atmosphere.'],
       ['the use of DDT', 'DDT is now restricted in many countries.', 'DDT is now the first choice of insecticide everywhere.', 'It stays in the environment and builds up in food chains.', 'It breaks down within a few minutes.', 'DDT is a polyhalogen compound.'],
       ['iodoform', 'Iodoform is used as an antiseptic.', 'Iodoform is used as an anaesthetic.', 'It frees iodine, which is antiseptic.', 'It frees chlorine, which is antiseptic.', 'Iodoform is a yellow solid.'],
     ],

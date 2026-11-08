@@ -7,7 +7,7 @@ const knowledge: Record<string, Facts> = {
     ar: [
       ['the law of definite proportions', 'Pure water always has the same ratio of hydrogen to oxygen by mass.', 'The ratio of hydrogen to oxygen by mass in pure water depends on its source.', 'A compound always has its elements in a fixed ratio by mass.', 'A compound can have its elements in any ratio by mass.', 'This ratio is about 1 : 8 for water.'],
       ['isotopes and atomic mass', 'The relative atomic mass of chlorine isn’t a whole number.', 'The relative atomic mass of chlorine is exactly 35.', 'It is an average over its isotopes, weighted by their abundance.', 'Each of its atoms has a mass of 35.5 u.', 'Chlorine has two main isotopes, of mass numbers 35 and 37.'],
-      ['Avogadro’s law', 'Equal volumes of hydrogen and oxygen at the same temperature and pressure hold equal numbers of molecules.', 'Equal volumes of hydrogen and oxygen at the same temperature and pressure have equal masses.', 'This follows from Avogadro’s law.', 'Oxygen molecules have the same mass as hydrogen molecules.', 'One mole of an ideal gas takes up about 22.4 L at STP.'],
+      ['the mole', '1 mole of CO₂ has a mass of 44 g.', '1 mole of CO₂ has a mass of 22 g.', 'Its molar mass is 12 + 2 × 16 = 44 g/mol.', 'Its molar mass is 12 + 16 = 28 g/mol.', '1 mole holds about 6.022 × 10²³ particles.'],
     ],
   },
   '1b': {
@@ -41,8 +41,8 @@ const knowledge: Record<string, Facts> = {
   '3a': {
     ar: [
       ['the size of ions', 'A cation is smaller than its parent atom.', 'A cation is larger than its parent atom.', 'It has lost electrons, so the nucleus holds the rest more tightly.', 'It has gained electrons.', 'An anion is larger than its parent atom.'],
-      ['ionisation enthalpy', 'Nitrogen has a higher first ionisation enthalpy than oxygen.', 'Oxygen has a higher first ionisation enthalpy than nitrogen.', 'Nitrogen has a stable half-filled 2p subshell.', 'Nitrogen has a full 2p subshell.', 'Ionisation enthalpy generally rises across a period.'],
-      ['electron gain enthalpy', 'Chlorine has a more negative electron gain enthalpy than fluorine.', 'Fluorine has a more negative electron gain enthalpy than chlorine.', 'Fluorine’s small 2p shell repels the extra electron strongly.', 'Chlorine’s atom is smaller than fluorine’s.', 'Fluorine is the most electronegative element.'],
+      ['ionisation enthalpy', 'Beryllium has a higher first ionisation enthalpy than boron.', 'Boron has a higher first ionisation enthalpy than beryllium.', 'Boron’s outer electron is in a 2p subshell, held less tightly than a 2s electron.', 'Boron has a full 2p subshell.', 'Ionisation enthalpy generally rises across a period.'],
+      ['electron gain enthalpy', 'Noble gases have positive electron gain enthalpies.', 'Noble gases have large negative electron gain enthalpies.', 'An added electron must enter a new, higher shell.', 'An added electron enters a half-filled subshell.', 'Halogens have large negative electron gain enthalpies.'],
     ],
   },
   '4a': {
@@ -62,7 +62,7 @@ const knowledge: Record<string, Facts> = {
   '5a': {
     ar: [
       ['state functions', 'Enthalpy change doesn’t depend on the path taken.', 'Enthalpy change depends on the path taken.', 'Enthalpy is a state function.', 'Enthalpy is a path function.', 'Heat and work are path functions.'],
-      ['Hess’s law', 'An enthalpy of reaction can be found from others that add up to it.', 'An enthalpy of reaction can’t be found from others that add up to it.', 'Enthalpy depends only on the initial and final states.', 'Enthalpy depends on the time taken.', 'This is Hess’s law of constant heat summation.'],
+      ['Hess’s law', 'An enthalpy of reaction can be found from others that add up to it.', 'An enthalpy of reaction can’t be found from others that add up to it.', 'Enthalpy depends only on the initial and final states.', 'Enthalpy depends on the time taken.', 'Standard enthalpies are usually quoted at 298 K.'],
       ['enthalpy and internal energy', 'ΔH and ΔU are equal for a reaction with no change in the number of moles of gas.', 'ΔH and ΔU are never equal.', 'ΔH = ΔU + Δn_g RT, and Δn_g is zero here.', 'ΔH = ΔU × Δn_g RT, and Δn_g is one here.', 'ΔH is the heat change at constant pressure.'],
     ],
   },
@@ -75,9 +75,9 @@ const knowledge: Record<string, Facts> = {
   },
   '6a': {
     ar: [
-      ['Le Chatelier’s principle', 'Raising the pressure favours ammonia in the Haber process.', 'Lowering the pressure favours ammonia in the Haber process.', 'The forward reaction reduces the number of moles of gas.', 'The forward reaction increases the number of moles of gas.', 'Iron is the catalyst in the Haber process.'],
+      ['pressure and moles of gas', 'Changing the pressure doesn’t shift H₂ + I₂ ⇌ 2HI.', 'Raising the pressure shifts H₂ + I₂ ⇌ 2HI to the right.', 'The number of moles of gas is the same on both sides.', 'There are more moles of gas on the right.', 'Iron is the catalyst in the Haber process.'],
       ['the catalyst and equilibrium', 'A catalyst doesn’t change the position of an equilibrium.', 'A catalyst moves the position of an equilibrium towards the products.', 'It speeds up the forward and backward reactions equally.', 'It speeds up only the forward reaction.', 'A catalyst shortens the time taken to reach equilibrium.'],
-      ['the temperature and K', 'Raising the temperature lowers K for an exothermic reaction.', 'Raising the temperature raises K for an exothermic reaction.', 'It favours the endothermic direction, which is the backward one here.', 'It favours the exothermic direction, which is the forward one here.', 'K changes only with temperature.'],
+      ['the temperature and K', 'Raising the temperature lowers K for an exothermic reaction.', 'Raising the temperature raises K for an exothermic reaction.', 'It favours the endothermic direction, which is the backward one here.', 'It favours the exothermic direction, which is the forward one here.', 'Adding a reactant shifts an equilibrium forwards.'],
     ],
   },
   '6b': {
@@ -89,8 +89,8 @@ const knowledge: Record<string, Facts> = {
   },
   '7a': {
     ar: [
-      ['oxidation and reduction', 'Oxidation and reduction always occur together.', 'Oxidation can occur with no reduction.', 'Electrons lost by one species must be gained by another.', 'Electrons can be lost into empty space.', 'A reducing agent is itself oxidised.'],
-      ['hydrogen peroxide', 'H₂O₂ can act as both an oxidising and a reducing agent.', 'H₂O₂ can act only as an oxidising agent.', 'Oxygen in it has −1, between −2 and 0.', 'Oxygen in it has its lowest possible oxidation number.', 'H₂O₂ can decompose into water and oxygen.'],
+      ['oxygen in OF₂', 'Oxygen has an oxidation number of +2 in OF₂.', 'Oxygen has an oxidation number of −2 in OF₂.', 'Fluorine is more electronegative than oxygen.', 'Oxygen is more electronegative than fluorine.', 'A reducing agent is itself oxidised.'],
+      ['KMnO₄', 'KMnO₄ acts only as an oxidising agent, through its manganese.', 'KMnO₄ acts only as a reducing agent, through its manganese.', 'Mn in it has its highest oxidation number, +7.', 'Mn in it has its lowest oxidation number.', 'KMnO₄ gives a purple solution.'],
       ['disproportionation', 'Cl₂ with cold NaOH is a disproportionation.', 'Cl₂ with cold NaOH isn’t a redox reaction.', 'Chlorine is both oxidised and reduced in it.', 'Chlorine’s oxidation number stays the same in it.', 'The products of the reaction include NaCl and NaClO.'],
     ],
   },
@@ -110,15 +110,15 @@ const knowledge: Record<string, Facts> = {
   },
   '8c': {
     ar: [
-      ['the stability of carbocations', 'A tertiary carbocation is more stable than a primary one.', 'A primary carbocation is more stable than a tertiary one.', 'Alkyl groups push electrons towards the positive carbon.', 'Alkyl groups pull electrons away from the positive carbon.', 'Carbocations have sp² carbon atoms.'],
-      ['the inductive effect', 'Chloroethanoic acid is stronger than ethanoic acid.', 'Ethanoic acid is stronger than chloroethanoic acid.', 'Chlorine’s −I effect stabilises the anion.', 'Chlorine’s +I effect destabilises the anion.', 'The inductive effect falls off along a chain.'],
+      ['electrophiles', 'AlCl₃ acts as an electrophile.', 'AlCl₃ acts as a nucleophile.', 'Its aluminium atom is short of electrons.', 'Its aluminium atom has a lone pair.', 'NH₃ acts as a nucleophile.'],
+      ['the inductive effect', 'Fluoroethanoic acid is stronger than chloroethanoic acid.', 'Chloroethanoic acid is stronger than fluoroethanoic acid.', 'Fluorine has the stronger −I effect.', 'Fluorine has a +I effect.', 'The inductive effect falls off along a chain.'],
       ['resonance', 'All the carbon–oxygen bonds in a carbonate ion are the same length.', 'The carbon–oxygen bonds in a carbonate ion have three different lengths.', 'The ion is a resonance hybrid.', 'One bond is a true double bond at all times.', 'Resonance structures differ only in where electrons are.'],
     ],
   },
   '9a': {
     ar: [
       ['the reactivity of alkanes', 'Alkanes are fairly unreactive.', 'Alkanes are highly reactive with most reagents.', 'They have only strong, non-polar C–C and C–H bonds.', 'They have many weak, polar bonds.', 'Alkanes burn in plenty of oxygen to form carbon dioxide and water.'],
-      ['boiling points of alkanes', 'Neopentane boils lower than n-pentane.', 'Neopentane boils higher than n-pentane.', 'Its more nearly spherical shape has less surface for van der Waals forces.', 'Its molecules form hydrogen bonds with each other.', 'These two compounds are isomers.'],
+      ['the Wurtz reaction', 'The Wurtz reaction on one alkyl halide gives an alkane with an even number of carbon atoms.', 'The Wurtz reaction on one alkyl halide gives an alkane with an odd number of carbon atoms.', 'Two identical alkyl groups join together.', 'Three identical alkyl groups join together.', 'Dry ether is the solvent.'],
       ['the halogenation of alkanes', 'Chlorination of methane needs light.', 'Chlorination of methane needs no light or heat.', 'Light breaks Cl₂ into free radicals, which start the chain.', 'Light breaks methane into ions.', 'A mixture of products forms if chlorine is in excess.'],
     ],
   },
@@ -131,21 +131,21 @@ const knowledge: Record<string, Facts> = {
   },
   '9c': {
     ar: [
-      ['the acidity of alkynes', 'Ethyne is acidic, compared with ethene.', 'Ethene is more acidic than ethyne.', 'The sp carbon has more s character, so it holds the electrons closer.', 'The sp carbon has less s character than sp².', 'Ethyne reacts with sodamide.'],
+      ['addition to alkynes', 'Propyne with excess HBr gives 2,2-dibromopropane.', 'Propyne with excess HBr gives 1,2-dibromopropane.', 'Both additions follow Markovnikov’s rule.', 'Both additions go against Markovnikov’s rule.', 'Ethyne decolourises bromine water.'],
       ['the structure of ethyne', 'Ethyne is linear.', 'Ethyne is bent at each carbon.', 'Its carbon atoms are sp hybridised.', 'Its carbon atoms are sp³ hybridised.', 'A triple bond has one σ and two π bonds.'],
       ['the hydration of alkynes', 'Ethyne gives ethanal with dilute H₂SO₄ and HgSO₄.', 'Ethyne gives ethanol with dilute H₂SO₄ and HgSO₄.', 'The first product, an enol, rearranges into the aldehyde.', 'The first product loses a carbon atom.', 'Other alkynes give ketones this way.'],
     ],
   },
   '9d': {
     ar: [
-      ['aromatic substitution', 'Benzene prefers substitution to addition.', 'Benzene prefers addition to substitution.', 'Substitution keeps its stable aromatic ring.', 'Addition makes its ring more stable.', 'Its six π electrons are delocalised.'],
+      ['deactivated rings', 'Nitrobenzene doesn’t undergo Friedel–Crafts reactions.', 'Nitrobenzene undergoes Friedel–Crafts reactions faster than benzene.', 'Its nitro group strongly deactivates the ring.', 'Its nitro group strongly activates the ring.', 'Phenol is nitrated more easily than benzene.'],
       ['the carbon–carbon bonds in benzene', 'All the carbon–carbon bonds in benzene have the same length.', 'Benzene has three short and three long carbon–carbon bonds.', 'Its π electrons are spread evenly around the ring.', 'Its π electrons stay between pairs of carbon atoms.', 'Its ring is flat, with each carbon sp² hybridised.'],
       ['directing groups', 'A methyl group directs an incoming group to the ortho and para positions.', 'A methyl group directs an incoming group to the meta position.', 'It pushes electrons into those positions.', 'It pulls electrons out of those positions.', 'A nitro group directs to the meta position.'],
     ],
   },
   '10a': {
     ar: [
-      ['rinsing the burette', 'A burette is rinsed with the solution it will hold.', 'A burette is rinsed with water last of all, just before filling.', 'Water left inside would dilute the solution.', 'Rinsing with the solution dilutes it.', 'A conical flask is rinsed with distilled water only.'],
+      ['using an indicator', 'Only a few drops of indicator are used.', 'A large volume of indicator is used.', 'An indicator is itself a weak acid or base, and would use up some of the solution.', 'An indicator makes the solution more concentrated.', 'A conical flask is rinsed with distilled water only.'],
       ['reading the burette', 'The lower meniscus is read for a colourless solution in a burette.', 'The upper meniscus is read for a colourless solution in a burette.', 'A colourless solution’s lower curve is the clearest line to see.', 'A colourless solution has no lower curve.', 'A dark solution, like KMnO₄, is read at the upper meniscus.'],
       ['the self-indicator', 'A KMnO₄ titration needs no separate indicator.', 'A KMnO₄ titration needs methyl orange.', 'One extra drop of KMnO₄ turns the solution pink.', 'KMnO₄ is colourless in water.', 'It is carried out in dilute sulphuric acid.'],
     ],
