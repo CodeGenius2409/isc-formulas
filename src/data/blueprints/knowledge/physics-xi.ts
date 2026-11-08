@@ -11,14 +11,14 @@ const curve = (f: (x: number) => number, from: number, to: number, steps = 24): 
 const knowledge: Record<string, Facts> = {
   '1a': {
     ar: [
-      ['random and systematic error', 'Taking the mean of many readings reduces random error.', 'Taking the mean of many readings removes systematic error.', 'Random errors are as likely to be high as low, so they tend to cancel.', 'Every reading has the same error, so averaging cancels it.', 'A random error changes unpredictably from one reading to the next.'],
+      ['zero error', 'A screw gauge’s zero error must be corrected in every reading.', 'A screw gauge’s zero error goes away if many readings are taken.', 'It shifts all the readings by the same amount.', 'It changes at random from one reading to the next.', 'A screw gauge has a circular scale.'],
       ['significant figures', 'A result found by multiplying can’t have more significant figures than the least precise value used.', 'A product always has as many significant figures as the most precise value used.', 'A result can’t be more precise than the least precise value that went into it.', 'Multiplying always makes a measurement more precise.', 'Zeros between non-zero digits are significant.'],
       ['least count', 'A vernier calliper measures length more precisely than a metre rule.', 'A metre rule measures length more precisely than a vernier calliper.', 'The vernier calliper has the smaller least count.', 'A metre rule has the smaller least count.', 'The least count is the smallest value an instrument can measure directly.'],
     ],
   },
   '1b': {
     ar: [
-      ['the limits of dimensional analysis', 'Dimensional analysis can’t find a number like ½ in a formula.', 'Dimensional analysis can find a number like ½ in a formula.', 'Pure numbers have no dimensions.', 'Pure numbers have the dimensions of length.', 'Dimensional analysis can show that a formula is wrong, but not that it is right.'],
+      ['checking a formula', 'v = u + at is dimensionally correct.', 'v = u + at is dimensionally wrong.', 'Each term has the dimensions [L T⁻¹].', 'Each term has the dimensions [L T⁻²].', 'Dimensional analysis can show that a formula is wrong, but not that it is right.'],
       ['homogeneity of dimensions', 'Force and energy can’t be added together.', 'Force and energy can be added together.', 'Only quantities with the same dimensions can be added.', 'Only quantities with different dimensions can be added.', 'Each term of a correct equation has the same dimensions.'],
       ['dimensionless quantities', 'Strain has no dimensions.', 'Strain has the dimensions of length.', 'It is a ratio of two lengths.', 'It is a product of two lengths.', 'Angle, too, is a dimensionless quantity.'],
     ],
@@ -81,7 +81,7 @@ const knowledge: Record<string, Facts> = {
   '5a': {
     ar: [
       ['the centre of mass in a body', 'The centre of mass of a ring lies at a point with no mass.', 'The centre of mass of a ring lies on the ring.', 'By symmetry it must be at the ring’s centre, which is empty.', 'The ring’s mass is concentrated at its centre.', 'A centre of mass need not lie within the material of a body.'],
-      ['the motion of the centre of mass', 'The centre of mass of a shell moves on along its path after the shell explodes in mid-air.', 'The centre of mass of a shell stops after the shell explodes in mid-air.', 'The explosion is due to internal forces, which don’t change its motion.', 'The explosion is due to an external force.', 'The total momentum of the fragments is the same just after the explosion.'],
+      ['the motion of the centre of mass', 'A system’s centre of mass accelerates only when a net external force acts.', 'A system’s centre of mass accelerates even with no net external force.', 'The net external force equals the total mass times the centre of mass’s acceleration.', 'The net internal force equals the total mass times the centre of mass’s acceleration.', 'The centre of mass of a uniform rod is at its middle.'],
       ['position of the centre of mass', 'The centre of mass of two unequal masses lies nearer the heavier one.', 'The centre of mass of two unequal masses lies nearer the lighter one.', 'm₁r₁ = m₂r₂ about the centre of mass.', 'm₁r₂ = m₂r₁ about the centre of mass, and nothing else holds.', 'For two equal masses, it lies half-way between them.'],
     ],
   },
@@ -101,7 +101,7 @@ const knowledge: Record<string, Facts> = {
   },
   '6a': {
     ar: [
-      ['g with latitude', 'The value of g is greater at the poles than at the equator.', 'The value of g is smaller at the poles than at the equator.', 'The Earth’s rotation and its bulge at the equator both reduce g there.', 'The Earth is nearer the Sun at the poles.', 'The value of g also falls with height above the surface.'],
+      ['orbital speed', 'A satellite nearer the Earth moves faster than one further away.', 'A satellite nearer the Earth moves slower than one further away.', 'Orbital speed is √(GM/r), which rises as r falls.', 'Orbital speed is √(GMr), which rises as r rises.', 'A geostationary satellite has a period of 24 hours.'],
       ['g inside the Earth', 'The value of g is zero at the centre of the Earth.', 'The value of g is greatest at the centre of the Earth.', 'The pull of the mass around the centre cancels in every direction.', 'There is no matter at the centre of the Earth.', 'The value of g falls steadily with depth, if the density is taken as uniform.'],
       ['universal gravitation', 'The gravitational force between two bodies acts even with nothing between them.', 'The gravitational force between two bodies needs a medium between them.', 'Gravity doesn’t depend on the medium between the masses.', 'Gravity acts only through air.', 'The force falls off as the square of the distance.'],
     ],

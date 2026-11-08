@@ -18,7 +18,7 @@ const blueprints: Blueprint[] = [
       ['The number of significant figures in 0.00450 is:', '3', '2', '5', '6'],
       ['Which is an SI base unit?', 'kilogram', 'gram', 'newton', 'joule'],
       ['A vernier calliper has a least count of 0.1 mm. This means it can measure to:', 'one tenth of a millimetre', 'one millimetre', 'one hundredth of a millimetre', 'one centimetre'],
-      ['Multiplying measured values, the answer keeps as many significant figures as:', 'the value with the fewest', 'the value with the most', 'the total of them all', 'the first value'],
+      ['The number of significant figures in 2.050 × 10³ is:', '4', '3', '2', '7'],
     ],
     reason: [
       ['Taking the mean of many readings improves a result.', 'Random errors tend to cancel out when averaged.'],
@@ -29,6 +29,7 @@ const blueprints: Blueprint[] = [
     ],
     truths: [
       ['Percentage errors add when quantities are multiplied.', 'Percentage errors cancel when quantities are multiplied.'],
+      ['The SI unit of luminous intensity is the candela.', 'The SI unit of luminous intensity is the lumen.'],
       ['Trailing zeros after a decimal point are significant.', 'Trailing zeros after a decimal point are never significant.'],
       ['A larger number of divisions on a vernier scale gives a smaller least count.', 'A larger number of divisions on a vernier scale gives a larger least count.'],
     ],
@@ -50,6 +51,7 @@ const blueprints: Blueprint[] = [
     ],
     truths: [
       ['An angle has no dimensions.', 'An angle has dimensions of length.'],
+      ['Momentum and impulse have the same dimensions.', 'Momentum and force have the same dimensions.'],
       ['A dimensionally correct equation might still be wrong.', 'A dimensionally correct equation must always be right.'],
       ['Stress and pressure have the same dimensions.', 'Stress and strain have the same dimensions.'],
     ],
@@ -529,8 +531,8 @@ const blueprints: Blueprint[] = [
       ['the centre of mass', 'The point at which the whole mass of a body can be taken to act, for the study of its motion.'],
     ],
     recall: [
-      ['The centre of mass of a uniform ring lies:', 'at its centre, with no mass there', 'on the rim', 'nowhere', 'at one end'],
-      ['An exploding firework’s centre of mass, ignoring air, follows:', 'the same parabola', 'a straight vertical path', 'a circle', 'no path'],
+      ['The centre of mass of a uniform disc lies:', 'at its centre', 'on the rim', 'halfway between the centre and the rim', 'outside the disc'],
+      ['An exploding firework’s centre of mass, ignoring air, follows:', 'the same parabola', 'a straight vertical path', 'a circle', 'a horizontal straight line'],
       ['Internal forces in a system:', 'don’t change the motion of its centre of mass', 'always stop it', 'always speed it up', 'change its mass'],
     ],
     reason: [
@@ -605,7 +607,7 @@ const blueprints: Blueprint[] = [
   }),
   num('g-height', [6, 'a', 2, 2], {
     variants: [
-      { diagram: (v) => ({ kind: 'orbit', height: `${v.H} km`, mass: 'Earth' }), text: 'Find g at a height of {H} km above the Earth’s surface. Take the Earth’s radius to be 6400 km.', parts: [{ ask: 'g at that height', use: 'p-xi-6-7', find: 'g_h', given: { h: 'H km', R: '6400 km' }, marks: 2 }] },
+      { diagram: (v) => ({ kind: 'orbit', height: `${v.H} km`, mass: 'Earth' }), text: 'Find g at a height of {H} km above the Earth’s surface. Take the Earth’s radius to be 6400 km.', parts: [{ ask: 'g at that height', use: 'p-xi-6-27', find: 'g_h', given: { h: 'H km', R: '6400 km' }, marks: 2 }] },
       { text: 'Find g at a depth of {D} km below the Earth’s surface. Take the Earth’s radius to be 6400 km.', parts: [{ ask: 'g at that depth', use: 'p-xi-6-32', find: 'g_d', given: { d: 'D km', R: '6400 km' }, marks: 2 }] },
     ],
     vars: { H: [100, 900, 100], D: [100, 3000, 100] },
@@ -632,9 +634,9 @@ const blueprints: Blueprint[] = [
       ['acceleration due to gravity', 'The acceleration of a freely falling body, caused by the Earth’s pull.'],
     ],
     recall: [
-      ['As you go deeper into the Earth, g:', 'decreases', 'increases', 'stays the same', 'first rises steeply, then jumps'],
-      ['At the centre of the Earth, g is:', 'zero', '9.8 m/s²', 'infinite', 'negative'],
-      ['g is greatest at the:', 'poles', 'equator', 'mid-latitudes', 'centre of the Earth'],
+      ['As you go deeper into a uniform Earth, g:', 'decreases', 'increases', 'stays the same', 'becomes negative'],
+      ['The SI unit of G is:', 'N m² kg⁻²', 'N m kg⁻¹', 'N kg⁻²', 'N m² kg⁻¹'],
+      ['Kepler’s first law says that planets move in:', 'ellipses', 'circles', 'parabolas', 'straight lines'],
       ['Kepler’s third law says that T² is proportional to:', 'r³', 'r²', 'r', '1/r'],
     ],
     reason: [
@@ -648,6 +650,7 @@ const blueprints: Blueprint[] = [
       ['The value of G is the same everywhere in the universe.', 'The value of G changes from planet to planet.'],
       ['A planet moves fastest when closest to the Sun.', 'A planet moves slowest when closest to the Sun.'],
       ['Gravity is always attractive.', 'Gravity can be attractive or repulsive.'],
+      ['Escape speed from the Earth doesn’t depend on the mass of the body.', 'Escape speed from the Earth is greater for a heavier body.'],
     ],
     figures: { 'Derive an expression for g at a height h above the Earth’s surface, and approximate it for small h.': { kind: 'orbit', height: 'h', mass: 'M' } },
     long: [

@@ -564,6 +564,7 @@ const blueprints: Blueprint[] = [
       ['next() reads one word at a time.', 'next() always reads a whole line.'],
       ['System.in stands for the standard input.', 'System.in stands for the standard output.'],
       ['java.lang is imported automatically.', 'java.util is imported automatically.'],
+      ['hasNextInt() tells whether the next token is an int.', 'hasNextInt() reads the next int and returns it.'],
     ],
   }),
   ...facts(11, 'b', {

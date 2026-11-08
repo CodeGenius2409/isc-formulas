@@ -127,6 +127,7 @@ export const MECHANICS: SolverEntry[] = [
   { id: 'p-xi-6-3', topic: G, eq: 'V = -G*M/r', ask: 'V', vars: { V: 'gravitational potential|gravpot', G: 'c:G', M: 'mass of the planet|planetMass', r: 'distance from centre|planetLength' } },
   { id: 'p-xi-6-4', topic: G, eq: 'v_e = sqrt(2*G*M/R)', vars: { v_e: 'escape velocity|speed', G: 'c:G', M: 'mass of the planet|planetMass', R: 'radius of the planet|planetLength' } },
   { id: 'p-xi-6-6', topic: G, eq: 'T = 2*pi*sqrt(r^3/(G*M))', vars: { T: 'period of satellite|period', r: 'orbit radius|planetLength', G: 'c:G', M: 'mass of the planet|planetMass' } },
+  { id: 'p-xi-6-27', topic: G, eq: 'g_h = g*(R/(R + h))^2', ask: 'g_h', vars: { g_h: 'g at height h|gravity', g: 'c:g', R: 'radius of Earth|planetLength', h: ['height', 'distance', { gen: [1e5, 1e6] }] } },
   { id: 'p-xi-6-7', topic: G, eq: 'g_h = g*(1 - 2*h/R)', vars: { g_h: 'g at height h|gravity', g: 'c:g', h: ['height', 'distance', { gen: [1e4, 2e5] }], R: 'radius of Earth|planetLength' } },
   { id: 'p-xi-6-9', topic: G, eq: 'U = -G*m_1*m_2/r', ask: 'U', vars: { U: 'potential energy|energy', G: 'c:G', m_1: 'first mass|mass', m_2: 'second mass|mass', r: 'separation|length' } },
   { id: 'p-xi-6-15', topic: G, eq: 'M = g*R^2/G', vars: { M: 'mass of Earth|planetMass', g: 'c:g', R: 'radius of Earth|planetLength', G: 'c:G' } },

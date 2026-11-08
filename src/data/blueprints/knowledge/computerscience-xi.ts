@@ -90,8 +90,8 @@ const knowledge: Record<string, Facts> = {
   '11a': {
     ar: [
       ['Scanner’s methods', 'nextInt() leaves the newline behind.', 'nextInt() always reads the newline as well.', 'It reads only the number’s characters.', 'It reads the entire rest of the line.', 'nextLine() reads up to the end of the line.'],
-      ['Scanner and imports', 'A program using Scanner needs an import.', 'A program using Scanner needs no import.', 'Scanner is in the package java.util.', 'Scanner is in the package java.lang.', 'System.in stands for the keyboard.'],
-      ['wrong input', 'nextInt() can throw an exception for the input “abc”.', 'nextInt() returns 0 for the input “abc”.', 'The input can’t be read as an int.', 'The input is treated as 0 by default.', 'hasNextInt() can check before reading.'],
+      ['Scanner and imports', 'A program using Scanner needs an import.', 'A program using Scanner needs no import.', 'Scanner is in the package java.util.', 'Scanner is in the package java.lang.', 'import java.util.*; imports all the classes of that package.'],
+      ['wrong input', 'nextInt() can throw an exception for the input “abc”.', 'nextInt() returns 0 for the input “abc”.', 'The input can’t be read as an int.', 'The input is treated as 0 by default.', 'nextDouble() reads a double.'],
     ],
   },
   '11b': {

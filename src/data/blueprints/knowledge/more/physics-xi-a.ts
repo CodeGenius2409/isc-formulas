@@ -196,7 +196,7 @@ const knowledge: Record<string, Facts> = {
 
   '5a': {
     recall: [
-      ['For two particles, the centre of mass lies:', 'closer to the heavier particle', 'closer to the lighter particle', 'always midway between them', 'outside the line joining them'],
+      ['Masses of 1 kg and 3 kg lie 4 m apart. Their centre of mass is this far from the 1 kg mass:', '3 m', '1 m', '2 m', '4 m'],
       ['The centre of mass of a uniform rod lies:', 'at its middle', 'at one end', 'one third of the way along', 'outside it'],
     ],
     truths: [

@@ -7,7 +7,7 @@ const knowledge: Record<string, Facts> = {
     ar: [
       ['the law of definite proportions', 'Pure water always has the same ratio of hydrogen to oxygen by mass.', 'The ratio of hydrogen to oxygen by mass in pure water depends on its source.', 'A compound always has its elements in a fixed ratio by mass.', 'A compound can have its elements in any ratio by mass.', 'This ratio is about 1 : 8 for water.'],
       ['isotopes and atomic mass', 'The relative atomic mass of chlorine isn’t a whole number.', 'The relative atomic mass of chlorine is exactly 35.', 'It is an average over its isotopes, weighted by their abundance.', 'Each of its atoms has a mass of 35.5 u.', 'Chlorine has two main isotopes, of mass numbers 35 and 37.'],
-      ['Avogadro’s law', 'Equal volumes of hydrogen and oxygen at the same temperature and pressure hold equal numbers of molecules.', 'Equal volumes of hydrogen and oxygen at the same temperature and pressure have equal masses.', 'This follows from Avogadro’s law.', 'Oxygen molecules have the same mass as hydrogen molecules.', 'One mole of an ideal gas takes up about 22.4 L at STP.'],
+      ['the mole', '1 mole of CO₂ has a mass of 44 g.', '1 mole of CO₂ has a mass of 22 g.', 'Its molar mass is 12 + 2 × 16 = 44 g/mol.', 'Its molar mass is 12 + 16 = 28 g/mol.', '1 mole holds about 6.022 × 10²³ particles.'],
     ],
   },
   '1b': {
@@ -75,9 +75,9 @@ const knowledge: Record<string, Facts> = {
   },
   '6a': {
     ar: [
-      ['Le Chatelier’s principle', 'Raising the pressure favours ammonia in the Haber process.', 'Lowering the pressure favours ammonia in the Haber process.', 'The forward reaction reduces the number of moles of gas.', 'The forward reaction increases the number of moles of gas.', 'Iron is the catalyst in the Haber process.'],
+      ['pressure and moles of gas', 'Changing the pressure doesn’t shift H₂ + I₂ ⇌ 2HI.', 'Raising the pressure shifts H₂ + I₂ ⇌ 2HI to the right.', 'The number of moles of gas is the same on both sides.', 'There are more moles of gas on the right.', 'Iron is the catalyst in the Haber process.'],
       ['the catalyst and equilibrium', 'A catalyst doesn’t change the position of an equilibrium.', 'A catalyst moves the position of an equilibrium towards the products.', 'It speeds up the forward and backward reactions equally.', 'It speeds up only the forward reaction.', 'A catalyst shortens the time taken to reach equilibrium.'],
-      ['the temperature and K', 'Raising the temperature lowers K for an exothermic reaction.', 'Raising the temperature raises K for an exothermic reaction.', 'It favours the endothermic direction, which is the backward one here.', 'It favours the exothermic direction, which is the forward one here.', 'K changes only with temperature.'],
+      ['the temperature and K', 'Raising the temperature lowers K for an exothermic reaction.', 'Raising the temperature raises K for an exothermic reaction.', 'It favours the endothermic direction, which is the backward one here.', 'It favours the exothermic direction, which is the forward one here.', 'Adding a reactant shifts an equilibrium forwards.'],
     ],
   },
   '6b': {

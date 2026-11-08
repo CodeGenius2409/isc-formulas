@@ -409,3 +409,5 @@ Work is on a `rebuild` branch. `master` still holds your original files.
   Argon was dropped as a “smaller than Cl⁻” option, since its radius is a van der Waals radius and the comparison isn’t safe.
 - **Review batch 34** (Maths XI binomial, Physics XI projectiles, solids, surface tension and thermodynamics; 45 blueprints, 11 fixed). Stress now has its own σ = F/A entry rather than borrowing pressure’s P, and binomial questions no longer print x¹ or (1x).
   Entropy left the truths as it isn’t safely in the syllabus; silly distractors and copied AR nodes were replaced.
+- **Review batch 35** (Physics XI measurement, dimensions, centre of mass and gravity, Chemistry XI laws and equilibrium, CS XI input; 40 blueprints, 10 fixed). g at a height of hundreds of kilometres now uses the exact formula, as h is not small against R; a new registry entry holds it.
+  Silly distractors (a ring’s “one end”) and AR nodes that named a law as its own reason were replaced.

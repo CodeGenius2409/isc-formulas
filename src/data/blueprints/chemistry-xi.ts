@@ -492,7 +492,7 @@ const blueprints: Blueprint[] = [
       ['the reaction quotient', 'The same ratio as the equilibrium constant, at any moment in the reaction.'],
     ],
     recall: [
-      ['A catalyst at equilibrium:', 'speeds up both reactions equally', 'changes K', 'shifts it to the products', 'stops the reaction'],
+      ['For N₂ + 3H₂ ⇌ 2NH₃, the unit of Kc is:', 'mol⁻² L²', 'mol L⁻¹', 'mol² L⁻²', 'no unit'],
       ['Raising the pressure on N₂ + 3H₂ ⇌ 2NH₃ shifts it towards:', 'ammonia', 'nitrogen and hydrogen', 'neither', 'the side with more gas'],
       ['K for a reaction changes only with:', 'temperature', 'pressure', 'concentration', 'a catalyst'],
       ['If Q < K, the reaction moves:', 'forward', 'backward', 'neither way', 'to a stop'],
@@ -503,8 +503,9 @@ const blueprints: Blueprint[] = [
     ],
     truths: [
       ['K doesn’t depend on the starting concentrations.', 'K depends on the starting concentrations.'],
-      ['For an exothermic reaction, K falls as temperature rises.', 'For an exothermic reaction, K rises as temperature rises.'],
+      ['At equilibrium, Q equals K.', 'At equilibrium, Q is always zero.'],
       ['Solids and pure liquids don’t appear in the expression for K.', 'Solids and pure liquids always appear in the expression for K.'],
+      ['K for the reverse reaction is 1/K.', 'K for the reverse reaction is −K.'],
     ],
     cases: [
       {
