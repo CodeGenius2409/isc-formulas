@@ -419,3 +419,5 @@ Work is on a `rebuild` branch. `master` still holds your original files.
   This batch’s practical chemistry was mostly right; three-option MCQs and copied AR nodes were the main faults.
 - **Review batch 39** (Physics XI friction, circular motion, collisions and instruments, CS lists, tuples and OOP; 46 blueprints, 14 fixed). A collision question asked for the reduced mass, out of syllabus and off the story; it now asks for the kinetic energy lost.
   Method names keep their small letter in “distinguish” answers, and copied AR nodes were replaced.
+- **Review batch 40** (Physics XI torque, Physics XII ray optics practicals; 16 blueprints, 4 fixed). The last batch: AR nodes and a truth that repeated a recall or reason were rewritten, and the numericals were right.
+  All blueprints have now been read; the common mistakes are listed in reports/question-quality.md.

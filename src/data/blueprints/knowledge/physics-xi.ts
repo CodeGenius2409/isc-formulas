@@ -87,8 +87,8 @@ const knowledge: Record<string, Facts> = {
   },
   '5b': {
     ar: [
-      ['the conservation of angular momentum', 'A skater spins faster on pulling in the arms.', 'A skater spins slower on pulling in the arms.', 'The moment of inertia falls while the angular momentum stays the same.', 'The angular momentum rises when the arms are pulled in.', 'No external torque acts on the skater about the vertical axis.'],
-      ['torque', 'A door handle is placed far from the hinges.', 'A door handle is placed near the hinges, to increase the torque.', 'The same force then gives a larger torque.', 'The same force then gives a smaller torque.', 'Torque is the force multiplied by its perpendicular distance from the axis.'],
+      ['the conservation of angular momentum', 'A planet moves faster when it is nearer the Sun.', 'A planet moves slower when it is nearer the Sun.', 'The Sun’s pull exerts no torque on it about the Sun, so its angular momentum stays the same.', 'The Sun’s pull exerts a large torque on it about the Sun.', 'Planets move in ellipses.'],
+      ['a couple', 'A couple turns a steering wheel without moving it sideways.', 'A couple moves a steering wheel sideways without turning it.', 'Its two equal and opposite forces have different lines of action, so the net force is zero.', 'Its two forces act along the same line.', 'Torque is a vector.'],
       ['the equilibrium of a rigid body', 'A rigid body in equilibrium has no net force and no net torque on it.', 'A rigid body in equilibrium needs only no net force on it.', 'A body could rotate under a couple even with no net force.', 'A couple always moves a body in a straight line.', 'A couple is two equal and opposite forces with different lines of action.'],
     ],
   },

@@ -14,11 +14,12 @@ const knowledge: Record<string, Facts> = {
       ['A graph of 1/v against 1/u for a convex lens, in the usual form, cuts each axis at:', '1/f', 'f', '2f', 'f/2'],
       ['For a convex lens, a graph of uv against (u + v), using sizes alone, has a slope of:', 'f', '1/f', 'u', 'v'],
       ['For a real image, the smallest distance between object and image with a convex lens is:', '4f', '2f', 'f', '3f'],
-      ['A focal length of a convex lens can be found roughly by:', 'focusing a distant object on a screen', 'measuring its thickness', 'weighing it', 'measuring its colour'],
+      ['The focal length of a convex lens can be found roughly by:', 'focusing a distant object on a screen', 'measuring its thickness', 'weighing it', 'measuring its diameter'],
     ],
     truths: [
       ['A distance is measured between the optical centre and the needle’s tip, with a correction if needed.', 'A distance is measured between the optical centre and the base of the stand, in every case.'],
       ['At no parallax, the tip of the needle coincides with the tip of the image.', 'At no parallax, the needle is at twice the distance of the image.'],
+      ['A graph of uv against (u + v) is a straight line.', 'A graph of uv against (u + v) is a parabola.'],
       ['Index error is the difference between the true and measured distance for a known rod.', 'Index error is the difference between the two focal lengths of a lens.'],
     ],
     reason: [

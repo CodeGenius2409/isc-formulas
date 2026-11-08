@@ -554,7 +554,7 @@ const blueprints: Blueprint[] = [
     ],
     recall: [
       ['The SI unit of torque is:', 'N m', 'N', 'J/s', 'kg m/s'],
-      ['A skater who pulls in the arms:', 'spins faster', 'spins slower', 'stops', 'loses angular momentum'],
+      ['Angular momentum equals the moment of inertia times:', 'angular velocity', 'angular acceleration', 'torque', 'mass'],
       ['The rotational analogue of force is:', 'torque', 'moment of inertia', 'angular velocity', 'angular momentum'],
     ],
     reason: [
@@ -567,7 +567,8 @@ const blueprints: Blueprint[] = [
     truths: [
       ['Torque is zero when the force passes through the axis.', 'Torque is greatest when the force passes through the axis.'],
       ['Angular momentum is a vector.', 'Angular momentum is a scalar.'],
-      ['A body in equilibrium has no net force and no net torque.', 'A body in equilibrium has no net force, but must have a net torque.'],
+      ['Torque is the rate of change of angular momentum.', 'Torque is the rate of change of angular velocity.'],
+      ['A force at right angles to the lever arm gives the largest torque.', 'A force along the lever arm gives the largest torque.'],
     ],
   }),
   ...facts(5, 'c', {
