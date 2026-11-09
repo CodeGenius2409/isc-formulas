@@ -9,7 +9,7 @@ test('a format with nothing for a subtopic is greyed out, with the reason', asyn
   await page.getByTestId('chapter-picker').locator('summary').click();
   await page.getByLabel('Physical World and Measurement', { exact: false }).first().check();
   await page.getByLabel('Units and Measurements', { exact: true }).check();
-  const box = page.locator('.gen-check', { hasText: 'Long answer' });
+  const box = page.locator('.gen-check', { hasText: 'Derivation or proof' });
   await expect(box).toHaveAttribute('data-none', 'true');
   await expect(box.getByRole('checkbox')).toBeDisabled();
   await expect(box).toContainText('none for these choices');
