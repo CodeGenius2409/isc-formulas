@@ -14,12 +14,12 @@ Written by `tests/unit/supply-report.test.ts`. It counts the app's own material,
 | Physics | 41 | 2731 | 12995 | 2147 | 10968 | 12 | 200 | 94.7 |
 | Chemistry | 52 | 1308 | 7059 | 2139 | 2940 | 12 | 68 | 90.4 |
 | Mathematics | 28 | 820 | 4594 | 1096 | 861 | 16 | 200 | 94 |
-| Computer Science | 31 | 631 | 3855 | 1241 | 640 | 12 | 166 | 91.3 |
-| **All** | 152 | 5490 | 28503 | 6623 | 15409 | 12 | 200 | 92.4 |
+| Computer Science | 31 | 631 | 3859 | 1241 | 640 | 12 | 166 | 91.3 |
+| **All** | 152 | 5490 | 28507 | 6623 | 15409 | 12 | 200 | 92.4 |
 
 ## What the bank targets add up to
 
-- 152 subtopics, 38 of them most asked. At 40 and 80 questions, the target is **7,600** bank questions. There are 28503.
+- 152 subtopics, 38 of them most asked. At 40 and 80 questions, the target is **7,600** bank questions. There are 28507.
 - Counting a format as fitting a subtopic only where something already exists for it, there are **5,841** subtopic × format × difficulty combinations. **4,935** have fewer than 10 bank questions. Ten in each is **58,410** questions; forty, which the stress test asks for at 0%, is **233,640**.
 
 ## Before and after
@@ -29,26 +29,42 @@ Written by `tests/unit/supply-report.test.ts`. It counts the app's own material,
 | Blueprints | 2,214 | 5,490 |
 | Distinct structures | 2,272 | 15,409 |
 | Facts | 6,623 | 6,623 |
-| Bank questions, all layers | 704 | 28,503 |
+| Bank questions, all layers | 704 | 28,507 |
 | Median questions before a structure repeats | 12 | 12 |
 | Median distinct questions per subtopic, capped at 200 | 159 | 200 |
 | Mean variety score | 66.8 | 92.4 |
 
 ## The bank, by where each question came from
 
-Only "Written" is finished questions written by hand as bank questions. "Facts" is reviewed facts asked as fixed questions, which are the same knowledge the generator uses. "Compiled" is frozen from reviewed blueprints, with machine-checked answers.
+Only "Written" is finished questions written by hand as bank questions. "Facts" is reviewed facts asked as fixed questions, which are the same knowledge the generator uses. "Compiled" is frozen from reviewed blueprints, with machine-checked answers, and the slider counts it as generated: 0% uses only the first two.
 
 | Subject | Written | Facts | Compiled | Total |
 |---|---:|---:|---:|---:|
 | Physics | 610 | 4,138 | 8,247 | 12,995 |
 | Chemistry | 522 | 4,046 | 2,491 | 7,059 |
 | Mathematics | 255 | 2,037 | 2,302 | 4,594 |
-| Computer Science | 192 | 2,436 | 1,227 | 3,855 |
-| **All** | 1,579 | 12,657 | 14,267 | 28,503 |
+| Computer Science | 196 | 2,436 | 1,227 | 3,859 |
+| **All** | 1,583 | 12,657 | 14,267 | 28,507 |
+
+## Numericals at 0%
+
+Numericals are the format 0% loses most by leaving compiled questions out, as most of the bank's were compiled.
+
+| Class | Numericals 0% can use | Compiled, for above 0% | Subtopics with fewer than 10 at 0% |
+|---|---:|---:|---:|
+| Physics XI | 22 | 1,672 | 20 of 20 |
+| Physics XII | 45 | 1,405 | 15 of 16 |
+| Chemistry XI | 17 | 493 | 11 of 11 |
+| Chemistry XII | 17 | 423 | 6 of 6 |
+| Mathematics XI | 8 | 962 | 14 of 14 |
+| Mathematics XII | 4 | 710 | 13 of 13 |
+| Computer Science XI | 0 | 57 | 1 of 1 |
+| Computer Science XII | 0 | 16 | 1 of 1 |
 
 ## Against the 40 and 80 target
 
 - Counting all three layers, 152 of 152 subtopics reach it.
+- Counting hand-written and fact-based questions, all that 0% can use, 123 of 152 reach it.
 - Counting only hand-written questions, 7 of 152 reach it.
 
 ## Filter stress test
@@ -57,41 +73,41 @@ For each subtopic, fitting format and fitting difficulty, how many combinations 
 
 | Subject | Combinations | 0%: 10 | 0%: 20 | 0%: 40 | 50%: 10 | 50%: 20 | 50%: 40 | 100%: 10 | 100%: 20 | 100%: 40 |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| Physics | 1,550 | 363 | 251 | 121 | 423 | 348 | 303 | 381 | 330 | 303 |
-| Chemistry | 1,574 | 193 | 92 | 32 | 244 | 146 | 104 | 211 | 135 | 103 |
-| Mathematics | 892 | 175 | 58 | 8 | 240 | 142 | 120 | 220 | 136 | 118 |
-| Computer Science | 1,031 | 145 | 24 | 0 | 216 | 95 | 76 | 193 | 92 | 74 |
+| Physics | 1,550 | 123 | 64 | 0 | 423 | 348 | 303 | 381 | 331 | 303 |
+| Chemistry | 1,574 | 116 | 38 | 1 | 244 | 146 | 104 | 213 | 138 | 104 |
+| Mathematics | 892 | 91 | 12 | 0 | 240 | 142 | 120 | 220 | 138 | 120 |
+| Computer Science | 1,031 | 105 | 9 | 0 | 216 | 95 | 76 | 193 | 93 | 76 |
 
 ### By format
 
 | Format | Combinations | Fill 10 at 0% | Fill 10 at 50% |
 |---|---:|---:|---:|
-| mcq | 456 | 147 | 221 |
+| mcq | 456 | 89 | 221 |
 | assertion | 456 | 12 | 35 |
-| mistake | 456 | 99 | 100 |
+| mistake | 456 | 78 | 100 |
 | statement | 453 | 156 | 156 |
 | reason | 414 | 7 | 7 |
-| short | 378 | 10 | 35 |
+| short | 378 | 1 | 35 |
 | very-short | 304 | 73 | 73 |
 | complete | 292 | 16 | 16 |
 | match | 264 | 0 | 0 |
 | distinguish | 262 | 0 | 4 |
-| numerical | 246 | 184 | 205 |
-| cbq | 237 | 33 | 59 |
-| data | 156 | 61 | 77 |
-| derivation | 116 | 4 | 13 |
-| long | 114 | 5 | 12 |
-| order | 102 | 37 | 45 |
+| numerical | 246 | 0 | 205 |
+| cbq | 237 | 0 | 59 |
+| data | 156 | 0 | 77 |
+| derivation | 116 | 3 | 13 |
+| long | 114 | 0 | 12 |
+| order | 102 | 0 | 45 |
 | diagram | 102 | 0 | 0 |
-| output | 48 | 3 | 20 |
+| output | 48 | 0 | 20 |
 | predict | 46 | 0 | 0 |
-| change | 27 | 8 | 9 |
-| fill | 27 | 9 | 9 |
+| change | 27 | 0 | 9 |
+| fill | 27 | 0 | 9 |
 | program | 24 | 0 | 3 |
-| error | 18 | 2 | 4 |
-| trace | 18 | 5 | 9 |
+| error | 18 | 0 | 4 |
+| trace | 18 | 0 | 9 |
 | odd | 16 | 0 | 0 |
-| convert | 15 | 5 | 11 |
+| convert | 15 | 0 | 11 |
 
 ## Two mock papers running
 
@@ -99,29 +115,29 @@ With the same settings and the first paper in the history, what the second share
 
 | Paper | Generated | Same questions | Same facts | Same structures |
 |---|---:|---:|---:|---:|
-| physics XI | 0% | 1.0% | 0.0% | 3.0% |
+| physics XI | 0% | 0.0% | 0.0% | 0.0% |
 | physics XI | 50% | 0.0% | 0.0% | 0.0% |
 | physics XI | 100% | 0.0% | 0.0% | 0.0% |
-| physics XII | 0% | 2.0% | 0.0% | 4.0% |
+| physics XII | 0% | 0.0% | 0.0% | 0.0% |
 | physics XII | 50% | 0.0% | 0.0% | 0.0% |
 | physics XII | 100% | 0.0% | 0.0% | 0.0% |
-| chemistry XI | 0% | 0.0% | 0.0% | 0.0% |
+| chemistry XI | 0% | 2.9% | 0.0% | 2.9% |
 | chemistry XI | 50% | 0.0% | 0.0% | 0.0% |
 | chemistry XI | 100% | 0.0% | 0.0% | 0.0% |
 | chemistry XII | 0% | 0.0% | 0.0% | 0.0% |
 | chemistry XII | 50% | 0.0% | 0.0% | 0.0% |
 | chemistry XII | 100% | 0.0% | 0.0% | 0.0% |
-| mathematics XI | 0% | 6.0% | 0.0% | 17.1% |
-| mathematics XI | 50% | 1.7% | 0.0% | 3.4% |
+| mathematics XI | 0% | 7.7% | 0.0% | 7.7% |
+| mathematics XI | 50% | 0.0% | 0.0% | 0.0% |
 | mathematics XI | 100% | 0.0% | 0.0% | 0.0% |
-| mathematics XII | 0% | 8.5% | 0.0% | 35.0% |
-| mathematics XII | 50% | 2.6% | 0.0% | 9.4% |
+| mathematics XII | 0% | 0.0% | 0.0% | 0.0% |
+| mathematics XII | 50% | 0.0% | 0.0% | 0.0% |
 | mathematics XII | 100% | 0.0% | 0.0% | 0.0% |
-| computerscience XI | 0% | 4.2% | 0.0% | 8.3% |
+| computerscience XI | 0% | 0.0% | 0.0% | 0.0% |
 | computerscience XI | 50% | 0.0% | 0.0% | 0.0% |
 | computerscience XI | 100% | 0.0% | 0.0% | 0.0% |
-| computerscience XII | 0% | 8.3% | 0.0% | 15.3% |
-| computerscience XII | 50% | 1.4% | 0.0% | 4.2% |
+| computerscience XII | 0% | 4.2% | 0.0% | 4.2% |
+| computerscience XII | 50% | 0.0% | 0.0% | 0.0% |
 | computerscience XII | 100% | 0.0% | 0.0% | 0.0% |
 
 ## Physics
@@ -264,21 +280,21 @@ With the same settings and the first paper in the history, what the second share
 
 | Topic | Asked | Blueprints | Numerical | Bank | Facts | Structures | Contexts | To structure repeat | Smallest gap | Distinct | Variety |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| XI 1a System of Numeration | 0 | 30 | 10 | 205 | 52 | 38 | 18 | 15 | 6 | 200 | 95 |
+| XI 1a System of Numeration | 0 | 30 | 10 | 206 | 52 | 38 | 18 | 15 | 6 | 200 | 95 |
 | XI 2a Encodings | 0 | 16 | 0 | 99 | 48 | 16 | 0 | 13 | 1 | 129 | 91 |
-| XI 3a Propositional logic | 0 | 18 | 0 | 117 | 40 | 18 | 0 | 12 | 1 | 98 | 97 |
+| XI 3a Propositional logic | 0 | 18 | 0 | 118 | 40 | 18 | 0 | 12 | 1 | 98 | 97 |
 | XI 3b Logic and hardware | 0 | 16 | 0 | 64 | 16 | 16 | 0 | 12 | 1 | 89 | 96 |
 | XI 4a Introduction | 0 | 12 | 0 | 42 | 16 | 12 | 0 | 11 | 1 | 15 | 96 |
 | XI 5a Objects and the JVM | 0 | 14 | 0 | 108 | 48 | 14 | 0 | 12 | 1 | 74 | 97 |
 | XI 5b Errors and exceptions | 0 | 12 | 0 | 40 | 16 | 12 | 0 | 10 | 2 | 16 | 98 |
 | XI 6a Primitive values, Wrapper classes, Types and casting | 0 | 18 | 0 | 121 | 54 | 18 | 0 | 12 | 1 | 165 | 97 |
 | XI 7a Variables, Expressions | 0 | 23 | 0 | 165 | 60 | 23 | 0 | 12 | 1 | 200 | 97 |
-| XI 8a Statements, Scope | 0 | 44 | 0 | 270 | 58 | 44 | 0 | 14 | 10 | 200 | 96 |
+| XI 8a Statements, Scope | 0 | 44 | 0 | 271 | 58 | 44 | 0 | 14 | 10 | 200 | 96 |
 | XI 9a Methods and Constructors | 0 | 25 | 0 | 157 | 50 | 25 | 0 | 14 | 1 | 200 | 97 |
 | XI 10a Arrays, Strings | 0 | 23 | 0 | 116 | 15 | 23 | 0 | 12 | 7 | 200 | 95 |
 | XI 11a Basic input/output using Scanner class | 0 | 9 | 0 | 41 | 16 | 9 | 0 | 8 | 1 | 16 | 93 |
 | XI 11b Data File Handling | 0 | 12 | 0 | 41 | 17 | 12 | 0 | 10 | 1 | 17 | 95 |
-| XI 12a Introduction to Python | 0 | 13 | 0 | 54 | 17 | 13 | 0 | 13 | 1 | 123 | 62 |
+| XI 12a Introduction to Python | 0 | 13 | 0 | 55 | 17 | 13 | 0 | 13 | 1 | 123 | 62 |
 | XI 13a Trends in computing and ethical issues | 0 | 13 | 0 | 46 | 20 | 13 | 0 | 11 | 2 | 19 | 99 |
 | XII 1a Propositional logic | 0 | 20 | 0 | 140 | 48 | 20 | 0 | 17 | 1 | 200 | 97 |
 | XII 1b Boolean algebra and Karnaugh maps | 0 | 38 | 0 | 264 | 72 | 38 | 0 | 12 | 3 | 200 | 98 |
@@ -296,4 +312,4 @@ With the same settings and the first paper in the history, what the second share
 | XII 8a Binary trees [Conceptual] | 0 | 21 | 0 | 152 | 56 | 21 | 0 | 13 | 1 | 166 | 95 |
 | XII 9a Complexity and Big O notation | 0 | 17 | 0 | 123 | 51 | 17 | 0 | 12 | 1 | 85 | 95 |
 
-Took 264 s.
+Took 297 s.

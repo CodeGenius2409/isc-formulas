@@ -11,7 +11,7 @@ import { customInPracticeStore } from '../custom/store';
 import { loadStructures } from '../data/structures';
 import { generatedQuestionForId, loadBlueprints } from '../data/blueprints';
 import { bankQuestion, loadBankUnits, questionForId } from './bank';
-import { isBankId } from './bank/define';
+import { isBankId, isCompiled } from './bank/define';
 import type { BankDef } from './bank/types';
 import { defKeys, generatedCount, historyKeys, pickGenerated, questionKey, practiceShareStore } from './gen/mix';
 import { isGeneratedId } from './gen/engine';
@@ -161,13 +161,17 @@ export async function startUnit(subject: SubjectId, level: ClassLevel, unitIndex
     };
     const number = Number(unit.number);
     const fits = (d: { unit: number; topic: string; difficulty: number }) => d.unit === number && (!options.topic || d.topic === options.topic) && (!options.difficulty || d.difficulty === options.difficulty);
-    const here = bank.defs.filter(fits);
+    const share = options.share ?? practiceShareStore.get();
+    // Compiled questions count as generated, so they stay off the bank's side, and out altogether at 0%.
+    const here = bank.defs.filter((d) => fits(d) && !isCompiled(d));
+    const compiledHere = share > 0 ? bank.defs.filter((d) => fits(d) && isCompiled(d)) : [];
     const unseen = shuffled(here.filter((d) => !seen[d.id] && !fresh.resting(defKeys(d))), rng);
     const pool = set.blueprints.filter(fits);
-    const share = options.share ?? practiceShareStore.get();
     // More are generated when the bank has run out of unseen questions for this choice.
-    const wanted = pool.length ? Math.max(generatedCount(EXAM_SHARE, share), share > 0 ? EXAM_SHARE - unseen.length : 0) : 0;
-    const made = pickGenerated(set, pool, { count: Math.min(EXAM_SHARE, wanted), rng, used, seenText, seenFacts, fresh, freshOnly: true });
+    const wanted = pool.length || compiledHere.length ? Math.min(EXAM_SHARE, Math.max(generatedCount(EXAM_SHARE, share), share > 0 ? EXAM_SHARE - unseen.length : 0)) : 0;
+    const made = pickGenerated(set, pool, { count: wanted, rng, used, seenText, seenFacts, fresh, freshOnly: true });
+    // A compiled question is a frozen copy of what a blueprint gives, so it makes up what the blueprints couldn't.
+    made.push(...takeDefs(shuffled(compiledHere.filter((d) => !seen[d.id] && !fresh.resting(defKeys(d))), rng), wanted - made.length).map((d) => bankQuestion(d, bank, rng)));
     // What's left: never seen, then answered before but rested, and then whatever was seen longest ago.
     const rested = shuffled(here.filter((d) => seen[d.id] && !fresh.resting(defKeys(d))), rng);
     const fromRested = takeDefs([...unseen, ...rested], EXAM_SHARE - made.length);
@@ -180,7 +184,7 @@ export async function startUnit(subject: SubjectId, level: ClassLevel, unitIndex
     const short = EXAM_SHARE - made.length - fromBank.length;
     for (const q of made) seenText.add(questionKey(q));
     const wider = short > 0 && share > 0 ? pickGenerated(set, set.blueprints.filter((b) => b.unit === number), { count: short, rng, used, seenText, seenFacts, fresh }) : [];
-    const widerDefs = takeDefs(shuffled(bank.defs.filter((d) => d.unit === number && !fits(d)), rng).sort((a, b) => fresh.lastSeen(defKeys(a)) - fresh.lastSeen(defKeys(b))), short - wider.length);
+    const widerDefs = takeDefs(shuffled(bank.defs.filter((d) => d.unit === number && !fits(d) && !isCompiled(d)), rng).sort((a, b) => fresh.lastSeen(defKeys(a)) - fresh.lastSeen(defKeys(b))), short - wider.length);
     const widerBank = widerDefs.map((d) => ({ question: bankQuestion(d, bank, rng) }));
     exam.push(...shuffled([...fromBank, ...widerBank, ...[...made, ...wider].map((question) => ({ question }))], rng));
     const repeats = exam.filter((i) => fresh.resting(historyKeys(i.question))).length;

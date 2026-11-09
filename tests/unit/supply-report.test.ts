@@ -34,7 +34,7 @@ function afterSections(rows: TopicSupply[], top: Set<string>): string[] {
     const o = (origins[SUBJECT_NAME[r.ref.subject]] ??= { written: 0, facts: 0, compiled: 0 });
     for (const [k, v] of Object.entries(r.bankOrigin ?? {})) o[k] = (o[k] ?? 0) + v;
   }
-  out.push('', '## The bank, by where each question came from', '', 'Only "Written" is finished questions written by hand as bank questions. "Facts" is reviewed facts asked as fixed questions, which are the same knowledge the generator uses. "Compiled" is frozen from reviewed blueprints, with machine-checked answers.', '', '| Subject | Written | Facts | Compiled | Total |', '|---|---:|---:|---:|---:|');
+  out.push('', '## The bank, by where each question came from', '', 'Only "Written" is finished questions written by hand as bank questions. "Facts" is reviewed facts asked as fixed questions, which are the same knowledge the generator uses. "Compiled" is frozen from reviewed blueprints, with machine-checked answers, and the slider counts it as generated: 0% uses only the first two.', '', '| Subject | Written | Facts | Compiled | Total |', '|---|---:|---:|---:|---:|');
   let w = 0, fa = 0, c = 0;
   for (const [name, o] of Object.entries(origins)) {
     out.push(`| ${name} | ${o.written.toLocaleString('en-GB')} | ${o.facts.toLocaleString('en-GB')} | ${o.compiled.toLocaleString('en-GB')} | ${(o.written + o.facts + o.compiled).toLocaleString('en-GB')} |`);
@@ -42,11 +42,30 @@ function afterSections(rows: TopicSupply[], top: Set<string>): string[] {
   }
   out.push(`| **All** | ${w.toLocaleString('en-GB')} | ${fa.toLocaleString('en-GB')} | ${c.toLocaleString('en-GB')} | ${(w + fa + c).toLocaleString('en-GB')} |`);
 
+  // What a 0% numerical can use, and where that's thinnest.
+  out.push('', '## Numericals at 0%', '', 'Numericals are the format 0% loses most by leaving compiled questions out, as most of the bank\'s were compiled.', '', '| Class | Numericals 0% can use | Compiled, for above 0% | Subtopics with fewer than 10 at 0% |', '|---|---:|---:|---:|');
+  const numericByClass = new Map<string, { zero: number; compiled: number; thin: number; topics: number }>();
+  for (const r of rows) {
+    const name = `${SUBJECT_NAME[r.ref.subject]} ${r.ref.level}`;
+    const row = numericByClass.get(name) ?? { zero: 0, compiled: 0, thin: 0, topics: 0 };
+    const zero = r.numericsAtZero ?? 0;
+    const all = r.bankByFormat.numerical ?? 0;
+    row.zero += zero;
+    row.compiled += all - zero;
+    if (all > 0 || r.numericBlueprints > 0) {
+      row.topics++;
+      if (zero < 10) row.thin++;
+    }
+    numericByClass.set(name, row);
+  }
+  for (const [name, n] of numericByClass) out.push(`| ${name} | ${n.zero.toLocaleString('en-GB')} | ${n.compiled.toLocaleString('en-GB')} | ${n.thin} of ${n.topics} |`);
+
   // Against the targets.
   const need = (r: TopicSupply) => (top.has(r.ref.key) ? 80 : 40);
   const underAll = rows.filter((r) => r.bank < need(r));
   const underWritten = rows.filter((r) => (r.bankOrigin?.written ?? 0) < need(r));
-  out.push('', '## Against the 40 and 80 target', '', `- Counting all three layers, ${rows.length - underAll.length} of ${rows.length} subtopics reach it.`, `- Counting only hand-written questions, ${rows.length - underWritten.length} of ${rows.length} reach it.`);
+  const underZero = rows.filter((r) => (r.bankOrigin?.written ?? 0) + (r.bankOrigin?.facts ?? 0) < need(r));
+  out.push('', '## Against the 40 and 80 target', '', `- Counting all three layers, ${rows.length - underAll.length} of ${rows.length} subtopics reach it.`, `- Counting hand-written and fact-based questions, all that 0% can use, ${rows.length - underZero.length} of ${rows.length} reach it.`, `- Counting only hand-written questions, ${rows.length - underWritten.length} of ${rows.length} reach it.`);
   if (underAll.length) out.push(`- Below it with all layers: ${underAll.map((r) => `${SUBJECT_NAME[r.ref.subject]} ${r.ref.level} ${r.ref.unit}${r.ref.topic} (${r.bank} of ${need(r)})`).join('; ')}.`);
 
   // The stress test.

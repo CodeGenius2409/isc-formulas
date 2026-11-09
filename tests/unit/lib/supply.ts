@@ -143,6 +143,8 @@ export interface TopicSupply {
   variety: number | null;
   bankByFormat: Record<string, number>;
   bankOrigin?: Record<string, number>;
+  /** Numericals that aren't compiled, so 0% can use them. */
+  numericsAtZero?: number;
   bankByDifficulty: Record<string, number>;
   bankCells: Record<string, number>;
   blueprintFormats: Record<string, number>;
@@ -242,6 +244,7 @@ export function measureTopic(ref: TopicRef, all: Loaded): TopicSupply {
     variety: varietyRuns ? Math.round(variety / varietyRuns) : null,
     bankByFormat,
     bankOrigin,
+    numericsAtZero: defs.filter((d) => d.origin !== 'compiled' && bankFormatOf(d) === 'numerical').length,
     bankByDifficulty,
     bankCells,
     blueprintFormats,

@@ -33,11 +33,16 @@ function hash(text: string): string {
 export const isBankId = (id: string): boolean => /^q-[pcmk]1[12]-/.test(id);
 
 /**
- * Whether a question carries the Generated mark and its note. Made from a blueprint just now, or frozen from one into the bank:
- * neither was read one by one. Hand-written and fact-based bank questions were, so they don't. Only for what a person sees:
- * `item.generated` still says whether a question came from the bank's data or the generator.
+ * Frozen from a blueprint, so on the generated side of the slider wherever one is offered: never used at 0%, and counted in the
+ * percentage above that. Hand-written and fact-based questions are the bank's side.
  */
-export const isMarkedGenerated = (item: Pick<BankItem, 'generated' | 'origin'>): boolean => Boolean(item.generated) || item.origin === 'compiled';
+export const isCompiled = (d: { origin?: string }): boolean => d.origin === 'compiled';
+
+/**
+ * Whether a question carries the Generated mark and its note. Made from a blueprint just now, or frozen from one into the bank:
+ * neither was read one by one. Hand-written and fact-based bank questions were, so they don't. `item.generated` says only whether it was made from a blueprint just now, which swapping and repeat tracking need.
+ */
+export const isMarkedGenerated = (item: Pick<BankItem, 'generated' | 'origin'>): boolean => Boolean(item.generated) || isCompiled(item);
 
 /** A question from the bank, or one generated from a blueprint and a seed. */
 export const isExamId = (id: string): boolean => isBankId(id) || id.startsWith('g-');

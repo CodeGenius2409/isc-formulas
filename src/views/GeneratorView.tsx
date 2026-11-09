@@ -591,9 +591,12 @@ export default function GeneratorView() {
   const none = capacity.status === 'ready' ? capacity.value.none : null;
   const total = capacity.status === 'ready' ? capacity.value.total : null;
   // Said before generating, never after.
-  const cantFill = mode === 'set' && countMode === 'count' && total && total.withRelated < wantedCount;
+  const paperCantFill = mode === 'paper' && share === 0 && Boolean(plan?.raised);
+  const cantFill = paperCantFill || (mode === 'set' && countMode === 'count' && total && total.withRelated < wantedCount);
   const cantFillMessage = !cantFill
     ? ''
+    : paperCantFill
+      ? `The bank doesn’t have enough hand-written and fact-based questions for this paper. Raise the generated-share slider to at least ${plan!.share}%, or change the sections.`
     : share === 0
       ? total!.withRelated === 0
         ? 'The bank has no questions for these choices. Raise the generated-share slider, or choose differently.'

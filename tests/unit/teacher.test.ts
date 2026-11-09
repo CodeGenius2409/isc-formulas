@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { isMarkedGenerated } from '../../src/practice/bank/define';
 import { questionKey } from '../../src/practice/gen/mix';
 import { allItems, blueprintMatches, buildFullPaper, buildQuestionSet, deleteItem, emptyFilters, makeSets, moveItem, officialStructure, paperFromFile, paperToFile, regenerateItem, regenerateUnlocked, totalMarks, updateItem, type Filters } from '../../src/practice/gen/teacher';
 import { loadBlueprints } from '../../src/data/blueprints';
@@ -6,7 +7,7 @@ import { describePlan, planShare } from '../../src/practice/gen/mix';
 
 const filters = (change: Partial<Filters> = {}): Filters => ({ ...emptyFilters('physics'), levels: ['XII'], ...change });
 
-const generatedShare = (items: { question: { item: { generated?: unknown } } }[]) => items.filter((i) => i.question.item.generated).length;
+const generatedShare = (items: ReturnType<typeof allItems>) => items.filter((i) => isMarkedGenerated(i.question.item)).length;
 
 describe('filters', () => {
   it('combine, and an empty filter means all', async () => {

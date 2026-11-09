@@ -563,21 +563,21 @@ Written here by `tests/unit/supply-report.test.ts`. “Reviewed” is by layer, 
 | Mathematics XII 5a | 40 | 8 | 83 | 83 | 174 | 63 | 62 | 49 | numerical 56, statement 26, mcq 25 | Yes, by layer |
 | Mathematics XII 6a | 40 | 4 | 94 | 95 | 193 | 58 | 94 | 41 | numerical 71, statement 26, mcq 25 | Yes, by layer |
 | Mathematics XII 7a | 40 | 43 | 116 | 96 | 255 | 103 | 100 | 52 | numerical 51, mcq 44, statement 28 | Yes, by layer |
-| Computer Science XI 1a | 40 | 5 | 98 | 102 | 205 | 91 | 78 | 36 | numerical 57, mcq 29, statement 28 | Yes, by layer |
+| Computer Science XI 1a | 40 | 6 | 98 | 102 | 206 | 91 | 79 | 36 | numerical 57, mcq 29, statement 28 | Yes, by layer |
 | Computer Science XI 2a | 40 | 3 | 96 | 0 | 99 | 44 | 39 | 16 | statement 26, mcq 18, assertion 13 | Yes, by layer |
-| Computer Science XI 3a | 40 | 3 | 82 | 32 | 117 | 49 | 48 | 20 | statement 24, convert 23, mcq 13 | Yes, by layer |
+| Computer Science XI 3a | 40 | 4 | 82 | 32 | 118 | 49 | 49 | 20 | statement 24, convert 23, mcq 13 | Yes, by layer |
 | Computer Science XI 3b | 40 | 2 | 34 | 28 | 64 | 30 | 22 | 12 | convert 23, assertion 12, mcq 10 | Yes, by layer |
 | Computer Science XI 4a | 40 | 4 | 38 | 0 | 42 | 17 | 18 | 7 | assertion 12, statement 8, mcq 5 | Yes, by layer |
 | Computer Science XI 5a | 40 | 1 | 100 | 7 | 108 | 46 | 45 | 17 | statement 28, very-short 15, mcq 14 | Yes, by layer |
 | Computer Science XI 5b | 40 | 2 | 38 | 0 | 40 | 15 | 18 | 7 | assertion 12, statement 8, mcq 4 | Yes, by layer |
 | Computer Science XI 6a | 40 | 4 | 96 | 21 | 121 | 50 | 54 | 17 | statement 28, mcq 25, very-short 17 | Yes, by layer |
 | Computer Science XI 7a | 40 | 3 | 112 | 50 | 165 | 52 | 80 | 33 | mcq 31, statement 30, very-short 15 | Yes, by layer |
-| Computer Science XI 8a | 40 | 4 | 111 | 155 | 270 | 87 | 134 | 49 | trace 53, statement 32, change 29 | Yes, by layer |
+| Computer Science XI 8a | 40 | 5 | 111 | 155 | 271 | 87 | 135 | 49 | trace 53, statement 32, change 29 | Yes, by layer |
 | Computer Science XI 9a | 40 | 3 | 99 | 55 | 157 | 47 | 74 | 36 | statement 30, very-short 16, mistake 15 | Yes, by layer |
 | Computer Science XI 10a | 40 | 4 | 36 | 76 | 116 | 35 | 52 | 29 | trace 21, short 16, output 14 | Yes, by layer |
 | Computer Science XI 11a | 40 | 5 | 36 | 0 | 41 | 16 | 18 | 7 | assertion 12, mcq 8, statement 8 | Yes, by layer |
 | Computer Science XI 11b | 40 | 3 | 38 | 0 | 41 | 14 | 19 | 8 | assertion 12, statement 8, mcq 5 | Yes, by layer |
-| Computer Science XI 12a | 40 | 5 | 38 | 11 | 54 | 25 | 22 | 7 | output 13, assertion 12, statement 8 | Yes, by layer |
+| Computer Science XI 12a | 40 | 6 | 38 | 11 | 55 | 25 | 23 | 7 | output 13, assertion 12, statement 8 | Yes, by layer |
 | Computer Science XI 13a | 40 | 3 | 43 | 0 | 46 | 20 | 19 | 7 | assertion 12, statement 8, mcq 5 | Yes, by layer |
 | Computer Science XII 1a | 40 | 3 | 95 | 42 | 140 | 69 | 49 | 22 | mcq 26, statement 26, convert 25 | Yes, by layer |
 | Computer Science XII 1b | 40 | 52 | 136 | 76 | 264 | 104 | 98 | 62 | mcq 53, statement 34, convert 30 | Yes, by layer |

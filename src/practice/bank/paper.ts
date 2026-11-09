@@ -7,8 +7,9 @@ import { readJson, writeJson } from '../../lib/storage';
 import { noteMissedSteps, papersImported, recordAnswer, studentFreshness } from '../progress';
 import { seededRng, type Rng } from '../questions';
 import { loadBlueprints, type LoadedBlueprints } from '../../data/blueprints';
-import { bankFormatOf, CBQ_SHARE, defKeys, FORMAT_SHARE, generatedCount, historyKeys, mixedBankOrder, pickGenerated, planShare, type Freshness, type SlotCount } from '../gen/mix';
+import { bankFormatOf, CBQ_SHARE, defKeys, distinctCount, FORMAT_SHARE, generatedCount, historyKeys, mixedBankOrder, pickGenerated, planShare, type Freshness, type SlotCount } from '../gen/mix';
 import { ensureFactHistory, factGapStore, noteFactsShown } from '../fact-history';
+import { isCompiled } from './define';
 import { bankQuestion, loadBank, type LoadedBank } from './index';
 import { answerSummary, isAttempted, isPassing, qualityOf, scoreOf, yourAnswerSummary } from './mark';
 import type { BankAnswer, BankDef, BankItem, BankQuestion } from './types';
@@ -259,7 +260,7 @@ export function paperSlots(subject: SubjectId, level: ClassLevel, bank: LoadedBa
   const taken = new Map<number, number>();
   return spec.sections.flatMap((section) =>
     section.slots.map((slot) => {
-      const have = bank.defs.filter((d) => d.marks === slot.marks && (!section.units || section.units.includes(d.unit))).length;
+      const have = distinctCount(bank.defs.filter((d) => !isCompiled(d) && d.marks === slot.marks && (!section.units || section.units.includes(d.unit))));
       // Sections that share a mark value also share the bank's questions for it.
       const before = section.units ? 0 : (taken.get(slot.marks) ?? 0);
       if (!section.units) taken.set(slot.marks, before + slot.count);
@@ -284,10 +285,13 @@ export function assemblePaper(subject: SubjectId, level: ClassLevel, bank: Loade
     const questions = section.slots.flatMap((slot) => {
       const inSection = (unit: number) => !section.units || section.units.includes(unit);
       const notAsked = (d: BankDef) => !(d.facts ?? []).some((f) => seenFacts.has(f));
-      const bankFor = (wantDerivation: boolean | null) => bank.defs.filter((d) => d.marks === slot.marks && inSection(d.unit) && !used.has(d.id) && notAsked(d) && (wantDerivation === null || isDerivationType(d.type) === wantDerivation));
+      const openDefs = (wantDerivation: boolean | null) => bank.defs.filter((d) => d.marks === slot.marks && inSection(d.unit) && !used.has(d.id) && notAsked(d) && (wantDerivation === null || isDerivationType(d.type) === wantDerivation));
+      // The slider's two sides. At 0%, nothing from the generated side is used, whatever else runs short.
+      const bankFor = (wantDerivation: boolean | null) => openDefs(wantDerivation).filter((d) => !isCompiled(d));
+      const compiledFor = (wantDerivation: boolean | null) => (share > 0 ? openDefs(wantDerivation).filter(isCompiled) : []);
       const anyBlueprintFor = (wantDerivation: boolean | null) => (generated?.set.blueprints ?? []).filter((b) => b.marks === slot.marks && inSection(b.unit) && (wantDerivation === null || isDerivationType(b.type) === wantDerivation));
       const blueprintsFor = (wantDerivation: boolean | null) => anyBlueprintFor(wantDerivation).filter((b) => !generated?.reviewedOnly || b.reviewed === true);
-      const pickMade = (pool: ReturnType<typeof blueprintsFor>, count: number, cbqShare = 0) => (generated && count > 0 ? pickGenerated(generated.set, pool, { count, weights, rng, used: usedBlueprints, seenText, seenFacts, seenStructures, cbqShare, fresh, freshOnly: true }) : []);
+      const pickMade = (pool: ReturnType<typeof blueprintsFor>, count: number, cbqShare = 0) => (generated && share > 0 && count > 0 ? pickGenerated(generated.set, pool, { count, weights, rng, used: usedBlueprints, seenText, seenFacts, seenStructures, cbqShare, fresh, freshOnly: true }) : []);
       const takeBank = (all: BankDef[], count: number) => {
         const pool = fresh ? all.filter((d) => !fresh.resting(defKeys(d))) : all;
         const defs = count > 0 && pool.length ? draw(pool, Math.min(count, pool.length), weights, used, rng, usedShapes) : [];
@@ -304,7 +308,7 @@ export function assemblePaper(subject: SubjectId, level: ClassLevel, bank: Loade
         }
         return defs;
       };
-      const pickOld = (pool: ReturnType<typeof blueprintsFor>, count: number) => (generated && fresh && count > 0 ? pickGenerated(generated.set, pool, { count, weights, rng, used: usedBlueprints, seenText, seenFacts, fresh }) : []);
+      const pickOld = (pool: ReturnType<typeof blueprintsFor>, count: number) => (generated && share > 0 && fresh && count > 0 ? pickGenerated(generated.set, pool, { count, weights, rng, used: usedBlueprints, seenText, seenFacts, fresh }) : []);
       // Derivations first, in the share the real papers give them, from the bank or generated as the slider says.
       const wantDerivations = Math.round(slot.count * (DERIVATION_SHARE[subject][slot.marks] ?? 0));
       const genDerivations = pickMade(blueprintsFor(true), generatedCount(wantDerivations, share));
@@ -315,11 +319,14 @@ export function assemblePaper(subject: SubjectId, level: ClassLevel, bank: Loade
       const derivationCount = genDerivations.length + bankDerivations.length + lateDerivations.length + oldBankDerivations.length + oldDerivations.length;
       // Then everything else.
       const others = slot.count - derivationCount;
-      const made = pickMade(blueprintsFor(false), generatedCount(others, share), CBQ_SHARE);
+      const wantMade = generatedCount(others, share);
+      const made = pickMade(blueprintsFor(false), wantMade, CBQ_SHARE);
+      // A compiled question is a frozen copy of what a blueprint gives, so it makes up what the blueprints couldn't.
+      const madeCompiled = takeBank(compiledFor(false), wantMade - made.length);
       // Worked out after the generated ones, which may have used facts that bank questions also ask.
-      const defs = takeBank(bankFor(false), others - made.length);
-      // A paper is never handed out short: if one kind runs out, anything of the right marks fills the rest, whatever the slider says.
-      let left = others - made.length - defs.length;
+      const defs = takeBank(bankFor(false), others - made.length - madeCompiled.length);
+      // A paper isn't handed out short: if one side runs out, the other fills the rest, except that 0% stays 0%.
+      let left = others - made.length - madeCompiled.length - defs.length;
       const moreBank = takeBank(bankFor(null), left);
       left -= moreBank.length;
       // At 0% the bank's older questions come before anything generated.
@@ -327,16 +334,20 @@ export function assemblePaper(subject: SubjectId, level: ClassLevel, bank: Loade
       left -= oldFirst.length;
       const fill = pickMade(blueprintsFor(null), left);
       left -= fill.length;
+      const fillCompiled = takeBank(compiledFor(null), left);
+      left -= fillCompiled.length;
       const oldMade = pickOld(blueprintsFor(null), left);
       left -= oldMade.length;
       const oldLast = takeOldBank(bankFor(null), left);
       left -= oldLast.length;
+      const oldCompiled = takeOldBank(compiledFor(null), left);
+      left -= oldCompiled.length;
       // Only when nothing reviewed is left does an unreviewed one fill a gap, and the paper says so.
-      const unreviewed = generated?.reviewedOnly && left > 0 ? pickGenerated(generated.set, anyBlueprintFor(null), { count: left, weights, rng, used: usedBlueprints, seenText, seenFacts, fresh }) : [];
+      const unreviewed = generated?.reviewedOnly && share > 0 && left > 0 ? pickGenerated(generated.set, anyBlueprintFor(null), { count: left, weights, rng, used: usedBlueprints, seenText, seenFacts, fresh }) : [];
       left -= unreviewed.length;
       unreviewedFill += unreviewed.length;
-      if (left > 0) throw new Error(`There are too few ${slot.marks}-mark questions for this paper.`);
-      return shuffled([...[...bankDerivations, ...oldBankDerivations, ...defs, ...moreBank, ...oldFirst, ...oldLast].map((d) => bankQuestion(d, bank, rng)), ...genDerivations, ...lateDerivations, ...oldDerivations, ...made, ...fill, ...oldMade, ...unreviewed], rng);
+      if (left > 0) throw new Error(share > 0 ? `There are too few ${slot.marks}-mark questions for this paper.` : `There aren’t enough hand-written and fact-based ${slot.marks}-mark questions for this paper. Raise the slider to use generated questions.`);
+      return shuffled([...[...bankDerivations, ...oldBankDerivations, ...madeCompiled, ...defs, ...moreBank, ...oldFirst, ...fillCompiled, ...oldLast, ...oldCompiled].map((d) => bankQuestion(d, bank, rng)), ...genDerivations, ...lateDerivations, ...oldDerivations, ...made, ...fill, ...oldMade, ...unreviewed], rng);
     });
     return { name: section.name, note: section.note, choose: section.choose, questions };
   });

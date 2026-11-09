@@ -4,6 +4,7 @@ import { loadBlueprints } from '../../src/data/blueprints';
 import { loadSyllabus } from '../../src/data/syllabus';
 import type { ClassLevel, SubjectId } from '../../src/data/types';
 import { loadBank } from '../../src/practice/bank';
+import { isMarkedGenerated } from '../../src/practice/bank/define';
 import { assemblePaper, paperSpec, unitWeightsForTest } from '../../src/practice/bank/paper';
 import { factsOf, questionKey } from '../../src/practice/gen/mix';
 import { allItems, buildQuestionSet, capacityOf, emptyFilters, FORMATS, type Filters } from '../../src/practice/gen/teacher';
@@ -24,9 +25,9 @@ async function check(f: Filters, count: number, seed: number): Promise<'made' | 
   expect(new Set(items.map((i) => questionKey(i.question))).size, label).toBe(count);
   const facts = items.flatMap((i) => factsOf(i.question));
   expect(new Set(facts).size, `a fact was asked twice: ${label}`).toBe(facts.length);
-  // At 0% nothing is generated, and at 100% everything is.
-  if (f.share === 0) expect(items.every((i) => !i.question.item.generated), label).toBe(true);
-  if (f.share === 100) expect(items.every((i) => i.question.item.generated), label).toBe(true);
+  // At 0% nothing is generated or compiled, and at 100% everything is one or the other.
+  if (f.share === 0) expect(items.every((i) => !isMarkedGenerated(i.question.item)), label).toBe(true);
+  if (f.share === 100) expect(items.every((i) => isMarkedGenerated(i.question.item)), label).toBe(true);
   // Anything outside the chosen subtopics says so.
   for (const i of items) {
     const key = `${i.question.item.level} ${i.question.item.unit} ${i.question.item.topic}`;
@@ -90,6 +91,7 @@ describe('a mock paper is always whole', () => {
               expect(paper.sections[i].questions.length, `${section.name} at ${share}%`).toBe(section.slots.reduce((n, s) => n + s.count, 0));
             }
             const items = paper.sections.flatMap((s) => s.questions);
+            if (share === 0) expect(items.filter((q) => isMarkedGenerated(q.item)).map((q) => q.item.id), 'nothing generated or compiled at 0%').toEqual([]);
             expect(new Set(items.map((q) => q.item.id)).size).toBe(items.length);
             const facts = items.flatMap(factsOf);
             expect(new Set(facts).size, 'a fact was asked twice').toBe(facts.length);

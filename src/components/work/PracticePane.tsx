@@ -5,6 +5,7 @@ import { CircleCheck, CircleX, FileText, ListChecks, Lightbulb, RotateCcw, Spark
 import { loadSyllabus } from '../../data/syllabus';
 import type { ClassLevel, SubjectId } from '../../data/types';
 import { loadBank, loadBankUnits } from '../../practice/bank';
+import { isCompiled } from '../../practice/bank/define';
 import { planShare, practiceShareStore } from '../../practice/gen/mix';
 import { ShareSlider } from '../bank/ShareSlider';
 import { findFormula, getSubject, unitTitle } from '../../data/book';
@@ -146,7 +147,7 @@ function UnitSettings({ subject, level, unit, topic, onTopic, difficulty, onDiff
   if (info.status !== 'ready') return null;
   const here = info.value.units[unit];
   if (!here) return null;
-  const unseen = info.value.bank.defs.filter((d) => d.unit === here.number && (!topic || d.topic === topic) && (!difficulty || d.difficulty === Number(difficulty)) && !srs[d.id]).length;
+  const unseen = info.value.bank.defs.filter((d) => !isCompiled(d) && d.unit === here.number && (!topic || d.topic === topic) && (!difficulty || d.difficulty === Number(difficulty)) && !srs[d.id]).length;
   const plan = planShare([{ marks: 1, count: SESSION_EXAM, bankHas: unseen }], share);
   return (
     <details className="practice-settings">

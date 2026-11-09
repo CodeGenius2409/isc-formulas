@@ -11,7 +11,8 @@ import { paperSpec } from '../bank/paper';
 import type { BankDef, BankQuestion, BankType, Difficulty, GeneratedTag, QuestionFormat } from '../bank/types';
 import { seededRng, type Rng } from '../questions';
 import { tryQuestion } from './engine';
-import { bankFormatOf, defKeys, factsOf, generatedCount, historyKeys, mixedBankOrder, pickGenerated, PROBE_SEEDS, questionKey, usedFreshness, type Freshness } from './mix';
+import { isCompiled } from '../bank/define';
+import { bankFormatOf, defKeys, distinctCount, factsOf, generatedCount, historyKeys, mixedBankOrder, pickGenerated, PROBE_SEEDS, questionKey, usedFreshness, type Freshness } from './mix';
 
 export { bankFormatOf };
 
@@ -117,7 +118,7 @@ export interface Availability {
 export async function countAvailable(f: Filters, avoid: Set<string> = new Set()): Promise<Availability> {
   const sources = await loadSources(f);
   return {
-    bank: sources.reduce((sum, s) => sum + s.bank.defs.filter((d) => bankMatches(d, s.level, f) && !avoid.has(d.id)).length, 0),
+    bank: sources.reduce((sum, s) => sum + s.bank.defs.filter((d) => !isCompiled(d) && bankMatches(d, s.level, f) && !avoid.has(d.id)).length, 0),
     blueprints: sources.reduce((sum, s) => sum + s.set.blueprints.filter((b) => blueprintMatches(b, f)).length, 0),
   };
 }
@@ -129,7 +130,7 @@ export async function bankForSections(filters: Filters, level: ClassLevel, struc
   return structure.map((part) => {
     const units = part.units?.map((u) => `${level} ${u}`);
     const f: Filters = { ...filters, levels: [level], marks: [part.marks], formats: part.formats, units: units ?? filters.units, topics: units ? [] : filters.topics };
-    return source.bank.defs.filter((d) => bankMatches(d, level, f) && !avoid.has(d.id)).length;
+    return distinctCount(source.bank.defs.filter((d) => !isCompiled(d) && bankMatches(d, level, f) && !avoid.has(d.id)));
   });
 }
 
@@ -159,13 +160,15 @@ function countDistinct(sources: Source[], f: Filters, avoid: Set<string>, limit:
   let total = 0;
   const facts = new Set<string>();
   const keys = new Set<string>();
-  if (f.share < 100) {
-    // A paper asks each fact once, so several questions on one fact count as one. Questions on one fact first, as below.
+  // Hand-written and fact-based questions unless it's all generated, and compiled ones unless none is. A paper asks each fact once,
+  // so several questions on one fact count as one. Questions on one fact first, as below.
+  const sides = [...(f.share < 100 ? [false] : []), ...(f.share > 0 ? [true] : [])];
+  for (const side of sides) {
     for (const multi of [false, true]) {
       for (const s of sources) {
         for (const d of s.bank.defs) {
           const own = d.facts ?? [];
-          if (own.length > 1 !== multi || !bankMatches(d, s.level, f) || avoid.has(d.id) || own.some((x) => facts.has(x))) continue;
+          if (isCompiled(d) !== side || own.length > 1 !== multi || !bankMatches(d, s.level, f) || avoid.has(d.id) || own.some((x) => facts.has(x))) continue;
           // The same question reached by two routes counts once, as a paper would only take it once.
           const data = d.diagram && (d.diagram.kind === 'table' || d.diagram.kind === 'graph') ? JSON.stringify(d.diagram) : '';
           const key = d.form === 'mcq' ? (d.origin === 'compiled' ? d.text + data : `${d.text}|${d.options.map((o) => o.text).sort().join('|')}${data}`) : d.form === 'output' ? d.text + d.code : d.form === 'numeric' ? `${d.text}|${(d.fixedParts ?? d.parts).map((p) => p.ask).join('|')}${Object.values(d.vars).every((v) => v.length === 1) ? '' : JSON.stringify(d.vars)}${data}` : d.text + data;
@@ -339,10 +342,13 @@ async function drawQuestions(req: DrawRequest): Promise<{ items: PaperItem[]; sh
 async function drawOnce(req: DrawRequest, usedBlueprints: Set<string>, seenText: Set<string>, seenFacts: Set<string>): Promise<{ items: PaperItem[]; short: number }> {
   const { count, filters: f, rng, avoid, slot, singleFact, fresh } = req;
   const sources = await loadSources(f);
-  const bankPool = sources.flatMap((s) => s.bank.defs.filter((d) => bankMatches(d, s.level, f) && !avoid.has(d.id)).map((def) => ({ def, bank: s.bank })));
+  const matching = sources.flatMap((s) => s.bank.defs.filter((d) => bankMatches(d, s.level, f) && !avoid.has(d.id)).map((def) => ({ def, bank: s.bank })));
+  // The slider's two sides: compiled questions count as generated, so they're only for a share above 0%.
+  const bankPool = matching.filter(({ def }) => !isCompiled(def));
+  const compiledPool = f.share > 0 ? matching.filter(({ def }) => isCompiled(def)) : [];
   const pools = sources.map((s) => ({ s, list: s.set.blueprints.filter((b) => blueprintMatches(b, f) && !(singleFact && (b.id.endsWith('-match') || b.id.endsWith('-linked')))) }));
   const blueprintTotal = pools.reduce((n, p) => n + p.list.length, 0);
-  const wantGen = blueprintTotal ? generatedCount(count, f.share) : 0;
+  const wantGen = blueprintTotal || compiledPool.length ? generatedCount(count, f.share) : 0;
   const bankOrder = mixedBankOrder(fresh ? bankPool.filter(({ def }) => !fresh.resting(defKeys(def))) : bankPool, rng);
   const wantBank = f.share >= 100 ? 0 : Math.min(count - wantGen, bankOrder.length);
   // No fact twice, and no structure twice with the same setting, while there are others to take.
@@ -376,6 +382,20 @@ async function drawOnce(req: DrawRequest, usedBlueprints: Set<string>, seenText:
     const portion = i === order.length - 1 ? left : Math.ceil(left / (order.length - i));
     made.push(...pickGenerated(order[i].s.set, order[i].list, { count: portion, rng, used: usedBlueprints, seenText, seenFacts, fresh, freshOnly: true }));
   }
+  // A compiled question is a frozen copy of what a blueprint gives, so it makes up what the blueprints couldn't.
+  const takeCompiled = (pool: typeof compiledPool, upTo: () => boolean) => {
+    for (const { def, bank } of pool) {
+      if (upTo()) break;
+      if (!fits(def)) continue;
+      const q = bankQuestion(def, bank, rng);
+      if (seenText.has(questionKey(q))) continue;
+      made.push(q);
+      if (def.shape) shapes.add(`${def.shape}|${def.context ?? ''}`);
+      seenText.add(questionKey(q));
+      for (const x of factsOf(q)) seenFacts.add(x);
+    }
+  };
+  takeCompiled(mixedBankOrder(fresh ? compiledPool.filter(({ def }) => !fresh.resting(defKeys(def))) : compiledPool, rng), () => made.length >= needGen);
   // The generated side ran short, so the bank makes up the rest if the slider allows it.
   const extra: BankQuestion[] = [];
   if (f.share < 100) {
@@ -409,6 +429,8 @@ async function drawOnce(req: DrawRequest, usedBlueprints: Set<string>, seenText:
         const left = count - fromBank.length - extra.length - made.length;
         if (left > 0) made.push(...pickGenerated(s.set, list, { count: left, rng, used: usedBlueprints, seenText, seenFacts, fresh }));
       }
+      const oldCompiled = compiledPool.filter(({ def }) => fresh.resting(defKeys(def))).sort((a, b) => fresh.lastSeen(defKeys(a.def)) - fresh.lastSeen(defKeys(b.def)));
+      takeCompiled(oldCompiled, () => fromBank.length + extra.length + made.length >= count);
     }
     fromOldBank();
   }
@@ -522,8 +544,8 @@ export async function buildFullPaper(filters: Filters, level: ClassLevel, struct
     const f: Filters = { ...filters, levels: [level], marks: [part.marks], formats: part.formats, units: units ?? filters.units, topics: units ? [] : filters.topics };
     const drawn = await drawQuestions({ count: part.count, filters: f, rng, avoid: taken, usedBlueprints: used, seenText: seen, seenFacts, slot: { marks: part.marks, units }, fresh });
     for (const i of drawn.items) taken.add(i.key);
-    // A paper is never handed out short, so if generated questions run out, the bank fills the section, whatever the slider says.
-    const fill = drawn.short > 0 ? await drawQuestions({ count: drawn.short, filters: { ...f, share: 50 }, rng, avoid: taken, usedBlueprints: used, seenText: seen, seenFacts, slot: { marks: part.marks, units }, fresh }) : { items: [], short: 0 };
+    // A paper isn't handed out short, so if generated questions run out, the bank fills the section. At 0%, the shortfall is said instead.
+    const fill = drawn.short > 0 && filters.share > 0 ? await drawQuestions({ count: drawn.short, filters: { ...f, share: 50 }, rng, avoid: taken, usedBlueprints: used, seenText: seen, seenFacts, slot: { marks: part.marks, units }, fresh }) : { items: [], short: 0 };
     for (const i of fill.items) taken.add(i.key);
     filled += fill.items.length;
     short += fill.short;

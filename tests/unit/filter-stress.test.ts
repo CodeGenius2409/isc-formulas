@@ -11,6 +11,7 @@ import { loadBlueprints } from '../../src/data/blueprints';
 import { loadSyllabus } from '../../src/data/syllabus';
 import type { SubjectId } from '../../src/data/types';
 import { loadBank } from '../../src/practice/bank';
+import { isMarkedGenerated } from '../../src/practice/bank/define';
 import type { Difficulty } from '../../src/practice/bank/types';
 import { factsOf, questionKey } from '../../src/practice/gen/mix';
 import { allItems, bankFormatOf, buildQuestionSet, capacityOf, emptyFilters, FORMATS, type Filters, type FormatChoice } from '../../src/practice/gen/teacher';
@@ -83,8 +84,8 @@ async function realRequest(f: Filters, count: number, seed: number) {
     expect(i.related, `a related question in: ${label}`).toBeFalsy();
     const q = i.question.item;
     if (f.difficulties.length) expect(f.difficulties, label).toContain(q.difficulty);
-    if (f.share === 0) expect(q.generated, label).toBeFalsy();
-    if (f.share === 100) expect(q.generated, label).toBeTruthy();
+    if (f.share === 0) expect(isMarkedGenerated(q), label).toBe(false);
+    if (f.share === 100) expect(isMarkedGenerated(q), label).toBe(true);
   }
 }
 

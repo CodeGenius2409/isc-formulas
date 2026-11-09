@@ -41,7 +41,7 @@ export interface SharePlan {
 export interface SlotCount {
   marks: number;
   count: number;
-  /** Of `count`, how many the bank can supply. */
+  /** Of `count`, how many hand-written and fact-based questions can supply. */
   bankHas: number;
   /** Marks that count per question, for "any two" sections. */
   worth?: number;
@@ -60,7 +60,7 @@ export function planShare(slots: SlotCount[], wanted: number): SharePlan {
   }
   let raised: string | undefined;
   if (share < lowest) {
-    raised = `The bank doesn’t have enough questions for this, so at least ${lowest}% has to be generated.`;
+    raised = `The bank doesn’t have enough hand-written and fact-based questions for this, so at least ${lowest}% has to be generated. Raise the slider to choose how much.`;
     share = lowest;
   }
   const counts = slots.map((slot) => ({ slot, gen: generatedCount(slot.count, share) }));
@@ -78,6 +78,21 @@ export function describePlan(plan: SharePlan): string {
   if (plan.generated === 0) return 'Every question will come from the bank.';
   if (plan.generated === plan.questions) return `All ${plan.questions} questions (${plan.marks} marks) will be generated.`;
   return `About ${plan.generated} of ${plan.questions} questions (${plan.generatedMarks} of ${plan.marks} marks) will be generated.`;
+}
+
+/** How many of these one paper or set could use, since it asks each fact only once. Questions on one fact count first. */
+export function distinctCount(defs: readonly BankDef[]): number {
+  const facts = new Set<string>();
+  let total = 0;
+  for (const multi of [false, true]) {
+    for (const d of defs) {
+      const own = d.facts ?? [];
+      if (own.length > 1 !== multi || own.some((x) => facts.has(x))) continue;
+      for (const x of own) facts.add(x);
+      total++;
+    }
+  }
+  return total;
 }
 
 /** Seeds tried for each blueprint when looking for every question it can give. */
