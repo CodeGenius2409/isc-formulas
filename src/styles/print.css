@@ -66,12 +66,28 @@
     page-break-inside: avoid;
   }
 
+  /* The formula on the left, with its name and note beside it. A float lets each row decide for
+     itself: when a long formula leaves too little room, the name and note drop below it, at any
+     paper size, rather than printing over it. */
   .row-main {
-    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
-    grid-template-areas:
-      'math name'
-      'math note'
-      'struct struct';
+    display: flow-root;
+  }
+
+  .row-math {
+    float: left;
+    min-width: 55%;
+    max-width: 100%;
+    margin-right: 1rem;
+  }
+
+  .row-name,
+  .row-note {
+    display: flow-root;
+    min-width: 30%;
+  }
+
+  .row-structure {
+    clear: both;
   }
 
   .math-host {

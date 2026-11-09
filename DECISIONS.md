@@ -423,3 +423,5 @@ Work is on a `rebuild` branch. `master` still holds your original files.
   All blueprints have now been read; the common mistakes are listed in reports/question-quality.md.
 - **Three browser tests corrected at the end of the review.** They depended on chance or timing: a random paper’s line count, a figure still loading, and a seed that happened to have a simulator question.
   The app didn’t change for these. Each now checks the same behaviour without relying on luck, and the complete run passes.
+- **Printed rows use a float, not a two-column grid.** A long formula ran over its name and note, because a grid column can't widen for one row. Now the name and note drop below it when there's too little room.
+  This uses CSS only, so it adapts to any paper size. A scan of all 8,030 rows at A4 width found no overlap and nothing past the row's edge; 1,441 rows have the description underneath.
