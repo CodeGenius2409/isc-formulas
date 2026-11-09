@@ -1,0 +1,300 @@
+# Question supply, after
+
+Written by `tests/unit/supply-report.test.ts`. It counts the app's own material, and holds no wording from any paper.
+
+- **Structures** are blueprint × unknown × format × setting. New numbers alone don't make a new structure.
+- **To structure repeat** is how many questions the real picker gives for that subtopic before a structure comes round again, averaged over 3 runs of up to 200.
+- **Distinct** is how many different questions that picker can give with no fact asked twice, up to 200.
+- **Variety** is 0 to 100 for how unlike consecutive questions are, in wording, structure and blueprint.
+
+## By subject
+
+| Subject | Subtopics | Blueprints | Bank questions | Facts | Structures | Median to structure repeat | Median distinct | Mean variety |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| Physics | 41 | 2731 | 12799 | 2147 | 10968 | 6 | 200 | 94.6 |
+| Chemistry | 52 | 1308 | 6874 | 2139 | 2940 | 5 | 70 | 91.1 |
+| Mathematics | 28 | 820 | 4594 | 1096 | 861 | 14 | 200 | 93.6 |
+| Computer Science | 31 | 631 | 3846 | 1241 | 640 | 5 | 169 | 89 |
+| **All** | 152 | 5490 | 28113 | 6623 | 15409 | 6 | 200 | 92.1 |
+
+## What the bank targets add up to
+
+- 152 subtopics, 38 of them most asked. At 40 and 80 questions, the target is **7,600** bank questions. There are 28113.
+- Counting a format as fitting a subtopic only where something already exists for it, there are **5,640** subtopic × format × difficulty combinations. **4,743** have fewer than 10 bank questions. Ten in each is **56,400** questions; forty, which the stress test asks for at 0%, is **225,600**.
+
+## Before and after
+
+| Measure | Before | After |
+|---|---:|---:|
+| Blueprints | 2,214 | 5,490 |
+| Distinct structures | 2,272 | 15,409 |
+| Facts | 6,623 | 6,623 |
+| Bank questions, all layers | 704 | 28,113 |
+| Median questions before a structure repeats | 12 | 6 |
+| Median distinct questions per subtopic, capped at 200 | 159 | 200 |
+| Mean variety score | 66.8 | 92.1 |
+
+## The bank, by where each question came from
+
+Only "Written" is finished questions written by hand as bank questions. "Facts" is reviewed facts asked as fixed questions, which are the same knowledge the generator uses. "Compiled" is frozen from reviewed blueprints, with machine-checked answers.
+
+| Subject | Written | Facts | Compiled | Total |
+|---|---:|---:|---:|---:|
+| Physics | 414 | 4,138 | 8,247 | 12,799 |
+| Chemistry | 337 | 4,046 | 2,491 | 6,874 |
+| Mathematics | 255 | 2,037 | 2,302 | 4,594 |
+| Computer Science | 183 | 2,436 | 1,227 | 3,846 |
+| **All** | 1,189 | 12,657 | 14,267 | 28,113 |
+
+## Against the 40 and 80 target
+
+- Counting all three layers, 129 of 152 subtopics reach it.
+- Counting only hand-written questions, 7 of 152 reach it.
+- Below it with all layers: Physics XI 1a (39 of 80); Physics XI 1b (38 of 80); Physics XI 1p (27 of 80); Physics XII 6p (29 of 80); Chemistry XI 1a (36 of 40); Chemistry XI 8b (35 of 40); Chemistry XI 9a (37 of 40); Chemistry XI 9c (36 of 40); Chemistry XI 9d (38 of 40); Chemistry XI 10a (35 of 40); Chemistry XI 10b (26 of 40); Chemistry XI 10c (26 of 40); Chemistry XI 10d (27 of 40); Chemistry XII 2c (39 of 40); Chemistry XII 6c (35 of 40); Chemistry XII 10c (38 of 40); Chemistry XII 11a (26 of 40); Chemistry XII 11b (26 of 40); Chemistry XII 11c (25 of 40); Chemistry XII 11d (15 of 40); Computer Science XI 4a (39 of 40); Computer Science XI 11a (37 of 40); Computer Science XI 11b (39 of 40).
+
+## Filter stress test
+
+For each subtopic, fitting format and fitting difficulty, how many combinations can fill a request entirely from exact matches, with no fact asked twice. Generated from `tests/unit/filter-stress.test.ts`.
+
+| Subject | Combinations | 0%: 10 | 0%: 20 | 0%: 40 | 50%: 10 | 50%: 20 | 50%: 40 | 100%: 10 | 100%: 20 | 100%: 40 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| Physics | 1,506 | 358 | 251 | 121 | 415 | 348 | 303 | 381 | 330 | 303 |
+| Chemistry | 1,452 | 190 | 92 | 32 | 240 | 146 | 104 | 211 | 135 | 103 |
+| Mathematics | 892 | 175 | 58 | 8 | 240 | 142 | 120 | 220 | 136 | 118 |
+| Computer Science | 1,025 | 145 | 24 | 0 | 216 | 95 | 76 | 193 | 92 | 74 |
+
+### By format
+
+| Format | Combinations | Fill 10 at 0% | Fill 10 at 50% |
+|---|---:|---:|---:|
+| mcq | 456 | 139 | 209 |
+| statement | 453 | 156 | 156 |
+| mistake | 453 | 99 | 100 |
+| assertion | 429 | 12 | 35 |
+| reason | 387 | 7 | 7 |
+| short | 342 | 10 | 35 |
+| very-short | 304 | 73 | 73 |
+| complete | 292 | 16 | 16 |
+| match | 264 | 0 | 0 |
+| distinguish | 242 | 0 | 4 |
+| cbq | 237 | 33 | 59 |
+| numerical | 234 | 184 | 205 |
+| data | 141 | 61 | 77 |
+| derivation | 116 | 4 | 13 |
+| long | 108 | 5 | 12 |
+| diagram | 102 | 0 | 0 |
+| order | 98 | 37 | 45 |
+| output | 48 | 3 | 20 |
+| change | 27 | 8 | 9 |
+| fill | 27 | 9 | 9 |
+| predict | 26 | 0 | 0 |
+| program | 24 | 0 | 3 |
+| error | 18 | 2 | 4 |
+| trace | 18 | 5 | 9 |
+| convert | 15 | 5 | 11 |
+| odd | 14 | 0 | 0 |
+
+## Two mock papers running
+
+With the same settings and the first paper in the history, what the second shares with the first, averaged over 3 runs.
+
+| Paper | Generated | Same questions | Same facts | Same structures |
+|---|---:|---:|---:|---:|
+| physics XI | 0% | 3.0% | 0.0% | 4.0% |
+| physics XI | 50% | 0.0% | 0.0% | 0.0% |
+| physics XI | 100% | 0.0% | 0.0% | 0.0% |
+| physics XII | 0% | 2.0% | 0.0% | 3.0% |
+| physics XII | 50% | 0.0% | 0.0% | 0.0% |
+| physics XII | 100% | 0.0% | 0.0% | 0.0% |
+| chemistry XI | 0% | 0.0% | 0.0% | 0.0% |
+| chemistry XI | 50% | 0.0% | 0.0% | 0.0% |
+| chemistry XI | 100% | 0.0% | 0.0% | 0.0% |
+| chemistry XII | 0% | 1.0% | 0.0% | 1.0% |
+| chemistry XII | 50% | 0.0% | 0.0% | 0.0% |
+| chemistry XII | 100% | 0.0% | 0.0% | 0.0% |
+| mathematics XI | 0% | 5.1% | 0.0% | 17.1% |
+| mathematics XI | 50% | 0.9% | 0.0% | 4.3% |
+| mathematics XI | 100% | 0.0% | 0.0% | 0.0% |
+| mathematics XII | 0% | 4.3% | 0.0% | 17.1% |
+| mathematics XII | 50% | 0.0% | 0.0% | 2.6% |
+| mathematics XII | 100% | 0.0% | 0.0% | 0.0% |
+| computerscience XI | 0% | 5.6% | 0.0% | 15.3% |
+| computerscience XI | 50% | 1.4% | 0.0% | 2.8% |
+| computerscience XI | 100% | 0.0% | 0.0% | 0.0% |
+| computerscience XII | 0% | 9.7% | 0.0% | 19.4% |
+| computerscience XII | 50% | 1.4% | 0.0% | 8.3% |
+| computerscience XII | 100% | 0.0% | 0.0% | 0.0% |
+
+## Physics
+
+| Topic | Asked | Blueprints | Numerical | Bank | Facts | Structures | Contexts | To structure repeat | Smallest gap | Distinct | Variety |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| XI 1a Units and Measurements (most asked) | 0 | 13 | 0 | 39 | 17 | 13 | 0 | 2 | 1 | 16 | 93 |
+| XI 1b Dimensions (most asked) | 0 | 9 | 0 | 38 | 17 | 9 | 0 | 2 | 1 | 17 | 84 |
+| XI 1p Paper II: measuring instruments (most asked) | 0 | 9 | 0 | 27 | 16 | 9 | 0 | 3 | 1 | 16 | 90 |
+| XI 2a Motion in a Straight Line (most asked) | 0 | 64 | 24 | 319 | 63 | 300 | 20 | 11 | 1 | 200 | 96 |
+| XI 2b Motion in a Plane (most asked) | 0 | 80 | 34 | 297 | 19 | 470 | 13 | 5 | 3 | 200 | 95 |
+| XI 3a Newton's laws and momentum (most asked) | 0 | 97 | 46 | 354 | 22 | 609 | 13 | 8 | 5 | 200 | 97 |
+| XI 3b Equilibrium and friction (most asked) | 0 | 44 | 20 | 212 | 19 | 181 | 11 | 6 | 4 | 200 | 96 |
+| XI 3c Circular motion (most asked) | 0 | 56 | 28 | 265 | 16 | 353 | 14 | 7 | 4 | 200 | 95 |
+| XI 4a Work, energy and power (most asked) | 0 | 105 | 50 | 512 | 71 | 695 | 13 | 12 | 2 | 200 | 97 |
+| XI 4b Collisions (most asked) | 0 | 34 | 14 | 158 | 15 | 156 | 12 | 6 | 2 | 200 | 93 |
+| XI 5a Centre of mass (most asked) | 0 | 20 | 8 | 121 | 15 | 30 | 3 | 8 | 1 | 200 | 80 |
+| XI 5b Torque and angular momentum (most asked) | 0 | 44 | 20 | 215 | 16 | 238 | 11 | 4 | 3 | 200 | 95 |
+| XI 5c Moment of inertia (most asked) | 0 | 43 | 21 | 237 | 16 | 268 | 11 | 5 | 3 | 200 | 94 |
+| XI 6a Gravity and its variation (most asked) | 0 | 51 | 19 | 251 | 17 | 183 | 11 | 6 | 3 | 200 | 95 |
+| XI 6b Potential, escape velocity and satellites (most asked) | 0 | 66 | 23 | 296 | 19 | 284 | 11 | 5 | 3 | 200 | 94 |
+| XI 7a Mechanical Properties of Solids (most asked) | 0 | 52 | 23 | 267 | 17 | 294 | 9 | 4 | 3 | 200 | 95 |
+| XI 7b Mechanical Properties of Fluids (most asked) | 0 | 68 | 32 | 312 | 21 | 309 | 12 | 5 | 3 | 200 | 96 |
+| XI 7c Surface tension (most asked) | 0 | 21 | 8 | 117 | 16 | 61 | 6 | 7 | 1 | 200 | 86 |
+| XI 8a Thermal Properties of Matter (most asked) | 0 | 56 | 30 | 254 | 20 | 133 | 11 | 4 | 1 | 200 | 95 |
+| XI 8b Thermodynamics (most asked) | 0 | 52 | 18 | 226 | 21 | 80 | 6 | 5 | 3 | 200 | 96 |
+| XI 9a Kinetic Theory (most asked) | 0 | 55 | 24 | 269 | 18 | 283 | 10 | 5 | 3 | 200 | 94 |
+| XI 10a Oscillations (most asked) | 0 | 80 | 37 | 335 | 19 | 325 | 11 | 5 | 3 | 200 | 96 |
+| XI 10b Waves (most asked) | 0 | 101 | 49 | 497 | 84 | 577 | 13 | 11 | 1 | 200 | 96 |
+| XII 1a Electric Charges and Fields (most asked) | 0 | 122 | 49 | 552 | 101 | 324 | 15 | 10 | 1 | 200 | 97 |
+| XII 1b Electrostatic Potential, Potential Energy and Capacitance (most asked) | 0 | 143 | 67 | 590 | 95 | 497 | 14 | 11 | 1 | 200 | 97 |
+| XII 2a Conduction, Ohm's law and power (most asked) | 0 | 148 | 75 | 563 | 90 | 941 | 18 | 10 | 3 | 200 | 98 |
+| XII 2b Cells, Kirchhoff's laws and bridges (most asked) | 0 | 104 | 49 | 497 | 86 | 463 | 14 | 10 | 1 | 200 | 97 |
+| XII 3a Moving charges and magnetism (most asked) | 0 | 212 | 108 | 670 | 104 | 620 | 17 | 4 | 3 | 200 | 97 |
+| XII 3b Magnetism and Matter (most asked) | 0 | 20 | 0 | 145 | 74 | 20 | 0 | 6 | 1 | 67 | 96 |
+| XII 4a Electromagnetic Induction (most asked) | 0 | 75 | 27 | 414 | 82 | 327 | 12 | 10 | 1 | 200 | 97 |
+| XII 4b Alternating Current (most asked) | 0 | 109 | 44 | 571 | 105 | 320 | 12 | 11 | 1 | 200 | 97 |
+| XII 5a Electromagnetic Waves (most asked) | 0 | 25 | 3 | 200 | 84 | 30 | 2 | 7 | 1 | 200 | 96 |
+| XII 6a Ray Optics (most asked) | 0 | 134 | 65 | 603 | 133 | 569 | 17 | 10 | 1 | 200 | 97 |
+| XII 6b Optical instruments (most asked) | 0 | 53 | 16 | 305 | 74 | 185 | 8 | 10 | 1 | 200 | 95 |
+| XII 6c Wave Optics (most asked) | 0 | 79 | 27 | 438 | 89 | 177 | 8 | 10 | 1 | 200 | 97 |
+| XII 6p Paper II: ray optics experiments (most asked) | 0 | 11 | 0 | 29 | 18 | 11 | 0 | 4 | 1 | 18 | 88 |
+| XII 7a Dual Nature of Radiation and Matter (most asked) | 0 | 106 | 41 | 505 | 87 | 268 | 14 | 5 | 1 | 200 | 97 |
+| XII 8a Atoms (most asked) | 0 | 41 | 10 | 205 | 86 | 41 | 10 | 11 | 1 | 138 | 97 |
+| XII 8b Nuclei | 0 | 49 | 13 | 308 | 92 | 53 | 8 | 4 | 1 | 200 | 97 |
+| XII 9a Semiconductor Electronics | 0 | 28 | 5 | 222 | 78 | 28 | 2 | 4 | 1 | 200 | 97 |
+| XII 9b Semiconductor diode | 0 | 52 | 18 | 364 | 95 | 234 | 10 | 13 | 1 | 200 | 95 |
+
+## Chemistry
+
+| Topic | Asked | Blueprints | Numerical | Bank | Facts | Structures | Contexts | To structure repeat | Smallest gap | Distinct | Variety |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| XI 1a Matter, laws and measurement | 0 | 12 | 0 | 36 | 15 | 12 | 0 | 6 | 1 | 14 | 93 |
+| XI 1b Mole concept and stoichiometry | 0 | 22 | 7 | 100 | 17 | 27 | 4 | 12 | 2 | 200 | 91 |
+| XI 1c Chemical equivalents and volumetric calculations | 0 | 57 | 28 | 312 | 40 | 217 | 8 | 4 | 3 | 200 | 96 |
+| XI 2a Particles and atomic models | 0 | 37 | 17 | 209 | 16 | 140 | 12 | 15 | 3 | 200 | 95 |
+| XI 2b Quantum numbers and electronic configuration | 0 | 14 | 0 | 55 | 18 | 14 | 0 | 6 | 1 | 169 | 60 |
+| XI 3a Periodic law and periodic trends | 0 | 15 | 0 | 49 | 21 | 15 | 0 | 6 | 1 | 22 | 94 |
+| XI 4a Ionic and covalent bonding | 0 | 20 | 6 | 99 | 20 | 20 | 2 | 8 | 2 | 200 | 86 |
+| XI 4b VSEPR, hybridisation and molecular orbitals | 0 | 24 | 5 | 139 | 18 | 24 | 2 | 11 | 2 | 200 | 93 |
+| XI 5a Systems and the First Law | 0 | 58 | 26 | 274 | 17 | 114 | 7 | 12 | 3 | 200 | 93 |
+| XI 5b Second and Third Laws | 0 | 38 | 17 | 193 | 16 | 176 | 9 | 14 | 5 | 200 | 94 |
+| XI 6a Chemical Equilibrium | 0 | 15 | 0 | 40 | 17 | 15 | 0 | 4 | 2 | 18 | 96 |
+| XI 6b Ionic equilibrium | 0 | 55 | 23 | 312 | 75 | 138 | 13 | 9 | 1 | 200 | 98 |
+| XI 7a Redox Reactions | 0 | 15 | 0 | 53 | 18 | 15 | 0 | 9 | 1 | 160 | 72 |
+| XI 8a Classification, nomenclature and isomerism | 0 | 13 | 0 | 40 | 17 | 13 | 0 | 4 | 1 | 123 | 50 |
+| XI 8b Purification and analysis | 0 | 9 | 0 | 35 | 15 | 9 | 0 | 5 | 1 | 15 | 98 |
+| XI 8c Electronic effects and reaction types | 0 | 12 | 0 | 50 | 19 | 12 | 0 | 4 | 1 | 17 | 96 |
+| XI 9a Alkanes | 0 | 11 | 0 | 37 | 16 | 11 | 0 | 5 | 1 | 15 | 96 |
+| XI 9b Alkenes | 0 | 13 | 0 | 43 | 17 | 13 | 0 | 3 | 1 | 21 | 93 |
+| XI 9c Alkynes | 0 | 9 | 0 | 36 | 15 | 9 | 0 | 4 | 1 | 15 | 91 |
+| XI 9d Aromatic Hydrocarbons | 0 | 12 | 0 | 38 | 16 | 12 | 0 | 6 | 1 | 16 | 95 |
+| XI 10a Titration | 0 | 10 | 0 | 35 | 16 | 10 | 0 | 5 | 1 | 16 | 98 |
+| XI 10b Qualitative analysis | 0 | 8 | 0 | 26 | 18 | 8 | 0 | 3 | 1 | 17 | 76 |
+| XI 10c Preparation of inorganic compounds | 0 | 8 | 0 | 26 | 15 | 8 | 0 | 4 | 1 | 15 | 85 |
+| XI 10d Paper Chromatography | 0 | 9 | 0 | 27 | 16 | 9 | 0 | 4 | 1 | 16 | 94 |
+| XII 1a Solutions and colligative properties | 0 | 173 | 89 | 746 | 156 | 707 | 18 | 5 | 1 | 200 | 97 |
+| XII 2a Cells and potentials | 0 | 50 | 16 | 297 | 74 | 136 | 10 | 9 | 1 | 200 | 97 |
+| XII 2b Conductance and electrolysis | 0 | 80 | 36 | 416 | 73 | 183 | 10 | 3 | 1 | 200 | 97 |
+| XII 2c Batteries and corrosion | 0 | 13 | 0 | 39 | 18 | 13 | 0 | 5 | 1 | 18 | 96 |
+| XII 3a Rate, order and integrated rate equations | 0 | 87 | 31 | 493 | 94 | 367 | 12 | 9 | 1 | 200 | 96 |
+| XII 3b Collision theory and activation energy | 0 | 27 | 8 | 146 | 19 | 111 | 9 | 13 | 3 | 200 | 89 |
+| XII 4a Transition elements, lanthanoids and actinoids | 0 | 24 | 0 | 191 | 89 | 24 | 0 | 11 | 1 | 116 | 98 |
+| XII 4b K2Cr2O7 and KMnO4 | 0 | 20 | 0 | 166 | 87 | 20 | 0 | 6 | 1 | 95 | 94 |
+| XII 5a Coordination Compounds | 0 | 30 | 0 | 292 | 134 | 30 | 0 | 10 | 1 | 188 | 99 |
+| XII 6a Haloalkanes | 0 | 22 | 0 | 198 | 102 | 22 | 0 | 4 | 1 | 164 | 97 |
+| XII 6b Haloarenes | 0 | 19 | 0 | 86 | 42 | 19 | 0 | 8 | 1 | 42 | 91 |
+| XII 6c Polyhalogen compounds | 0 | 9 | 0 | 35 | 15 | 9 | 0 | 4 | 2 | 15 | 99 |
+| XII 7a Alcohols | 0 | 27 | 0 | 187 | 80 | 27 | 0 | 8 | 1 | 125 | 98 |
+| XII 7b Phenols | 0 | 20 | 0 | 139 | 70 | 20 | 0 | 7 | 1 | 75 | 96 |
+| XII 7c Ethers | 0 | 21 | 0 | 80 | 41 | 21 | 0 | 10 | 1 | 45 | 96 |
+| XII 8a Aldehydes and Ketones | 0 | 24 | 0 | 189 | 98 | 24 | 0 | 4 | 1 | 200 | 98 |
+| XII 8b Carboxylic Acids | 0 | 17 | 0 | 50 | 19 | 17 | 0 | 12 | 1 | 42 | 79 |
+| XII 9a Aliphatic Amines and Aniline | 0 | 21 | 0 | 178 | 89 | 21 | 0 | 4 | 1 | 106 | 98 |
+| XII 9b Cyanides and Isocyanides | 0 | 13 | 0 | 40 | 15 | 13 | 0 | 5 | 1 | 19 | 95 |
+| XII 9c Diazonium salts | 0 | 17 | 0 | 96 | 40 | 17 | 0 | 11 | 1 | 49 | 88 |
+| XII 10a Carbohydrates | 0 | 18 | 0 | 148 | 75 | 18 | 0 | 1 | 1 | 70 | 96 |
+| XII 10b Proteins | 0 | 21 | 0 | 159 | 83 | 21 | 0 | 4 | 1 | 81 | 96 |
+| XII 10c Vitamins | 0 | 12 | 0 | 38 | 18 | 12 | 0 | 2 | 1 | 18 | 97 |
+| XII 10d Nucleic Acids | 0 | 17 | 0 | 109 | 54 | 17 | 0 | 2 | 1 | 51 | 96 |
+| XII 11a Titrations | 0 | 10 | 0 | 26 | 17 | 10 | 0 | 5 | 1 | 17 | 87 |
+| XII 11b Rate of reaction, pH and cells | 0 | 9 | 0 | 26 | 17 | 9 | 0 | 4 | 1 | 17 | 87 |
+| XII 11c Identifying compounds and functional groups | 0 | 8 | 0 | 25 | 17 | 8 | 0 | 4 | 1 | 17 | 80 |
+| XII 11d Qualitative analysis | 0 | 3 | 0 | 15 | 15 | 3 | 0 | 1 | 1 | 15 | 68 |
+
+## Mathematics
+
+| Topic | Asked | Blueprints | Numerical | Bank | Facts | Structures | Contexts | To structure repeat | Smallest gap | Distinct | Variety |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| XI 1a Sets | 0 | 27 | 10 | 180 | 44 | 29 | 12 | 14 | 1 | 200 | 92 |
+| XI 1b Relations & Functions | 0 | 15 | 0 | 103 | 46 | 15 | 0 | 6 | 1 | 200 | 95 |
+| XI 1c Trigonometry | 0 | 28 | 11 | 166 | 56 | 28 | 11 | 18 | 1 | 200 | 94 |
+| XI 2a Complex Numbers | 0 | 26 | 11 | 139 | 15 | 26 | 9 | 14 | 3 | 200 | 94 |
+| XI 2b Quadratic Equations | 0 | 23 | 11 | 121 | 17 | 23 | 10 | 12 | 3 | 200 | 91 |
+| XI 2c Permutations and Combinations | 0 | 33 | 13 | 118 | 15 | 44 | 23 | 14 | 1 | 200 | 96 |
+| XI 2d Binomial Theorem | 0 | 22 | 10 | 92 | 16 | 22 | 8 | 11 | 1 | 175 | 90 |
+| XI 2e Sequence and Series | 0 | 35 | 14 | 159 | 18 | 35 | 14 | 12 | 1 | 200 | 93 |
+| XI 3a Straight Lines | 0 | 30 | 12 | 185 | 40 | 30 | 12 | 16 | 2 | 200 | 93 |
+| XI 3b Circles | 0 | 26 | 11 | 162 | 42 | 26 | 11 | 10 | 2 | 200 | 94 |
+| XI 3c Conic Section | 0 | 29 | 12 | 167 | 48 | 29 | 11 | 11 | 1 | 200 | 93 |
+| XI 3d Introduction to three-dimensional Geometry | 0 | 18 | 9 | 101 | 16 | 18 | 9 | 9 | 1 | 200 | 89 |
+| XI 4a Limits and Derivatives | 0 | 34 | 13 | 147 | 16 | 34 | 4 | 14 | 3 | 200 | 92 |
+| XI 5a Statistics | 0 | 26 | 13 | 143 | 16 | 32 | 19 | 12 | 2 | 200 | 92 |
+| XI 5b Probability | 0 | 25 | 13 | 156 | 40 | 34 | 21 | 13 | 1 | 198 | 94 |
+| XII 1a Types of relations and functions | 0 | 32 | 11 | 199 | 60 | 32 | 10 | 19 | 1 | 200 | 96 |
+| XII 1b Inverse Trigonometric Functions | 0 | 28 | 11 | 151 | 47 | 28 | 5 | 15 | 1 | 200 | 92 |
+| XII 2a Matrices | 0 | 34 | 11 | 187 | 48 | 34 | 11 | 16 | 1 | 200 | 94 |
+| XII 2b Determinants | 0 | 35 | 13 | 194 | 46 | 35 | 12 | 20 | 1 | 200 | 97 |
+| XII 3a Continuity, Differentiability and Differentiation | 0 | 36 | 14 | 185 | 47 | 36 | 5 | 16 | 1 | 200 | 96 |
+| XII 3b Applications of Derivatives | 0 | 38 | 12 | 238 | 49 | 42 | 16 | 13 | 1 | 200 | 96 |
+| XII 3c Integrals | 0 | 33 | 11 | 176 | 47 | 33 | 3 | 20 | 1 | 200 | 90 |
+| XII 3d Application of Integrals | 0 | 28 | 11 | 127 | 40 | 28 | 10 | 11 | 1 | 130 | 92 |
+| XII 3e Differential Equations | 0 | 29 | 12 | 162 | 45 | 30 | 13 | 16 | 1 | 200 | 94 |
+| XII 4a Vector Algebra | 0 | 33 | 10 | 214 | 60 | 33 | 9 | 16 | 1 | 200 | 96 |
+| XII 5a Three-dimensional Geometry | 0 | 29 | 10 | 174 | 47 | 30 | 10 | 14 | 1 | 200 | 95 |
+| XII 6a Linear Programming | 0 | 27 | 11 | 193 | 50 | 29 | 13 | 14 | 1 | 200 | 94 |
+| XII 7a Probability | 0 | 41 | 11 | 255 | 65 | 46 | 15 | 17 | 1 | 200 | 96 |
+
+## Computer Science
+
+| Topic | Asked | Blueprints | Numerical | Bank | Facts | Structures | Contexts | To structure repeat | Smallest gap | Distinct | Variety |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| XI 1a System of Numeration | 0 | 30 | 10 | 205 | 52 | 38 | 18 | 10 | 1 | 200 | 92 |
+| XI 2a Encodings | 0 | 16 | 0 | 99 | 48 | 16 | 0 | 5 | 1 | 128 | 92 |
+| XI 3a Propositional logic | 0 | 18 | 0 | 117 | 40 | 18 | 0 | 4 | 1 | 101 | 96 |
+| XI 3b Logic and hardware | 0 | 16 | 0 | 64 | 16 | 16 | 0 | 4 | 1 | 89 | 97 |
+| XI 4a Introduction | 0 | 12 | 0 | 39 | 16 | 12 | 0 | 2 | 1 | 15 | 96 |
+| XI 5a Objects and the JVM | 0 | 14 | 0 | 108 | 48 | 14 | 0 | 4 | 1 | 77 | 93 |
+| XI 5b Errors and exceptions | 0 | 12 | 0 | 40 | 16 | 12 | 0 | 2 | 1 | 16 | 96 |
+| XI 6a Primitive values, Wrapper classes, Types and casting | 0 | 18 | 0 | 121 | 54 | 18 | 0 | 4 | 1 | 169 | 88 |
+| XI 7a Variables, Expressions | 0 | 23 | 0 | 165 | 60 | 23 | 0 | 5 | 1 | 200 | 93 |
+| XI 8a Statements, Scope | 0 | 44 | 0 | 270 | 58 | 44 | 0 | 7 | 1 | 200 | 96 |
+| XI 9a Methods and Constructors | 0 | 25 | 0 | 157 | 50 | 25 | 0 | 9 | 1 | 200 | 96 |
+| XI 10a Arrays, Strings | 0 | 23 | 0 | 116 | 15 | 23 | 0 | 5 | 2 | 200 | 96 |
+| XI 11a Basic input/output using Scanner class | 0 | 9 | 0 | 37 | 16 | 9 | 0 | 2 | 1 | 16 | 91 |
+| XI 11b Data File Handling | 0 | 12 | 0 | 39 | 17 | 12 | 0 | 2 | 1 | 17 | 93 |
+| XI 12a Introduction to Python | 0 | 13 | 0 | 54 | 17 | 13 | 0 | 6 | 1 | 123 | 58 |
+| XI 13a Trends in computing and ethical issues | 0 | 13 | 0 | 46 | 20 | 13 | 0 | 2 | 1 | 19 | 96 |
+| XII 1a Propositional logic | 0 | 20 | 0 | 140 | 48 | 20 | 0 | 8 | 1 | 200 | 93 |
+| XII 1b Boolean algebra and Karnaugh maps | 0 | 38 | 0 | 264 | 72 | 38 | 0 | 5 | 1 | 200 | 95 |
+| XII 2a Logic gates | 0 | 19 | 0 | 132 | 54 | 19 | 0 | 4 | 1 | 200 | 93 |
+| XII 2b Applications | 0 | 18 | 0 | 129 | 63 | 18 | 0 | 2 | 1 | 67 | 94 |
+| XII 3a Methods | 0 | 30 | 0 | 246 | 67 | 30 | 0 | 5 | 1 | 200 | 96 |
+| XII 4a Arrays | 0 | 33 | 2 | 237 | 52 | 34 | 3 | 7 | 1 | 200 | 97 |
+| XII 4b String handling | 0 | 23 | 0 | 132 | 45 | 23 | 0 | 8 | 1 | 200 | 96 |
+| XII 5a Recursion | 0 | 26 | 0 | 147 | 40 | 26 | 0 | 4 | 1 | 200 | 95 |
+| XII 6a Inheritance | 0 | 34 | 0 | 211 | 57 | 34 | 0 | 6 | 1 | 200 | 98 |
+| XII 6b Interfaces in Java (Only Conceptual) | 0 | 23 | 0 | 121 | 48 | 23 | 0 | 9 | 1 | 126 | 95 |
+| XII 7a Strings | 0 | 9 | 0 | 42 | 15 | 9 | 0 | 6 | 1 | 139 | 46 |
+| XII 7b Lists | 0 | 11 | 0 | 51 | 15 | 11 | 0 | 7 | 1 | 200 | 72 |
+| XII 7c Tuples | 0 | 11 | 0 | 42 | 15 | 11 | 0 | 6 | 1 | 166 | 42 |
+| XII 8a Binary trees [Conceptual] | 0 | 21 | 0 | 152 | 56 | 21 | 0 | 4 | 1 | 172 | 88 |
+| XII 9a Complexity and Big O notation | 0 | 17 | 0 | 123 | 51 | 17 | 0 | 3 | 1 | 90 | 91 |
+
+Took 259 s.

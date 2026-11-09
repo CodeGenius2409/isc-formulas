@@ -138,7 +138,10 @@ const STRUCTURE_WINDOW = 10;
 const CONTEXT_WINDOW = 3;
 
 /** The next blueprint: the format furthest behind its share in the papers, then the way of asking used least, then one not used yet. */
-function chooseBlueprint(list: Blueprint[], formats: Map<string, number>, families: Map<string, number>, used: Set<string>, rng: Rng): Blueprint {
+function chooseBlueprint(all: Blueprint[], formats: Map<string, number>, families: Map<string, number>, used: Set<string>, recent: string[], rng: Rng): Blueprint {
+  // Nothing from the last few picks while others remain, so that the same template doesn't come straight back with new facts.
+  const rested = all.filter((b) => !recent.includes(b.id));
+  const list = rested.length ? rested : all;
   const share = FORMAT_SHARE[list[0].subject] ?? {};
   const present = shuffled([...new Set(list.map((b) => b.format))], rng);
   let format = present[0];
@@ -222,6 +225,7 @@ export function pickGenerated(set: LoadedBlueprints, pool: Blueprint[], options:
   const families = new Map<string, number>();
   const recentStructures: string[] = [];
   const recentContexts: string[] = [];
+  const recentBlueprints: string[] = [];
   /** Takes a question that passes every check. Later passes leave the softer ones out, rather than come back short. */
   const take = (question: BankQuestion, bp: Blueprint, strict: boolean): boolean => {
     const text = questionKey(question);
@@ -244,6 +248,8 @@ export function pickGenerated(set: LoadedBlueprints, pool: Blueprint[], options:
       if (recentContexts.length > CONTEXT_WINDOW) recentContexts.shift();
     }
     used.add(bp.id);
+    recentBlueprints.push(bp.id);
+    if (recentBlueprints.length > STRUCTURE_WINDOW) recentBlueprints.shift();
     formats.set(bp.format, (formats.get(bp.format) ?? 0) + 1);
     families.set(bp.family ?? bp.id, (families.get(bp.family ?? bp.id) ?? 0) + 1);
     out.push(question);
@@ -267,7 +273,7 @@ export function pickGenerated(set: LoadedBlueprints, pool: Blueprint[], options:
         unit = u;
       }
     }
-    const bp = chooseBlueprint(eligible.filter((b) => b.unit === unit), formats, families, used, rng);
+    const bp = chooseBlueprint(eligible.filter((b) => b.unit === unit), formats, families, used, recentBlueprints, rng);
     const seed = Math.floor(rng() * 2 ** 31);
     const question = generatedQuestion(bp, seed, set.names(bp));
     if (fresh?.resting(historyKeys(question)) || !take(question, bp, true)) {

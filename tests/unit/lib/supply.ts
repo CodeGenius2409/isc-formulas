@@ -142,6 +142,7 @@ export interface TopicSupply {
   toIdenticalRepeat: number;
   variety: number | null;
   bankByFormat: Record<string, number>;
+  bankOrigin?: Record<string, number>;
   bankByDifficulty: Record<string, number>;
   bankCells: Record<string, number>;
   blueprintFormats: Record<string, number>;
@@ -177,7 +178,8 @@ export function measureTopic(ref: TopicRef, all: Loaded): TopicSupply {
   const structures = new Set<string>();
   const contexts = new Set<string>();
   for (const bp of pool) {
-    for (let k = 1; k <= STRUCTURE_SEEDS; k++) {
+    // Enough to see each setting of the engine's blueprints, which number in the thousands.
+    for (let k = 1; k <= (bp.family ? 14 : STRUCTURE_SEEDS); k++) {
       const q = generatedQuestion(bp, k * 7919, set.names(bp));
       structures.add(structureOf(q.item));
       const c = contextOf(q.item);
@@ -215,7 +217,9 @@ export function measureTopic(ref: TopicRef, all: Loaded): TopicSupply {
   const bankByFormat: Record<string, number> = {};
   const bankByDifficulty: Record<string, number> = {};
   const bankCells: Record<string, number> = {};
+  const bankOrigin: Record<string, number> = { written: 0, facts: 0, compiled: 0 };
   for (const d of defs) {
+    bankOrigin[d.origin ?? 'written']++;
     const f = bankFormatOf(d);
     bankByFormat[f] = (bankByFormat[f] ?? 0) + 1;
     bankByDifficulty[d.difficulty] = (bankByDifficulty[d.difficulty] ?? 0) + 1;
@@ -236,6 +240,7 @@ export function measureTopic(ref: TopicRef, all: Loaded): TopicSupply {
     toIdenticalRepeat: Math.round(toIdentical / RUNS),
     variety: varietyRuns ? Math.round(variety / varietyRuns) : null,
     bankByFormat,
+    bankOrigin,
     bankByDifficulty,
     bankCells,
     blueprintFormats,

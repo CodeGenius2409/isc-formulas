@@ -11,6 +11,74 @@ const sum = (list: TopicSupply[], f: (t: TopicSupply) => number) => list.reduce(
 const avg = (values: number[]) => (values.length ? Math.round((values.reduce((a, b) => a + b, 0) / values.length) * 10) / 10 : 0);
 const median = (v: number[]) => [...v].sort((a, b) => a - b)[Math.floor(v.length / 2)] ?? 0;
 
+/** The comparison with the start of v6, the bank by layer, and the stress test. */
+function afterSections(rows: TopicSupply[], top: Set<string>): string[] {
+  const reports = path.resolve(__dirname, '../../reports');
+  const before = JSON.parse(fs.readFileSync(path.join(reports, 'supply-before.json'), 'utf8')) as { rows: TopicSupply[] };
+  const out: string[] = ['## Before and after', '', '| Measure | Before | After |', '|---|---:|---:|'];
+  const row = (name: string, f: (t: TopicSupply) => number, how: 'sum' | 'median' = 'sum') => {
+    const take = (list: TopicSupply[]) => (how === 'sum' ? sum(list, f) : median(list.map(f)));
+    out.push(`| ${name} | ${take(before.rows).toLocaleString('en-GB')} | ${take(rows).toLocaleString('en-GB')} |`);
+  };
+  row('Blueprints', (t) => t.blueprints);
+  row('Distinct structures', (t) => t.structures);
+  row('Facts', (t) => t.facts);
+  row('Bank questions, all layers', (t) => t.bank);
+  row('Median questions before a structure repeats', (t) => t.toStructureRepeat, 'median');
+  row('Median distinct questions per subtopic, capped at 200', (t) => t.toIdenticalRepeat, 'median');
+  out.push(`| Mean variety score | ${avg(before.rows.flatMap((t) => (t.variety === null ? [] : [t.variety])))} | ${avg(rows.flatMap((t) => (t.variety === null ? [] : [t.variety])))} |`);
+
+  // The bank, by where each question came from.
+  const origins: Record<string, Record<string, number>> = {};
+  for (const r of rows) {
+    const o = (origins[SUBJECT_NAME[r.ref.subject]] ??= { written: 0, facts: 0, compiled: 0 });
+    for (const [k, v] of Object.entries(r.bankOrigin ?? {})) o[k] = (o[k] ?? 0) + v;
+  }
+  out.push('', '## The bank, by where each question came from', '', 'Only "Written" is finished questions written by hand as bank questions. "Facts" is reviewed facts asked as fixed questions, which are the same knowledge the generator uses. "Compiled" is frozen from reviewed blueprints, with machine-checked answers.', '', '| Subject | Written | Facts | Compiled | Total |', '|---|---:|---:|---:|---:|');
+  let w = 0, fa = 0, c = 0;
+  for (const [name, o] of Object.entries(origins)) {
+    out.push(`| ${name} | ${o.written.toLocaleString('en-GB')} | ${o.facts.toLocaleString('en-GB')} | ${o.compiled.toLocaleString('en-GB')} | ${(o.written + o.facts + o.compiled).toLocaleString('en-GB')} |`);
+    w += o.written; fa += o.facts; c += o.compiled;
+  }
+  out.push(`| **All** | ${w.toLocaleString('en-GB')} | ${fa.toLocaleString('en-GB')} | ${c.toLocaleString('en-GB')} | ${(w + fa + c).toLocaleString('en-GB')} |`);
+
+  // Against the targets.
+  const need = (r: TopicSupply) => (top.has(r.ref.key) ? 80 : 40);
+  const underAll = rows.filter((r) => r.bank < need(r));
+  const underWritten = rows.filter((r) => (r.bankOrigin?.written ?? 0) < need(r));
+  out.push('', '## Against the 40 and 80 target', '', `- Counting all three layers, ${rows.length - underAll.length} of ${rows.length} subtopics reach it.`, `- Counting only hand-written questions, ${rows.length - underWritten.length} of ${rows.length} reach it.`);
+  if (underAll.length) out.push(`- Below it with all layers: ${underAll.map((r) => `${SUBJECT_NAME[r.ref.subject]} ${r.ref.level} ${r.ref.unit}${r.ref.topic} (${r.bank} of ${need(r)})`).join('; ')}.`);
+
+  // The stress test.
+  const stress = JSON.parse(fs.readFileSync(path.join(reports, 'filter-stress.json'), 'utf8')) as { totals: Record<string, { combos: number; filled: Record<string, number> }>; rows: { subject: string; key: string; format: string; difficulty: number; capacity: Record<string, number> }[] };
+  out.push('', '## Filter stress test', '', 'For each subtopic, fitting format and fitting difficulty, how many combinations can fill a request entirely from exact matches, with no fact asked twice. Generated from `tests/unit/filter-stress.test.ts`.', '', '| Subject | Combinations | 0%: 10 | 0%: 20 | 0%: 40 | 50%: 10 | 50%: 20 | 50%: 40 | 100%: 10 | 100%: 20 | 100%: 40 |', '|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|');
+  for (const [s, t] of Object.entries(stress.totals)) {
+    const cells = [0, 50, 100].flatMap((share) => [10, 20, 40].map((n) => t.filled[`${share}|${n}`] ?? 0));
+    out.push(`| ${SUBJECT_NAME[s]} | ${t.combos.toLocaleString('en-GB')} | ${cells.join(' | ')} |`);
+  }
+  const byFormat = new Map<string, [number, number, number]>();
+  for (const r of stress.rows) {
+    const x = byFormat.get(r.format) ?? [0, 0, 0];
+    x[0]++;
+    if (r.capacity[0] >= 10) x[1]++;
+    if (r.capacity[50] >= 10) x[2]++;
+    byFormat.set(r.format, x);
+  }
+  out.push('', '### By format', '', '| Format | Combinations | Fill 10 at 0% | Fill 10 at 50% |', '|---|---:|---:|---:|');
+  for (const [f, [n, a, b]] of [...byFormat].sort((p, q) => q[1][0] - p[1][0])) out.push(`| ${f} | ${n} | ${a} | ${b} |`);
+
+  // Mock papers.
+  const overlap = path.join(reports, 'paper-overlap.json');
+  if (fs.existsSync(overlap)) {
+    const list = JSON.parse(fs.readFileSync(overlap, 'utf8')) as { name: string; generated: number; questions: number; facts: number; structures: number }[];
+    out.push('', '## Two mock papers running', '', 'With the same settings and the first paper in the history, what the second shares with the first, averaged over 3 runs.', '', '| Paper | Generated | Same questions | Same facts | Same structures |', '|---|---:|---:|---:|---:|');
+    const pc = (x: number) => `${(x * 100).toFixed(1)}%`;
+    for (const r of list) out.push(`| ${r.name} | ${r.generated}% | ${pc(r.questions)} | ${pc(r.facts)} | ${pc(r.structures)} |`);
+  }
+  out.push('');
+  return out;
+}
+
 describe.skipIf(!WHICH)('supply report', () => {
   it('measures every subtopic', async () => {
     const started = Date.now();
@@ -58,6 +126,7 @@ describe.skipIf(!WHICH)('supply report', () => {
         lines.push(`| ${r.ref.level} ${r.ref.unit}${r.ref.topic} ${r.ref.name}${top.has(r.ref.key) ? ' (most asked)' : ''} | ${r.ref.asked} | ${r.blueprints} | ${r.numericBlueprints} | ${r.bank} | ${r.facts} | ${r.structures} | ${r.contexts} | ${r.toStructureRepeat} | ${r.smallestGap ?? '–'} | ${r.toIdenticalRepeat} | ${r.variety ?? '–'} |`);
       }
     }
+    if (WHICH === 'after') lines.splice(lines.findIndex((l) => l.startsWith('## Physics')), 0, ...afterSections(rows, top));
     lines.push('', `Took ${Math.round((Date.now() - started) / 1000)} s.`, '');
     fs.writeFileSync(path.join(reports, `supply-${WHICH}.md`), lines.join('\n'));
   }, 1_800_000);
