@@ -1,0 +1,13 @@
+// Written by hand: inheritance and interfaces, by question type. Places are at(unit, topic)(marks, difficulty).
+import { at, kit, type BankDef } from '../define';
+
+const { program, long } = kit('computerscience', 'XII');
+const A = at(6, 'a');
+const B = at(6, 'b');
+
+const questions: BankDef[] = [
+  program(A(10, 2), 'A class Account has data members holder (String) and balance (double), a constructor taking both, and void show(). A class Savings inherits from it, adding rate (double), a constructor taking all three, a method void addInterest() that adds a year’s interest to the balance, and its own void show() that shows the rate as well.\nWrite both classes. Use super in the constructor and in show().', [['Account’s data members are protected, so that Savings can reach them.', 1], ['Account’s constructor and show().', 2], ['Savings uses extends.', 1], ['Its constructor calls super(holder, balance) first.', 2], ['addInterest() adds balance × rate / 100.', 2], ['show() calls super.show(), then prints the rate.', 2]], '```\nclass Account {\n  protected String holder;\n  protected double balance;\n  Account(String h, double b) {\n    holder = h;\n    balance = b;\n  }\n  void show() {\n    System.out.println(holder + " " + balance);\n  }\n}\n\nclass Savings extends Account {\n  double rate;\n  Savings(String h, double b, double r) {\n    super(h, b);\n    rate = r;\n  }\n  void addInterest() {\n    balance = balance + balance * rate / 100;\n  }\n  void show() {\n    super.show();\n    System.out.println(rate);\n  }\n}\n```'),
+  long(B(10, 2), 'Answer each part on interfaces.\n(i) State three differences between an interface and an abstract class. [3]\n(ii) A class needs to behave as both Printable and Saveable. Why can’t it do this by inheriting from two classes, and how do interfaces solve it? [3]\n(iii) Write an interface Shape with methods area() and name(). [2]\n(iv) What must a class do if it implements Shape but leaves out area()? [2]', ['(i) An interface has only abstract methods, apart from default and static ones, while an abstract class may have ordinary ones.', '(i) An interface’s fields are constants, while an abstract class can have instance variables.', '(i) A class may implement many interfaces, but extends only one class.', ['(ii) Java doesn’t allow a class to extend two classes, which avoids clashes between what they inherit.', 2], '(ii) It can implement both interfaces, as they only state what it must do.', ['(iii) interface Shape { double area(); String name(); }', 2], ['(iv) It must be declared abstract, as it isn’t complete, or it won’t compile.', 2]]),
+];
+
+export default questions;

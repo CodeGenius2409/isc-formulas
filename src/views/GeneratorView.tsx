@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type DragEvent, Suspense } from 'react';
+import { Fragment, useEffect, useMemo, useRef, useState, type DragEvent, Suspense } from 'react';
 import { ArrowDown, ArrowUp, Dices, Download, FileText, FileUp, GripVertical, Lock, LockOpen, PenLine, Plus, Printer, RefreshCw, Save, Trash2, Wand2 } from 'lucide-react';
 import { BankPrompt } from '../components/bank/BankParts';
 import { GeneratedMark, GENERATED_NOTICE, PAPER_NOTICE, ReportProblem } from '../components/bank/GeneratedMark';
@@ -15,7 +15,7 @@ import { isMarkedGenerated } from '../practice/bank/define';
 import type { BankItem, Difficulty } from '../practice/bank/types';
 import { answerLines, saveBlob, STUDENT_FOOTER } from '../practice/gen/docx';
 import { describePlan, generatedCount, planShare, teacherShareStore } from '../practice/gen/mix';
-import { allItems, answerSpace, arranged, bankForSections, buildFullPaper, capacityOf, buildQuestionSet, countAvailable, deleteItem, deletePaper, emptyFilters, FORMATS, makeSets, moveItem, moveItemTo, officialStructure, paperFromFile, paperToFile, presetsStore, regenerateItem, regenerateUnlocked, savePaper, savePreset, teacherHistoryStore, totalMarks, updateItem, avoidRecentStore, recentPaperFreshness, teacherReviewedOnlyStore, type CustomSection, type Filters, type FormatChoice, type PaperItem, type TeacherPaper } from '../practice/gen/teacher';
+import { allItems, printedItems, answerSpace, arranged, bankForSections, buildFullPaper, capacityOf, buildQuestionSet, countAvailable, deleteItem, deletePaper, emptyFilters, FORMATS, makeSets, moveItem, moveItemTo, officialStructure, paperFromFile, paperToFile, presetsStore, regenerateItem, regenerateUnlocked, savePaper, savePreset, teacherHistoryStore, totalMarks, updateItem, avoidRecentStore, recentPaperFreshness, teacherReviewedOnlyStore, type CustomSection, type Filters, type FormatChoice, type PaperItem, type TeacherPaper } from '../practice/gen/teacher';
 
 const freshSeed = () => Math.floor(Math.random() * 2 ** 31);
 
@@ -122,7 +122,7 @@ function CustomStructureEditor({ parts, onChange }: { parts: CustomSection[]; on
 
 const withEdit = (entry: PaperItem): BankItem => (entry.editedText !== undefined ? { ...entry.question.item, text: entry.editedText } : entry.question.item);
 
-function ReviewItem({ entry, number, figure, canMove, onChange, onMove, onDrop, onRegenerate, busy }: { entry: PaperItem; number: number; figure: FigureMark | undefined; canMove: [boolean, boolean]; onChange: (change: Partial<PaperItem> | null) => void; onMove: (by: number) => void; onDrop: (from: string) => void; onRegenerate: () => void; busy: boolean }) {
+function ReviewItem({ entry, number, figure, orFigure, canMove, onChange, onMove, onDrop, onRegenerate, busy }: { entry: PaperItem; number: number; figure: FigureMark | undefined; orFigure?: FigureMark; canMove: [boolean, boolean]; onChange: (change: Partial<PaperItem> | null) => void; onMove: (by: number) => void; onDrop: (from: string) => void; onRegenerate: () => void; busy: boolean }) {
   const [editing, setEditing] = useState(false);
   const [over, setOver] = useState(false);
   const item = withEdit(entry);
@@ -194,6 +194,24 @@ function ReviewItem({ entry, number, figure, canMove, onChange, onMove, onDrop, 
           ))}
         </ol>
       )}
+      {entry.or && (
+        <div className="gen-or-block" data-testid="review-or">
+          <p className="gen-or">OR</p>
+          <BankPrompt item={withEdit(entry.or)} figure={orFigure ?? 'none'} />
+          {entry.or.question.item.form === 'mcq' && (
+            <ol className="gen-options">
+              {entry.or.question.item.options.map((o, i) => (
+                <li key={i}>
+                  <RichText text={o.text} className="rich-inline" />
+                </li>
+              ))}
+            </ol>
+          )}
+          <button type="button" className="btn btn-quiet no-print" onClick={() => onChange({ or: undefined })}>
+            Remove this choice
+          </button>
+        </div>
+      )}
       <div className="gen-actions no-print">
         <button type="button" className="btn btn-quiet" disabled={entry.locked || busy} onClick={onRegenerate}>
           <RefreshCw size={14} aria-hidden /> Regenerate
@@ -223,8 +241,8 @@ function ReviewItem({ entry, number, figure, canMove, onChange, onMove, onDrop, 
 function PrintSheet({ paper, kind }: { paper: TeacherPaper; kind: 'paper' | 'key' }) {
   const shown = useMemo(() => arranged(paper), [paper]);
   const { header, options } = shown;
-  const anyGenerated = allItems(shown).some((i) => isMarkedGenerated(i.question.item));
-  const figures = markFigures(allItems(shown).map((i) => i.question.item), options.diagrams);
+  const anyGenerated = printedItems(shown).some((i) => isMarkedGenerated(i.question.item));
+  const figures = markFigures(printedItems(shown).map((i) => withEdit(i)), options.diagrams);
   let number = 0;
   return (
     <div className="gen-print" style={{ fontSize: `${options.fontSize}pt` }} data-testid="print-sheet" data-kind={kind}>
@@ -251,12 +269,27 @@ function PrintSheet({ paper, kind }: { paper: TeacherPaper; kind: 'paper' | 'key
           {kind === 'paper' && section.note && <p className="gen-note-line">{section.note}</p>}
           {section.items.map((entry) => {
             number += 1;
+            return (
+              <Fragment key={entry.key}>
+                {printedQuestion(entry, number, false)}
+                {entry.or && <p className="gen-or" data-testid="print-or">OR</p>}
+                {entry.or && printedQuestion(entry.or, number, true)}
+              </Fragment>
+            );
+          })}
+        </section>
+      ))}
+      {anyGenerated && kind === 'paper' && <footer className="gen-print-footer">{STUDENT_FOOTER}</footer>}
+    </div>
+  );
+
+  function printedQuestion(entry: PaperItem, n: number, alternative: boolean) {
             const item = withEdit(entry);
             if (kind === 'key') {
               return (
                 <div key={entry.key} className="gen-print-q" data-generated={isMarkedGenerated(item) ? true : undefined}>
                   <p className="font-semibold">
-                    Question {number} <GeneratedMark item={item} /> [{item.marks}]
+                    Question {n}{alternative ? ', the alternative' : ''} <GeneratedMark item={item} /> [{item.marks}]
                   </p>
                   <ul className="gen-key-lines">
                     {answerLines(item).map((line, i) => (
@@ -276,9 +309,9 @@ function PrintSheet({ paper, kind }: { paper: TeacherPaper; kind: 'paper' | 'key
               );
             }
             return (
-              <div key={entry.key} className="gen-print-q" data-generated={isMarkedGenerated(item) ? true : undefined} data-testid="print-question">
+              <div key={entry.key} className="gen-print-q" data-generated={isMarkedGenerated(item) ? true : undefined} data-testid={alternative ? 'print-alternative' : 'print-question'}>
                 <p className="gen-print-num">
-                  <span className="font-semibold">{number}.</span> <GeneratedMark item={item} />
+                  <span className="font-semibold">{n}.</span> <GeneratedMark item={item} />
                   {entry.related && <span className="gen-related">Related subtopic</span>}
                   {options.showMarks && <span className="bank-marks">[{item.marks}]</span>}
                 </p>
@@ -306,12 +339,7 @@ function PrintSheet({ paper, kind }: { paper: TeacherPaper; kind: 'paper' | 'key
                 ))}
               </div>
             );
-          })}
-        </section>
-      ))}
-      {anyGenerated && kind === 'paper' && <footer className="gen-print-footer">{STUDENT_FOOTER}</footer>}
-    </div>
-  );
+  }
 }
 
 function Review({ paper, onChange, onClose, sets, onSets }: { paper: TeacherPaper; onChange: (p: TeacherPaper) => void; onClose: () => void; sets: TeacherPaper[]; onSets: (s: TeacherPaper[]) => void }) {
@@ -323,8 +351,8 @@ function Review({ paper, onChange, onClose, sets, onSets }: { paper: TeacherPape
     if (change.diagrams !== undefined) teacherDiagramsStore.set(change.diagrams);
     onChange({ ...paper, options: { ...paper.options, ...change } });
   };
-  const reviewFigures = useMemo(() => markFigures(allItems(paper).map((i) => withEdit(i)), paper.options.diagrams), [paper]);
-  const anyGenerated = allItems(paper).some((i) => isMarkedGenerated(i.question.item));
+  const reviewFigures = useMemo(() => markFigures(printedItems(paper).map((i) => withEdit(i)), paper.options.diagrams), [paper]);
+  const anyGenerated = printedItems(paper).some((i) => isMarkedGenerated(i.question.item));
 
   const print = (kind: 'paper' | 'key') => {
     setPrintKind(kind);
@@ -463,7 +491,7 @@ function Review({ paper, onChange, onClose, sets, onSets }: { paper: TeacherPape
                       entry={entry}
                       number={number}
                       busy={busy}
-                      figure={reviewFigures.get(withEdit(entry).id)} canMove={[i > 0, i < section.items.length - 1]}
+                      figure={reviewFigures.get(withEdit(entry).id)} orFigure={entry.or ? reviewFigures.get(withEdit(entry.or).id) : undefined} canMove={[i > 0, i < section.items.length - 1]}
                       onChange={(change) => onChange(change === null ? deleteItem(paper, entry.key) : updateItem(paper, entry.key, change))}
                       onMove={(by) => onChange(moveItem(paper, entry.key, by))}
                       onDrop={(from) => onChange(moveItemTo(paper, from, entry.key))}

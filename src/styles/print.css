@@ -155,6 +155,7 @@
     max-width: 8cm;
   }
 
+  .paper-alternative,
   .paper-question,
   .bank-figure {
     break-inside: avoid;
@@ -216,6 +217,7 @@
     border-left: 1.5pt dotted #000000;
   }
 
+  .paper-alternative[data-generated],
   .paper-question[data-generated],
   .bank-body[data-generated] {
     border-left: 1.5pt dotted #000000;

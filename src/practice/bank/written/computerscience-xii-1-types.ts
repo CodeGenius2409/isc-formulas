@@ -1,0 +1,15 @@
+// Written by hand: Boolean algebra, by question type. Places are at(unit, topic)(marks, difficulty).
+import { at, kit, type BankDef } from '../define';
+
+const { long } = kit('computerscience', 'XII');
+const A = at(1, 'a');
+const B = at(1, 'b');
+
+const questions: BankDef[] = [
+  long(A(10, 2), 'Answer each part.\n(i) Write the truth table of p ⊕ q, and write p ⊕ q using only ∧, ∨ and ¬. [3]\n(ii) Show by truth table that (p → q) ∧ (q → p) is equivalent to p ↔ q. [3]\n(iii) Let p be “it is hot” and q be “the fan is on”. Write in words: p → q, and its contrapositive. [2]\n(iv) Is p ∧ ¬p a tautology, a contradiction or a contingency? Say why. [2]', ['(i) The table gives 0, 1, 1, 0 for 00, 01, 10, 11.', ['(i) p ⊕ q = (p ∧ ¬q) ∨ (¬p ∧ q).', 2], '(ii) All four rows are listed.', '(ii) The columns for both implications and their conjunction are correct.', '(ii) The final columns agree on every row.', '(iii) If it is hot, the fan is on.', '(iii) If the fan is not on, it is not hot.', '(iv) A contradiction.', '(iv) p and ¬p can never both be true, so it is false on every row.']),
+  long(B(10, 2), 'Given F(A, B, C, D) = Σ(0, 1, 2, 5, 8, 9, 10):\n(i) Reduce it by a four-variable Karnaugh map, showing the groups. [6]\n(ii) Draw the logic circuit of the reduced form using NOT, AND and OR gates. [2]\n(iii) Write the canonical term for minterm 5. [2]', [['(i) The map is drawn with the seven 1s in the right cells.', 2], ['(i) The quad with B′D′ covers 0, 2, 8, 10.', 1], ['(i) The quad with B′C′ covers 0, 1, 8, 9.', 1], ['(i) The pair with A′C′D covers 1, 5.', 1], ['(i) F = B′D′ + B′C′ + A′C′D.', 1], ['(ii) Three AND gates feed one OR gate, with NOT gates on the inputs that need them.', 2], ['(iii) 5 is 0101, so A′BC′D.', 2]]),
+  long(B(10, 3), 'Given F(P, Q, R, S) = π(3, 7, 11, 12, 13, 14, 15):\n(i) Reduce it by a Karnaugh map for sums, showing the groups. [6]\n(ii) Draw the circuit of the reduced form using only NOR gates, or say how you would change each gate. [2]\n(iii) Write F as a sum of minterms. [2]', [['(i) The map has 0s in the seven cells named.', 2], ['(i) The quad 12, 13, 14, 15 gives (P′ + Q′).', 1], ['(i) The quad 3, 7, 11, 15 gives (R′ + S′).', 1], ['(i) Every 0 is covered by these two groups.', 1], ['(i) F = (P′ + Q′)(R′ + S′).', 1], ['(ii) Each OR is a NOR followed by a NOT, and the AND is a NOR of the inverted sums.', 2], ['(iii) F = Σ(0, 1, 2, 4, 5, 6, 8, 9, 10).', 2]]),
+  long(B(10, 2), 'Answer each part.\n(i) Simplify using the laws of Boolean algebra, naming each law: X′Y + XY′ + XY. [3]\n(ii) State and prove De Morgan’s first law by truth table. [3]\n(iii) Write the dual of A + A′B = A + B, and the complement of AB + C. [2]\n(iv) Write X + YZ in canonical sum-of-products form. [2]', ['(i) X′Y + X(Y′ + Y), taking X out as a common factor.', '(i) X′Y + X, as Y′ + Y = 1.', '(i) X + Y, by the absorption law.', '(ii) (A + B)′ = A′ · B′.', ['(ii) The table has all four rows, and the two columns agree.', 2], '(iii) The dual is A · (A′ + B) = A · B.', '(iii) The complement is (A′ + B′) · C′.', ['(iv) X + YZ = XY′Z′ + XY′Z + XYZ′ + XYZ + X′YZ.', 2]]),
+];
+
+export default questions;

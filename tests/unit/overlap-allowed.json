@@ -1,0 +1,146 @@
+{
+ "physics XI 0%": {
+  "questions": 0,
+  "structures": 0,
+  "asks": 0.00980392156862745,
+  "fifth": 0.1282051282051282
+ },
+ "physics XI 50%": {
+  "questions": 0,
+  "structures": 0,
+  "asks": 0,
+  "fifth": 0
+ },
+ "physics XI 100%": {
+  "questions": 0,
+  "structures": 0,
+  "asks": 0.017543859649122806,
+  "fifth": 0
+ },
+ "physics XII 0%": {
+  "questions": 0,
+  "structures": 0,
+  "asks": 0,
+  "fifth": 0
+ },
+ "physics XII 50%": {
+  "questions": 0,
+  "structures": 0,
+  "asks": 0,
+  "fifth": 0
+ },
+ "physics XII 100%": {
+  "questions": 0,
+  "structures": 0,
+  "asks": 0,
+  "fifth": 0
+ },
+ "chemistry XI 0%": {
+  "questions": 0,
+  "structures": 0,
+  "asks": 0,
+  "fifth": 0.225
+ },
+ "chemistry XI 50%": {
+  "questions": 0,
+  "structures": 0,
+  "asks": 0.008333333333333333,
+  "fifth": 0
+ },
+ "chemistry XI 100%": {
+  "questions": 0,
+  "structures": 0,
+  "asks": 0.02543859649122807,
+  "fifth": 0.025000000000000005
+ },
+ "chemistry XII 0%": {
+  "questions": 0,
+  "structures": 0,
+  "asks": 0,
+  "fifth": 0.125
+ },
+ "chemistry XII 50%": {
+  "questions": 0,
+  "structures": 0,
+  "asks": 0.008333333333333333,
+  "fifth": 0
+ },
+ "chemistry XII 100%": {
+  "questions": 0,
+  "structures": 0,
+  "asks": 0.009009009009009009,
+  "fifth": 0
+ },
+ "mathematics XI 0%": {
+  "questions": 0,
+  "structures": 0,
+  "asks": 0.01826826826826827,
+  "fifth": 0.08333333333333333
+ },
+ "mathematics XI 50%": {
+  "questions": 0,
+  "structures": 0,
+  "asks": 0.059547352230279064,
+  "fifth": 0
+ },
+ "mathematics XI 100%": {
+  "questions": 0,
+  "structures": 0,
+  "asks": 0.14143692564745194,
+  "fifth": 0.03472222222222222
+ },
+ "mathematics XII 0%": {
+  "questions": 0,
+  "structures": 0,
+  "asks": 0,
+  "fifth": 0
+ },
+ "mathematics XII 50%": {
+  "questions": 0,
+  "structures": 0,
+  "asks": 0.060844902224212565,
+  "fifth": 0
+ },
+ "mathematics XII 100%": {
+  "questions": 0,
+  "structures": 0,
+  "asks": 0.10246770773086562,
+  "fifth": 0
+ },
+ "computerscience XI 0%": {
+  "questions": 0,
+  "structures": 0,
+  "asks": 0.04545454545454545,
+  "fifth": 0.32
+ },
+ "computerscience XI 50%": {
+  "questions": 0,
+  "structures": 0,
+  "asks": 0.014492753623188406,
+  "fifth": 0.17333333333333334
+ },
+ "computerscience XI 100%": {
+  "questions": 0,
+  "structures": 0,
+  "asks": 0.013888888888888888,
+  "fifth": 0.13333333333333333
+ },
+ "computerscience XII 0%": {
+  "questions": 0,
+  "structures": 0,
+  "asks": 0.05742204655248134,
+  "fifth": 0.24
+ },
+ "computerscience XII 50%": {
+  "questions": 0,
+  "structures": 0,
+  "asks": 0.0428743961352657,
+  "fifth": 0.12
+ },
+ "computerscience XII 100%": {
+  "questions": 0,
+  "structures": 0,
+  "asks": 0.04055555555555556,
+  "fifth": 0.08
+ }
+}

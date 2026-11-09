@@ -7,7 +7,8 @@ import { teacherDiagramsStore } from './figures';
 import { readJson, writeJson } from '../../lib/storage';
 import type { ClassLevel, SubjectId } from '../../data/types';
 import { bankQuestion, loadBank, loadBankUnits, type LoadedBank } from '../bank/index';
-import { paperSpec } from '../bank/paper';
+import { composeSlot, createComposer, formatOfQuestion, sectionTarget } from '../bank/compose';
+import { paperSpec, unitWeights } from '../bank/paper';
 import type { BankDef, BankQuestion, BankType, Difficulty, GeneratedTag, QuestionFormat } from '../bank/types';
 import { seededRng, type Rng } from '../questions';
 import { tryQuestion } from './engine';
@@ -232,6 +233,8 @@ export interface PaperItem {
   slot?: { marks: number; units?: string[] };
   /** From a related subtopic in a chosen chapter, as there weren't enough in the subtopics chosen. */
   related?: boolean;
+  /** The question set beside this one as its "OR" alternative. */
+  or?: PaperItem;
 }
 
 export interface HeaderFields {
@@ -255,7 +258,7 @@ export interface PaperOptions {
 
 export const DEFAULT_OPTIONS: PaperOptions = { shuffleQuestions: false, shuffleOptions: false, diagrams: true, showMarks: true, answerLines: 0, fontSize: 12 };
 
-export const ISC_INSTRUCTIONS = 'Answer every question in Part I, and the stated number from each later part.\nThe marks for each question are in square brackets.\nShow your working beside each answer, including any rough work.\nUse the first 15 minutes to read the paper. Begin writing after that.';
+export const ISC_INSTRUCTIONS = 'Answer every question in Part I, and the stated number from each later part. Where a question has an OR, answer only one of the two.\nThe marks for each question are in square brackets.\nShow your working beside each answer, including any rough work.\nUse the first 15 minutes to read the paper. Begin writing after that.';
 
 export interface PaperSectionDraft {
   name: string;
@@ -286,6 +289,8 @@ export interface TeacherPaper {
 }
 
 export const allItems = (paper: TeacherPaper): PaperItem[] => paper.sections.flatMap((s) => s.items);
+/** Every question printed, with the "OR" alternatives. */
+export const printedItems = (paper: TeacherPaper): PaperItem[] => paper.sections.flatMap((s) => s.items.flatMap((i) => (i.or ? [i, i.or] : [i])));
 export const totalMarks = (paper: TeacherPaper): number =>
   paper.sections.reduce((sum, s) => {
     const marks = s.items.map((i) => i.question.item.marks);
@@ -520,36 +525,69 @@ export interface CustomSection {
   marks: number;
   formats: FormatChoice[];
   choose?: number;
+  /** How many of its questions have an "OR" alternative. */
+  or?: number;
 }
 
 /** The official structure for a subject and class, as an editable list of sections. */
 export function officialStructure(subject: SubjectId, level: ClassLevel): (CustomSection & { units?: number[] })[] {
   return paperSpec(subject, level).sections.flatMap((section) =>
-    section.slots.map((slot, i) => ({ name: section.slots.length > 1 ? `${section.name} (${i + 1})` : section.name, count: slot.count, marks: slot.marks, formats: [], choose: section.choose, units: section.units })),
+    section.slots.map((slot, i) => ({ name: section.slots.length > 1 ? `${section.name} (${i + 1})` : section.name, count: slot.count, marks: slot.marks, formats: [], choose: section.choose, units: section.units, or: section.or })),
   );
 }
 
-/** A whole paper, from the official structure or a custom one. */
+/** Section A of these subjects keeps each kind together, as the real one does. */
+const GROUPED: Partial<Record<SubjectId, FormatChoice[]>> = {
+  chemistry: ['complete', 'mcq', 'assertion', 'numerical', 'reason', 'very-short'],
+  mathematics: ['mcq', 'assertion', 'very-short'],
+};
+
+/** A whole paper, from the official structure or a custom one. A section with no formats chosen follows the real paper's mix. */
 export async function buildFullPaper(filters: Filters, level: ClassLevel, structure: (CustomSection & { units?: number[] })[], subjectLabel: string, seed: number, avoid: Set<string> = new Set(), fresh?: Freshness): Promise<TeacherPaper> {
   const rng = seededRng(seed);
-  const used = new Set<string>();
-  const seen = new Set<string>();
-  const seenFacts = new Set<string>();
-  const taken = new Set(avoid);
+  const weights = await unitWeights(filters.subject, level);
+  const composer = createComposer({ subject: filters.subject, level, set: undefined, weights, share: filters.share, rng, fresh, reviewedOnly: filters.reviewedOnly });
   let short = 0;
-  let filled = 0;
+  const related: PaperItem[] = [];
   const sections: PaperSectionDraft[] = [];
   for (const part of structure) {
     const units = part.units?.map((u) => `${level} ${u}`);
     const f: Filters = { ...filters, levels: [level], marks: [part.marks], formats: part.formats, units: units ?? filters.units, topics: units ? [] : filters.topics };
-    const drawn = await drawQuestions({ count: part.count, filters: f, rng, avoid: taken, usedBlueprints: used, seenText: seen, seenFacts, slot: { marks: part.marks, units }, fresh });
-    for (const i of drawn.items) taken.add(i.key);
-    // A paper isn't handed out short, so if generated questions run out, the bank fills the section. At 0%, the shortfall is said instead.
-    const fill = drawn.short > 0 && filters.share > 0 ? await drawQuestions({ count: drawn.short, filters: { ...f, share: 50 }, rng, avoid: taken, usedBlueprints: used, seenText: seen, seenFacts, slot: { marks: part.marks, units }, fresh }) : { items: [], short: 0 };
-    for (const i of fill.items) taken.add(i.key);
-    filled += fill.items.length;
-    short += fill.short;
-    sections.push({ name: part.name, note: part.choose ? `Answer any ${part.choose}.` : `${part.count} ${part.count === 1 ? 'question' : 'questions'} of ${part.marks} ${part.marks === 1 ? 'mark' : 'marks'}${part.count === 1 ? '' : ' each'}.`, choose: part.choose, items: [...drawn.items, ...fill.items] });
+    const target = part.formats.length ? undefined : sectionTarget(filters.subject, level, part.name, part.marks);
+    const slot = (narrow: Filters, source: Source, count: number, or: number) => {
+      composer.set = source.set;
+      return composeSlot(composer, {
+        defs: source.bank.defs.filter((d) => bankMatches(d, level, narrow) && !avoid.has(d.id)),
+        blueprints: source.set.blueprints.filter((b) => blueprintMatches(b, narrow)),
+        bank: source.bank,
+        marks: part.marks,
+        count,
+        mix: target?.mix,
+        figure: target?.figure,
+        cbq: target?.cbq,
+        or,
+        grouped: part.marks === 1 && !part.formats.length ? GROUPED[filters.subject] : undefined,
+      });
+    };
+    const [source] = await loadSources(f);
+    const drawn = slot(f, source, part.count, part.or ?? 0);
+    const slotTag = { marks: part.marks, units };
+    const items: PaperItem[] = drawn.questions.map((q) => ({ ...toItem(q, slotTag), ...(drawn.alternatives[q.item.id] ? { or: toItem(drawn.alternatives[q.item.id], slotTag) } : {}) }));
+    // The last resort, as for a set: related subtopics in the chapters chosen, which are labelled.
+    let left = drawn.short;
+    if (left > 0 && f.topics.length) {
+      const wider = widened(f);
+      const [whole] = await loadSources(wider);
+      const more = slot(wider, whole, left, 0);
+      const extra = more.questions.map((q) => ({ ...toItem(q, slotTag), related: true }));
+      items.push(...extra);
+      related.push(...extra);
+      left = more.short;
+    }
+    short += left;
+    const orCount = items.filter((i) => i.or).length;
+    const orText = orCount ? ` Internal choice in ${orCount} ${orCount === 1 ? 'question' : 'questions'}.` : '';
+    sections.push({ name: part.name, note: `${part.choose ? `Answer any ${part.choose}.` : `${part.count} ${part.count === 1 ? 'question' : 'questions'} of ${part.marks} ${part.marks === 1 ? 'mark' : 'marks'}${part.count === 1 ? '' : ' each'}.`}${orText}`, choose: part.choose, items });
   }
   const paper: TeacherPaper = {
     id: `t-${seed}-${Date.now().toString(36)}`,
@@ -562,7 +600,7 @@ export async function buildFullPaper(filters: Filters, level: ClassLevel, struct
     sections,
     createdAt: Date.now(),
     shortfall: short ? `${short} ${short === 1 ? 'question' : 'questions'} couldn’t be found for these choices.` : undefined,
-    relatedNote: [relatedSummary(sections.flatMap((s) => s.items)), filled ? `${filled} ${filled === 1 ? 'question comes' : 'questions come'} from the bank, as there weren’t enough new ones for that section.` : ''].filter(Boolean).join(' ') || undefined,
+    relatedNote: relatedSummary(related),
     repeatNote: repeatSummary(sections.flatMap((s) => s.items), fresh),
   };
   paper.header.maxMarks = String(totalMarks(paper));
@@ -578,7 +616,11 @@ export async function regenerateItem(paper: TeacherPaper, key: string, seed: num
       items: await Promise.all(
         section.items.map(async (item) => {
           if (item.key !== key || item.locked) return item;
-          return (await replacementFor(paper, item, rng, fresh)) ?? item;
+          const next = (await replacementFor(paper, item, rng, fresh)) ?? item;
+          if (!item.or) return next;
+          // Its "OR" goes with it, being set to match. If nothing else fits, the old one stays.
+          const shadow = { ...paper, sections: paper.sections.map((s) => ({ ...s, items: s.items.map((i) => (i.key === item.key ? next : i)) })) };
+          return { ...next, or: (await replacementFor(shadow, item.or, rng, fresh)) ?? item.or };
         }),
       ),
     })),
@@ -587,9 +629,9 @@ export async function regenerateItem(paper: TeacherPaper, key: string, seed: num
 }
 
 async function replacementFor(paper: TeacherPaper, item: PaperItem, rng: Rng, fresh?: Freshness): Promise<PaperItem | null> {
-  const taken = new Set(allItems(paper).map((i) => i.key));
-  const seen = new Set(allItems(paper).map((i) => questionKey(i.question)));
-  const seenFacts = new Set(allItems(paper).flatMap((i) => (i.key === item.key ? [] : factsOf(i.question))));
+  const taken = new Set(printedItems(paper).map((i) => i.key));
+  const seen = new Set(printedItems(paper).map((i) => questionKey(i.question)));
+  const seenFacts = new Set(printedItems(paper).flatMap((i) => (i.key === item.key ? [] : factsOf(i.question))));
   const old = item.question.item;
   // A generated one gets new values from its own blueprint when it can, which keeps the question's shape.
   if (old.generated) {
@@ -603,7 +645,12 @@ async function replacementFor(paper: TeacherPaper, item: PaperItem, rng: Rng, fr
     }
   }
   const f: Filters = { ...paper.filters, levels: [old.level], marks: [old.marks], units: item.slot?.units ?? paper.filters.units, topics: item.slot?.units ? [] : paper.filters.topics };
-  const drawn = await drawQuestions({ count: 1, filters: f, rng, avoid: taken, seenText: seen, seenFacts, fresh });
+  // The same format first, so that a paper keeps its mix. If a paper is narrowed to some formats, that already holds.
+  const sameKind: Filters = f.formats.length ? f : { ...f, formats: [formatOfQuestion(item.question)] };
+  const inKind = await drawQuestions({ count: 1, filters: sameKind, rng, avoid: taken, seenText: new Set(seen), seenFacts: new Set(seenFacts), fresh });
+  // A draw that came back with something used lately isn't worth keeping while another format has something unused.
+  const good = inKind.items[0] && !inKind.items[0].related && !fresh?.resting(historyKeys(inKind.items[0].question));
+  const drawn = good ? inKind : await drawQuestions({ count: 1, filters: f, rng, avoid: taken, seenText: seen, seenFacts, fresh });
   const next = drawn.items[0];
   return next ? { ...item, key: next.key, question: next.question, editedText: undefined } : null;
 }
@@ -631,7 +678,7 @@ export async function makeSets(paper: TeacherPaper, names: string[], baseSeed: n
     const open = allItems(current).filter((item) => !item.locked);
     const repeated = i > 0 ? repeatSummary(open, onlyEarlier, 'an earlier set') : undefined;
     out.push({ ...current, id: `${paper.id}-${names[i]}`, setName: names[i], seed: baseSeed + i * 1000, title: `${paper.title}, Set ${names[i]}`, repeatNote: repeated ?? current.repeatNote });
-    for (const item of open) for (const key of historyKeys(item.question)) inEarlierSets.set(key, i + 1);
+    for (const item of open) for (const key of [...historyKeys(item.question), ...(item.or ? historyKeys(item.or.question) : [])]) inEarlierSets.set(key, i + 1);
   }
   return out;
 }
@@ -725,7 +772,7 @@ export const avoidRecentStore = createStore<boolean>(readJson<boolean>('isc-teac
 export function recentPaperFreshness(): Freshness {
   const used = new Map<string, number>();
   for (const paper of teacherHistoryStore.get()) {
-    for (const item of allItems(paper)) {
+    for (const item of printedItems(paper)) {
       for (const key of historyKeys(item.question)) used.set(key, Math.max(used.get(key) ?? 0, paper.createdAt));
     }
   }

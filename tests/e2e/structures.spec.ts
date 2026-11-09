@@ -1,7 +1,10 @@
 // Bond-line structures: drawn with their atom labels, in the theme's colour, enlargeable, and offline.
 import AxeBuilder from '@axe-core/playwright';
-import { expect, test } from '@playwright/test';
+import { expect as baseExpect, test } from '@playwright/test';
 import { openRoute, setTheme, waitForServiceWorker, watchProblems } from './helpers';
+
+// The drawing library loads on first need, which can take more than the usual five seconds on a busy machine.
+const expect = baseExpect.configure({ timeout: 30_000 });
 
 test('a reaction is drawn out, with labelled atoms and a text alternative', async ({ page }) => {
   const problems = watchProblems(page);
@@ -75,12 +78,22 @@ test('the columns of a row are not squeezed by a long reaction', async ({ page }
   await page.setViewportSize({ width: 1024, height: 768 });
   await page.goto('/#/book/chemistry/XII/7?s=4');
   await expect(page.locator('.structures .molecule').first()).toBeVisible();
-  const row = await page.locator('main .row-main').filter({ has: page.locator('.molecule') }).first().boundingBox();
-  const structure = await page.locator('main .row-structure').first().boundingBox();
-  expect(structure!.x).toBeGreaterThanOrEqual(row!.x);
-  expect(structure!.x + structure!.width).toBeLessThanOrEqual(row!.x + row!.width + 1);
-  const name = await page.locator('main .row-name').first().boundingBox();
-  expect(name!.width).toBeGreaterThan(80);
+  // All from one row at one moment. The list can replace a row as it settles, so a measurement taken in steps can be of two rows.
+  await expect
+    .poll(() =>
+      page.evaluate(() => {
+        const row = [...document.querySelectorAll('main .row-main')].find((r) => r.querySelector('.molecule'));
+        const structure = row?.querySelector('.row-structure');
+        const name = row?.querySelector('.row-name');
+        if (!row || !structure || !name) return 'no row yet';
+        const [r, s, n] = [row, structure, name].map((el) => el.getBoundingClientRect());
+        if (s.left < r.left) return 'structure starts left of its row';
+        if (s.right > r.right + 1) return 'structure runs past its row';
+        if (n.width <= 80) return 'the name is squeezed';
+        return 'fits';
+      }),
+    )
+    .toBe('fits');
 });
 
 test('a section restored from the URL stays put when the structures arrive', async ({ page }) => {
