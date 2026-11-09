@@ -100,7 +100,7 @@ export type Question = NumericQuestion | McqQuestion | RecallQuestion | BankQues
 
 const DEG = Math.PI / 180;
 
-function niceValue(v: ResolvedVar, rng: Rng): number {
+export function niceValue(v: ResolvedVar, rng: Rng): number {
   const [lo, hi] = v.gen;
   if (v.show === 'deg') {
     const low = Math.ceil(lo / DEG / 5);
@@ -113,7 +113,7 @@ function niceValue(v: ResolvedVar, rng: Rng): number {
   return Number(raw.toPrecision(2));
 }
 
-function rawOf(v: ResolvedVar, value: number): { raw: string; unit: string } {
+export function rawOf(v: ResolvedVar, value: number): { raw: string; unit: string } {
   if (v.show === 'deg') return { raw: String(Math.round(value / DEG)), unit: 'deg' };
   return { raw: plainNumber(value), unit: v.unit };
 }

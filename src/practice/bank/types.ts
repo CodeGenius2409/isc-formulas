@@ -29,10 +29,50 @@ export interface GeneratedTag {
   blueprint: string;
   seed: number;
   style: 'paper-style' | 'cbq-style';
-  format: 'mcq' | 'assertion' | 'very-short' | 'short' | 'long' | 'numerical' | 'derivation' | 'reason' | 'distinguish' | 'diagram' | 'cbq' | 'output' | 'error' | 'program';
+  format: QuestionFormat;
   /** Its blueprint hasn't been read as a teacher would yet. */
   unreviewed?: true;
+  /** The kind of setting, such as "sport", where it has one. */
+  context?: string;
+  /** The way of asking, where the blueprint names one. */
+  family?: string;
 }
+
+/** Every format a question can be filed under, on both the generated side and the bank's. */
+export type QuestionFormat =
+  | 'mcq'
+  | 'assertion'
+  | 'very-short'
+  | 'short'
+  | 'long'
+  | 'numerical'
+  | 'derivation'
+  | 'reason'
+  | 'distinguish'
+  | 'diagram'
+  | 'cbq'
+  | 'statement'
+  | 'match'
+  | 'mistake'
+  | 'complete'
+  | 'order'
+  | 'odd'
+  | 'data'
+  | 'predict'
+  | 'output'
+  | 'error'
+  | 'program'
+  | 'change'
+  | 'trace'
+  | 'fill'
+  | 'convert';
+
+/**
+ * Where a bank question came from. "written" was written by hand as a finished question, "facts" is a reviewed fact from
+ * the knowledge base asked as a fixed question, and "compiled" is an instance frozen from a reviewed blueprint, its answer
+ * checked by machine. Reports count them apart. Absent means written, as in the first bank.
+ */
+export type BankOrigin = 'written' | 'facts' | 'compiled';
 
 /** One marking point. */
 export interface MarkPoint {
@@ -68,6 +108,16 @@ interface Tags {
   answerLewis?: string[];
   /** A deliberate short recall item. The quality gate caps how many of these there are. */
   recall?: 1;
+  /** The format it's filed under, where its type alone can't say. */
+  format?: QuestionFormat;
+  /** Paper-style unless it says otherwise. */
+  style?: GeneratedTag['style'];
+  /** Where it came from. Absent means written, as in the first bank. */
+  origin?: BankOrigin;
+  /** What it shares a structure with: two with the same shape and context never share a paper. */
+  shape?: string;
+  /** The kind of setting, such as "sport", where it has one. */
+  context?: string;
 }
 
 export interface McqDef extends Tags {

@@ -11,7 +11,7 @@ import type { Blueprint, Body, Format, Style } from './types';
 import { DERIVATIONS, derivationFact } from '../derivations';
 
 export type Place = [unit: number, topic: string, marks: number, difficulty: Difficulty];
-type Range = [number, number, number] | number[];
+export type Range = [number, number, number] | number[];
 
 export type Values = Record<string, number>;
 
@@ -91,6 +91,12 @@ export interface Facts {
   cases?: { scene: string; parts: [ask: string, answer: string, marks: number][] }[];
   /** Diagram-based: what to draw, then what earns marks. */
   draw?: [question: string, ...points: string[]][];
+  /** Arrange in order: the instruction, the items in the right order, and why. */
+  order?: [instruction: string, items: string[], why: string][];
+  /** Odd one out: the items, which one, and why. */
+  odd?: [items: string[], odd: string, why: string][];
+  /** Predict and explain: what is changed, what happens, and why. */
+  predict?: [question: string, happens: string, why: string][];
   /**
    * How facts in this topic relate, which gives assertion and reason, and "distinguish between", more good pairs.
    * "cause": truth a happens because of truth b. "same": truths a and b are about one concept, and neither explains the other.
@@ -108,12 +114,23 @@ export function mergeKnowledge(...sets: Record<string, Facts>[]): Record<string,
   return out;
 }
 
+/** Each reviewed numerical's values, by class: the variety engine asks new things of the same realistic situations. */
+export interface NumSource {
+  unit: number;
+  topic: string;
+  vars: Record<string, Range>;
+  derive?: (v: Values) => Values;
+  when?: (v: Values) => boolean;
+  part: NumericPartDef;
+}
+export const NUM_SOURCES = new Map<string, NumSource[]>();
+
 /** Every topic's merged knowledge, by "subject level unit+topic". Tests and the report read this. */
 export const FACT_BOOK = new Map<string, Facts>();
 
 const CODE: Record<SubjectId, string> = { physics: 'p', chemistry: 'c', mathematics: 'm', computerscience: 'k' };
 
-function drawValues(g: Gen, vars: Record<string, Range>): Values {
+export function drawValues(g: Gen, vars: Record<string, Range>): Values {
   const out: Values = {};
   for (const [name, spec] of Object.entries(vars)) {
     // Three numbers are a range: low, high and step. A choice of three needs writing as a range, or as a longer list.
@@ -165,7 +182,19 @@ export function blueprintsFor(subject: SubjectId, level: ClassLevel, knowledge: 
     make,
   });
 
-  const num = (key: string, place: Place, spec: NumSpec): Blueprint => ({
+  const remember = (place: Place, vars: Record<string, Range>, parts: NumericPartDef[], derive?: (v: Values) => Values, when?: (v: Values) => boolean) => {
+    const key = `${subject} ${level}`;
+    const list = NUM_SOURCES.get(key) ?? [];
+    for (const part of parts) list.push({ unit: place[0], topic: place[1], vars, derive, when, part });
+    NUM_SOURCES.set(key, list);
+  };
+
+  const num = (key: string, place: Place, spec: NumSpec): Blueprint => {
+    remember(place, spec.vars, spec.variants ? spec.variants.flatMap((v) => v.parts) : (spec.parts ?? []), spec.derive, spec.when);
+    return numBlueprint(key, place, spec);
+  };
+
+  const numBlueprint = (key: string, place: Place, spec: NumSpec): Blueprint => ({
     ...base(key, place, 'numerical', spec.format ?? 'numerical', spec.style ?? 'paper-style'),
     make(g) {
       const values = drawValues(g, spec.vars);
@@ -178,7 +207,12 @@ export function blueprintsFor(subject: SubjectId, level: ClassLevel, knowledge: 
     },
   });
 
-  const mcqNum = (key: string, place: Place, spec: McqNumSpec): Blueprint => ({
+  const mcqNum = (key: string, place: Place, spec: McqNumSpec): Blueprint => {
+    remember(place, spec.vars, [{ ask: '', use: spec.use, find: spec.find, given: spec.given, unit: spec.unit, marks: 1 }], spec.derive, spec.when);
+    return mcqBlueprint(key, place, spec);
+  };
+
+  const mcqBlueprint = (key: string, place: Place, spec: McqNumSpec): Blueprint => ({
     ...base(key, place, 'mcq', 'mcq', spec.style ?? 'paper-style'),
     make(g) {
       const values = drawValues(g, spec.vars);
@@ -204,10 +238,10 @@ export function blueprintsFor(subject: SubjectId, level: ClassLevel, knowledge: 
     /** A fact's name, the same in every format that asks it. */
     const fact = (text: string) => `${prefix}-${unit}${topic}:${text.slice(0, 80)}`;
 
-    if (f.define && f.define.length >= 3 && (subject === 'chemistry' || subject === 'physics')) {
+    if (f.define && f.define.length >= 3) {
       const list = f.define;
       const size = Math.min(4, list.length);
-      add('match', size, 2, 'short', 'very-short', 'paper-style', (g) => {
+      add('match', size, 2, 'short', 'match', 'paper-style', (g) => {
         const pairs = g.sample(list, size);
         const order = g.shuffle(pairs.map((_, i) => i));
         if (order.every((j, i) => j === i)) g.retry('the columns line up');
@@ -354,6 +388,71 @@ export function blueprintsFor(subject: SubjectId, level: ClassLevel, knowledge: 
           return g.theory(`${c.scene}\n${asks}`, c.parts.map((p, i) => [`(${['i', 'ii', 'iii', 'iv', 'v'][i]}) ${p[1]}`, p[2]]), { facts: [fact(c.scene)] });
         });
       }
+    }
+    // The same facts, asked other ways.
+    const truthList = f.truths ?? [];
+    if (truthList.length >= 4) {
+      add('correct', 1, 2, 'mcq', 'statement', 'paper-style', (g) => {
+        const [picked, ...rest] = g.shuffle(truthList);
+        const wrong = g.sample(rest, 3).map((t) => t[1]);
+        return { ...g.mcq('Which one of the following statements is true?', picked[0], wrong, { why: `The others are false. ${picked[0]}` }), facts: [fact(picked[0])] };
+      });
+      add('incorrect', 1, 2, 'mcq', 'statement', 'paper-style', (g) => {
+        const [picked, ...rest] = g.shuffle(truthList);
+        const right = g.sample(rest, 3).map((t) => t[0]);
+        return { ...g.mcq('Which one of the following statements is incorrect?', picked[1], right, { why: `This one is false. In fact: ${picked[0]}` }), facts: [fact(picked[0])] };
+      });
+    }
+    if (truthList.length) {
+      add('wrongly', 2, 2, 'short', 'mistake', 'paper-style', (g) => {
+        const [right, wrong] = g.pick(truthList);
+        return g.theory(`A student writes: “${wrong}” Say what is wrong with this, and write the statement correctly.`, [[right, 2]], { facts: [fact(right)] });
+      });
+    }
+    /** A definition that doesn't give its own term away. */
+    const hidden = (f.define ?? []).filter(([term, meaning]) => {
+      const key = term.toLowerCase().replace(/[^a-z ]/g, '').split(' ').filter((w) => w.length > 3);
+      return !key.some((w) => meaning.toLowerCase().includes(w.slice(0, 5)));
+    });
+    if (hidden.length) {
+      add('complete', 1, 1, 'short', 'complete', 'paper-style', (g) => {
+        const [term, meaning] = g.pick(hidden);
+        return g.theory(`Complete the statement. “${meaning}” This describes ______.`, [capital(term)], { facts: [fact(term)] });
+      });
+    }
+    const tables = (f.compare ?? []).filter((c) => c.length - 2 >= 2);
+    if (tables.length) {
+      add('complete-table', 2, 2, 'short', 'complete', 'paper-style', (g) => {
+        const [a, b, ...rows] = g.pick(tables);
+        const chosen = g.sample(rows as [string, string][], 2);
+        const hideFirst = g.chance(0.5);
+        const shownRows = chosen.map(([x, y], i) => (i === 0 ? (hideFirst ? ['?', y] : [x, '?']) : hideFirst ? [x, '?'] : ['?', y]));
+        const answers = chosen.map(([x, y], i) => ((i === 0) === hideFirst ? x : y));
+        return { ...g.theory('Complete the table, by saying what belongs in place of each question mark.', answers.map((text, i) => `Row ${i + 1}: ${text}`), { facts: [fact(`${a} | ${b}`)] }), diagram: { kind: 'table', head: [capital(a), capital(b)], rows: shownRows } };
+      });
+    }
+    if (f.order?.length) {
+      const list = f.order;
+      add('order', 2, 2, 'short', 'order', 'paper-style', (g) => {
+        const [instruction, items, why] = g.pick(list);
+        const mixed = g.shuffle(items);
+        if (mixed.every((x, i) => x === items[i])) g.retry('already in order');
+        return g.theory(`${instruction}: ${mixed.join(', ')}.`, [items.join(', '), why], { facts: [fact(instruction)] });
+      });
+    }
+    if (f.odd?.length) {
+      const list = f.odd;
+      add('odd', 2, 2, 'short', 'odd', 'paper-style', (g) => {
+        const [items, odd, why] = g.pick(list);
+        return g.theory(`Which is the odd one out? Give the reason.\n${g.shuffle(items).join(', ')}`, [`The odd one out is ${odd}.`, why], { facts: [fact(items.join(' '))] });
+      });
+    }
+    if (f.predict?.length) {
+      const list = f.predict;
+      add('predict', 2, 2, 'short', 'predict', 'cbq-style', (g) => {
+        const [question, happens, why] = g.pick(list);
+        return g.theory(`${question} Predict what happens, and explain why.`, [happens, why], { facts: [fact(question)] });
+      });
     }
     return out;
   };

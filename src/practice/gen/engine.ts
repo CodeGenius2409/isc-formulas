@@ -107,9 +107,10 @@ export function generateItem(bp: Blueprint, seed: number, names: Names): BankIte
         continue;
       }
       const marks = body.form === 'theory' || body.form === 'numeric' ? bp.marks : bp.marks;
-      const generated: GeneratedTag = { blueprint: bp.id, seed, style: bp.style, format: bp.format, ...(bp.reviewed ? {} : { unreviewed: true as const }) };
+      const { context, ...rest } = body;
+      const generated: GeneratedTag = { blueprint: bp.id, seed, style: bp.style, format: bp.format, ...(bp.reviewed ? {} : { unreviewed: true as const }), ...(context ? { context } : {}), ...(bp.family ? { family: bp.family } : {}) };
       return {
-        ...body,
+        ...rest,
         id: generatedId(bp.id, seed),
         subject: bp.subject,
         level: bp.level,

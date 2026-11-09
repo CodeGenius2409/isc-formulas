@@ -8,12 +8,12 @@ import { readJson, writeJson } from '../../lib/storage';
 import type { ClassLevel, SubjectId } from '../../data/types';
 import { bankQuestion, loadBank, type LoadedBank } from '../bank/index';
 import { paperSpec } from '../bank/paper';
-import type { BankDef, BankQuestion, BankType, Difficulty, GeneratedTag } from '../bank/types';
+import type { BankDef, BankQuestion, BankType, Difficulty, GeneratedTag, QuestionFormat } from '../bank/types';
 import { seededRng, type Rng } from '../questions';
 import { generatedQuestion } from './engine';
 import { defKeys, factsOf, generatedCount, historyKeys, pickGenerated, PROBE_SEEDS, questionKey, usedFreshness, type Freshness } from './mix';
 
-export type FormatChoice = 'mcq' | 'assertion' | 'very-short' | 'short' | 'long' | 'numerical' | 'derivation' | 'reason' | 'distinguish' | 'diagram' | 'cbq' | 'output' | 'error' | 'program';
+export type FormatChoice = QuestionFormat;
 
 export const FORMATS: { key: FormatChoice; label: string; cs?: 1 }[] = [
   { key: 'mcq', label: 'Multiple choice' },
@@ -27,9 +27,21 @@ export const FORMATS: { key: FormatChoice; label: string; cs?: 1 }[] = [
   { key: 'distinguish', label: 'Distinguish between' },
   { key: 'diagram', label: 'Diagram-based' },
   { key: 'cbq', label: 'CBQ or case-based' },
+  { key: 'statement', label: 'Which statement is correct or incorrect' },
+  { key: 'match', label: 'Match the columns' },
+  { key: 'mistake', label: 'Find the mistake' },
+  { key: 'complete', label: 'Complete the statement or table' },
+  { key: 'order', label: 'Arrange in order' },
+  { key: 'odd', label: 'Odd one out' },
+  { key: 'data', label: 'Read a graph or table' },
+  { key: 'predict', label: 'Predict and explain' },
   { key: 'output', label: 'Write the output', cs: 1 },
   { key: 'error', label: 'Find the error', cs: 1 },
   { key: 'program', label: 'Program writing', cs: 1 },
+  { key: 'change', label: 'Output after a change', cs: 1 },
+  { key: 'trace', label: 'Trace or count', cs: 1 },
+  { key: 'fill', label: 'Fill in the missing line', cs: 1 },
+  { key: 'convert', label: 'Expression, table and circuit', cs: 1 },
 ];
 
 export interface Filters {
@@ -55,6 +67,7 @@ export const emptyFilters = (subject: SubjectId = 'physics'): Filters => ({ subj
 
 /** The format of a bank question, worked out from its type and marks, so the same filters apply to both sources. */
 export function bankFormatOf(def: BankDef): FormatChoice {
+  if (def.format) return def.format;
   const byType: Partial<Record<BankType, FormatChoice>> = { mcq: 'mcq', assertion: 'assertion', numerical: 'numerical', derivation: 'derivation', proof: 'derivation', reason: 'reason', distinguish: 'distinguish', output: 'output', error: 'error', program: 'program' };
   const direct = byType[def.type];
   if (direct) return direct;
@@ -63,7 +76,7 @@ export function bankFormatOf(def: BankDef): FormatChoice {
   return def.marks >= 5 ? 'long' : 'short';
 }
 
-const bankStyle = (def: BankDef): GeneratedTag['style'] => (def.type === 'assertion' ? 'cbq-style' : 'paper-style');
+const bankStyle = (def: BankDef): GeneratedTag['style'] => def.style ?? (def.type === 'assertion' ? 'cbq-style' : 'paper-style');
 
 interface Source {
   level: ClassLevel;

@@ -20,6 +20,8 @@ interface Attachments {
   /** The facts a question tests, so that a paper never asks one twice, even in another format. */
   facts?: string[];
   simulator?: SimulatorRef;
+  /** The kind of setting this instance uses, such as "sport" or "medicine", so that a set can vary them. */
+  context?: string;
 }
 
 export interface McqBody extends Attachments {
@@ -68,6 +70,8 @@ export interface Blueprint {
   format: Format;
   style: Style;
   python?: 1;
+  /** The way of asking, for blueprints the variety engine or a new format made: "reverse", "units", "chain" and so on. */
+  family?: string;
   /** Set when the class loads, from its file in reviews/. False until it has been read as a teacher would. */
   reviewed?: boolean;
   /** When it was read, and what was fixed. */

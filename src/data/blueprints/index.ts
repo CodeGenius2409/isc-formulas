@@ -53,16 +53,17 @@ export function loadBlueprints(subject: SubjectId, level: ClassLevel): Promise<L
   let loader = loaded.get(key);
   if (!loader) {
     loader = loadOnce(async () => {
-      const [module, reviews, syllabus] = await Promise.all([files[key](), reviewFiles[key](), loadSyllabus(subject)]);
-      applyReviews(module.default, reviews.default);
+      const [module, reviews, syllabus, variety] = await Promise.all([files[key](), reviewFiles[key](), loadSyllabus(subject), import('./variety')]);
+      const blueprints = [...module.default, ...variety.varietyFor(subject, level)];
+      applyReviews(blueprints, reviews.default);
       const names = new Map<string, string>();
       for (const unit of syllabus.classes.find((c) => c.level === level)?.units ?? []) {
         names.set(String(unit.number), unit.name);
         for (const topic of unit.topics) names.set(`${unit.number} ${topic.key}`, topic.name);
       }
       return {
-        blueprints: module.default,
-        byId: new Map(module.default.map((bp) => [bp.id, bp])),
+        blueprints,
+        byId: new Map(blueprints.map((bp) => [bp.id, bp])),
         names: (bp: Blueprint) => ({ unitName: names.get(String(bp.unit)) ?? '', topicName: names.get(`${bp.unit} ${bp.topic}`) ?? '' }),
       };
     });

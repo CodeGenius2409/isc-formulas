@@ -4,7 +4,8 @@ import type { LoadedBlueprints } from '../../data/blueprints';
 import { createStore } from '../../lib/store';
 import { readJson, writeJson } from '../../lib/storage';
 import type { Rng } from '../questions';
-import type { BankDef, BankQuestion } from '../bank/types';
+import type { SubjectId } from '../../data/types';
+import type { BankDef, BankQuestion, QuestionFormat } from '../bank/types';
 import { generatedQuestion } from './engine';
 
 const shareStore = (key: string, start: number) => createStore<number>(readJson<number>(key, start), (value) => writeJson(key, value));
@@ -99,10 +100,13 @@ export function usedFreshness(used: Map<string, number>, also?: Freshness): Fres
 }
 
 /** What a history keeps a question under: its facts, or for a numerical its blueprint, or else its own id. */
-export function historyKeys(q: { formulaId: string; kind: string; item?: { facts?: string[]; generated?: { blueprint: string } } }): string[] {
+export function historyKeys(q: { formulaId: string; kind: string; item?: { facts?: string[]; form?: string; parts?: { question: { unknown: string } }[]; generated?: { blueprint: string } } }): string[] {
   if (q.kind !== 'bank') return [`formula:${q.formulaId}`];
   if (q.item?.facts?.length) return q.item.facts;
-  return [q.item?.generated ? `bp:${q.item.generated.blueprint}` : q.formulaId];
+  if (!q.item?.generated) return [q.formulaId];
+  // A numerical is remembered by its structure: the same blueprint asking for something else is a different question.
+  const unknowns = q.item.parts?.map((p) => p.question.unknown).join('+');
+  return [`bp:${q.item.generated.blueprint}${unknowns ? `|${unknowns}` : ''}`];
 }
 
 export const defKeys = (d: BankDef): string[] => (d.facts?.length ? d.facts : [d.id]);
@@ -124,6 +128,31 @@ export interface PickOptions {
   fresh?: Freshness;
   /** Stop when the unseen ones run out, so that the caller can try other sources first. */
   freshOnly?: boolean;
+  /** Structures already in this paper or set, so that none comes back with the same setting. */
+  seenStructures?: Set<string>;
+}
+
+/** How many of the last questions must differ in structure, and in setting. */
+const STRUCTURE_WINDOW = 10;
+const CONTEXT_WINDOW = 3;
+
+/** The next blueprint: the format furthest behind its share in the papers, then the way of asking used least, then one not used yet. */
+function chooseBlueprint(list: Blueprint[], formats: Map<string, number>, families: Map<string, number>, used: Set<string>, rng: Rng): Blueprint {
+  const share = FORMAT_SHARE[list[0].subject] ?? {};
+  const present = shuffled([...new Set(list.map((b) => b.format))], rng);
+  let format = present[0];
+  let best = -Infinity;
+  for (const f of present) {
+    const gap = (share[f] ?? 1) / ((formats.get(f) ?? 0) + 1);
+    if (gap > best) {
+      best = gap;
+      format = f;
+    }
+  }
+  const ofFormat = shuffled(list.filter((b) => b.format === format), rng);
+  const least = Math.min(...ofFormat.map((b) => families.get(b.family ?? b.id) ?? 0));
+  const quiet = ofFormat.filter((b) => (families.get(b.family ?? b.id) ?? 0) === least);
+  return quiet.find((b) => !used.has(b.id)) ?? ofFormat.find((b) => !used.has(b.id)) ?? quiet[0];
 }
 
 function shuffled<T>(list: readonly T[], rng: Rng): T[] {
@@ -146,12 +175,62 @@ export function questionKey(q: BankQuestion): string {
 
 export const factsOf = (q: BankQuestion): string[] => q.item.facts ?? [];
 
+/** A question's structure: its blueprint, what it asks for, its format and its setting. New numbers alone don't change it. */
+export function structureKey(q: BankQuestion): string {
+  const { item } = q;
+  const tag = item.generated;
+  const unknown = item.form === 'numeric' ? item.parts.map((p) => p.question.unknown).join('+') : '';
+  return [tag?.blueprint ?? item.shape ?? item.id, unknown, tag?.format ?? '', tag?.context ?? item.context ?? ''].join('|');
+}
+
+/**
+ * How often each format turns up in the papers, from the counts in reports/question-analysis.md, so that a mixed set reads
+ * like a paper. The new formats take a small share of what they grew from. Numbers are relative.
+ */
+export const FORMAT_SHARE: Record<SubjectId, Partial<Record<QuestionFormat, number>>> = {
+  physics: { numerical: 26, short: 20, 'very-short': 17, mcq: 10, statement: 3, reason: 5, derivation: 8, long: 4, diagram: 7, distinguish: 4, assertion: 2, cbq: 4, data: 4, mistake: 2, match: 1, complete: 1, order: 1, odd: 1, predict: 2 },
+  chemistry: { short: 26, numerical: 12, mcq: 12, statement: 3, reason: 13, 'very-short': 6, complete: 6, match: 3, distinguish: 3, assertion: 3, cbq: 3, long: 3, derivation: 1, diagram: 1, data: 2, mistake: 2, order: 2, odd: 1, predict: 2 },
+  mathematics: { numerical: 44, mcq: 20, statement: 2, assertion: 11, derivation: 9, short: 8, long: 3, 'very-short': 3, cbq: 4, data: 2, diagram: 1, mistake: 2, distinguish: 1, complete: 1, match: 1, order: 1, odd: 1 },
+  computerscience: { short: 18, program: 15, 'very-short': 11, convert: 8, numerical: 4, output: 7, change: 3, trace: 3, fill: 4, mcq: 6, statement: 1, error: 3, assertion: 3, distinguish: 2, reason: 1, diagram: 1, cbq: 3, mistake: 2, match: 1, complete: 1, order: 1, odd: 1, long: 3 },
+};
+
 /** Draws questions from a pool of blueprints, spreading them across units by weight. Fewer come back if the pool is empty. */
 export function pickGenerated(set: LoadedBlueprints, pool: Blueprint[], options: PickOptions): BankQuestion[] {
-  const { count, weights, rng, used = new Set<string>(), seenText = new Set<string>(), seenFacts = new Set<string>(), cbqShare = 0, fresh, freshOnly } = options;
+  const { count, weights, rng, used = new Set<string>(), seenText = new Set<string>(), seenFacts = new Set<string>(), seenStructures = new Set<string>(), cbqShare = 0, fresh, freshOnly } = options;
   const out: BankQuestion[] = [];
   if (!pool.length) return out;
   const given = new Map<number, number>();
+  const formats = new Map<string, number>();
+  const families = new Map<string, number>();
+  const recentStructures: string[] = [];
+  const recentContexts: string[] = [];
+  /** Takes a question that passes every check. Later passes leave the softer ones out, rather than come back short. */
+  const take = (question: BankQuestion, bp: Blueprint, strict: boolean): boolean => {
+    const text = questionKey(question);
+    if (seenText.has(text) || factsOf(question).some((f) => seenFacts.has(f))) return false;
+    const shape = structureKey(question);
+    const context = question.item.generated?.context;
+    if (strict) {
+      if (seenStructures.has(shape) || recentStructures.includes(shape)) return false;
+      if (context && recentContexts.includes(context)) return false;
+      // A blueprint with no facts of its own only has new numbers to offer, so it waits until the others have had a turn.
+      if (!factsOf(question).length && used.has(bp.id)) return false;
+    }
+    seenText.add(text);
+    for (const f of factsOf(question)) seenFacts.add(f);
+    seenStructures.add(shape);
+    recentStructures.push(shape);
+    if (recentStructures.length > STRUCTURE_WINDOW) recentStructures.shift();
+    if (context) {
+      recentContexts.push(context);
+      if (recentContexts.length > CONTEXT_WINDOW) recentContexts.shift();
+    }
+    used.add(bp.id);
+    formats.set(bp.format, (formats.get(bp.format) ?? 0) + 1);
+    families.set(bp.family ?? bp.id, (families.get(bp.family ?? bp.id) ?? 0) + 1);
+    out.push(question);
+    return true;
+  };
   const wantCbq = Math.round(count * cbqShare);
   let cbqTaken = 0;
   let tries = 0;
@@ -170,30 +249,24 @@ export function pickGenerated(set: LoadedBlueprints, pool: Blueprint[], options:
         unit = u;
       }
     }
-    const inUnit = shuffled(eligible.filter((b) => b.unit === unit), rng);
-    const bp = inUnit.find((b) => !used.has(b.id)) ?? inUnit[0];
+    const bp = chooseBlueprint(eligible.filter((b) => b.unit === unit), formats, families, used, rng);
     const seed = Math.floor(rng() * 2 ** 31);
     const question = generatedQuestion(bp, seed, set.names(bp));
-    const text = questionKey(question);
-    if (seenText.has(text) || factsOf(question).some((f) => seenFacts.has(f)) || fresh?.resting(historyKeys(question))) continue;
-    seenText.add(text);
-    for (const f of factsOf(question)) seenFacts.add(f);
-    used.add(bp.id);
+    if (fresh?.resting(historyKeys(question)) || !take(question, bp, true)) {
+      // So that a format with nothing left to give doesn't keep being chosen.
+      formats.set(bp.format, (formats.get(bp.format) ?? 0) + 0.5);
+      continue;
+    }
     given.set(unit, (given.get(unit) ?? 0) + 1);
     if (bp.style === 'cbq-style') cbqTaken++;
-    out.push(question);
   }
   // Chance alone rarely finds the last few, so this goes through every blueprint in turn, with the seeds that capacity counts.
   if (out.length < count) {
     for (const bp of shuffled(pool, rng)) {
       for (let k = 1; k <= PROBE_SEEDS && out.length < count; k++) {
         const question = generatedQuestion(bp, k * 7919, set.names(bp));
-        const text = questionKey(question);
-        if (seenText.has(text) || factsOf(question).some((f) => seenFacts.has(f)) || fresh?.resting(historyKeys(question))) continue;
-        seenText.add(text);
-        for (const f of factsOf(question)) seenFacts.add(f);
-        used.add(bp.id);
-        out.push(question);
+        if (fresh?.resting(historyKeys(question))) continue;
+        take(question, bp, false);
       }
       if (out.length >= count) break;
     }
@@ -211,12 +284,7 @@ export function pickGenerated(set: LoadedBlueprints, pool: Blueprint[], options:
     candidates.sort((a, b) => a.at - b.at);
     for (const { question, bp } of candidates) {
       if (out.length >= count) break;
-      const text = questionKey(question);
-      if (seenText.has(text) || factsOf(question).some((f) => seenFacts.has(f))) continue;
-      seenText.add(text);
-      for (const f of factsOf(question)) seenFacts.add(f);
-      used.add(bp.id);
-      out.push(question);
+      take(question, bp, false);
     }
   }
   return out;

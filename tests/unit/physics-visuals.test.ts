@@ -51,6 +51,8 @@ for (const level of ['XI', 'XII'] as ClassLevel[]) {
             if (n === 0) continue;
             // Its frequencies are read off the graph: the words point to them and don't repeat them.
             if (bp.id.endsWith('stopping-graph')) continue;
+            // A table or graph that is the question's data: the words point to it, and the engine draws it from the same values.
+            if (bp.id.endsWith('complete-table') || ['table', 'compare', 'rank'].includes(bp.family ?? '')) continue;
             expect(inText, `${bp.id} seed ${seed}: ${n} is on the figure but not in the question: ${text}`).toContain(n);
           }
           if (item.form === 'numeric') {
