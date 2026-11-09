@@ -430,6 +430,7 @@ The engine's blueprints are too many to read one at a time, so they were read as
 | 2 | Physics XII 3a, 4b, 6a; Chemistry XII 1a, 3a; Mathematics XII 3b, 3c, 7a; CS XII 1b, 3a | A wrong solver symbol, one question repeating the first bank, two phrases close to a paper, one assertion–reason with no right option | 1,128 |
 | 3 | Order, odd one out and predict for most-asked topics; 31 cross-topic and thin-topic numericals; Chemistry XII 7a, Physics XII 2b | A muddled explanation, a wrong ionisation order, a word the syllabus scan rightly caught | 1,189 |
 | 4 | All 23 subtopics still under 40 or 80: Physics XI 1a, 1b, 1p, XII 6p; Chemistry XI 1a, 8b, 9a, 9c, 9d, 10a–10d; Chemistry XII 2c, 6c, 10c, 11a–11d; CS XI 4a, 11a, 11b | One repeated question stem; three clumsy wordings, fixed on re-reading; a new test on Section A then showed mock papers could lose the papers' mix of formats, which is fixed in `draw` | 1,579 |
+| 5 | 281 Mathematics numericals, all 28 subtopics, for 0% generated. Four long Computer Science XI questions | A question that repeated one in the first bank. A comment that claimed a check, `written-bank.test.ts`, which never existed, so `tests/unit/written-answers.test.ts` now computes every hand-written Mathematics numerical a second time. Its first full run found no wrong answer | 1,864 |
 
 ### Novelty check for v6
 
@@ -535,34 +536,34 @@ Written here by `tests/unit/supply-report.test.ts`. “Reviewed” is by layer, 
 | Chemistry XII 11b | 40 | 18 | 26 | 0 | 44 | 19 | 19 | 6 | mcq 14, statement 8, very-short 5 | Yes, by layer |
 | Chemistry XII 11c | 40 | 21 | 25 | 0 | 46 | 16 | 24 | 6 | mcq 19, statement 8, mistake 5 | Yes, by layer |
 | Chemistry XII 11d | 40 | 29 | 15 | 0 | 44 | 18 | 18 | 8 | mcq 24, reason 4, very-short 3 | Yes, by layer |
-| Mathematics XI 1a | 40 | 4 | 94 | 82 | 180 | 86 | 63 | 31 | numerical 70, statement 24, mcq 17 | Yes, by layer |
-| Mathematics XI 1b | 40 | 2 | 86 | 15 | 103 | 47 | 41 | 15 | mcq 25, statement 24, very-short 14 | Yes, by layer |
-| Mathematics XI 1c | 40 | 8 | 90 | 68 | 166 | 86 | 63 | 17 | numerical 49, mcq 44, statement 22 | Yes, by layer |
-| Mathematics XI 2a | 40 | 6 | 33 | 100 | 139 | 62 | 61 | 16 | numerical 78, short 17, mcq 13 | Yes, by layer |
-| Mathematics XI 2b | 40 | 3 | 35 | 83 | 121 | 52 | 55 | 14 | numerical 72, mcq 14, assertion 12 | Yes, by layer |
-| Mathematics XI 2c | 40 | 7 | 38 | 73 | 118 | 30 | 71 | 17 | numerical 63, mcq 12, assertion 12 | Yes, by layer |
-| Mathematics XI 2d | 40 | 4 | 34 | 54 | 92 | 29 | 47 | 16 | numerical 51, assertion 12, statement 8 | Yes, by layer |
-| Mathematics XI 2e | 40 | 8 | 41 | 110 | 159 | 73 | 71 | 15 | numerical 88, cbq 17, mcq 14 | Yes, by layer |
-| Mathematics XI 3a | 40 | 6 | 75 | 104 | 185 | 89 | 67 | 29 | numerical 82, mcq 26, statement 20 | Yes, by layer |
-| Mathematics XI 3b | 40 | 3 | 75 | 84 | 162 | 76 | 62 | 24 | numerical 68, mcq 20, statement 18 | Yes, by layer |
-| Mathematics XI 3c | 40 | 2 | 91 | 74 | 167 | 75 | 68 | 24 | numerical 65, statement 20, mcq 19 | Yes, by layer |
-| Mathematics XI 3d | 40 | 2 | 34 | 65 | 101 | 49 | 45 | 7 | numerical 65, assertion 12, statement 8 | Yes, by layer |
-| Mathematics XI 4a | 40 | 11 | 35 | 101 | 147 | 59 | 71 | 17 | numerical 73, mcq 20, assertion 13 | Yes, by layer |
-| Mathematics XI 5a | 40 | 4 | 36 | 103 | 143 | 56 | 71 | 16 | numerical 81, cbq 15, mcq 13 | Yes, by layer |
-| Mathematics XI 5b | 40 | 4 | 78 | 74 | 156 | 74 | 54 | 28 | numerical 65, statement 22, mcq 21 | Yes, by layer |
-| Mathematics XII 1a | 40 | 6 | 105 | 88 | 199 | 92 | 83 | 24 | numerical 60, mcq 34, statement 32 | Yes, by layer |
-| Mathematics XII 1b | 40 | 5 | 83 | 63 | 151 | 48 | 66 | 37 | numerical 48, mcq 32, statement 24 | Yes, by layer |
-| Mathematics XII 2a | 40 | 7 | 87 | 93 | 187 | 84 | 82 | 21 | numerical 63, statement 26, mcq 25 | Yes, by layer |
-| Mathematics XII 2b | 40 | 7 | 81 | 106 | 194 | 44 | 100 | 50 | numerical 64, mcq 37, statement 24 | Yes, by layer |
-| Mathematics XII 3a | 40 | 11 | 84 | 90 | 185 | 65 | 83 | 37 | numerical 76, mcq 31, statement 24 | Yes, by layer |
-| Mathematics XII 3b | 40 | 40 | 88 | 110 | 238 | 69 | 112 | 57 | numerical 42, mcq 37, cbq 30 | Yes, by layer |
-| Mathematics XII 3c | 40 | 32 | 83 | 61 | 176 | 68 | 83 | 25 | mcq 48, numerical 31, short 27 | Yes, by layer |
-| Mathematics XII 3d | 40 | 4 | 71 | 52 | 127 | 45 | 60 | 22 | numerical 42, mcq 20, statement 18 | Yes, by layer |
-| Mathematics XII 3e | 40 | 6 | 82 | 74 | 162 | 58 | 67 | 37 | numerical 40, statement 24, mcq 23 | Yes, by layer |
-| Mathematics XII 4a | 40 | 8 | 105 | 101 | 214 | 86 | 94 | 34 | numerical 70, mcq 31, statement 30 | Yes, by layer |
-| Mathematics XII 5a | 40 | 8 | 83 | 83 | 174 | 63 | 62 | 49 | numerical 56, statement 26, mcq 25 | Yes, by layer |
-| Mathematics XII 6a | 40 | 4 | 94 | 95 | 193 | 58 | 94 | 41 | numerical 71, statement 26, mcq 25 | Yes, by layer |
-| Mathematics XII 7a | 40 | 43 | 116 | 96 | 255 | 103 | 100 | 52 | numerical 51, mcq 44, statement 28 | Yes, by layer |
+| Mathematics XI 1a | 40 | 13 | 94 | 82 | 189 | 90 | 67 | 32 | numerical 79, statement 24, mcq 17 | Yes, by layer |
+| Mathematics XI 1b | 40 | 10 | 86 | 15 | 111 | 51 | 45 | 15 | mcq 25, statement 24, very-short 14 | Yes, by layer |
+| Mathematics XI 1c | 40 | 18 | 90 | 68 | 176 | 91 | 67 | 18 | numerical 59, mcq 44, statement 22 | Yes, by layer |
+| Mathematics XI 2a | 40 | 16 | 33 | 100 | 149 | 67 | 64 | 18 | numerical 88, short 17, mcq 13 | Yes, by layer |
+| Mathematics XI 2b | 40 | 13 | 35 | 83 | 131 | 57 | 60 | 14 | numerical 82, mcq 14, assertion 12 | Yes, by layer |
+| Mathematics XI 2c | 40 | 17 | 38 | 73 | 128 | 35 | 75 | 18 | numerical 73, mcq 12, assertion 12 | Yes, by layer |
+| Mathematics XI 2d | 40 | 14 | 34 | 54 | 102 | 34 | 51 | 17 | numerical 61, assertion 12, statement 8 | Yes, by layer |
+| Mathematics XI 2e | 40 | 18 | 41 | 110 | 169 | 78 | 75 | 16 | numerical 98, cbq 17, mcq 14 | Yes, by layer |
+| Mathematics XI 3a | 40 | 16 | 75 | 104 | 195 | 95 | 70 | 30 | numerical 92, mcq 26, statement 20 | Yes, by layer |
+| Mathematics XI 3b | 40 | 13 | 75 | 84 | 172 | 80 | 66 | 26 | numerical 78, mcq 20, statement 18 | Yes, by layer |
+| Mathematics XI 3c | 40 | 12 | 91 | 74 | 177 | 79 | 73 | 25 | numerical 75, statement 20, mcq 19 | Yes, by layer |
+| Mathematics XI 3d | 40 | 12 | 34 | 65 | 111 | 54 | 49 | 8 | numerical 75, assertion 12, statement 8 | Yes, by layer |
+| Mathematics XI 4a | 40 | 21 | 35 | 101 | 157 | 64 | 75 | 18 | numerical 83, mcq 20, assertion 13 | Yes, by layer |
+| Mathematics XI 5a | 40 | 14 | 36 | 103 | 153 | 61 | 75 | 17 | numerical 91, cbq 15, mcq 13 | Yes, by layer |
+| Mathematics XI 5b | 40 | 14 | 78 | 74 | 166 | 79 | 58 | 29 | numerical 75, statement 22, mcq 21 | Yes, by layer |
+| Mathematics XII 1a | 40 | 16 | 105 | 88 | 209 | 95 | 88 | 26 | numerical 70, mcq 34, statement 32 | Yes, by layer |
+| Mathematics XII 1b | 40 | 15 | 83 | 63 | 161 | 52 | 71 | 38 | numerical 58, mcq 32, statement 24 | Yes, by layer |
+| Mathematics XII 2a | 40 | 17 | 87 | 93 | 197 | 88 | 87 | 22 | numerical 73, statement 26, mcq 25 | Yes, by layer |
+| Mathematics XII 2b | 40 | 18 | 81 | 106 | 205 | 49 | 105 | 51 | numerical 75, mcq 37, statement 24 | Yes, by layer |
+| Mathematics XII 3a | 40 | 21 | 84 | 90 | 195 | 70 | 86 | 39 | numerical 86, mcq 31, statement 24 | Yes, by layer |
+| Mathematics XII 3b | 40 | 50 | 88 | 110 | 248 | 74 | 116 | 58 | numerical 52, mcq 37, cbq 30 | Yes, by layer |
+| Mathematics XII 3c | 40 | 42 | 83 | 61 | 186 | 72 | 87 | 27 | mcq 48, numerical 41, short 27 | Yes, by layer |
+| Mathematics XII 3d | 40 | 14 | 71 | 52 | 137 | 48 | 65 | 24 | numerical 52, mcq 20, statement 18 | Yes, by layer |
+| Mathematics XII 3e | 40 | 15 | 82 | 74 | 171 | 61 | 70 | 40 | numerical 49, statement 24, mcq 23 | Yes, by layer |
+| Mathematics XII 4a | 40 | 18 | 105 | 101 | 224 | 91 | 97 | 36 | numerical 80, mcq 31, statement 30 | Yes, by layer |
+| Mathematics XII 5a | 40 | 18 | 83 | 83 | 184 | 66 | 67 | 51 | numerical 66, statement 26, mcq 25 | Yes, by layer |
+| Mathematics XII 6a | 40 | 14 | 94 | 95 | 203 | 61 | 99 | 43 | numerical 81, statement 26, mcq 25 | Yes, by layer |
+| Mathematics XII 7a | 40 | 53 | 116 | 96 | 265 | 108 | 104 | 53 | numerical 61, mcq 44, statement 28 | Yes, by layer |
 | Computer Science XI 1a | 40 | 6 | 98 | 102 | 206 | 91 | 79 | 36 | numerical 57, mcq 29, statement 28 | Yes, by layer |
 | Computer Science XI 2a | 40 | 3 | 96 | 0 | 99 | 44 | 39 | 16 | statement 26, mcq 18, assertion 13 | Yes, by layer |
 | Computer Science XI 3a | 40 | 4 | 82 | 32 | 118 | 49 | 49 | 20 | statement 24, convert 23, mcq 13 | Yes, by layer |

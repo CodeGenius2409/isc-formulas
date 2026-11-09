@@ -1,5 +1,5 @@
 // Written by hand: Applications of derivatives and integrals in Mathematics XII. Fixed questions, with answers worked by hand and
-// held to a numerical check in tests/unit/written-bank.test.ts where they can be. Places are [unit, topic, marks, difficulty].
+// with the numericals among them computed separately in tests/unit/written-answers.test.ts. Places are [unit, topic, marks, difficulty].
 import { bank, type BankDef } from '../define';
 
 const { mcq, ar, theory } = bank('mathematics', 'XII');

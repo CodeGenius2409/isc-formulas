@@ -13,14 +13,14 @@ Written by `tests/unit/supply-report.test.ts`. It counts the app's own material,
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
 | Physics | 41 | 2731 | 12995 | 2147 | 10968 | 12 | 200 | 94.7 |
 | Chemistry | 52 | 1308 | 7059 | 2139 | 2940 | 12 | 68 | 90.4 |
-| Mathematics | 28 | 820 | 4594 | 1096 | 861 | 16 | 200 | 94 |
+| Mathematics | 28 | 820 | 4871 | 1096 | 861 | 16 | 200 | 94 |
 | Computer Science | 31 | 631 | 3859 | 1241 | 640 | 12 | 166 | 91.3 |
-| **All** | 152 | 5490 | 28507 | 6623 | 15409 | 12 | 200 | 92.4 |
+| **All** | 152 | 5490 | 28784 | 6623 | 15409 | 12 | 200 | 92.4 |
 
 ## What the bank targets add up to
 
-- 152 subtopics, 38 of them most asked. At 40 and 80 questions, the target is **7,600** bank questions. There are 28507.
-- Counting a format as fitting a subtopic only where something already exists for it, there are **5,841** subtopic × format × difficulty combinations. **4,935** have fewer than 10 bank questions. Ten in each is **58,410** questions; forty, which the stress test asks for at 0%, is **233,640**.
+- 152 subtopics, 38 of them most asked. At 40 and 80 questions, the target is **7,600** bank questions. There are 28784.
+- Counting a format as fitting a subtopic only where something already exists for it, there are **5,844** subtopic × format × difficulty combinations. **4,937** have fewer than 10 bank questions. Ten in each is **58,440** questions; forty, which the stress test asks for at 0%, is **233,760**.
 
 ## Before and after
 
@@ -29,7 +29,7 @@ Written by `tests/unit/supply-report.test.ts`. It counts the app's own material,
 | Blueprints | 2,214 | 5,490 |
 | Distinct structures | 2,272 | 15,409 |
 | Facts | 6,623 | 6,623 |
-| Bank questions, all layers | 704 | 28,507 |
+| Bank questions, all layers | 704 | 28,784 |
 | Median questions before a structure repeats | 12 | 12 |
 | Median distinct questions per subtopic, capped at 200 | 159 | 200 |
 | Mean variety score | 66.8 | 92.4 |
@@ -42,9 +42,9 @@ Only "Written" is finished questions written by hand as bank questions. "Facts" 
 |---|---:|---:|---:|---:|
 | Physics | 610 | 4,138 | 8,247 | 12,995 |
 | Chemistry | 522 | 4,046 | 2,491 | 7,059 |
-| Mathematics | 255 | 2,037 | 2,302 | 4,594 |
+| Mathematics | 532 | 2,037 | 2,302 | 4,871 |
 | Computer Science | 196 | 2,436 | 1,227 | 3,859 |
-| **All** | 1,583 | 12,657 | 14,267 | 28,507 |
+| **All** | 1,860 | 12,657 | 14,267 | 28,784 |
 
 ## Numericals at 0%
 
@@ -56,16 +56,16 @@ Numericals are the format 0% loses most by leaving compiled questions out, as mo
 | Physics XII | 45 | 1,405 | 15 of 16 |
 | Chemistry XI | 17 | 493 | 11 of 11 |
 | Chemistry XII | 17 | 423 | 6 of 6 |
-| Mathematics XI | 8 | 962 | 14 of 14 |
-| Mathematics XII | 4 | 710 | 13 of 13 |
+| Mathematics XI | 155 | 962 | 2 of 15 |
+| Mathematics XII | 134 | 710 | 1 of 13 |
 | Computer Science XI | 0 | 57 | 1 of 1 |
 | Computer Science XII | 0 | 16 | 1 of 1 |
 
 ## Against the 40 and 80 target
 
 - Counting all three layers, 152 of 152 subtopics reach it.
-- Counting hand-written and fact-based questions, all that 0% can use, 123 of 152 reach it.
-- Counting only hand-written questions, 7 of 152 reach it.
+- Counting hand-written and fact-based questions, all that 0% can use, 127 of 152 reach it.
+- Counting only hand-written questions, 8 of 152 reach it.
 
 ## Filter stress test
 
@@ -75,7 +75,7 @@ For each subtopic, fitting format and fitting difficulty, how many combinations 
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
 | Physics | 1,550 | 123 | 64 | 0 | 423 | 348 | 303 | 381 | 331 | 303 |
 | Chemistry | 1,574 | 116 | 38 | 1 | 244 | 146 | 104 | 213 | 138 | 104 |
-| Mathematics | 892 | 91 | 12 | 0 | 240 | 142 | 120 | 220 | 138 | 120 |
+| Mathematics | 895 | 91 | 12 | 0 | 241 | 144 | 122 | 220 | 138 | 120 |
 | Computer Science | 1,031 | 105 | 9 | 0 | 216 | 95 | 76 | 193 | 93 | 76 |
 
 ### By format
@@ -92,7 +92,7 @@ For each subtopic, fitting format and fitting difficulty, how many combinations 
 | complete | 292 | 16 | 16 |
 | match | 264 | 0 | 0 |
 | distinguish | 262 | 0 | 4 |
-| numerical | 246 | 0 | 205 |
+| numerical | 249 | 0 | 206 |
 | cbq | 237 | 0 | 59 |
 | data | 156 | 0 | 77 |
 | derivation | 116 | 3 | 13 |
@@ -127,7 +127,7 @@ With the same settings and the first paper in the history, what the second share
 | chemistry XII | 0% | 0.0% | 0.0% | 0.0% |
 | chemistry XII | 50% | 0.0% | 0.0% | 0.0% |
 | chemistry XII | 100% | 0.0% | 0.0% | 0.0% |
-| mathematics XI | 0% | 7.7% | 0.0% | 7.7% |
+| mathematics XI | 0% | 2.6% | 0.0% | 2.6% |
 | mathematics XI | 50% | 0.0% | 0.0% | 0.0% |
 | mathematics XI | 100% | 0.0% | 0.0% | 0.0% |
 | mathematics XII | 0% | 0.0% | 0.0% | 0.0% |
@@ -247,34 +247,34 @@ With the same settings and the first paper in the history, what the second share
 
 | Topic | Asked | Blueprints | Numerical | Bank | Facts | Structures | Contexts | To structure repeat | Smallest gap | Distinct | Variety |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| XI 1a Sets | 0 | 27 | 10 | 180 | 44 | 29 | 12 | 15 | 5 | 200 | 96 |
-| XI 1b Relations & Functions | 0 | 15 | 0 | 103 | 46 | 15 | 0 | 11 | 1 | 200 | 96 |
-| XI 1c Trigonometry | 0 | 28 | 11 | 166 | 56 | 28 | 11 | 19 | 1 | 200 | 96 |
-| XI 2a Complex Numbers | 0 | 26 | 11 | 139 | 15 | 26 | 9 | 15 | 5 | 200 | 94 |
-| XI 2b Quadratic Equations | 0 | 23 | 11 | 121 | 17 | 23 | 10 | 16 | 4 | 200 | 91 |
-| XI 2c Permutations and Combinations | 0 | 33 | 13 | 118 | 15 | 44 | 23 | 17 | 1 | 200 | 97 |
-| XI 2d Binomial Theorem | 0 | 22 | 10 | 92 | 16 | 22 | 8 | 13 | 1 | 175 | 86 |
-| XI 2e Sequence and Series | 0 | 35 | 14 | 159 | 18 | 35 | 14 | 17 | 4 | 200 | 94 |
-| XI 3a Straight Lines | 0 | 30 | 12 | 185 | 40 | 30 | 12 | 18 | 6 | 200 | 92 |
-| XI 3b Circles | 0 | 26 | 11 | 162 | 42 | 26 | 11 | 13 | 6 | 200 | 93 |
-| XI 3c Conic Section | 0 | 29 | 12 | 167 | 48 | 29 | 11 | 13 | 1 | 200 | 94 |
-| XI 3d Introduction to three-dimensional Geometry | 0 | 18 | 9 | 101 | 16 | 18 | 9 | 13 | 3 | 200 | 91 |
-| XI 4a Limits and Derivatives | 0 | 34 | 13 | 147 | 16 | 34 | 4 | 16 | 7 | 200 | 92 |
-| XI 5a Statistics | 0 | 26 | 13 | 143 | 16 | 32 | 19 | 14 | 9 | 200 | 91 |
-| XI 5b Probability | 0 | 25 | 13 | 156 | 40 | 34 | 21 | 13 | 1 | 195 | 95 |
-| XII 1a Types of relations and functions | 0 | 32 | 11 | 199 | 60 | 32 | 10 | 18 | 2 | 200 | 96 |
-| XII 1b Inverse Trigonometric Functions | 0 | 28 | 11 | 151 | 47 | 28 | 5 | 17 | 1 | 200 | 92 |
-| XII 2a Matrices | 0 | 34 | 11 | 187 | 48 | 34 | 11 | 15 | 8 | 200 | 97 |
-| XII 2b Determinants | 0 | 35 | 13 | 194 | 46 | 35 | 12 | 20 | 11 | 200 | 97 |
-| XII 3a Continuity, Differentiability and Differentiation | 0 | 36 | 14 | 185 | 47 | 36 | 5 | 18 | 2 | 200 | 94 |
-| XII 3b Applications of Derivatives | 0 | 38 | 12 | 238 | 49 | 42 | 16 | 18 | 3 | 200 | 96 |
-| XII 3c Integrals | 0 | 33 | 11 | 176 | 47 | 33 | 3 | 19 | 1 | 200 | 90 |
-| XII 3d Application of Integrals | 0 | 28 | 11 | 127 | 40 | 28 | 10 | 13 | 1 | 128 | 91 |
-| XII 3e Differential Equations | 0 | 29 | 12 | 162 | 45 | 30 | 13 | 18 | 3 | 200 | 96 |
-| XII 4a Vector Algebra | 0 | 33 | 10 | 214 | 60 | 33 | 9 | 18 | 4 | 200 | 96 |
-| XII 5a Three-dimensional Geometry | 0 | 29 | 10 | 174 | 47 | 30 | 10 | 16 | 3 | 200 | 95 |
-| XII 6a Linear Programming | 0 | 27 | 11 | 193 | 50 | 29 | 13 | 14 | 10 | 200 | 97 |
-| XII 7a Probability | 0 | 41 | 11 | 255 | 65 | 46 | 15 | 18 | 5 | 200 | 96 |
+| XI 1a Sets | 0 | 27 | 10 | 189 | 44 | 29 | 12 | 15 | 5 | 200 | 96 |
+| XI 1b Relations & Functions | 0 | 15 | 0 | 111 | 46 | 15 | 0 | 11 | 1 | 200 | 96 |
+| XI 1c Trigonometry | 0 | 28 | 11 | 176 | 56 | 28 | 11 | 19 | 1 | 200 | 96 |
+| XI 2a Complex Numbers | 0 | 26 | 11 | 149 | 15 | 26 | 9 | 15 | 5 | 200 | 94 |
+| XI 2b Quadratic Equations | 0 | 23 | 11 | 131 | 17 | 23 | 10 | 16 | 4 | 200 | 91 |
+| XI 2c Permutations and Combinations | 0 | 33 | 13 | 128 | 15 | 44 | 23 | 17 | 1 | 200 | 97 |
+| XI 2d Binomial Theorem | 0 | 22 | 10 | 102 | 16 | 22 | 8 | 13 | 1 | 175 | 86 |
+| XI 2e Sequence and Series | 0 | 35 | 14 | 169 | 18 | 35 | 14 | 17 | 4 | 200 | 94 |
+| XI 3a Straight Lines | 0 | 30 | 12 | 195 | 40 | 30 | 12 | 18 | 6 | 200 | 92 |
+| XI 3b Circles | 0 | 26 | 11 | 172 | 42 | 26 | 11 | 13 | 6 | 200 | 93 |
+| XI 3c Conic Section | 0 | 29 | 12 | 177 | 48 | 29 | 11 | 13 | 1 | 200 | 94 |
+| XI 3d Introduction to three-dimensional Geometry | 0 | 18 | 9 | 111 | 16 | 18 | 9 | 13 | 3 | 200 | 91 |
+| XI 4a Limits and Derivatives | 0 | 34 | 13 | 157 | 16 | 34 | 4 | 16 | 7 | 200 | 92 |
+| XI 5a Statistics | 0 | 26 | 13 | 153 | 16 | 32 | 19 | 14 | 9 | 200 | 91 |
+| XI 5b Probability | 0 | 25 | 13 | 166 | 40 | 34 | 21 | 13 | 1 | 195 | 95 |
+| XII 1a Types of relations and functions | 0 | 32 | 11 | 209 | 60 | 32 | 10 | 18 | 2 | 200 | 96 |
+| XII 1b Inverse Trigonometric Functions | 0 | 28 | 11 | 161 | 47 | 28 | 5 | 17 | 1 | 200 | 92 |
+| XII 2a Matrices | 0 | 34 | 11 | 197 | 48 | 34 | 11 | 15 | 8 | 200 | 97 |
+| XII 2b Determinants | 0 | 35 | 13 | 205 | 46 | 35 | 12 | 20 | 11 | 200 | 97 |
+| XII 3a Continuity, Differentiability and Differentiation | 0 | 36 | 14 | 195 | 47 | 36 | 5 | 18 | 2 | 200 | 94 |
+| XII 3b Applications of Derivatives | 0 | 38 | 12 | 248 | 49 | 42 | 16 | 18 | 3 | 200 | 96 |
+| XII 3c Integrals | 0 | 33 | 11 | 186 | 47 | 33 | 3 | 19 | 1 | 200 | 90 |
+| XII 3d Application of Integrals | 0 | 28 | 11 | 137 | 40 | 28 | 10 | 13 | 1 | 128 | 91 |
+| XII 3e Differential Equations | 0 | 29 | 12 | 171 | 45 | 30 | 13 | 18 | 3 | 200 | 96 |
+| XII 4a Vector Algebra | 0 | 33 | 10 | 224 | 60 | 33 | 9 | 18 | 4 | 200 | 96 |
+| XII 5a Three-dimensional Geometry | 0 | 29 | 10 | 184 | 47 | 30 | 10 | 16 | 3 | 200 | 95 |
+| XII 6a Linear Programming | 0 | 27 | 11 | 203 | 50 | 29 | 13 | 14 | 10 | 200 | 97 |
+| XII 7a Probability | 0 | 41 | 11 | 265 | 65 | 46 | 15 | 18 | 5 | 200 | 96 |
 
 ## Computer Science
 
@@ -312,4 +312,4 @@ With the same settings and the first paper in the history, what the second share
 | XII 8a Binary trees [Conceptual] | 0 | 21 | 0 | 152 | 56 | 21 | 0 | 13 | 1 | 166 | 95 |
 | XII 9a Complexity and Big O notation | 0 | 17 | 0 | 123 | 51 | 17 | 0 | 12 | 1 | 85 | 95 |
 
-Took 297 s.
+Took 262 s.
