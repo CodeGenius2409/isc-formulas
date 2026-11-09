@@ -4,7 +4,7 @@ Every ISC 2028 formula for Physics, Chemistry, Mathematics and Computer Science,
 problem solver, practice with spaced repetition, and simulators. It installs as an app
 and works with no network after the first visit.
 
-7,822 formulas mapped to the official 2028 syllabus, with Computer Science written as Java, verified bond-line structures for organic chemistry, 586 exam-style questions, 1,484 question blueprints that generate new ones offline, your own formulas alongside the printed ones, timed mock papers, 448 solvable for any variable, 41 simulators including a step-through Java
+7,822 formulas mapped to the official 2028 syllabus, with Computer Science written as Java, verified bond-line structures for organic chemistry, about 28,000 fixed exam-style questions, about 5,500 question blueprints that generate new ones offline, your own formulas alongside the printed ones, timed mock papers, 448 solvable for any variable, 41 simulators including a step-through Java
 tracer.
 
 ## Run it
@@ -97,6 +97,17 @@ the generated files is lost the next time that runs.
 
 **A simulator.** Add a component in `src/sims/` and one line in `src/sims/registry.ts`.
 
+**A bank question.** Add it to the file for its chapter in `src/practice/bank/written/`, named `<subject>-<level>-<unit>.ts`, using `mcq`, `ar`, `theory`, `num` or `output` from `define.ts`. A numerical names its solver entry, and a program is run by a test. Then, after any change to facts or blueprints, rebuild the rest of the bank's data, in PowerShell:
+
+    $env:BANK_COMPILE=1; npx vitest run tests/unit/bank-compile.test.ts
+
+**A new setting for numericals.** Add it to `src/data/blueprints/variety/scenes.ts`, with a pattern for the quantities it suits. Read a sample with `tests/unit/variety-dump.test.ts`.
+
+**Measuring the supply.** These write `reports/supply-after.md`, `reports/filter-stress.json` and `reports/paper-overlap.json`:
+
+    $env:STRESS_REPORT=1; npx vitest run tests/unit/filter-stress.test.ts tests/unit/freshness.test.ts
+    $env:SUPPLY_REPORT='after'; npx vitest run tests/unit/supply-report.test.ts
+
 **A question blueprint.** Add it to the right file in `src/data/blueprints/`, using `num`, `mcqNum`, `facts` or `custom` from `dsl.ts`. A numerical names its formula in the solver registry, and an MCQ gives each wrong answer with the mistake that leads to it. A test then generates 1,000 of them. Don't copy wording from a paper: `tests/unit/novelty-private.test.ts` looks for that where the papers are present.
 
 **A figure for a question.** Add a `kind` to `DiagramSpec` in `src/practice/bank/diagram.ts`, draw it and describe it in `src/components/bank/BankDiagram.tsx`, and set `diagram` on the blueprint from its own values. `tests/unit/physics-visuals.test.ts` checks that each number on it is in the question, and that none gives the answer.
@@ -120,6 +131,9 @@ doesn't need this.
 | `src/practice/bank/` | The exam-style question bank, marking and mock papers |
 | `src/practice/gen/` | The generator: exact arithmetic, Quine–McCluskey, the mix, the teacher's papers and Word export |
 | `src/data/blueprints/` | Question blueprints, one file per subject and class, with no text from the papers |
+| `src/data/blueprints/variety/` | The variety engine, its settings, and hand-written Mathematics, Computer Science and cross-topic ways of asking |
+| `src/data/bank/` | The bank's data, a file for each chapter, built by `tests/unit/bank-compile.test.ts` |
+| `src/practice/bank/written/` | Bank questions written by hand, a file for each chapter |
 | `scripts/private/` | Reads the private papers on your machine. Its results stay in `data-private/` and aren't committed |
 | `src/custom/` | Your own formulas: IndexedDB storage, placing them in the book, backup files, and SMILES |
 | `src/data/lewis/` | Structures with lone pairs as data, and the automated check every one must pass |

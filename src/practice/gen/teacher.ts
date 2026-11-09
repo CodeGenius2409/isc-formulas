@@ -10,7 +10,7 @@ import { bankQuestion, loadBank, loadBankUnits, type LoadedBank } from '../bank/
 import { paperSpec } from '../bank/paper';
 import type { BankDef, BankQuestion, BankType, Difficulty, GeneratedTag, QuestionFormat } from '../bank/types';
 import { seededRng, type Rng } from '../questions';
-import { generatedQuestion } from './engine';
+import { tryQuestion } from './engine';
 import { bankFormatOf, defKeys, factsOf, generatedCount, historyKeys, mixedBankOrder, pickGenerated, PROBE_SEEDS, questionKey, usedFreshness, type Freshness } from './mix';
 
 export { bankFormatOf };
@@ -142,7 +142,8 @@ function probe(set: LoadedBlueprints, bp: Blueprint): { key: string; facts: stri
     const seen = new Set<string>();
     list = [];
     for (let seed = 1; seed <= PROBE_SEEDS && list.length < 40; seed++) {
-      const q = generatedQuestion(bp, seed * 7919, set.names(bp));
+      const q = tryQuestion(bp, seed * 7919, set.names(bp));
+      if (!q) continue;
       const key = questionKey(q);
       if (seen.has(key)) continue;
       seen.add(key);
@@ -574,8 +575,8 @@ async function replacementFor(paper: TeacherPaper, item: PaperItem, rng: Rng, fr
     const bp = set.byId.get(old.generated.blueprint);
     if (bp) {
       for (let i = 0; i < 40; i++) {
-        const q = generatedQuestion(bp, Math.floor(rng() * 2 ** 31), set.names(bp));
-        if (!seen.has(questionKey(q)) && !factsOf(q).some((x) => seenFacts.has(x)) && !fresh?.resting(historyKeys(q))) return { ...item, key: q.item.id, question: q, editedText: undefined };
+        const q = tryQuestion(bp, Math.floor(rng() * 2 ** 31), set.names(bp));
+        if (q && !seen.has(questionKey(q)) && !factsOf(q).some((x) => seenFacts.has(x)) && !fresh?.resting(historyKeys(q))) return { ...item, key: q.item.id, question: q, editedText: undefined };
       }
     }
   }

@@ -13,7 +13,7 @@ import { loadSyllabus } from '../../src/data/syllabus';
 import type { ClassLevel, SubjectId } from '../../src/data/types';
 import { factDefs } from '../../src/practice/bank/from-facts';
 import type { BankDef, Difficulty } from '../../src/practice/bank/types';
-import { generateBody } from '../../src/practice/gen/engine';
+import { generateBody, NoQuestion } from '../../src/practice/gen/engine';
 
 const OUT = path.resolve(__dirname, '../../src/data/bank');
 const SUBJECTS: SubjectId[] = ['physics', 'chemistry', 'mathematics', 'computerscience'];
@@ -92,7 +92,12 @@ describe.skipIf(!process.env.BANK_COMPILE)('compiling the bank', () => {
               for (let round = 1; round <= PER_BLUEPRINT && seen.size < PER_CELL; round++) {
                 for (const bp of list) {
                   if (seen.size >= PER_CELL) break;
-                  const def = freeze(bp, round * 104_729 + 17);
+                  let def: BankDef | null = null;
+                  try {
+                    def = freeze(bp, round * 104_729 + 17);
+                  } catch (err) {
+                    if (!(err instanceof NoQuestion)) throw err;
+                  }
                   if (!def || seen.has(def.id) || chapterKeys.has(def.id)) continue;
                   seen.add(def.id);
                   chapterKeys.add(def.id);

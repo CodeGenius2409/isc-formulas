@@ -1,6 +1,6 @@
 // Exam-style practice and mock papers: real flows, every width in both themes, keyboard, and offline.
 import AxeBuilder from '@axe-core/playwright';
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 import { openRoute, setTheme, waitForServiceWorker, watchProblems } from './helpers';
 
 const WIDTHS = [
@@ -124,6 +124,8 @@ for (const theme of ['paper', 'board'] as const) {
   });
 }
 
+const circuits = (page: Page) => page.locator('.bank-diagram[aria-label*="Ω"], .bank-diagram[aria-label*="µF"]');
+
 test('a circuit drawn for a question has its values, in the theme’s ink', async ({ page }) => {
   // Keep starting papers until one has a figure. Several Physics XII questions do.
   test.setTimeout(120_000);
@@ -131,11 +133,12 @@ test('a circuit drawn for a question has its values, in the theme’s ink', asyn
   let found = false;
   for (let tries = 0; tries < 15 && !found; tries++) {
     await startPaper(page, 'physics', 'XII');
-    found = (await page.locator('.bank-diagram').count()) > 0;
+    // Papers have graphs and tables too. This is about a circuit's values.
+    found = (await circuits(page).count()) > 0;
     if (!found) await page.getByRole('button', { name: 'Abandon this paper' }).click();
   }
   expect(found).toBe(true);
-  const diagram = page.locator('.bank-diagram').first();
+  const diagram = circuits(page).first();
   await expect(diagram).toHaveAttribute('aria-label', /Ω|µF/);
   expect(await diagram.locator('text').count()).toBeGreaterThan(1);
   expect(await diagram.textContent()).not.toMatch(/\{/);

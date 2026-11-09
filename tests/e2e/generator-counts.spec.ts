@@ -23,7 +23,8 @@ test('asking for more than the bank has, at 0%, is refused beforehand with a sug
   const slider = page.getByRole('slider');
   await slider.focus();
   await page.keyboard.press('Home');
-  await page.locator('#gen-amount').fill('500');
+  // More than the bank holds for these choices, which now takes a large number.
+  await page.locator('#gen-amount').fill('20000');
   await expect(page.getByTestId('cant-fill')).toContainText('Raise the generated-share slider');
   await expect(page.getByRole('button', { name: 'Generate the questions' })).toBeDisabled();
   await page.locator('#gen-amount').fill('3');

@@ -9,7 +9,7 @@ import { loadSyllabus } from '../../../src/data/syllabus';
 import type { ClassLevel, SubjectId } from '../../../src/data/types';
 import { loadBank, type LoadedBank } from '../../../src/practice/bank';
 import type { BankDef, BankItem, BankQuestion } from '../../../src/practice/bank/types';
-import { generatedQuestion } from '../../../src/practice/gen/engine';
+import { tryQuestion } from '../../../src/practice/gen/engine';
 import { pickGenerated } from '../../../src/practice/gen/mix';
 import { bankFormatOf, FORMATS, type FormatChoice } from '../../../src/practice/gen/teacher';
 import { seededRng } from '../../../src/practice/questions';
@@ -180,7 +180,8 @@ export function measureTopic(ref: TopicRef, all: Loaded): TopicSupply {
   for (const bp of pool) {
     // Enough to see each setting of the engine's blueprints, which number in the thousands.
     for (let k = 1; k <= (bp.family ? 14 : STRUCTURE_SEEDS); k++) {
-      const q = generatedQuestion(bp, k * 7919, set.names(bp));
+      const q = tryQuestion(bp, k * 7919, set.names(bp));
+      if (!q) continue;
       structures.add(structureOf(q.item));
       const c = contextOf(q.item);
       if (c) contexts.add(c);

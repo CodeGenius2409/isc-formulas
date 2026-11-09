@@ -92,6 +92,9 @@ export interface Names {
   topicName: string;
 }
 
+/** A blueprint whose conditions are rarely met can run out of tries on one unlucky seed. */
+export class NoQuestion extends Error {}
+
 /** One question's content, before it's filed. The same blueprint and seed always give the same one. */
 export function generateBody(bp: Blueprint, seed: number): Body {
   const rng = seededRng((seed ^ hash(bp.id)) >>> 0);
@@ -109,7 +112,7 @@ export function generateBody(bp: Blueprint, seed: number): Body {
       last = err.message;
     }
   }
-  throw new Error(`${bp.id} with seed ${seed} gave nothing usable: ${last}`);
+  throw new NoQuestion(`${bp.id} with seed ${seed} gave nothing usable: ${last}`);
 }
 
 /** One question. Throws if a blueprint can't produce anything in many tries, which a test rules out. */
@@ -137,4 +140,14 @@ export function generateItem(bp: Blueprint, seed: number, names: Names): BankIte
 export function generatedQuestion(bp: Blueprint, seed: number, names: Names): BankQuestion {
   const item = generateItem(bp, seed, names);
   return { kind: 'bank', formulaId: item.id, item };
+}
+
+/** For a picker trying seeds: an unlucky seed gives nothing, and it moves on, rather than the whole request failing. */
+export function tryQuestion(bp: Blueprint, seed: number, names: Names): BankQuestion | null {
+  try {
+    return generatedQuestion(bp, seed, names);
+  } catch (err) {
+    if (err instanceof NoQuestion) return null;
+    throw err;
+  }
 }

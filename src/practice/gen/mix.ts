@@ -6,7 +6,7 @@ import { readJson, writeJson } from '../../lib/storage';
 import type { Rng } from '../questions';
 import type { SubjectId } from '../../data/types';
 import type { BankDef, BankQuestion, BankType, QuestionFormat } from '../bank/types';
-import { generatedQuestion } from './engine';
+import { tryQuestion } from './engine';
 
 const shareStore = (key: string, start: number) => createStore<number>(readJson<number>(key, start), (value) => writeJson(key, value));
 
@@ -275,8 +275,8 @@ export function pickGenerated(set: LoadedBlueprints, pool: Blueprint[], options:
     }
     const bp = chooseBlueprint(eligible.filter((b) => b.unit === unit), formats, families, used, recentBlueprints, rng);
     const seed = Math.floor(rng() * 2 ** 31);
-    const question = generatedQuestion(bp, seed, set.names(bp));
-    if (fresh?.resting(historyKeys(question)) || !take(question, bp, true)) {
+    const question = tryQuestion(bp, seed, set.names(bp));
+    if (!question || fresh?.resting(historyKeys(question)) || !take(question, bp, true)) {
       // So that a format with nothing left to give doesn't keep being chosen.
       formats.set(bp.format, (formats.get(bp.format) ?? 0) + 0.5);
       continue;
@@ -291,8 +291,8 @@ export function pickGenerated(set: LoadedBlueprints, pool: Blueprint[], options:
     for (let k = 1; k <= PROBE_SEEDS && out.length < count; k++) {
       for (const bp of order) {
         if (out.length >= count) break;
-        const question = generatedQuestion(bp, k * 7919, set.names(bp));
-        if (fresh?.resting(historyKeys(question))) continue;
+        const question = tryQuestion(bp, k * 7919, set.names(bp));
+        if (!question || fresh?.resting(historyKeys(question))) continue;
         take(question, bp, false);
       }
     }
@@ -303,8 +303,8 @@ export function pickGenerated(set: LoadedBlueprints, pool: Blueprint[], options:
     const candidates: { question: BankQuestion; at: number; bp: Blueprint }[] = [];
     for (const bp of shuffled(pool, rng)) {
       for (let k = 1; k <= seeds; k++) {
-        const question = generatedQuestion(bp, k * 7919, set.names(bp));
-        candidates.push({ question, at: fresh.lastSeen(historyKeys(question)), bp });
+        const question = tryQuestion(bp, k * 7919, set.names(bp));
+        if (question) candidates.push({ question, at: fresh.lastSeen(historyKeys(question)), bp });
       }
     }
     candidates.sort((a, b) => a.at - b.at);
@@ -323,7 +323,9 @@ export function mixedBankOrder<T extends { def: BankDef }>(pool: T[], rng: Rng):
   const byFormat = new Map<string, T[]>();
   for (const x of shuffled(pool, rng).sort((a, b) => rank(a.def) - rank(b.def))) {
     const key = bankFormatOf(x.def);
-    byFormat.set(key, [...(byFormat.get(key) ?? []), x]);
+    const list = byFormat.get(key);
+    if (list) list.push(x);
+    else byFormat.set(key, [x]);
   }
   const share = FORMAT_SHARE[pool[0].def.subject] ?? {};
   const taken = new Map<string, number>();

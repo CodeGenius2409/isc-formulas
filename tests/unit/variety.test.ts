@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { loadBlueprints } from '../../src/data/blueprints';
 import type { ClassLevel, SubjectId } from '../../src/data/types';
 import { writeFileSync } from 'node:fs';
-import { generatedQuestion, generateItem, problemsWith } from '../../src/practice/gen/engine';
+import { generatedQuestion, generateItem, problemsWith, tryQuestion } from '../../src/practice/gen/engine';
 import { pickGenerated, structureKey } from '../../src/practice/gen/mix';
 import { seededRng } from '../../src/practice/questions';
 
@@ -38,6 +38,17 @@ describe.each(CLASSES)('%s %s', (subject, level) => {
 });
 
 // The targets of v6 Task 1, for each subtopic with numericals. Maths topics built on abstract numbers have no settings to count.
+describe('a blueprint whose conditions are rarely met', () => {
+  it('gives nothing on an unlucky seed, and the picker carries on', async () => {
+    const bp = { id: 'p12-1a-never', subject: 'physics', level: 'XII', unit: 1, topic: 'a', marks: 1, type: 'mcq', difficulty: 1, format: 'mcq', style: 'paper-style', make: (g: { retry: (w: string) => never }) => g.retry('never') } as unknown as Parameters<typeof tryQuestion>[0];
+    expect(tryQuestion(bp, 1, { unitName: '', topicName: '' })).toBeNull();
+    expect(() => generatedQuestion(bp, 1, { unitName: '', topicName: '' })).toThrow(/nothing usable/);
+    const set = await loadBlueprints('physics', 'XII');
+    const good = set.blueprints.filter((b) => b.unit === 1 && b.topic === 'a').slice(0, 5);
+    expect(pickGenerated(set, [bp, ...good], { count: 3, rng: seededRng(1) }).length).toBe(3);
+  });
+});
+
 describe('numerical topics', () => {
   it('reaches the targets for structures, settings and rotation', async () => {
     const short: string[] = [];
@@ -53,7 +64,8 @@ describe('numerical topics', () => {
         let instances = 0;
         for (const bp of list) {
           for (let k = 1; k <= 12; k++) {
-            const q = generatedQuestion(bp, k * 7919, set.names(bp));
+            const q = tryQuestion(bp, k * 7919, set.names(bp));
+            if (!q) continue;
             structures.add(structureKey(q));
             const c = q.item.generated?.context;
             if (c) {

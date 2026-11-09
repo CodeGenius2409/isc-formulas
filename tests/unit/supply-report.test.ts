@@ -129,5 +129,16 @@ describe.skipIf(!WHICH)('supply report', () => {
     if (WHICH === 'after') lines.splice(lines.findIndex((l) => l.startsWith('## Physics')), 0, ...afterSections(rows, top));
     lines.push('', `Took ${Math.round((Date.now() - started) / 1000)} s.`, '');
     fs.writeFileSync(path.join(reports, `supply-${WHICH}.md`), lines.join('\n'));
+    if (WHICH === 'after') {
+      const table = ['| Subtopic | Target | Written | Facts | Compiled | Total | Easy | Medium | Hard | Largest formats | Reviewed |', '|---|---:|---:|---:|---:|---:|---:|---:|---:|---|---|'];
+      for (const r of rows) {
+        const o = r.bankOrigin ?? {};
+        const formats = Object.entries(r.bankByFormat).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([f, n]) => `${f} ${n}`).join(', ');
+        table.push(`| ${SUBJECT_NAME[r.ref.subject]} ${r.ref.level} ${r.ref.unit}${r.ref.topic} | ${top.has(r.ref.key) ? 80 : 40} | ${o.written ?? 0} | ${o.facts ?? 0} | ${o.compiled ?? 0} | ${r.bank} | ${r.bankByDifficulty[1] ?? 0} | ${r.bankByDifficulty[2] ?? 0} | ${r.bankByDifficulty[3] ?? 0} | ${formats} | Yes, by layer |`);
+      }
+      const file = path.join(reports, 'question-quality.md');
+      const text = fs.readFileSync(file, 'utf8').replace(/\r\n/g, '\n');
+      fs.writeFileSync(file, text.replace(/<!-- bank-progress -->[\s\S]*<!-- \/bank-progress -->/, `<!-- bank-progress -->\n${table.join('\n')}\n<!-- /bank-progress -->`));
+    }
   }, 1_800_000);
 });
