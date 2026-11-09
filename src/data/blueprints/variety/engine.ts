@@ -2,10 +2,8 @@
 // factor or a percentage, a comparison, a mistake to find, an estimate, an error, a trend, and chains and case sets.
 //
 // The situations are the ones already reviewed: a numerical blueprint's own value ranges and units are drawn from, so the
-// values stay realistic. Every answer comes from the solver registry, which also checks units and ranges. Mathematics has
-// no such blueprints and no physical size to get wrong, so it draws from the registry's own ranges.
+// values stay realistic. Every answer comes from the solver registry, which also checks units and ranges.
 // What each entry can do was found by trying it: see entry-map.json and tests/unit/variety-map.test.ts.
-import { niceValue, rawOf } from '../../../practice/questions';
 import type { BankType, Difficulty, NumericPartDef } from '../../../practice/bank/types';
 import { getEntry } from '../../../solver/registry';
 import type { ResolvedEntry, ResolvedVar } from '../../../solver/types';
@@ -31,7 +29,6 @@ interface EntryInfo {
 }
 
 const ENTRIES = MAP.entries as Record<string, EntryInfo>;
-const TOPICS = MAP.topics as Record<string, string[]>;
 
 /** Blueprints that turned out not to work for their entry, found by trying them: see tests/unit/variety-map.test.ts. */
 const skipped = new Set<string>(SKIP as string[]);
@@ -107,27 +104,6 @@ function fromSources(entry: ResolvedEntry, find: string, sources: NumSource[], s
         const given = readGiven(source.part.given[v.symbol], values, v);
         if (!given) g.retry('a value carried from another part');
         out[v.symbol] = given!;
-      }
-      return out;
-    },
-  };
-}
-
-function fromRegistry(entry: ResolvedEntry): Situation {
-  const info = ENTRIES[entry.id];
-  const name = (symbol: string) => nameOf(entry.id, symbol, varOf(entry, symbol).name);
-  return {
-    entry,
-    find: info.natural,
-    name,
-    unknowns: info.unknowns,
-    powers: info.powers ? Object.entries(info.powers) : [],
-    draw(g) {
-      const out: Givens = {};
-      for (const v of freeVars(entry)) {
-        if (v.symbol === info.natural) continue;
-        const { raw, unit } = rawOf(v, niceValue(v, g.rng));
-        out[v.symbol] = { value: Number(raw), unit };
       }
       return out;
     },
@@ -714,18 +690,14 @@ export function varietyBlueprints(subject: SubjectId, level: ClassLevel, scenesF
   const prefix = `${CODE[subject]}${level === 'XII' ? '12' : '11'}`;
   const out: Blueprint[] = [];
   const sources = NUM_SOURCES.get(`${subject} ${level}`) ?? [];
-  for (const [key, ids] of Object.entries(TOPICS)) {
-    const [s, l, place] = key.split(' ');
-    if (s !== subject || l !== level) continue;
+  // Each topic a reviewed numerical is placed in, wherever the book files its formula.
+  for (const place of new Set(sources.map((x) => `${x.unit}${x.topic}`))) {
     const match = /^(\d+)([a-z])$/.exec(place)!;
     const unit = Number(match[1]);
     const topic = match[2];
     const scenes = scenesFor(unit, topic);
     const situations: Situation[] = [];
-    if (subject === 'mathematics') {
-      for (const id of ids) situations.push(fromRegistry(getEntry(id)!));
-    } else {
-      // Anything a blueprint in this class already works with, placed where the blueprint is.
+    {
       const here = sources.filter((x) => x.unit === unit && x.topic === topic);
       const uses = new Map<string, NumSource[]>();
       for (const x of here) {

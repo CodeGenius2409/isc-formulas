@@ -197,7 +197,8 @@ export function structureKey(q: BankQuestion): string {
   const { item } = q;
   const tag = item.generated;
   const unknown = item.form === 'numeric' ? item.parts.map((p) => p.question.unknown).join('+') : '';
-  return [tag?.blueprint ?? item.shape ?? item.id, unknown, tag?.format ?? '', tag?.context ?? item.context ?? ''].join('|');
+  // Two questions from one template on different facts aren't the same question, so a fact counts as part of the shape.
+  return [tag?.blueprint ?? item.shape ?? item.id, unknown, tag?.format ?? '', tag?.context ?? item.context ?? '', item.facts?.[0] ?? ''].join('|');
 }
 
 /**
@@ -277,15 +278,17 @@ export function pickGenerated(set: LoadedBlueprints, pool: Blueprint[], options:
     given.set(unit, (given.get(unit) ?? 0) + 1);
     if (bp.style === 'cbq-style') cbqTaken++;
   }
-  // Chance alone rarely finds the last few, so this goes through every blueprint in turn, with the seeds that capacity counts.
+  // Chance alone rarely finds the last few, so this goes round every blueprint in turn, one seed each time, with the seeds
+  // that capacity counts. Going round keeps a blueprint's questions apart, however long the set is.
   if (out.length < count) {
-    for (const bp of shuffled(pool, rng)) {
-      for (let k = 1; k <= PROBE_SEEDS && out.length < count; k++) {
+    const order = shuffled(pool, rng);
+    for (let k = 1; k <= PROBE_SEEDS && out.length < count; k++) {
+      for (const bp of order) {
+        if (out.length >= count) break;
         const question = generatedQuestion(bp, k * 7919, set.names(bp));
         if (fresh?.resting(historyKeys(question))) continue;
         take(question, bp, false);
       }
-      if (out.length >= count) break;
     }
   }
   // Every fresh fact has gone, so the ones seen longest ago come back. There is never a shorter paper for it.

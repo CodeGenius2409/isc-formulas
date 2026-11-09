@@ -90,7 +90,7 @@ export function buildMap() {
     }
   }
   const entries: Record<string, { title: string; natural: string; unknowns: string[]; powers?: Record<string, number> }> = {};
-  for (const id of new Set(Object.values(topics).flat())) {
+  for (const id of new Set(RAW_ENTRIES.map((e) => e.id))) {
     const entry = getEntry(id)!;
     const natural = defaultUnknown(entry);
     const free = entry.vars.filter((v) => !v.isConstant && v.value === undefined);
@@ -127,7 +127,7 @@ describe('the variety map', () => {
     const { loadBlueprints } = await import('../../src/data/blueprints');
     const { generateItem } = await import('../../src/practice/gen/engine');
     const bad: string[] = [];
-    for (const subject of ['physics', 'chemistry', 'computerscience'] as const) {
+    for (const subject of ['physics', 'chemistry', 'mathematics', 'computerscience'] as const) {
       for (const level of ['XI', 'XII'] as const) {
         const set = await loadBlueprints(subject, level);
         for (const bp of set.blueprints.filter((b) => b.family)) {
