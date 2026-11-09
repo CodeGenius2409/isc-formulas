@@ -1,0 +1,42 @@
+// Written by hand: Probability in Mathematics XII. Answers checked by hand. Places are [unit, topic, marks, difficulty].
+import { bank, type BankDef } from '../define';
+
+const { mcq, ar, theory } = bank('mathematics', 'XII');
+const P = (marks: number, d: 1 | 2 | 3): [number, string, number, 1 | 2 | 3] => [7, 'a', marks, d];
+
+const questions: BankDef[] = [
+  mcq(P(1, 1), 'If $P(A) = 0.4$ and $P(B) = 0.5$, with $A$ and $B$ independent, then $P(A \\cap B)$ is:', ['0.2', '0.9', '0.1', '0.45'], 0),
+  mcq(P(1, 1), 'If $P(A | B) = P(A)$, then $A$ and $B$ are:', ['mutually exclusive', 'independent', 'exhaustive', 'complementary'], 1),
+  mcq(P(1, 1), 'A fair die is thrown. Given that the number is even, the probability that it is 4 is:', ['$\\frac{1}{6}$', '$\\frac{1}{3}$', '$\\frac{1}{2}$', '$\\frac{2}{3}$'], 1),
+  mcq(P(1, 2), 'If $P(A) = 0.6$, $P(B) = 0.3$ and $P(A \\cap B) = 0.2$, then $P(B | A)$ is:', ['$\\frac{1}{3}$', '$\\frac{2}{3}$', '$\\frac{1}{2}$', '0.12'], 0),
+  mcq(P(1, 2), 'For mutually exclusive events with non-zero probabilities, $P(A | B)$ is:', ['0', '1', '$P(A)$', '$P(B)$'], 0),
+  mcq(P(1, 2), 'The sum of the probabilities in a probability distribution is:', ['0', '1', 'the mean', 'the variance'], 1),
+  mcq(P(1, 3), 'If $A$ and $B$ are independent, then $A\'$ and $B\'$ are:', ['mutually exclusive', 'independent', 'always equal', 'impossible'], 1),
+  mcq(P(1, 3), 'Two cards are drawn without replacement from a pack of 52. The probability that both are kings is:', ['$\\frac{1}{221}$', '$\\frac{1}{169}$', '$\\frac{1}{13}$', '$\\frac{4}{663}$'], 0, '$\\frac{4}{52} \\times \\frac{3}{51}$.'),
+  mcq(P(1, 3), 'Three coins are tossed. Given at least one head, the probability of exactly two heads is:', ['$\\frac{3}{7}$', '$\\frac{3}{8}$', '$\\frac{1}{2}$', '$\\frac{1}{7}$'], 0, '$\\frac{3/8}{7/8}$.'),
+  ar(P(1, 2), 'If $P(A) > 0$ and $P(B) > 0$, and $A$ and $B$ are mutually exclusive, they can’t be independent.', 'For such events, $P(A \\cap B) = 0$, which differs from $P(A)P(B)$.', 1),
+  ar(P(1, 2), 'In Bayes’ theorem, the events in the partition must be mutually exclusive and exhaustive.', 'Then the total probability of any event can be split across them.', 1),
+  ar(P(1, 1), 'Drawing cards without replacement gives independent draws.', 'The pack changes after each draw.', 4, 'The second draw’s chances depend on the first, so they aren’t independent.'),
+  ar(P(1, 3), 'The mean of a random variable need not be a value the variable can take.', 'The mean is a weighted average of the values.', 1),
+  ar(P(1, 3), 'If $P(A | B) = 1$, then $A$ is certain.', 'If $B$ has happened, $A$ must have happened too.', 4, 'It only means that $B$ implies $A$, not that $A$ always occurs.'),
+  theory('reason', P(2, 2), 'Explain why a table with values of $X$ having probabilities 0.5, 0.4 and 0.3 can’t be a probability distribution.', ['The probabilities of a distribution must add up to 1.', 'These add up to 1.2.']),
+  theory('reason', P(2, 3), 'Explain why two events with non-zero probabilities can’t be both independent and mutually exclusive.', ['Independent means $P(A \\cap B) = P(A)P(B)$, which is greater than 0.', 'Mutually exclusive means $P(A \\cap B) = 0$. Both can’t hold.']),
+  theory('distinguish', P(2, 1), 'Distinguish between independent events and mutually exclusive events.', ['Independent: one happening doesn’t change the chance of the other, $P(A \\cap B) = P(A)P(B)$.', 'Mutually exclusive: they can’t happen together, $P(A \\cap B) = 0$.']),
+  theory('distinguish', P(2, 2), 'Distinguish between $P(A | B)$ and $P(A \\cap B)$.', ['$P(A | B)$: the chance of $A$, given that $B$ has happened.', '$P(A \\cap B)$: the chance that both happen. It equals $P(A | B)P(B)$.']),
+  theory('short', P(2, 1), 'If $P(A) = \\frac{1}{2}$, $P(B) = \\frac{1}{3}$ and $A$ and $B$ are independent, find $P(A \\cup B)$.', ['$P(A \\cap B) = \\frac{1}{6}$.', '$P(A \\cup B) = \\frac{1}{2} + \\frac{1}{3} - \\frac{1}{6} = \\frac{2}{3}$.']),
+  theory('short', P(2, 1), 'A bag has 3 red and 2 black balls. Two are drawn in turn, without replacement. Find the probability that both are red.', ['$\\frac{3}{5} \\times \\frac{2}{4}$.', '$= \\frac{3}{10}$.']),
+  theory('short', P(2, 2), 'Find the mean of a random variable that takes the values 1, 2 and 3 with probabilities 0.2, 0.5 and 0.3.', ['$E(X) = 1(0.2) + 2(0.5) + 3(0.3)$.', '$= 2.1$.']),
+  theory('short', P(2, 2), 'Two dice are thrown. Given that the total is 7, find the probability that one of them shows 2.', ['There are 6 ways of getting 7.', 'Two of them, (2, 5) and (5, 2), have a 2, so the answer is $\\frac{1}{3}$.']),
+  theory('short', P(3, 2), 'A and B solve a problem independently, with probabilities $\\frac{1}{2}$ and $\\frac{1}{3}$. Find the probability that it’s solved.', ['Neither solves it: $\\frac{1}{2} \\times \\frac{2}{3} = \\frac{1}{3}$.', 'Solved means at least one does.', 'So the probability is $1 - \\frac{1}{3} = \\frac{2}{3}$.']),
+  theory('short', P(3, 2), 'Find $k$ if $X$ takes values 0, 1, 2 with probabilities $k$, $2k$, $3k$, and then find $P(X \\ge 1)$.', ['The probabilities add up to 1, so $6k = 1$.', '$k = \\frac{1}{6}$.', '$P(X \\ge 1) = 1 - k = \\frac{5}{6}$.']),
+  theory('short', P(3, 3), 'Find the variance of the number of heads when two fair coins are tossed.', ['$X$ takes 0, 1, 2 with probabilities $\\frac{1}{4}, \\frac{1}{2}, \\frac{1}{4}$, and $E(X) = 1$.', '$E(X^2) = \\frac{1}{2} + 1 = \\frac{3}{2}$.', 'Var$(X) = \\frac{3}{2} - 1 = \\frac{1}{2}$.']),
+  theory('short', P(5, 2), 'Bag I holds 3 red and 4 black balls. Bag II holds 4 red and 5 black. One ball is moved from Bag I to Bag II, and a ball is then drawn from Bag II. Find the probability that it’s red.', [['Red moved: probability $\\frac{3}{7}$, and Bag II has 5 red of 10.', 1], ['Black moved: probability $\\frac{4}{7}$, and Bag II has 4 red of 10.', 1], ['By total probability: $\\frac{3}{7} \\cdot \\frac{5}{10} + \\frac{4}{7} \\cdot \\frac{4}{10}$.', 1], ['$= \\frac{15 + 16}{70}$.', 1], ['$= \\frac{31}{70}$.', 1]], { format: 'long' }),
+  theory('short', P(5, 3), 'A factory has machines A, B and C making 50%, 30% and 20% of its output, with defect rates of 1%, 2% and 3%. An item picked at random is defective. Find the probability that machine C made it.', [['Let D be “defective”. $P(D | A) = 0.01$, $P(D | B) = 0.02$, $P(D | C) = 0.03$.', 1], ['$P(D) = 0.5(0.01) + 0.3(0.02) + 0.2(0.03)$.', 1], ['$= 0.005 + 0.006 + 0.006 = 0.017$.', 1], ['By Bayes’ theorem, $P(C | D) = \\frac{0.2 \\times 0.03}{0.017}$.', 1], ['$= \\frac{6}{17}$.', 1]], { format: 'long' }),
+  theory('short', P(5, 3), 'A test for a disease is right 95% of the time, whether or not a person has it. 1% of people have the disease. A person tests positive. Find the probability that they have it, and comment.', [['$P(+) = 0.01(0.95) + 0.99(0.05)$.', 1], ['$= 0.0095 + 0.0495 = 0.059$.', 1], ['$P(\\text{disease} | +) = \\frac{0.0095}{0.059}$.', 1], ['$\\approx 0.161$, about 16%.', 1], ['Most positives are false, because the disease is rare.', 1]], { format: 'long', style: 'cbq-style' }),
+  theory('proof', P(3, 2), 'Prove that if $A$ and $B$ are independent, so are $A$ and $B\'$.', ['$P(A \\cap B\') = P(A) - P(A \\cap B)$.', '$= P(A) - P(A)P(B) = P(A)(1 - P(B))$.', '$= P(A)P(B\')$, so they are independent.'], { format: 'derivation' }),
+  theory('proof', P(3, 3), 'State and prove the theorem of total probability for two events $E_1$ and $E_2$ forming a partition.', ['$A = (A \\cap E_1) \\cup (A \\cap E_2)$, since $E_1$ and $E_2$ cover everything.', 'These parts are mutually exclusive, so the probabilities add.', '$P(A) = P(E_1)P(A | E_1) + P(E_2)P(A | E_2)$.'], { format: 'derivation' }),
+  theory('short', P(2, 2), 'A student writes: “$P(A | B) = P(B | A)$, because they both involve $A$ and $B$.” Give what’s wrong with this.', ['$P(A | B) = \\frac{P(A \\cap B)}{P(B)}$, and $P(B | A) = \\frac{P(A \\cap B)}{P(A)}$.', 'They are equal only if $P(A) = P(B)$.'], { format: 'mistake' }),
+  theory('short', P(4, 2), 'A school’s records show 60% of students take the bus and 40% walk. Of those on the bus, 5% were late last month, and of those walking, 10% were late.\n(i) What fraction of all students were late? [2]\n(ii) A late student is chosen. What is the chance that this student walks? [2]', [['(i) $0.6(0.05) + 0.4(0.1) = 0.07$.', 2], ['(ii) $\\frac{0.04}{0.07} = \\frac{4}{7}$.', 2]], { format: 'cbq', style: 'cbq-style' }),
+];
+
+export default questions;
