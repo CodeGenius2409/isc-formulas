@@ -54,7 +54,7 @@ export interface Filters {
 export const emptyFilters = (subject: SubjectId = 'physics'): Filters => ({ subject, levels: [], units: [], topics: [], formats: [], styles: [], difficulties: [], marks: [], share: 50 });
 
 /** The format of a bank question, worked out from its type and marks, so the same filters apply to both sources. */
-function bankFormat(def: BankDef): FormatChoice {
+export function bankFormatOf(def: BankDef): FormatChoice {
   const byType: Partial<Record<BankType, FormatChoice>> = { mcq: 'mcq', assertion: 'assertion', numerical: 'numerical', derivation: 'derivation', proof: 'derivation', reason: 'reason', distinguish: 'distinguish', output: 'output', error: 'error', program: 'program' };
   const direct = byType[def.type];
   if (direct) return direct;
@@ -91,7 +91,7 @@ function matches(item: { unit: number; topic: string; marks: number; difficulty:
 
 const isDerivation = (type: BankType) => type === 'derivation' || type === 'proof';
 export const blueprintMatches = (bp: Blueprint, f: Filters): boolean => (!f.reviewedOnly || bp.reviewed === true) && matches(bp, bp.level, isDerivation(bp.type) && f.formats.includes('derivation') ? 'derivation' : bp.format, bp.style, f);
-export const bankMatches = (def: BankDef, level: ClassLevel, f: Filters): boolean => matches(def, level, bankFormat(def), bankStyle(def), f);
+export const bankMatches = (def: BankDef, level: ClassLevel, f: Filters): boolean => matches(def, level, bankFormatOf(def), bankStyle(def), f);
 
 async function loadSources(f: Filters): Promise<Source[]> {
   const levels: ClassLevel[] = f.levels.length ? f.levels : ['XI', 'XII'];
