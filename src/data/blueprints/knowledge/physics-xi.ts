@@ -1,5 +1,6 @@
 // Physics, Class XI: knowledge added to what physics-xi.ts holds. Written fresh from the syllabus.
 import { mergeKnowledge, type Facts } from '../dsl';
+import { PHYSICS_XI } from './more/v6-formats';
 import MORE_A from './more/physics-xi-a';
 
 /** Points along a curve, for a sketch in an answer. These carry no values from any question. */
@@ -183,4 +184,4 @@ const knowledge: Record<string, Facts> = {
   },
 };
 
-export default mergeKnowledge(knowledge, MORE_A);
+export default mergeKnowledge(knowledge, MORE_A, PHYSICS_XI);

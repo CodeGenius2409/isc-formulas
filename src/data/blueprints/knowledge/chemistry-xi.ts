@@ -1,5 +1,6 @@
 // Chemistry, Class XI: knowledge added to what chemistry-xi.ts holds. Written fresh from the syllabus.
 import { mergeKnowledge, type Facts } from '../dsl';
+import { CHEMISTRY_XI } from './more/v6-formats';
 import MORE_A from './more/chemistry-xi-a';
 
 const knowledge: Record<string, Facts> = {
@@ -152,4 +153,4 @@ const knowledge: Record<string, Facts> = {
   },
 };
 
-export default mergeKnowledge(knowledge, MORE_A);
+export default mergeKnowledge(knowledge, MORE_A, CHEMISTRY_XI);

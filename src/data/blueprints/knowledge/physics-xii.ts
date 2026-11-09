@@ -1,5 +1,6 @@
 // Physics, Class XII: knowledge added to what physics-xii.ts holds. Written fresh from the syllabus.
 import { mergeKnowledge, type Facts } from '../dsl';
+import { PHYSICS_XII } from './more/v6-formats';
 import MORE_A from './more/physics-xii-a';
 import MORE_B from './more/physics-xii-b';
 import MORE_C from './more/physics-xii-c';
@@ -179,4 +180,4 @@ const knowledge: Record<string, Facts> = {
   },
 };
 
-export default mergeKnowledge(knowledge, MORE_A, MORE_B, MORE_C, MORE_D);
+export default mergeKnowledge(knowledge, MORE_A, MORE_B, MORE_C, MORE_D, PHYSICS_XII);

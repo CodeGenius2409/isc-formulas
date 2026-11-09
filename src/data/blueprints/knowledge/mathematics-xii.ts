@@ -1,5 +1,6 @@
 // Mathematics, Class XII: knowledge added to what mathematics-xii.ts holds. Written fresh from the syllabus.
 import { mergeKnowledge, type Facts } from '../dsl';
+import { MATHEMATICS_XII } from './more/v6-formats';
 import MORE_A from './more/mathematics-xii-a';
 import MORE_B from './more/mathematics-xii-b';
 
@@ -98,4 +99,4 @@ const knowledge: Record<string, Facts> = {
   },
 };
 
-export default mergeKnowledge(knowledge, MORE_A, MORE_B);
+export default mergeKnowledge(knowledge, MORE_A, MORE_B, MATHEMATICS_XII);
