@@ -62,7 +62,7 @@ export const COMPUTERSCIENCE_XII: Record<string, Facts> = {
     predict: [['A method’s int parameter is changed inside the method.', 'The caller’s variable doesn’t change.', 'Java passes a primitive by value, so the method has a copy.'], ['An element of an array parameter is changed inside a method.', 'The caller sees the change.', 'The reference is copied, and both refer to one array.']],
   },
   '5a': {
-    predict: [['A recursive method’s base case is removed.', 'It never stops by itself, and runs out of stack space.', 'Each call makes another call, and each one needs stack memory.']],
+    predict: [['A recursive method’s base case is removed.', 'It never stops by itself, and ends with an error when memory for its calls runs out.', 'Each call makes another call, and each one needs memory until it returns.']],
   },
 };
 
