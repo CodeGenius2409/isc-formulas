@@ -8,7 +8,7 @@ import { pickGenerated, structureKey } from '../../src/practice/gen/mix';
 import { seededRng } from '../../src/practice/questions';
 
 /** Falls to zero as material is written. It can only go down. */
-const ALLOWED_SHORT = 1000;
+const ALLOWED_SHORT = 34;
 
 const CLASSES: [SubjectId, ClassLevel][] = [['physics', 'XI'], ['physics', 'XII'], ['chemistry', 'XI'], ['chemistry', 'XII'], ['computerscience', 'XI'], ['computerscience', 'XII']];
 const ALL_CLASSES: [SubjectId, ClassLevel][] = [...CLASSES, ['mathematics', 'XI'], ['mathematics', 'XII']];

@@ -11,16 +11,16 @@ Written by `tests/unit/supply-report.test.ts`. It counts the app's own material,
 
 | Subject | Subtopics | Blueprints | Bank questions | Facts | Structures | Median to structure repeat | Median distinct | Mean variety |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
-| Physics | 41 | 2731 | 12799 | 2147 | 10968 | 12 | 200 | 94.7 |
-| Chemistry | 52 | 1308 | 6874 | 2139 | 2940 | 12 | 68 | 90.4 |
+| Physics | 41 | 2731 | 12995 | 2147 | 10968 | 12 | 200 | 94.7 |
+| Chemistry | 52 | 1308 | 7059 | 2139 | 2940 | 12 | 68 | 90.4 |
 | Mathematics | 28 | 820 | 4594 | 1096 | 861 | 16 | 200 | 94 |
-| Computer Science | 31 | 631 | 3846 | 1241 | 640 | 12 | 166 | 91.3 |
-| **All** | 152 | 5490 | 28113 | 6623 | 15409 | 12 | 200 | 92.4 |
+| Computer Science | 31 | 631 | 3855 | 1241 | 640 | 12 | 166 | 91.3 |
+| **All** | 152 | 5490 | 28503 | 6623 | 15409 | 12 | 200 | 92.4 |
 
 ## What the bank targets add up to
 
-- 152 subtopics, 38 of them most asked. At 40 and 80 questions, the target is **7,600** bank questions. There are 28113.
-- Counting a format as fitting a subtopic only where something already exists for it, there are **5,640** subtopic × format × difficulty combinations. **4,743** have fewer than 10 bank questions. Ten in each is **56,400** questions; forty, which the stress test asks for at 0%, is **225,600**.
+- 152 subtopics, 38 of them most asked. At 40 and 80 questions, the target is **7,600** bank questions. There are 28503.
+- Counting a format as fitting a subtopic only where something already exists for it, there are **5,841** subtopic × format × difficulty combinations. **4,935** have fewer than 10 bank questions. Ten in each is **58,410** questions; forty, which the stress test asks for at 0%, is **233,640**.
 
 ## Before and after
 
@@ -29,7 +29,7 @@ Written by `tests/unit/supply-report.test.ts`. It counts the app's own material,
 | Blueprints | 2,214 | 5,490 |
 | Distinct structures | 2,272 | 15,409 |
 | Facts | 6,623 | 6,623 |
-| Bank questions, all layers | 704 | 28,113 |
+| Bank questions, all layers | 704 | 28,503 |
 | Median questions before a structure repeats | 12 | 12 |
 | Median distinct questions per subtopic, capped at 200 | 159 | 200 |
 | Mean variety score | 66.8 | 92.4 |
@@ -40,17 +40,16 @@ Only "Written" is finished questions written by hand as bank questions. "Facts" 
 
 | Subject | Written | Facts | Compiled | Total |
 |---|---:|---:|---:|---:|
-| Physics | 414 | 4,138 | 8,247 | 12,799 |
-| Chemistry | 337 | 4,046 | 2,491 | 6,874 |
+| Physics | 610 | 4,138 | 8,247 | 12,995 |
+| Chemistry | 522 | 4,046 | 2,491 | 7,059 |
 | Mathematics | 255 | 2,037 | 2,302 | 4,594 |
-| Computer Science | 183 | 2,436 | 1,227 | 3,846 |
-| **All** | 1,189 | 12,657 | 14,267 | 28,113 |
+| Computer Science | 192 | 2,436 | 1,227 | 3,855 |
+| **All** | 1,579 | 12,657 | 14,267 | 28,503 |
 
 ## Against the 40 and 80 target
 
-- Counting all three layers, 129 of 152 subtopics reach it.
+- Counting all three layers, 152 of 152 subtopics reach it.
 - Counting only hand-written questions, 7 of 152 reach it.
-- Below it with all layers: Physics XI 1a (39 of 80); Physics XI 1b (38 of 80); Physics XI 1p (27 of 80); Physics XII 6p (29 of 80); Chemistry XI 1a (36 of 40); Chemistry XI 8b (35 of 40); Chemistry XI 9a (37 of 40); Chemistry XI 9c (36 of 40); Chemistry XI 9d (38 of 40); Chemistry XI 10a (35 of 40); Chemistry XI 10b (26 of 40); Chemistry XI 10c (26 of 40); Chemistry XI 10d (27 of 40); Chemistry XII 2c (39 of 40); Chemistry XII 6c (35 of 40); Chemistry XII 10c (38 of 40); Chemistry XII 11a (26 of 40); Chemistry XII 11b (26 of 40); Chemistry XII 11c (25 of 40); Chemistry XII 11d (15 of 40); Computer Science XI 4a (39 of 40); Computer Science XI 11a (37 of 40); Computer Science XI 11b (39 of 40).
 
 ## Filter stress test
 
@@ -58,41 +57,41 @@ For each subtopic, fitting format and fitting difficulty, how many combinations 
 
 | Subject | Combinations | 0%: 10 | 0%: 20 | 0%: 40 | 50%: 10 | 50%: 20 | 50%: 40 | 100%: 10 | 100%: 20 | 100%: 40 |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| Physics | 1,506 | 358 | 251 | 121 | 415 | 348 | 303 | 381 | 330 | 303 |
-| Chemistry | 1,452 | 190 | 92 | 32 | 240 | 146 | 104 | 211 | 135 | 103 |
+| Physics | 1,550 | 363 | 251 | 121 | 423 | 348 | 303 | 381 | 330 | 303 |
+| Chemistry | 1,574 | 193 | 92 | 32 | 244 | 146 | 104 | 211 | 135 | 103 |
 | Mathematics | 892 | 175 | 58 | 8 | 240 | 142 | 120 | 220 | 136 | 118 |
-| Computer Science | 1,025 | 145 | 24 | 0 | 216 | 95 | 76 | 193 | 92 | 74 |
+| Computer Science | 1,031 | 145 | 24 | 0 | 216 | 95 | 76 | 193 | 92 | 74 |
 
 ### By format
 
 | Format | Combinations | Fill 10 at 0% | Fill 10 at 50% |
 |---|---:|---:|---:|
-| mcq | 456 | 139 | 209 |
+| mcq | 456 | 147 | 221 |
+| assertion | 456 | 12 | 35 |
+| mistake | 456 | 99 | 100 |
 | statement | 453 | 156 | 156 |
-| mistake | 453 | 99 | 100 |
-| assertion | 429 | 12 | 35 |
-| reason | 387 | 7 | 7 |
-| short | 342 | 10 | 35 |
+| reason | 414 | 7 | 7 |
+| short | 378 | 10 | 35 |
 | very-short | 304 | 73 | 73 |
 | complete | 292 | 16 | 16 |
 | match | 264 | 0 | 0 |
-| distinguish | 242 | 0 | 4 |
+| distinguish | 262 | 0 | 4 |
+| numerical | 246 | 184 | 205 |
 | cbq | 237 | 33 | 59 |
-| numerical | 234 | 184 | 205 |
-| data | 141 | 61 | 77 |
+| data | 156 | 61 | 77 |
 | derivation | 116 | 4 | 13 |
-| long | 108 | 5 | 12 |
+| long | 114 | 5 | 12 |
+| order | 102 | 37 | 45 |
 | diagram | 102 | 0 | 0 |
-| order | 98 | 37 | 45 |
 | output | 48 | 3 | 20 |
+| predict | 46 | 0 | 0 |
 | change | 27 | 8 | 9 |
 | fill | 27 | 9 | 9 |
-| predict | 26 | 0 | 0 |
 | program | 24 | 0 | 3 |
 | error | 18 | 2 | 4 |
 | trace | 18 | 5 | 9 |
+| odd | 16 | 0 | 0 |
 | convert | 15 | 5 | 11 |
-| odd | 14 | 0 | 0 |
 
 ## Two mock papers running
 
@@ -100,38 +99,38 @@ With the same settings and the first paper in the history, what the second share
 
 | Paper | Generated | Same questions | Same facts | Same structures |
 |---|---:|---:|---:|---:|
-| physics XI | 0% | 3.0% | 0.0% | 4.0% |
+| physics XI | 0% | 1.0% | 0.0% | 3.0% |
 | physics XI | 50% | 0.0% | 0.0% | 0.0% |
 | physics XI | 100% | 0.0% | 0.0% | 0.0% |
-| physics XII | 0% | 2.0% | 0.0% | 3.0% |
+| physics XII | 0% | 2.0% | 0.0% | 4.0% |
 | physics XII | 50% | 0.0% | 0.0% | 0.0% |
 | physics XII | 100% | 0.0% | 0.0% | 0.0% |
 | chemistry XI | 0% | 0.0% | 0.0% | 0.0% |
 | chemistry XI | 50% | 0.0% | 0.0% | 0.0% |
 | chemistry XI | 100% | 0.0% | 0.0% | 0.0% |
-| chemistry XII | 0% | 1.0% | 0.0% | 1.0% |
+| chemistry XII | 0% | 0.0% | 0.0% | 0.0% |
 | chemistry XII | 50% | 0.0% | 0.0% | 0.0% |
 | chemistry XII | 100% | 0.0% | 0.0% | 0.0% |
-| mathematics XI | 0% | 5.1% | 0.0% | 17.1% |
-| mathematics XI | 50% | 0.9% | 0.0% | 5.1% |
+| mathematics XI | 0% | 6.0% | 0.0% | 17.1% |
+| mathematics XI | 50% | 1.7% | 0.0% | 3.4% |
 | mathematics XI | 100% | 0.0% | 0.0% | 0.0% |
-| mathematics XII | 0% | 4.3% | 0.0% | 17.1% |
-| mathematics XII | 50% | 0.0% | 0.0% | 4.3% |
+| mathematics XII | 0% | 8.5% | 0.0% | 35.0% |
+| mathematics XII | 50% | 2.6% | 0.0% | 9.4% |
 | mathematics XII | 100% | 0.0% | 0.0% | 0.0% |
-| computerscience XI | 0% | 5.6% | 0.0% | 15.3% |
-| computerscience XI | 50% | 1.4% | 0.0% | 2.8% |
+| computerscience XI | 0% | 4.2% | 0.0% | 8.3% |
+| computerscience XI | 50% | 0.0% | 0.0% | 0.0% |
 | computerscience XI | 100% | 0.0% | 0.0% | 0.0% |
-| computerscience XII | 0% | 9.7% | 0.0% | 19.4% |
-| computerscience XII | 50% | 1.4% | 0.0% | 8.3% |
+| computerscience XII | 0% | 8.3% | 0.0% | 15.3% |
+| computerscience XII | 50% | 1.4% | 0.0% | 4.2% |
 | computerscience XII | 100% | 0.0% | 0.0% | 0.0% |
 
 ## Physics
 
 | Topic | Asked | Blueprints | Numerical | Bank | Facts | Structures | Contexts | To structure repeat | Smallest gap | Distinct | Variety |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| XI 1a Units and Measurements (most asked) | 0 | 13 | 0 | 39 | 17 | 13 | 0 | 11 | 1 | 16 | 93 |
-| XI 1b Dimensions (most asked) | 0 | 9 | 0 | 38 | 17 | 9 | 0 | 9 | 1 | 17 | 86 |
-| XI 1p Paper II: measuring instruments (most asked) | 0 | 9 | 0 | 27 | 16 | 9 | 0 | 8 | 1 | 15 | 90 |
+| XI 1a Units and Measurements (most asked) | 0 | 13 | 0 | 82 | 17 | 13 | 0 | 11 | 1 | 16 | 93 |
+| XI 1b Dimensions (most asked) | 0 | 9 | 0 | 81 | 17 | 9 | 0 | 9 | 1 | 17 | 86 |
+| XI 1p Paper II: measuring instruments (most asked) | 0 | 9 | 0 | 85 | 16 | 9 | 0 | 8 | 1 | 15 | 90 |
 | XI 2a Motion in a Straight Line (most asked) | 0 | 64 | 24 | 319 | 63 | 300 | 20 | 16 | 7 | 200 | 97 |
 | XI 2b Motion in a Plane (most asked) | 0 | 80 | 34 | 297 | 19 | 470 | 13 | 12 | 11 | 200 | 95 |
 | XI 3a Newton's laws and momentum (most asked) | 0 | 97 | 46 | 354 | 22 | 609 | 13 | 13 | 11 | 200 | 96 |
@@ -164,7 +163,7 @@ With the same settings and the first paper in the history, what the second share
 | XII 6a Ray Optics (most asked) | 0 | 134 | 65 | 603 | 133 | 569 | 17 | 13 | 11 | 200 | 97 |
 | XII 6b Optical instruments (most asked) | 0 | 53 | 16 | 305 | 74 | 185 | 8 | 13 | 7 | 200 | 95 |
 | XII 6c Wave Optics (most asked) | 0 | 79 | 27 | 438 | 89 | 177 | 8 | 12 | 10 | 200 | 97 |
-| XII 6p Paper II: ray optics experiments (most asked) | 0 | 11 | 0 | 29 | 18 | 11 | 0 | 10 | 1 | 18 | 90 |
+| XII 6p Paper II: ray optics experiments (most asked) | 0 | 11 | 0 | 81 | 18 | 11 | 0 | 10 | 1 | 18 | 90 |
 | XII 7a Dual Nature of Radiation and Matter (most asked) | 0 | 106 | 41 | 505 | 87 | 268 | 14 | 12 | 6 | 200 | 98 |
 | XII 8a Atoms (most asked) | 0 | 41 | 10 | 205 | 86 | 41 | 10 | 13 | 1 | 138 | 96 |
 | XII 8b Nuclei | 0 | 49 | 13 | 308 | 92 | 53 | 8 | 12 | 4 | 200 | 98 |
@@ -175,7 +174,7 @@ With the same settings and the first paper in the history, what the second share
 
 | Topic | Asked | Blueprints | Numerical | Bank | Facts | Structures | Contexts | To structure repeat | Smallest gap | Distinct | Variety |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| XI 1a Matter, laws and measurement | 0 | 12 | 0 | 36 | 15 | 12 | 0 | 10 | 2 | 14 | 96 |
+| XI 1a Matter, laws and measurement | 0 | 12 | 0 | 42 | 15 | 12 | 0 | 10 | 2 | 14 | 96 |
 | XI 1b Mole concept and stoichiometry | 0 | 22 | 7 | 100 | 17 | 27 | 4 | 14 | 2 | 200 | 93 |
 | XI 1c Chemical equivalents and volumetric calculations | 0 | 57 | 28 | 312 | 40 | 217 | 8 | 11 | 11 | 200 | 95 |
 | XI 2a Particles and atomic models | 0 | 37 | 17 | 209 | 16 | 140 | 12 | 15 | 3 | 200 | 95 |
@@ -189,20 +188,20 @@ With the same settings and the first paper in the history, what the second share
 | XI 6b Ionic equilibrium | 0 | 55 | 23 | 312 | 75 | 138 | 13 | 12 | 9 | 200 | 97 |
 | XI 7a Redox Reactions | 0 | 15 | 0 | 53 | 18 | 15 | 0 | 13 | 1 | 160 | 74 |
 | XI 8a Classification, nomenclature and isomerism | 0 | 13 | 0 | 40 | 17 | 13 | 0 | 11 | 1 | 123 | 53 |
-| XI 8b Purification and analysis | 0 | 9 | 0 | 35 | 15 | 9 | 0 | 9 | 1 | 15 | 92 |
+| XI 8b Purification and analysis | 0 | 9 | 0 | 42 | 15 | 9 | 0 | 9 | 1 | 15 | 92 |
 | XI 8c Electronic effects and reaction types | 0 | 12 | 0 | 50 | 19 | 12 | 0 | 11 | 1 | 17 | 92 |
-| XI 9a Alkanes | 0 | 11 | 0 | 37 | 16 | 11 | 0 | 10 | 1 | 15 | 96 |
+| XI 9a Alkanes | 0 | 11 | 0 | 41 | 16 | 11 | 0 | 10 | 1 | 15 | 96 |
 | XI 9b Alkenes | 0 | 13 | 0 | 43 | 17 | 13 | 0 | 11 | 1 | 21 | 96 |
-| XI 9c Alkynes | 0 | 9 | 0 | 36 | 15 | 9 | 0 | 8 | 1 | 15 | 91 |
-| XI 9d Aromatic Hydrocarbons | 0 | 12 | 0 | 38 | 16 | 12 | 0 | 11 | 1 | 16 | 94 |
-| XI 10a Titration | 0 | 10 | 0 | 35 | 16 | 10 | 0 | 10 | 1 | 16 | 94 |
-| XI 10b Qualitative analysis | 0 | 8 | 0 | 26 | 18 | 8 | 0 | 7 | 1 | 17 | 71 |
-| XI 10c Preparation of inorganic compounds | 0 | 8 | 0 | 26 | 15 | 8 | 0 | 7 | 1 | 15 | 83 |
-| XI 10d Paper Chromatography | 0 | 9 | 0 | 27 | 16 | 9 | 0 | 8 | 1 | 14 | 87 |
+| XI 9c Alkynes | 0 | 9 | 0 | 42 | 15 | 9 | 0 | 8 | 1 | 15 | 91 |
+| XI 9d Aromatic Hydrocarbons | 0 | 12 | 0 | 42 | 16 | 12 | 0 | 11 | 1 | 16 | 94 |
+| XI 10a Titration | 0 | 10 | 0 | 41 | 16 | 10 | 0 | 10 | 1 | 16 | 94 |
+| XI 10b Qualitative analysis | 0 | 8 | 0 | 41 | 18 | 8 | 0 | 7 | 1 | 17 | 71 |
+| XI 10c Preparation of inorganic compounds | 0 | 8 | 0 | 45 | 15 | 8 | 0 | 7 | 1 | 15 | 83 |
+| XI 10d Paper Chromatography | 0 | 9 | 0 | 44 | 16 | 9 | 0 | 8 | 1 | 14 | 87 |
 | XII 1a Solutions and colligative properties | 0 | 173 | 89 | 746 | 156 | 707 | 18 | 11 | 11 | 200 | 97 |
 | XII 2a Cells and potentials | 0 | 50 | 16 | 297 | 74 | 136 | 10 | 12 | 7 | 200 | 97 |
 | XII 2b Conductance and electrolysis | 0 | 80 | 36 | 416 | 73 | 183 | 10 | 11 | 8 | 200 | 97 |
-| XII 2c Batteries and corrosion | 0 | 13 | 0 | 39 | 18 | 13 | 0 | 12 | 1 | 18 | 93 |
+| XII 2c Batteries and corrosion | 0 | 13 | 0 | 42 | 18 | 13 | 0 | 12 | 1 | 18 | 93 |
 | XII 3a Rate, order and integrated rate equations | 0 | 87 | 31 | 493 | 94 | 367 | 12 | 12 | 11 | 200 | 96 |
 | XII 3b Collision theory and activation energy | 0 | 27 | 8 | 146 | 19 | 111 | 9 | 16 | 11 | 200 | 89 |
 | XII 4a Transition elements, lanthanoids and actinoids | 0 | 24 | 0 | 191 | 89 | 24 | 0 | 12 | 1 | 113 | 97 |
@@ -210,7 +209,7 @@ With the same settings and the first paper in the history, what the second share
 | XII 5a Coordination Compounds | 0 | 30 | 0 | 292 | 134 | 30 | 0 | 12 | 1 | 186 | 98 |
 | XII 6a Haloalkanes | 0 | 22 | 0 | 198 | 102 | 22 | 0 | 12 | 1 | 164 | 98 |
 | XII 6b Haloarenes | 0 | 19 | 0 | 86 | 42 | 19 | 0 | 13 | 1 | 42 | 93 |
-| XII 6c Polyhalogen compounds | 0 | 9 | 0 | 35 | 15 | 9 | 0 | 9 | 1 | 15 | 89 |
+| XII 6c Polyhalogen compounds | 0 | 9 | 0 | 42 | 15 | 9 | 0 | 9 | 1 | 15 | 89 |
 | XII 7a Alcohols | 0 | 27 | 0 | 187 | 80 | 27 | 0 | 13 | 1 | 124 | 98 |
 | XII 7b Phenols | 0 | 20 | 0 | 139 | 70 | 20 | 0 | 11 | 1 | 76 | 97 |
 | XII 7c Ethers | 0 | 21 | 0 | 80 | 41 | 21 | 0 | 13 | 1 | 44 | 95 |
@@ -221,12 +220,12 @@ With the same settings and the first paper in the history, what the second share
 | XII 9c Diazonium salts | 0 | 17 | 0 | 96 | 40 | 17 | 0 | 13 | 1 | 49 | 93 |
 | XII 10a Carbohydrates | 0 | 18 | 0 | 148 | 75 | 18 | 0 | 11 | 1 | 68 | 98 |
 | XII 10b Proteins | 0 | 21 | 0 | 159 | 83 | 21 | 0 | 12 | 1 | 78 | 98 |
-| XII 10c Vitamins | 0 | 12 | 0 | 38 | 18 | 12 | 0 | 10 | 1 | 18 | 92 |
+| XII 10c Vitamins | 0 | 12 | 0 | 42 | 18 | 12 | 0 | 10 | 1 | 18 | 92 |
 | XII 10d Nucleic Acids | 0 | 17 | 0 | 109 | 54 | 17 | 0 | 11 | 1 | 48 | 94 |
-| XII 11a Titrations | 0 | 10 | 0 | 26 | 17 | 10 | 0 | 9 | 1 | 17 | 84 |
-| XII 11b Rate of reaction, pH and cells | 0 | 9 | 0 | 26 | 17 | 9 | 0 | 8 | 1 | 17 | 84 |
-| XII 11c Identifying compounds and functional groups | 0 | 8 | 0 | 25 | 17 | 8 | 0 | 7 | 1 | 17 | 77 |
-| XII 11d Qualitative analysis | 0 | 3 | 0 | 15 | 15 | 3 | 0 | 2 | 1 | 15 | 60 |
+| XII 11a Titrations | 0 | 10 | 0 | 45 | 17 | 10 | 0 | 9 | 1 | 17 | 84 |
+| XII 11b Rate of reaction, pH and cells | 0 | 9 | 0 | 44 | 17 | 9 | 0 | 8 | 1 | 17 | 84 |
+| XII 11c Identifying compounds and functional groups | 0 | 8 | 0 | 46 | 17 | 8 | 0 | 7 | 1 | 17 | 77 |
+| XII 11d Qualitative analysis | 0 | 3 | 0 | 44 | 15 | 3 | 0 | 2 | 1 | 15 | 60 |
 
 ## Mathematics
 
@@ -269,7 +268,7 @@ With the same settings and the first paper in the history, what the second share
 | XI 2a Encodings | 0 | 16 | 0 | 99 | 48 | 16 | 0 | 13 | 1 | 129 | 91 |
 | XI 3a Propositional logic | 0 | 18 | 0 | 117 | 40 | 18 | 0 | 12 | 1 | 98 | 97 |
 | XI 3b Logic and hardware | 0 | 16 | 0 | 64 | 16 | 16 | 0 | 12 | 1 | 89 | 96 |
-| XI 4a Introduction | 0 | 12 | 0 | 39 | 16 | 12 | 0 | 11 | 1 | 15 | 96 |
+| XI 4a Introduction | 0 | 12 | 0 | 42 | 16 | 12 | 0 | 11 | 1 | 15 | 96 |
 | XI 5a Objects and the JVM | 0 | 14 | 0 | 108 | 48 | 14 | 0 | 12 | 1 | 74 | 97 |
 | XI 5b Errors and exceptions | 0 | 12 | 0 | 40 | 16 | 12 | 0 | 10 | 2 | 16 | 98 |
 | XI 6a Primitive values, Wrapper classes, Types and casting | 0 | 18 | 0 | 121 | 54 | 18 | 0 | 12 | 1 | 165 | 97 |
@@ -277,8 +276,8 @@ With the same settings and the first paper in the history, what the second share
 | XI 8a Statements, Scope | 0 | 44 | 0 | 270 | 58 | 44 | 0 | 14 | 10 | 200 | 96 |
 | XI 9a Methods and Constructors | 0 | 25 | 0 | 157 | 50 | 25 | 0 | 14 | 1 | 200 | 97 |
 | XI 10a Arrays, Strings | 0 | 23 | 0 | 116 | 15 | 23 | 0 | 12 | 7 | 200 | 95 |
-| XI 11a Basic input/output using Scanner class | 0 | 9 | 0 | 37 | 16 | 9 | 0 | 8 | 1 | 16 | 93 |
-| XI 11b Data File Handling | 0 | 12 | 0 | 39 | 17 | 12 | 0 | 10 | 1 | 17 | 95 |
+| XI 11a Basic input/output using Scanner class | 0 | 9 | 0 | 41 | 16 | 9 | 0 | 8 | 1 | 16 | 93 |
+| XI 11b Data File Handling | 0 | 12 | 0 | 41 | 17 | 12 | 0 | 10 | 1 | 17 | 95 |
 | XI 12a Introduction to Python | 0 | 13 | 0 | 54 | 17 | 13 | 0 | 13 | 1 | 123 | 62 |
 | XI 13a Trends in computing and ethical issues | 0 | 13 | 0 | 46 | 20 | 13 | 0 | 11 | 2 | 19 | 99 |
 | XII 1a Propositional logic | 0 | 20 | 0 | 140 | 48 | 20 | 0 | 17 | 1 | 200 | 97 |
@@ -297,4 +296,4 @@ With the same settings and the first paper in the history, what the second share
 | XII 8a Binary trees [Conceptual] | 0 | 21 | 0 | 152 | 56 | 21 | 0 | 13 | 1 | 166 | 95 |
 | XII 9a Complexity and Big O notation | 0 | 17 | 0 | 123 | 51 | 17 | 0 | 12 | 1 | 85 | 95 |
 
-Took 190 s.
+Took 264 s.

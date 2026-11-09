@@ -7,7 +7,7 @@ import { readJson, writeJson } from '../../lib/storage';
 import { noteMissedSteps, papersImported, recordAnswer, studentFreshness } from '../progress';
 import { seededRng, type Rng } from '../questions';
 import { loadBlueprints, type LoadedBlueprints } from '../../data/blueprints';
-import { CBQ_SHARE, defKeys, generatedCount, historyKeys, mixedBankOrder, pickGenerated, planShare, type Freshness, type SlotCount } from '../gen/mix';
+import { bankFormatOf, CBQ_SHARE, defKeys, FORMAT_SHARE, generatedCount, historyKeys, mixedBankOrder, pickGenerated, planShare, type Freshness, type SlotCount } from '../gen/mix';
 import { ensureFactHistory, factGapStore, noteFactsShown } from '../fact-history';
 import { bankQuestion, loadBank, type LoadedBank } from './index';
 import { answerSummary, isAttempted, isPassing, qualityOf, scoreOf, yourAnswerSummary } from './mark';
@@ -158,6 +158,7 @@ function draw(pool: BankDef[], count: number, weights: Map<number, number>, used
   const given = new Map<number, number>();
   const topicsTaken = new Set<string>();
   const factsTaken = new Set<string>();
+  const formatsTaken = new Map<string, number>();
   while (out.length < count && left.length) {
     const units = [...new Set(left.map((d) => d.unit))];
     let best = units[0];
@@ -173,7 +174,23 @@ function draw(pool: BankDef[], count: number, weights: Map<number, number>, used
     const inUnit = left.filter((d) => d.unit === best);
     const open = inUnit.filter((d) => !d.shape || !shapes.has(`${d.shape}|${d.context ?? ''}`));
     const choices = open.length ? open : inUnit;
-    const chosen = choices.find((d) => !topicsTaken.has(`${d.unit}${d.topic}`)) ?? choices[0];
+    const newTopic = choices.filter((d) => !topicsTaken.has(`${d.unit}${d.topic}`));
+    // Picking by unit would lose the papers' mix of formats, so the format furthest behind its share goes next.
+    const within = newTopic.length ? newTopic : choices;
+    let chosen = within[0];
+    let formatGap = -Infinity;
+    const looked = new Set<string>();
+    for (const d of within) {
+      const format = bankFormatOf(d);
+      if (looked.has(format)) continue;
+      looked.add(format);
+      const gap = (FORMAT_SHARE[d.subject][format] ?? 1) / ((formatsTaken.get(format) ?? 0) + 1);
+      if (gap > formatGap) {
+        formatGap = gap;
+        chosen = d;
+      }
+    }
+    formatsTaken.set(bankFormatOf(chosen), (formatsTaken.get(bankFormatOf(chosen)) ?? 0) + 1);
     if (chosen.shape) shapes.add(`${chosen.shape}|${chosen.context ?? ''}`);
     left.splice(left.indexOf(chosen), 1);
     // Several questions can ask one fact, in different formats, and a paper only asks it once.

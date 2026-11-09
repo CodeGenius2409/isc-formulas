@@ -31,6 +31,10 @@ describe('mock papers', () => {
       for (let run = 1; run <= RUNS; run++) {
         const first = assemblePaper(subject, level, bank, weights, seededRng(run * 13), 0, { set, share: generated });
         const shapes = questionsOf(first).map(structureKey);
+        // The one-mark parts always include choice questions, whatever the slider says. Very short answers outnumber them in Computer Science's papers.
+        const oneMark = first.sections[0].questions.filter((q) => q.item.marks === 1);
+        const withChoices = oneMark.filter((q) => q.item.form === 'mcq').length;
+        expect(withChoices, 'choice questions among the one-mark parts').toBeGreaterThanOrEqual(subject === 'computerscience' ? 1 : 3);
         // No two with the same structure and setting, wherever the supply allows that. A real paper has 30 to 40 places.
         // In Computer Science, a 10-mark blueprint chooses among several classes to design, which looks like one structure here.
         expect(new Set(shapes).size / shapes.length, 'structures repeated within a paper').toBeGreaterThanOrEqual(subject === 'computerscience' ? 0.7 : 0.9);

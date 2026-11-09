@@ -29,15 +29,15 @@ test('a mock paper has the real structure, and is marked and broken down by topi
   await expect(page.locator('section[aria-label="Section A"] .paper-question')).toHaveCount(14);
   await expect(page.locator('section[aria-label="Section C"] .paper-question')).toHaveCount(9);
 
-  // Answer the first multiple choice question, and hand in.
-  const first = page.locator('.paper-question').first();
+  // Answer the first multiple choice question, and hand in. Section A is shuffled, so it may not be question 1.
+  const first = page.locator('.paper-question:has(.choice)').first();
   await first.locator('.choice').first().click();
   await expect(first.locator('.choice').first()).toHaveAttribute('aria-pressed', 'true');
 
   // The clock and answers survive a reload.
   await page.reload();
   await expect(page.getByRole('timer')).toBeVisible();
-  await expect(page.locator('.paper-question').first().locator('.choice').first()).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('.paper-question:has(.choice)').first().locator('.choice').first()).toHaveAttribute('aria-pressed', 'true');
 
   await page.getByRole('button', { name: 'Hand in', exact: true }).click();
   await expect(page.locator('p[role="status"]')).toContainText('still blank');
