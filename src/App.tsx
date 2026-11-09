@@ -17,6 +17,7 @@ import { Dock } from './components/shell/Dock';
 import { Rail } from './components/shell/Rail';
 import { Toast } from './components/shell/Toast';
 import { WorkArea } from './components/work/WorkArea';
+import { WorkResizer } from './components/work/WorkResizer';
 import { UpdatePrompt } from './components/UpdatePrompt';
 import Home from './views/Home';
 
@@ -198,6 +199,7 @@ export function App() {
       </main>
       {workBeside && (
         <aside className="work" aria-label="Working area">
+          <WorkResizer />
           <ErrorBoundary label="The working area" resetKey={workTab}>
             <WorkArea route={route} tab={workTab} />
           </ErrorBoundary>

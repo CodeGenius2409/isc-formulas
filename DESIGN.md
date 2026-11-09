@@ -159,7 +159,8 @@ Rules:
 
 - WCAG AA contrast in every theme. `tests/e2e` runs axe on the main views.
 - Visible focus through `:focus-visible`, in the `--focus` colour.
-- Every feature is reachable by keyboard. `/` and Ctrl or ⌘ K open find.
+- Every feature is reachable by keyboard. `/` and Ctrl or ⌘ K open find. The edge of the work page
+  takes the arrow keys, Home and End to resize it, and Enter to reset it.
 - Landmarks: subject nav, main nav, the contents `aside`, `main`, and the work `aside`.
 - A failure is explained, never blank. Pages sit inside `ErrorBoundary`.
 - Right and wrong are shown with an icon and words, never colour alone.

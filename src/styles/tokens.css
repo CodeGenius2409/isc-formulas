@@ -23,6 +23,8 @@
   --rail: 4.75rem;
   --contents: 17.25rem;
   --work: 27.75rem;
+  --work-min: 20rem;
+  --main-min: 24rem;
   --margin-col: 4.5rem;
   --dock: 3.75rem;
   --scrim: rgb(10 16 20 / 0.42);
