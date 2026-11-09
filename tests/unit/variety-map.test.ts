@@ -16,7 +16,7 @@ const WRITE = process.env.WRITE_VARIETY_MAP;
 interface ClassFile {
   subject: string;
   classLevel: string;
-  units: { number: number; subtopics: { topic: string; items: { id?: string; ref?: string }[] }[] }[];
+  units: { number: number; subtopics: { topic: string; items: { id?: string; ref?: string; name?: string }[] }[] }[];
 }
 
 const FILES = ['physics-XI', 'physics-XII', 'chemistry-XI', 'chemistry-XII', 'mathematics-XI', 'mathematics-XII', 'computerscience-XI', 'computerscience-XII'];
@@ -73,8 +73,8 @@ function powers(entry: ResolvedEntry, natural: string): Record<string, number> |
 export function buildMap() {
   const byEntry = new Map(RAW_ENTRIES.map((e) => [e.id, e]));
   const topics: Record<string, string[]> = {};
-  const shared = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../src/data/generated/shared.json'), 'utf8'));
-  void shared;
+  const shared = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../src/data/generated/shared.json'), 'utf8')) as Record<string, { name: string }>;
+  const titles = new Map<string, string>();
   for (const name of FILES) {
     const file = JSON.parse(fs.readFileSync(path.resolve(__dirname, `../../src/data/generated/${name}.json`), 'utf8')) as ClassFile;
     for (const unit of file.units) {
@@ -82,13 +82,14 @@ export function buildMap() {
         for (const item of sub.items) {
           const id = item.id ?? item.ref;
           if (!id || !byEntry.has(id)) continue;
+          titles.set(id, item.name ?? shared[id]?.name ?? '');
           const key = `${file.subject} ${file.classLevel} ${unit.number}${sub.topic}`;
           (topics[key] ??= []).includes(id) || topics[key].push(id);
         }
       }
     }
   }
-  const entries: Record<string, { natural: string; unknowns: string[]; powers?: Record<string, number> }> = {};
+  const entries: Record<string, { title: string; natural: string; unknowns: string[]; powers?: Record<string, number> }> = {};
   for (const id of new Set(Object.values(topics).flat())) {
     const entry = getEntry(id)!;
     const natural = defaultUnknown(entry);
@@ -108,7 +109,7 @@ export function buildMap() {
     }
     if (!unknowns.length) continue;
     const power = powers(entry, natural);
-    entries[id] = { natural, unknowns, ...(power ? { powers: power } : {}) };
+    entries[id] = { title: titles.get(id) ?? '', natural, unknowns, ...(power ? { powers: power } : {}) };
   }
   const cleaned: Record<string, string[]> = {};
   for (const [key, list] of Object.entries(topics).sort()) {
@@ -126,7 +127,7 @@ describe('the variety map', () => {
     const { loadBlueprints } = await import('../../src/data/blueprints');
     const { generateItem } = await import('../../src/practice/gen/engine');
     const bad: string[] = [];
-    for (const subject of ['physics', 'chemistry', 'mathematics'] as const) {
+    for (const subject of ['physics', 'chemistry', 'computerscience'] as const) {
       for (const level of ['XI', 'XII'] as const) {
         const set = await loadBlueprints(subject, level);
         for (const bp of set.blueprints.filter((b) => b.family)) {

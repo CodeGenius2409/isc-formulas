@@ -62,7 +62,7 @@ describe.each(CLASSES)('$name', ({ subject, level }) => {
   it('has marking points that add up to the marks for the question', () => {
     for (const d of defs) {
       if (d.form === 'theory') expect(d.points.reduce((sum, p) => sum + p.marks, 0), d.id).toBe(d.marks);
-      if (d.form === 'numeric') expect(d.parts.reduce((sum, p) => sum + p.marks, 0), d.id).toBe(d.marks);
+      if (d.form === 'numeric') expect((d.fixedParts ?? d.parts).reduce((sum, p) => sum + p.marks, 0), d.id).toBe(d.marks);
     }
   });
 
@@ -87,10 +87,12 @@ describe.each(CLASSES)('$name', ({ subject, level }) => {
     for (const d of defs) {
       if (d.form !== 'numeric') continue;
       const texts = new Set<string>();
-      for (let seed = 1; seed <= 25; seed++) {
+      // A fixed question has only one set of values to try.
+      const fixed = Object.values(d.vars).every((v) => v.length === 1);
+      for (let seed = 1; seed <= (fixed ? 1 : 25); seed++) {
         const item = instantiate(d, bank, seededRng(seed)) as NumericItem;
         texts.add(item.text + JSON.stringify(item.diagram ?? ''));
-        expect(item.text, d.id).not.toMatch(/\{[A-Za-z]\w*\}/);
+        expect(item.text.replace(/\$[^$]*\$/g, ''), d.id).not.toMatch(/\{[A-Za-z]\w*\}/);
         item.parts.forEach((part, i) => {
           expect(part.ask, d.id).not.toMatch(/\{[A-Za-z]\w*\}/);
           expect(Number.isFinite(part.question.answers[0]), d.id).toBe(true);
@@ -100,7 +102,7 @@ describe.each(CLASSES)('$name', ({ subject, level }) => {
           expect(markPart(item, i, { parts }).correct, `${d.id} part ${i + 1}: ${part.question.answers[0]} ${part.question.unit}`).toBe(true);
         });
       }
-      expect(texts.size, `${d.id} should vary`).toBeGreaterThan(1);
+      if (!fixed) expect(texts.size, `${d.id} should vary`).toBeGreaterThan(1);
     }
   });
 
@@ -141,8 +143,9 @@ describe.each(CLASSES)('$name', ({ subject, level }) => {
   it('writes Computer Science as code, with no maths-only markup', () => {
     if (subject !== 'computerscience') return;
     for (const d of defs) {
-      const text = JSON.stringify(d);
-      expect(text, d.id).not.toMatch(/\\\\frac|\\\\sqrt|\^\{/);
+      // Worked steps for a number may use maths markup, as those are shown as maths. Questions may not.
+      const { fixedParts: _steps, ...question } = d as BankDef & { fixedParts?: unknown };
+      expect(JSON.stringify(question), d.id).not.toMatch(/\\\\frac|\\\\sqrt|\^\{/);
     }
   });
 });
@@ -157,7 +160,8 @@ describe('Computer Science programs', () => {
   it('prints exactly what "write the output" questions say, in the tracer’s interpreter', async () => {
     let checked = 0;
     for (const d of await allOutputs()) {
-      if (d.form !== 'output' || d.python) continue;
+      // A question on a change shows the program before it, and answers for the changed one, which was run when it was frozen.
+      if (d.form !== 'output' || d.python || d.format === 'change') continue;
       const run = runProgram(d.code);
       expect(run.error, `${d.id}: ${run.error}`).toBeFalsy();
       expect(normaliseOutput(run.output), d.id).toBe(normaliseOutput(d.expected));

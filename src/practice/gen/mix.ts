@@ -5,7 +5,7 @@ import { createStore } from '../../lib/store';
 import { readJson, writeJson } from '../../lib/storage';
 import type { Rng } from '../questions';
 import type { SubjectId } from '../../data/types';
-import type { BankDef, BankQuestion, QuestionFormat } from '../bank/types';
+import type { BankDef, BankQuestion, BankType, QuestionFormat } from '../bank/types';
 import { generatedQuestion } from './engine';
 
 const shareStore = (key: string, start: number) => createStore<number>(readJson<number>(key, start), (value) => writeJson(key, value));
@@ -109,7 +109,8 @@ export function historyKeys(q: { formulaId: string; kind: string; item?: { facts
   return [`bp:${q.item.generated.blueprint}${unknowns ? `|${unknowns}` : ''}`];
 }
 
-export const defKeys = (d: BankDef): string[] => (d.facts?.length ? d.facts : [d.id]);
+/** What a fixed question rests under. One frozen from a blueprint rests with the structure it shares, as the generator's do. */
+export const defKeys = (d: BankDef): string[] => (d.facts?.length ? d.facts : d.shape ? [`bp:${d.shape}`] : [d.id]);
 
 export interface PickOptions {
   count: number;
@@ -167,11 +168,27 @@ function shuffled<T>(list: readonly T[], rng: Rng): T[] {
 /** What makes two questions the same: not just the words, as "Which of these is correct?" has many different questions. */
 export function questionKey(q: BankQuestion): string {
   const { item } = q;
+  // Where the figure holds the data, two questions with the same words and different figures are different questions.
+  const data = item.diagram && (item.diagram.kind === 'table' || item.diagram.kind === 'graph') ? JSON.stringify(item.diagram) : '';
   if (item.form === 'output') return item.text + item.code;
-  if (item.form === 'mcq') return `${item.text}|${item.options.map((o) => o.text).sort().join('|')}`;
-  if (item.form === 'numeric') return `${item.text}|${item.parts.map((p) => p.ask).join('|')}`;
-  return item.text;
+  // Where the stem says it all, new wrong options don't make a new question. "Which statement is true?" is the opposite case.
+  if (item.form === 'mcq' && (item.generated?.family || item.origin === 'compiled')) return item.text + data;
+  if (item.form === 'mcq') return `${item.text}|${item.options.map((o) => o.text).sort().join('|')}${data}`;
+  if (item.form === 'numeric') return `${item.text}|${item.parts.map((p) => p.ask).join('|')}${data}`;
+  return item.text + data;
 }
+
+/** The format of a bank question, worked out from its type and marks, so the same filters apply to both sources. */
+export function bankFormatOf(def: BankDef): QuestionFormat {
+  if (def.format) return def.format;
+  const byType: Partial<Record<BankType, QuestionFormat>> = { mcq: 'mcq', assertion: 'assertion', numerical: 'numerical', derivation: 'derivation', proof: 'derivation', reason: 'reason', distinguish: 'distinguish', output: 'output', error: 'error', program: 'program' };
+  const direct = byType[def.type];
+  if (direct) return direct;
+  if (def.diagram) return 'diagram';
+  if (def.marks === 1) return 'very-short';
+  return def.marks >= 5 ? 'long' : 'short';
+}
+
 
 export const factsOf = (q: BankQuestion): string[] => q.item.facts ?? [];
 
@@ -286,6 +303,38 @@ export function pickGenerated(set: LoadedBlueprints, pool: Blueprint[], options:
       if (out.length >= count) break;
       take(question, bp, false);
     }
+  }
+  return out;
+}
+
+/** A fixed question's order in a pool: the formats in the papers' proportions, and hand-written ones before those made from facts or blueprints. */
+export function mixedBankOrder<T extends { def: BankDef }>(pool: T[], rng: Rng): T[] {
+  if (pool.length < 2) return [...pool];
+  const rank = (d: BankDef) => (!d.origin || d.origin === 'written' ? 0 : d.origin === 'facts' ? 1 : 2);
+  const byFormat = new Map<string, T[]>();
+  for (const x of shuffled(pool, rng).sort((a, b) => rank(a.def) - rank(b.def))) {
+    const key = bankFormatOf(x.def);
+    byFormat.set(key, [...(byFormat.get(key) ?? []), x]);
+  }
+  const share = FORMAT_SHARE[pool[0].def.subject] ?? {};
+  const taken = new Map<string, number>();
+  const at = new Map<string, number>();
+  const out: T[] = [];
+  while (out.length < pool.length) {
+    let best = '';
+    let bestGap = -Infinity;
+    for (const [format, list] of byFormat) {
+      if ((at.get(format) ?? 0) >= list.length) continue;
+      const gap = (share[format as QuestionFormat] ?? 1) / ((taken.get(format) ?? 0) + 1);
+      if (gap > bestGap) {
+        bestGap = gap;
+        best = format;
+      }
+    }
+    const i = at.get(best) ?? 0;
+    out.push(byFormat.get(best)![i]);
+    at.set(best, i + 1);
+    taken.set(best, (taken.get(best) ?? 0) + 1);
   }
   return out;
 }

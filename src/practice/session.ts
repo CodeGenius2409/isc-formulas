@@ -10,7 +10,7 @@ import { repeatNoteFor } from './bank/paper';
 import { customInPracticeStore } from '../custom/store';
 import { loadStructures } from '../data/structures';
 import { generatedQuestionForId, loadBlueprints } from '../data/blueprints';
-import { bankQuestion, loadBank, questionForId } from './bank';
+import { bankQuestion, loadBankUnits, questionForId } from './bank';
 import { isBankId } from './bank/define';
 import type { BankDef } from './bank/types';
 import { defKeys, generatedCount, historyKeys, pickGenerated, questionKey, practiceShareStore } from './gen/mix';
@@ -142,7 +142,7 @@ export async function startUnit(subject: SubjectId, level: ClassLevel, unitIndex
   let note: string | undefined;
   await ensureFactHistory();
   if (subtopicIndex == null) {
-    const [bank, set] = await Promise.all([loadBank(subject, level), loadBlueprints(subject, level)]);
+    const [bank, set] = await Promise.all([loadBankUnits(subject, level, [Number(unit.number)]), loadBlueprints(subject, level)]);
     const seen = srsStore.get();
     const fresh = studentFreshness();
     const seenFacts = new Set<string>();

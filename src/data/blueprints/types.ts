@@ -1,7 +1,7 @@
 // A blueprint is an original, parameterised recipe for one kind of question: what it tests, how it is built and
 // how it is marked. Nothing in src/data/blueprints is taken from a paper's wording. See reports/question-analysis.md.
 import type { DiagramSpec } from '../../practice/bank/diagram';
-import type { BankOption, BankType, Difficulty, GeneratedTag, MarkPoint, NumericPart, SimulatorRef } from '../../practice/bank/types';
+import type { BankOption, BankType, Difficulty, GeneratedTag, MarkPoint, NumericPart, NumericPartDef, SimulatorRef } from '../../practice/bank/types';
 import type { Gen } from '../../practice/gen/gen';
 import type { ClassLevel, EntryStructure, SubjectId } from '../types';
 
@@ -53,6 +53,8 @@ export interface NumericBody extends Attachments {
   form: 'numeric';
   text: string;
   parts: NumericPart[];
+  /** How the solver was asked, so that the bank can freeze this question and still have the solver answer it. */
+  source?: { parts: NumericPartDef[]; values: Record<string, number> };
 }
 
 export type Body = McqBody | TheoryBody | OutputBody | NumericBody;

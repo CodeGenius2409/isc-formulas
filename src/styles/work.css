@@ -733,3 +733,10 @@ mark {
   padding-top: 0.5rem;
   border-top: 1px solid var(--rule);
 }
+
+/* A fixed question's note: small and calm. It says what the question is, and asks for nothing. */
+.bank-note {
+  margin-top: 0.25rem;
+  font-size: var(--step--1);
+  color: var(--ink-3);
+}

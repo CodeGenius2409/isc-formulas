@@ -266,6 +266,7 @@ function PaperSheet({ paper, onFinished }: { paper: Paper; onFinished: (result: 
           <p className="mt-2 max-w-[65ch] text-ink-2">Write theory answers on paper. Your work is saved as you go, so you can leave and come back, but the clock keeps running.</p>
         )}
         {anyGenerated && <PaperLegend unreviewed={paper.sections.some((s) => s.questions.some((q) => q.item.generated?.unreviewed))} />}
+        {paper.sections.some((s) => s.questions.some((q) => !q.item.generated)) && <p className="bank-note">The other questions are original practice questions, not official ISC questions.{/* {BANK_NOTICE} on single questions */}</p>}
 
         {paper.sections.map((section) => (
           <section key={section.name} className="today-section" aria-label={section.name}>

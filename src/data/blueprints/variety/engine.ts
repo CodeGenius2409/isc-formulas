@@ -23,6 +23,8 @@ import { nameOf } from './names';
 export type Scene = readonly [tag: string, lead: string, suits?: RegExp];
 
 interface EntryInfo {
+  /** The formula's name in the book, which says what situation a question is about. */
+  title: string;
   natural: string;
   unknowns: string[];
   powers?: Record<string, number>;
@@ -43,6 +45,8 @@ interface Given {
 type Givens = Record<string, Given>;
 
 const sig3 = (x: number) => Number(x.toPrecision(3));
+/** A converted value worth printing: at most two figures, so that it reads like a measurement, not a conversion's leftovers. */
+const reads = (x: number) => Math.abs(x) >= 0.01 && Math.abs(x) < 1e5 && Number(x.toPrecision(2)) === x;
 
 /** A value as a person reads it, with a true minus sign and its unit. */
 function shown(value: number, unit: string): string {
@@ -52,7 +56,7 @@ function shown(value: number, unit: string): string {
 }
 
 // A name that starts with a small letter on purpose, like pH, keeps it.
-const capital = (s: string) => (/^[a-z][A-Z]/.test(s) ? s : s.charAt(0).toUpperCase() + s.slice(1));
+const capital = (s: string) => (/^[a-z][A-Z]|^rms\b/.test(s) ? s : s.charAt(0).toUpperCase() + s.slice(1));
 const varOf = (entry: ResolvedEntry, symbol: string) => entry.vars.find((v) => v.symbol === symbol)!;
 // A value the entry fixes itself, like 13.6 eV, is part of its formula, not something to state or ask for.
 const freeVars = (entry: ResolvedEntry) => entry.vars.filter((v) => !v.isConstant && v.value === undefined);
@@ -130,6 +134,11 @@ function fromRegistry(entry: ResolvedEntry): Situation {
   };
 }
 
+function situationOf(entry: ResolvedEntry): string {
+  const title = ENTRIES[entry.id]?.title;
+  return title ? `Situation: ${title.replace(/\.$/, '')}. ` : '';
+}
+
 /** Consistent values with `ask` left out. Asking for anything else states what the situation naturally finds, as a result. */
 function scenario(g: Gen, s: Situation, ask: string): Givens {
   const base = s.draw(g);
@@ -163,6 +172,7 @@ function takeLine(entry: ResolvedEntry): string {
 
 function listGivens(s: Situation, givens: Givens, style: number): string {
   const rows = Object.entries(givens).map(([symbol, g]) => [s.name(symbol), shown(g.value, g.unit)] as const);
+  if (rows.length === 1) return `The ${rows[0][0]} is ${rows[0][1]}.`;
   if (style % 3 === 1) return `Given: ${rows.map(([a, b]) => `${a} = ${b}`).join(', ')}.`;
   if (style % 3 === 2) return `The values are: ${rows.map(([a, b]) => `${a}, ${b}`).join('; ')}.`;
   const last = rows.length - 1;
@@ -222,7 +232,9 @@ function specsFor(s: Situation, subject: SubjectId, key: string): Spec[] {
   const out: Spec[] = [];
   const { entry, find, powers } = s;
   const target = s.name(find);
-  const lead = (scene: Scene | null) => (scene ? `${scene[1]} ` : '');
+  // A quantity's name alone can be ambiguous: which body's moment of inertia, what order of reaction. So each question says.
+  const situation = situationOf(entry);
+  const lead = (scene: Scene | null) => `${scene ? `${scene[1]} ` : ''}${situation}`;
   const tag = (scene: Scene | null) => (scene ? { context: scene[0] } : {});
   const others = (v: ResolvedVar, now: string) => v.alt.filter((u) => u !== now && !/angstrom/.test(u) && !(v.show === 'deg')).concat(v.unit !== now && v.show !== 'deg' ? [v.unit] : []);
   const convertible = freeVars(entry).some((v) => v.symbol !== find && !v.integer && v.alt.length > 0 && v.show !== 'deg');
@@ -264,8 +276,8 @@ function specsFor(s: Situation, subject: SubjectId, key: string): Spec[] {
           const v = varOf(entry, x);
           const alt = g.pick(others(v, givens[x].unit));
           const value = sig3(convertResult(givens[x].value, givens[x].unit, alt));
-          // Nothing odd to read, such as 0.00007 km.
-          if (Math.abs(value) >= 0.01 && Math.abs(value) < 1e5) {
+          // Nothing odd to read, such as 0.00007 km or 71.7 cal.
+          if (reads(value)) {
             givens[x] = { value, unit: alt };
             changed++;
           }
@@ -279,7 +291,7 @@ function specsFor(s: Situation, subject: SubjectId, key: string): Spec[] {
         const body = g.numeric(`${lead(scene)}${listGivens(s, givens, g.seed)} ${asking(g.seed, target)}${giveIn}${takeLine(entry)}`, [part], values);
         // A size no one would report isn't a good question.
         const answer = Math.abs(body.parts[0].question.answers[0]);
-        if (unit && (answer < 0.001 || answer >= 1e6)) g.retry('an awkward answer in that unit');
+        if (unit && (answer < 0.01 || answer >= 1e5)) g.retry('an awkward answer in that unit');
         return { ...body, ...tag(scene) };
       },
     });
@@ -300,7 +312,10 @@ function specsFor(s: Situation, subject: SubjectId, key: string): Spec[] {
         const values: Record<string, number> = {};
         const part = partFor(s, find, givens, 2, values);
         const rows = Object.entries(givens).map(([x, v]) => [capital(s.name(x)), shown(v.value, v.unit)]);
-        return { ...g.numeric(`${lead(scene)}The table gives the values. Use them to find the ${target}.${takeLine(entry)}`, [part], values), diagram: { kind: 'table', head: ['Quantity', 'Value'], rows }, ...tag(scene) };
+        const body = g.numeric(`${lead(scene)}The table gives the values. Use them to find the ${target}.${takeLine(entry)}`, [part], values);
+        // By chance the answer can equal a value in the table, which would look like a misprint.
+        if (Object.values(givens).some((v) => Math.abs(Math.abs(v.value) - Math.abs(body.parts[0].question.answers[0])) <= Math.abs(v.value) * 0.002)) g.retry('the answer is already in the table');
+        return { ...body, diagram: { kind: 'table', head: ['Quantity', 'Value'], rows }, ...tag(scene) };
       },
     });
   }
@@ -319,7 +334,7 @@ function specsFor(s: Situation, subject: SubjectId, key: string): Spec[] {
         const name = s.name(symbol);
         const wrong = g.sample([1, 2, -1, -2, 0.5, -0.5, 3].filter((x) => x !== n), 3).map(trendWords);
         const rest = powers.length > 1 ? ', with everything else kept the same' : '';
-        return g.mcq(`As the ${name} changes${rest}, the ${target} varies:`, trendWords(n), wrong, { why: `${relation(target, name, n)}.` });
+        return g.mcq(`${situation}As the ${name} changes${rest}, the ${target} varies:`, trendWords(n), wrong, { why: `${relation(target, name, n)}.` });
       },
     });
 
@@ -337,7 +352,7 @@ function specsFor(s: Situation, subject: SubjectId, key: string): Spec[] {
         const right = curveWords(n);
         const wrong = g.sample(CURVES.filter((x) => curveWords(x) !== right).map(curveWords), 3);
         const name = s.name(symbol);
-        return g.mcq(`With everything else fixed, a graph of the ${target} (on the y-axis) against the ${name} (on the x-axis) is:`, right, wrong, { why: `${relation(target, name, n)}.` });
+        return g.mcq(`${situation}With everything else fixed, a graph of the ${target} (on the y-axis) against the ${name} (on the x-axis) is:`, right, wrong, { why: `${relation(target, name, n)}.` });
       },
     });
 
@@ -390,8 +405,9 @@ function specsFor(s: Situation, subject: SubjectId, key: string): Spec[] {
       });
     }
 
-    // A percentage change.
-    out.push({
+    // A percentage change, where the power makes it more than repeating the number in the question.
+    const curved = powers.filter(([, n]) => Math.abs(n) !== 1 || n === -1);
+    if (curved.length) out.push({
       key: `percent-${key}`,
       family: 'percent',
       marks: 2,
@@ -399,7 +415,7 @@ function specsFor(s: Situation, subject: SubjectId, key: string): Spec[] {
       type: 'numerical',
       format: 'numerical',
       make(g, scene) {
-        const [symbol, n] = g.pick(powers);
+        const [symbol, n] = g.pick(curved);
         const p = g.pick([10, 20, 25, 50, 100]);
         const after = (1 + p / 100) ** n;
         const change = (after - 1) * 100;
@@ -439,8 +455,12 @@ function specsFor(s: Situation, subject: SubjectId, key: string): Spec[] {
           const labelX = `${capital(xName)}${x.unit ? ` (${unitLabel(x.unit)})` : ''}`;
           const labelY = `${capital(target)}${z.unit ? ` (${unitLabel(z.unit)})` : ''}`;
           const point = `(${tidy(x.value, 3)}, ${tidy(sig3(z.value), 3)})`;
+          const answerNear = (body: Body) => body.form === 'numeric' && [x.value, sig3(z.value)].some((n) => Math.abs(Math.abs(n) - Math.abs(body.parts[0].question.answers[0])) <= Math.abs(n) * 0.002);
+          const made = g.numeric(`${lead(scene)}The graph shows the ${target} against the ${xName}: a straight line through the origin, passing through ${point}.${fixedText} Use its gradient to find the ${s.name(wanted)}.${takeLine(entry)}`, [part], values);
+          // By chance the answer can equal a number on the graph, which would look like a misprint.
+          if (answerNear(made)) g.retry('the answer is already on the graph');
           return {
-            ...g.numeric(`${lead(scene)}The graph shows the ${target} against the ${xName}: a straight line through the origin, passing through ${point}.${fixedText} Use its gradient to find the ${s.name(wanted)}.${takeLine(entry)}`, [part], values),
+            ...made,
             diagram: { kind: 'graph', x: labelX, y: labelY, lines: [{ points: [[0, 0], [x.value, sig3(z.value)]] }], ticksX: [[x.value, tidy(x.value, 3)]], ticksY: [[sig3(z.value), tidy(sig3(z.value), 3)]] },
             ...tag(scene),
           };
@@ -549,11 +569,13 @@ function specsFor(s: Situation, subject: SubjectId, key: string): Spec[] {
           const alt = g.pick(v.alt.filter((u) => !/angstrom/.test(u)));
           inUnit = { value: sig3(convertResult(base[x].value, v.unit, alt)), unit: alt };
         }
-        if (Math.abs(inUnit.value) < 0.01 || Math.abs(inUnit.value) >= 1e5) g.retry('an odd size to read');
+        if (!reads(inUnit.value)) g.retry('an odd size to read');
         const givens: Givens = { ...base, [x]: inUnit };
         const right = g.solve(entry.id, find, forSolve(givens));
         const wrong = g.solve(entry.id, find, forSolve({ ...base, [x]: { value: inUnit.value, unit: v.unit } }));
         if (Math.abs(wrong.value - right.value) < Math.abs(right.value) * 0.05) g.retry('the slip barely shows');
+        // A student would notice a negative size, and a slip no one could believe isn't realistic.
+        if (wrong.value * right.value <= 0) g.retry('the slip changes the sign');
         return {
           ...g.theory(`${lead(scene)}${listGivens(s, givens, g.seed)}${takeLine(entry)}\nA student works out the ${target}, putting the numbers straight into the formula, and writes ${shown(wrong.value, wrong.unit)}. Find the mistake, and give the correct value.`, [[`The ${s.name(x)} was used in ${unitLabel(inUnit.unit)} without being converted to ${unitLabel(v.unit)}.`, 1], [`Correct value: ${shown(right.value, right.unit)}.`, 1]]),
           ...tag(scene),
@@ -633,7 +655,7 @@ function specsFor(s: Situation, subject: SubjectId, key: string): Spec[] {
         const goal = sig3(z.value * 1.5);
         const toReach: Givens = { ...base, [find]: { value: goal, unit: z.unit } };
         delete toReach[symbol];
-        const part3 = partFor(s, symbol, toReach, 2, values, `(iii) What ${name} would give a ${target} of ${shown(goal, z.unit)}, with everything else as in (i)?`, undefined, 'c');
+        const part3 = partFor(s, symbol, toReach, 2, values, `(iii) What ${name} would make the ${target} ${shown(goal, z.unit)}, with everything else as in (i)?`, undefined, 'c');
         return { ...g.numeric(`${lead(scene)}${listGivens(s, base, g.seed)}${takeLine(entry)}`, [part1, part2, part3], values), ...tag(scene) };
       },
     });
@@ -648,6 +670,8 @@ function chainsIn(list: Situation[]): [Situation, Situation, string][] {
     const from = varOf(a.entry, a.find);
     for (const b of list) {
       if (a.entry.id === b.entry.id) continue;
+      // Ending on something part (a) was given only goes back to the start.
+      if (freeVars(a.entry).some((v) => a.name(v.symbol) === b.name(b.find))) continue;
       const into = freeVars(b.entry).find((v) => v.symbol !== b.find && v.quantityKey === from.quantityKey && b.name(v.symbol) === a.name(from.symbol));
       // Time and angle are too general to link two steps sensibly.
       if (into && !/\b(time|angle)\b/.test(from.name)) out.push([a, b, into.symbol]);
@@ -676,7 +700,9 @@ function chainSpec(a: Situation, b: Situation, into: string, marks: 3 | 5, key: 
       partB.given[into] = 'carried';
       const laterText = Object.keys(later).length ? ` For part (b), ${listGivens(b, later, g.seed).replace(/^./, (c) => c.toLowerCase())}` : '';
       const take = [takeLine(a.entry), takeLine(b.entry) === takeLine(a.entry) ? '' : takeLine(b.entry)].join('');
-      return { ...g.numeric(`${scene ? `${scene[1]} ` : ''}${listGivens(a, first, g.seed)}${laterText}${take}`, [partA, partB], values), ...(scene ? { context: scene[0] } : {}) };
+      const about = `${situationOf(a.entry)}${laterText ? '' : ''}`;
+      const then = ENTRIES[b.entry.id]?.title ? ` Part (b) uses: ${ENTRIES[b.entry.id].title.replace(/\.$/, '')}.` : '';
+      return { ...g.numeric(`${scene ? `${scene[1]} ` : ''}${about}${listGivens(a, first, g.seed)}${then}${laterText}${take}`, [partA, partB], values), ...(scene ? { context: scene[0] } : {}) };
     },
   };
 }

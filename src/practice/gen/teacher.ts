@@ -6,12 +6,14 @@ import { createStore } from '../../lib/store';
 import { teacherDiagramsStore } from './figures';
 import { readJson, writeJson } from '../../lib/storage';
 import type { ClassLevel, SubjectId } from '../../data/types';
-import { bankQuestion, loadBank, type LoadedBank } from '../bank/index';
+import { bankQuestion, loadBank, loadBankUnits, type LoadedBank } from '../bank/index';
 import { paperSpec } from '../bank/paper';
 import type { BankDef, BankQuestion, BankType, Difficulty, GeneratedTag, QuestionFormat } from '../bank/types';
 import { seededRng, type Rng } from '../questions';
 import { generatedQuestion } from './engine';
-import { defKeys, factsOf, generatedCount, historyKeys, pickGenerated, PROBE_SEEDS, questionKey, usedFreshness, type Freshness } from './mix';
+import { bankFormatOf, defKeys, factsOf, generatedCount, historyKeys, mixedBankOrder, pickGenerated, PROBE_SEEDS, questionKey, usedFreshness, type Freshness } from './mix';
+
+export { bankFormatOf };
 
 export type FormatChoice = QuestionFormat;
 
@@ -65,17 +67,6 @@ export interface Filters {
 
 export const emptyFilters = (subject: SubjectId = 'physics'): Filters => ({ subject, levels: [], units: [], topics: [], formats: [], styles: [], difficulties: [], marks: [], share: 50 });
 
-/** The format of a bank question, worked out from its type and marks, so the same filters apply to both sources. */
-export function bankFormatOf(def: BankDef): FormatChoice {
-  if (def.format) return def.format;
-  const byType: Partial<Record<BankType, FormatChoice>> = { mcq: 'mcq', assertion: 'assertion', numerical: 'numerical', derivation: 'derivation', proof: 'derivation', reason: 'reason', distinguish: 'distinguish', output: 'output', error: 'error', program: 'program' };
-  const direct = byType[def.type];
-  if (direct) return direct;
-  if (def.diagram) return 'diagram';
-  if (def.marks === 1) return 'very-short';
-  return def.marks >= 5 ? 'long' : 'short';
-}
-
 const bankStyle = (def: BankDef): GeneratedTag['style'] => def.style ?? (def.type === 'assertion' ? 'cbq-style' : 'paper-style');
 
 interface Source {
@@ -108,7 +99,14 @@ export const bankMatches = (def: BankDef, level: ClassLevel, f: Filters): boolea
 
 async function loadSources(f: Filters): Promise<Source[]> {
   const levels: ClassLevel[] = f.levels.length ? f.levels : ['XI', 'XII'];
-  return Promise.all(levels.map(async (level) => ({ level, bank: await loadBank(f.subject, level), set: await loadBlueprints(f.subject, level) })));
+  return Promise.all(
+    levels.map(async (level) => {
+      // A choice narrowed to some chapters only fetches those.
+      const chosen = [...f.units, ...f.topics].filter((key) => key.startsWith(`${level} `)).map((key) => Number(key.split(' ')[1]));
+      const narrowed = (f.units.length || f.topics.length) && chosen.length;
+      return { level, bank: narrowed ? await loadBankUnits(f.subject, level, [...new Set(chosen)]) : await loadBank(f.subject, level), set: await loadBlueprints(f.subject, level) };
+    }),
+  );
 }
 
 export interface Availability {
@@ -161,11 +159,20 @@ function countDistinct(sources: Source[], f: Filters, avoid: Set<string>, limit:
   const facts = new Set<string>();
   const keys = new Set<string>();
   if (f.share < 100) {
-    for (const s of sources) {
-      for (const d of s.bank.defs) {
-        if (!bankMatches(d, s.level, f) || avoid.has(d.id)) continue;
-        total++;
-        for (const x of d.facts ?? []) facts.add(x);
+    // A paper asks each fact once, so several questions on one fact count as one. Questions on one fact first, as below.
+    for (const multi of [false, true]) {
+      for (const s of sources) {
+        for (const d of s.bank.defs) {
+          const own = d.facts ?? [];
+          if (own.length > 1 !== multi || !bankMatches(d, s.level, f) || avoid.has(d.id) || own.some((x) => facts.has(x))) continue;
+          // The same question reached by two routes counts once, as a paper would only take it once.
+          const data = d.diagram && (d.diagram.kind === 'table' || d.diagram.kind === 'graph') ? JSON.stringify(d.diagram) : '';
+          const key = d.form === 'mcq' ? (d.origin === 'compiled' ? d.text + data : `${d.text}|${d.options.map((o) => o.text).sort().join('|')}${data}`) : d.form === 'output' ? d.text + d.code : d.form === 'numeric' ? `${d.text}|${(d.fixedParts ?? d.parts).map((p) => p.ask).join('|')}${Object.values(d.vars).every((v) => v.length === 1) ? '' : JSON.stringify(d.vars)}${data}` : d.text + data;
+          if (keys.has(key)) continue;
+          keys.add(key);
+          total++;
+          for (const x of own) facts.add(x);
+        }
       }
     }
   }
@@ -335,10 +342,26 @@ async function drawOnce(req: DrawRequest, usedBlueprints: Set<string>, seenText:
   const pools = sources.map((s) => ({ s, list: s.set.blueprints.filter((b) => blueprintMatches(b, f) && !(singleFact && (b.id.endsWith('-match') || b.id.endsWith('-linked')))) }));
   const blueprintTotal = pools.reduce((n, p) => n + p.list.length, 0);
   const wantGen = blueprintTotal ? generatedCount(count, f.share) : 0;
-  const bankOrder = shuffled(fresh ? bankPool.filter(({ def }) => !fresh.resting(defKeys(def))) : bankPool, rng);
+  const bankOrder = mixedBankOrder(fresh ? bankPool.filter(({ def }) => !fresh.resting(defKeys(def))) : bankPool, rng);
   const wantBank = f.share >= 100 ? 0 : Math.min(count - wantGen, bankOrder.length);
-  const fromBank = bankOrder.slice(0, wantBank).map(({ def, bank }) => bankQuestion(def, bank, rng));
-  for (const q of fromBank) {
+  // No fact twice, and no structure twice with the same setting, while there are others to take.
+  const shapes = new Set<string>();
+  const fits = (def: BankDef) => !(def.facts ?? []).some((x) => seenFacts.has(x)) && !(def.shape && shapes.has(`${def.shape}|${def.context ?? ''}`));
+  const fromBank: BankQuestion[] = [];
+  const passOver: { def: BankDef; bank: LoadedBank }[] = [];
+  for (const entry of bankOrder) {
+    if (fromBank.length >= wantBank) {
+      passOver.push(entry);
+      continue;
+    }
+    if (!fits(entry.def)) {
+      passOver.push(entry);
+      continue;
+    }
+    const q = bankQuestion(entry.def, entry.bank, rng);
+    if (seenText.has(questionKey(q))) continue;
+    fromBank.push(q);
+    if (entry.def.shape) shapes.add(`${entry.def.shape}|${entry.def.context ?? ''}`);
     seenText.add(questionKey(q));
     for (const x of factsOf(q)) seenFacts.add(x);
   }
@@ -355,10 +378,11 @@ async function drawOnce(req: DrawRequest, usedBlueprints: Set<string>, seenText:
   // The generated side ran short, so the bank makes up the rest if the slider allows it.
   const extra: BankQuestion[] = [];
   if (f.share < 100) {
-    for (const { def, bank } of bankOrder.slice(wantBank)) {
+    for (const { def, bank } of passOver) {
       if (extra.length >= count - fromBank.length - made.length) break;
       if ((def.facts ?? []).some((x) => seenFacts.has(x))) continue;
       const q = bankQuestion(def, bank, rng);
+      if (seenText.has(questionKey(q))) continue;
       extra.push(q);
       seenText.add(questionKey(q));
       for (const x of factsOf(q)) seenFacts.add(x);

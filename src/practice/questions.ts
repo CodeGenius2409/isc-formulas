@@ -10,7 +10,7 @@ import { formatDim, parseDim, sameDim } from '../solver/dims';
 import { getEntry } from '../solver/registry';
 import { defaultUnknown, solve, varTex, type SolveInput, type Step } from '../solver/solve';
 import type { ResolvedEntry, ResolvedVar } from '../solver/types';
-import { dimOfUnit, formatNumber, parseInput, plainNumber } from '../solver/units';
+import { convertResult, dimOfUnit, formatNumber, parseInput, plainNumber } from '../solver/units';
 import { unitTex } from '../solver/tex';
 import { unitLabel } from '../solver/unit-label';
 import { answerSummary } from './bank/mark';
@@ -181,6 +181,24 @@ function dimOfAnswerUnit(entry: ResolvedEntry | null, question: NumericQuestion)
   return entry?.vars.find((v) => v.symbol === question.unknown)?.dim ?? '';
 }
 
+const entry0 = (question: NumericQuestion) => getEntry(question.formulaId)?.vars.find((v) => v.symbol === question.unknown);
+
+function markWithoutEntry(question: NumericQuestion, raw: string, chosenUnit: string, base: string, shown: string): NumericMark {
+  const value = Number(raw.trim().replace(/[a-zA-Z°/²³Ωμ]+.*$/, '').trim());
+  if (!Number.isFinite(value)) return { correct: false, reason: 'That doesn’t read as a number.', shown };
+  let inBase = value;
+  if (chosenUnit && chosenUnit !== base) {
+    try {
+      if (!sameDim(dimOfUnit(chosenUnit), dimOfUnit(base))) return { correct: false, reason: `${unitLabel(chosenUnit)} doesn’t measure the same thing as ${unitLabel(base)}.`, shown };
+      inBase = convertResult(value, chosenUnit, base);
+    } catch {
+      return { correct: false, reason: `"${chosenUnit}" is not a unit I recognise.`, shown };
+    }
+  }
+  const close = question.answers.some((answer) => Math.abs(inBase - answer) <= Math.abs(answer) * question.tolerance);
+  return close ? { correct: true, shown } : { correct: false, shown };
+}
+
 /** Marks a typed answer: right number within tolerance, and a compatible unit. */
 export function markNumeric(question: NumericQuestion, raw: string, chosenUnit: string): NumericMark {
   const entry = getEntry(question.formulaId);
@@ -194,6 +212,8 @@ export function markNumeric(question: NumericQuestion, raw: string, chosenUnit: 
   }
 
   const base = question.unit === 'deg' ? 'deg' : question.unit;
+  // An answer worked out by a blueprint has no solver entry to say what its unit measures, so the unit itself does.
+  if (!entry0(question) && base) return markWithoutEntry(question, raw, chosenUnit, base, shown);
   // A unit of the wrong kind is its own mistake, so explain it before trying to convert.
   if (chosenUnit && base) {
     let actual;

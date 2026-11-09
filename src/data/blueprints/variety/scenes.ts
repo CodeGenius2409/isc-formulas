@@ -98,16 +98,18 @@ const FLUIDS: readonly Scene[] = [
 ];
 
 const HEAT: readonly Scene[] = [
-  ['household', 'An electric kettle is tested in a kitchen.', /heat|temperature|specific|mass|power/],
-  ['industry', 'A heat exchanger in a dairy is being checked.', /heat|temperature|specific|conduct/],
-  ['environment', 'A climate class analyses data from a weather station.', /temperature|radiat|emiss/],
-  ['vehicles', 'An engineer studies a small engine on a test bench.', /efficiency|work|heat|temperature|volume|pressure|gas/],
+  ['household', 'An electric kettle is tested in a kitchen.', /specific heat|heat supplied/],
+  ['energy', 'A power-station engineer compares steam temperatures.', /reservoir|hot side|efficiency/],
+  ['household', 'A refrigerator’s performance is being rated.', /coefficient of performance|cold side/],
+  ['industry', 'A heat exchanger in a dairy is being checked.', /specific heat|conductivity/],
+  ['environment', 'A climate class studies radiation from a surface.', /radiat|emiss/],
+  ['vehicles', 'An engineer studies a small engine on a test bench.', /reservoir|work done by the gas|heat supplied|heat absorbed/],
   ['lab', 'A student runs a calorimeter experiment.'],
-  ['medicine', 'A lab calibrates a blood warmer.', /heat|temperature|specific/],
-  ['energy', 'A solar water heater on a roof is being sized.', /heat|temperature|specific|power|radiat/],
-  ['construction', 'A builder compares wall insulation for a house.', /conduct|thickness|area|temperature|heat/],
-  ['food', 'A food plant pasteurises a batch of milk.', /heat|temperature|specific|mass/],
-  ['construction', 'A railway track’s expansion gap is being set.', /expansion|length|temperature/],
+  ['medicine', 'A lab calibrates a blood warmer.', /specific heat/],
+  ['energy', 'A solar water heater on a roof is being sized.', /specific heat|radiat/],
+  ['construction', 'A builder compares wall insulation for a house.', /conductivity|thickness/],
+  ['food', 'A food plant pasteurises a batch of milk.', /specific heat/],
+  ['construction', 'A railway track’s expansion gap is being set.', /expansion/],
 ];
 
 const GAS: readonly Scene[] = [
@@ -135,16 +137,16 @@ const WAVES: readonly Scene[] = [
 ];
 
 const ELECTROSTATICS: readonly Scene[] = [
-  ['industry', 'A paint-spray gun gives each droplet a small charge.', /charge|force|field/],
-  ['environment', 'An electrostatic precipitator cleans a chimney’s smoke.', /field|charge|force|potential/],
-  ['household', 'A photocopier’s drum is being checked for charge.', /charge|potential|field/],
-  ['nature', 'A class studies charge in a thundercloud with a simple model.', /charge|potential|field|force/],
+  ['industry', 'A paint-spray gun gives each droplet a small charge.', /charge/],
+  ['environment', 'An electrostatic precipitator cleans a chimney’s smoke.', /electric field/],
+  ['household', 'A photocopier’s drum is being checked for charge.', /potential|electric field/],
+  ['nature', 'A class studies charge in a thundercloud with a simple model.', /potential|electric field/],
   ['lab', 'A student works with charged spheres on insulating stands.'],
-  ['medicine', 'A defibrillator’s capacitor is being tested by a technician.', /capacit|energy|charge|voltage|potential/],
-  ['transport', 'A fuel tanker’s earthing strap is being inspected.', /charge|potential|energy/],
+  ['medicine', 'A defibrillator’s capacitor is being tested by a technician.', /capacit/],
+  ['transport', 'A fuel tanker’s earthing strap is being inspected.', /potential energy|potential difference/],
   ['electronics', 'A touch-screen sensor’s electrodes are being modelled.', /capacit|plate|area|distance/],
-  ['space', 'A team studies charging on a small satellite’s panel.', /charge|potential|field/],
-  ['household', 'A camera’s flash capacitor is being tested.', /capacit|energy|charge|voltage|potential/],
+  ['space', 'A team studies charging on a small satellite’s panel.', /surface charge|potential|capacit/],
+  ['household', 'A camera’s flash capacitor is being tested.', /capacit/],
   ['research', 'A student looks at the dipole of a water molecule in a field.', /dipole|torque/],
 ];
 
@@ -196,7 +198,7 @@ const AC: readonly Scene[] = [
   ['medicine', 'An X-ray machine’s supply circuit is being serviced.', /turns|primary|secondary|rms|peak|voltage/],
   ['communication', 'A filter in a broadband router is being designed.', /frequency|reactance|capacit|inductance/],
   ['transport', 'An electric locomotive’s supply is being examined.', /rms|peak|voltage|current|power/],
-  ['environment', 'A street-lighting circuit is being checked for efficiency.', /power|factor|rms|voltage|current/],
+  ['environment', 'A street-lighting circuit is being checked for its losses.', /average power|power factor|phase/],
 ];
 
 const EM: readonly Scene[] = [
@@ -226,14 +228,14 @@ const OPTICS: readonly Scene[] = [
 
 const MODERN: readonly Scene[] = [
   ['electronics', 'A light sensor in a door opener is being tested.', /photo|work function|stopping|threshold|frequency/],
-  ['medicine', 'A lab reviews the X-ray tube in a dental clinic.', /wavelength|energy|voltage|photon/],
+  ['medicine', 'A lab reviews the X-ray tube in a dental clinic.', /photon/],
   ['space', 'A solar panel on a satellite is tested in a vacuum chamber.', /photo|work function|stopping|threshold/],
   ['lab', 'A student takes readings with a photocell in a dark room.'],
   ['energy', 'A research group compares nuclear fuels on paper.', /binding|mass defect|nucleon|energy released|nucleus|fission|fusion/],
-  ['astronomy', 'An astronomy class studies the spectrum of hydrogen in a nebula.', /orbit|level|wavelength|rydberg|quantum|transition/],
-  ['research', 'A physicist reviews data from an electron microscope.', /de broglie|wavelength|momentum|voltage/],
-  ['industry', 'A semiconductor plant tests a laser’s photons.', /photon|wavelength|frequency|energy/],
-  ['environment', 'A monitoring station samples sunlight in the ultraviolet.', /photon|wavelength|frequency|energy/],
+  ['astronomy', 'An astronomy class studies the spectrum of hydrogen in a nebula.', /orbit|level|rydberg|quantum|transition/],
+  ['research', 'A physicist reviews data from an electron microscope.', /speed of the electron|stopping|accelerating/],
+  ['industry', 'A semiconductor plant tests a laser’s photons.', /photon/],
+  ['environment', 'A monitoring station samples sunlight in the ultraviolet.', /photon/],
 ];
 
 const DEVICES: readonly Scene[] = [
@@ -248,15 +250,15 @@ const DEVICES: readonly Scene[] = [
 ];
 
 const MOLES: readonly Scene[] = [
-  ['industry', 'A fertiliser plant checks a batch.', /mass|moles|amount|percent|molar/],
+  ['industry', 'A fertiliser plant checks a batch.', /mass of|percent|molar mass/],
   ['medicine', 'A hospital pharmacy prepares a dose.', /mass|moles|amount|molar|volume|concentration/],
   ['environment', 'A water authority tests a river sample.', /molar|normal|volume|concentration|mass/],
-  ['food', 'A food lab analyses a batch of baking soda.', /mass|moles|amount|molar|percent/],
+  ['food', 'A food lab analyses a batch of baking soda.', /mass of|percent|molar mass/],
   ['lab', 'A student weighs out a sample for a practical.'],
   ['household', 'A cleaning product’s label is checked in a school project.', /molar|normal|volume|percent|mass/],
   ['agriculture', 'An agricultural lab tests a soil sample.', /mass|percent|molar|normal|volume/],
-  ['energy', 'A biofuel team analyses a small sample of fuel.', /mass|percent|moles|amount/],
-  ['mining', 'A mining firm assays a sample of ore.', /mass|percent|moles|amount|molar/],
+  ['energy', 'A biofuel team analyses a small sample of fuel.', /mass of|percent/],
+  ['mining', 'A mining firm assays a sample of ore.', /mass of|percent/],
 ];
 
 const ATOMS: readonly Scene[] = [
@@ -272,13 +274,13 @@ const ATOMS: readonly Scene[] = [
 ];
 
 const THERMO: readonly Scene[] = [
-  ['energy', 'A power-station chemist compares fuels.', /enthalpy|heat|energy/],
-  ['food', 'A food lab uses a bomb calorimeter on a snack bar.', /heat|enthalpy|energy|mass/],
-  ['vehicles', 'A team studies the combustion of a car fuel.', /enthalpy|heat|energy|work/],
+  ['energy', 'A power-station chemist compares fuels.', /enthalpy/],
+  ['food', 'A food lab uses a bomb calorimeter on a snack bar.', /enthalpy of combustion|heat capacity/],
+  ['vehicles', 'A team studies the combustion of a car fuel.', /enthalpy/],
   ['industry', 'A plant engineer reviews a reaction’s heat budget.', /enthalpy|heat|entropy|gibbs|free energy/],
   ['lab', 'A student measures a temperature rise in a coffee-cup calorimeter.'],
-  ['household', 'A class compares the heat from LPG and kerosene.', /enthalpy|heat|energy/],
-  ['environment', 'A team studies heat released when a fuel burns.', /enthalpy|heat|energy/],
+  ['household', 'A class compares the heat from LPG and kerosene.', /enthalpy/],
+  ['environment', 'A team studies heat released when a fuel burns.', /enthalpy/],
   ['medicine', 'A lab studies a cold pack used for sports injuries.', /enthalpy|heat|entropy|gibbs|free energy/],
 ];
 

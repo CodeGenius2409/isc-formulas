@@ -7,6 +7,18 @@ export const GENERATED_NOTICE = 'Generated practice question. This is not an off
 export const UNREVIEWED_NOTICE = 'Not yet reviewed: the pattern behind this question hasn’t been read and checked line by line yet.';
 export const PAPER_NOTICE = 'This paper contains generated questions, marked with a die. They are not official ISC questions and may contain mistakes.';
 
+export const BANK_NOTICE = 'Original practice question, not an official ISC question.';
+
+/** A fixed question from the bank: a small, calm note, so that nobody takes it for a real paper's. */
+export function BankNote({ item }: { item: BankItem }) {
+  if (item.generated) return null;
+  return (
+    <p className="bank-note" data-testid="bank-note">
+      {BANK_NOTICE}
+    </p>
+  );
+}
+
 /** Beside the question number. Bank questions don't get one, so a glance is enough. */
 export function GeneratedMark({ item }: { item: BankItem }) {
   if (!item.generated) return null;

@@ -91,7 +91,9 @@ for (const [subject, level] of CLASSES) {
       it(bp.id, () => {
         const names = set.names(bp);
         const problems = new Set<string>();
-        for (let seed = 0; seed < INSTANCES; seed++) {
+        // The variety engine has thousands of blueprints with one shared code path, so each gets fewer, and BLUEPRINT_INSTANCES can ask for all.
+        const howMany = bp.family && !process.env.BLUEPRINT_INSTANCES ? 30 : INSTANCES;
+        for (let seed = 0; seed < howMany; seed++) {
           const item = generateItem(bp, seed, names);
           for (const p of checkItem(item)) problems.add(p);
           if (problems.size > 5) break;

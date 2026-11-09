@@ -4,7 +4,7 @@ import { historyKeys } from '../../practice/gen/mix';
 import { CircleCheck, CircleX, FileText, ListChecks, Lightbulb, RotateCcw, Sparkles, Wand2 } from 'lucide-react';
 import { loadSyllabus } from '../../data/syllabus';
 import type { ClassLevel, SubjectId } from '../../data/types';
-import { loadBank } from '../../practice/bank';
+import { loadBank, loadBankUnits } from '../../practice/bank';
 import { planShare, practiceShareStore } from '../../practice/gen/mix';
 import { ShareSlider } from '../bank/ShareSlider';
 import { findFormula, getSubject, unitTitle } from '../../data/book';
@@ -137,10 +137,12 @@ const SESSION_EXAM = 8;
 function UnitSettings({ subject, level, unit, topic, onTopic, difficulty, onDifficulty, share }: { subject: SubjectId; level: ClassLevel; unit: number; topic: string; onTopic: (t: string) => void; difficulty: string; onDifficulty: (d: string) => void; share: number }) {
   const srs = useStore(srsStore);
   const info = useAsync(async () => {
-    const [syllabus, bank] = await Promise.all([loadSyllabus(subject), loadBank(subject, level)]);
+    const syllabus = await loadSyllabus(subject);
     const units = syllabus.classes.find((c) => c.level === level)?.units ?? [];
+    // Only this chapter's questions need fetching to count them.
+    const bank = await (units[unit] ? loadBankUnits(subject, level, [units[unit].number]) : loadBank(subject, level));
     return { units, bank };
-  }, `${subject}-${level}`);
+  }, `${subject}-${level}-${unit}`);
   if (info.status !== 'ready') return null;
   const here = info.value.units[unit];
   if (!here) return null;
@@ -487,8 +489,10 @@ function RecallCard({ question, record }: { question: RecallQuestion; record: Re
       )}
     </div>
   );
-}
-
+}
+
+
+
 function OptionMolecule({ name }: { name: string }) {
   const compound = useStructures()?.[name];
   return compound ? <Molecule compound={compound} scale={0.85} /> : null;

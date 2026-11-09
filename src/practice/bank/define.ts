@@ -2,7 +2,7 @@
 // they don't move when questions are reordered.
 import type { ClassLevel, EntryStructure, SubjectId } from '../../data/types';
 import type { DiagramSpec } from './diagram';
-import type { BankDef, BankOption, BankType, Difficulty, McqDef, MarkPoint, NumericDef, OutputDef, TheoryDef } from './types';
+import type { BankDef, BankOption, BankType, Difficulty, McqDef, MarkPoint, NumericDef, OutputDef, QuestionFormat, TheoryDef } from './types';
 
 /** Marks are written as `[unit, topic, marks, difficulty]`, the same order everywhere. */
 export type Place = [unit: number, topic: string, marks: number, difficulty: Difficulty];
@@ -16,6 +16,9 @@ export interface Extras {
   diagram?: DiagramSpec;
   recall?: 1;
   python?: 1;
+  format?: QuestionFormat;
+  style?: 'paper-style' | 'cbq-style';
+  context?: string;
 }
 
 const SUBJECT_CODE: Record<SubjectId, string> = { physics: 'p', chemistry: 'c', mathematics: 'm', computerscience: 'k' };

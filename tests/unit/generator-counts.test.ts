@@ -47,7 +47,8 @@ describe('a set always has the number asked for', () => {
             for (const share of [0, 50, 100]) {
               for (const format of [null, ...FORMATS.filter((x) => !x.cs || subject === 'computerscience').map((x) => x.key)]) {
                 const f: Filters = { ...emptyFilters(subject), levels: [cls.level], topics: [key], formats: format ? [format] : [], share };
-                for (const count of format ? [10, 30] : [5, 10, 20, 30]) {
+                // filter-stress.test.ts covers each format at each difficulty, so one count is enough here.
+                for (const count of format ? [10] : [5, 10, 20, 30]) {
                   await check(f, count, count + share);
                 }
               }

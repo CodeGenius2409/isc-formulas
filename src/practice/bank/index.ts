@@ -23,6 +23,22 @@ const loaders: Record<string, BankFile> = {
   'computerscience-xi': () => import('./questions/computerscience-xi'),
   'computerscience-xii': () => import('./questions/computerscience-xii'),
 };
+
+/**
+ * The rest of the bank, a file for each chapter, so that a phone only fetches what's asked for. Data comes from
+ * tests/unit/bank-compile.test.ts, and hand-written questions are in written/.
+ */
+const chapterData = import.meta.glob<{ default: BankDef[] }>('../../data/bank/*.json');
+const chapterWritten = import.meta.glob<{ default: BankDef[] }>('./written/*.ts');
+
+const chapterFiles = (key: string, unit?: number): (() => Promise<{ default: BankDef[] }>)[] => {
+  const name = (p: string) => /([a-z]+-xi+)-(\d+)[^/]*\.(?:json|ts)$/.exec(p);
+  return [...Object.entries(chapterData), ...Object.entries(chapterWritten)].flatMap(([p, load]) => {
+    const m = name(p);
+    return m && m[1] === key && (unit === undefined || Number(m[2]) === unit) ? [load] : [];
+  });
+};
+
 const cache = new Map<string, Promise<LoadedBank>>();
 
 export interface LoadedBank {
@@ -31,19 +47,16 @@ export interface LoadedBank {
   names: Map<string, string>;
 }
 
-export function loadBank(subject: SubjectId, level: ClassLevel): Promise<LoadedBank> {
-  const key = `${subject}-${level.toLowerCase()}`;
+function loadParts(key: string, files: (() => Promise<{ default: BankDef[] }>)[], subject: SubjectId, level: ClassLevel, whole: boolean): Promise<LoadedBank> {
   let loading = cache.get(key);
   if (!loading) {
-    const loader = loaders[key];
-    if (!loader) return Promise.resolve({ defs: [], names: new Map() });
-    loading = Promise.all([retryImport(loader), loadSyllabus(subject)]).then(([module, syllabus]) => {
+    loading = Promise.all([Promise.all(files.map((f) => retryImport(f))), loadSyllabus(subject)]).then(([modules, syllabus]) => {
       const names = new Map<string, string>();
       for (const unit of syllabus.classes.find((c) => c.level === level)?.units ?? []) {
         names.set(String(unit.number), unit.name);
         for (const topic of unit.topics) names.set(`${unit.number} ${topic.key}`, topic.name);
       }
-      return { defs: [...module.default, ...derivationDefs(subject, level)], names };
+      return { defs: [...modules.flatMap((m) => m.default), ...(whole ? derivationDefs(subject, level) : [])], names };
     });
     cache.set(key, loading);
     // A failed load isn't kept, so the next try starts again.
@@ -52,11 +65,29 @@ export function loadBank(subject: SubjectId, level: ClassLevel): Promise<LoadedB
   return loading;
 }
 
-/** Finds a definition by id. Null once a question has left the bank. */
+/** A whole class's questions. */
+export function loadBank(subject: SubjectId, level: ClassLevel): Promise<LoadedBank> {
+  const key = `${subject}-${level.toLowerCase()}`;
+  const first = loaders[key];
+  if (!first) return Promise.resolve({ defs: [], names: new Map() });
+  return loadParts(key, [first, ...chapterFiles(key)], subject, level, true);
+}
+
+/** Only some chapters, for a choice that's narrowed to them. The first bank and the derivations come along, filtered. */
+export async function loadBankUnits(subject: SubjectId, level: ClassLevel, units: number[]): Promise<LoadedBank> {
+  const key = `${subject}-${level.toLowerCase()}`;
+  const wanted = new Set(units);
+  const parts = await Promise.all(units.map((unit) => loadParts(`${key}#${unit}`, chapterFiles(key, unit), subject, level, false)));
+  const base = await loadParts(`${key}#base`, loaders[key] ? [loaders[key]] : [], subject, level, true);
+  return { defs: [...base.defs.filter((d) => wanted.has(d.unit)), ...parts.flatMap((p) => p.defs)], names: base.names };
+}
+
+/** Finds a definition by id, loading only its chapter. Null once a question has left the bank. */
 export async function findBankDef(id: string): Promise<{ def: BankDef; bank: LoadedBank } | null> {
   const place = bankOfId(id);
   if (!place) return null;
-  const bank = await loadBank(place.subject, place.level);
+  const unit = /^q-[pcmk]1[12]-(\d+)/.exec(id);
+  const bank = unit ? await loadBankUnits(place.subject, place.level, [Number(unit[1])]) : await loadBank(place.subject, place.level);
   const def = bank.defs.find((d) => d.id === id);
   return def ? { def, bank } : null;
 }
@@ -143,7 +174,8 @@ export function buildParts(def: Pick<NumericDef, 'id' | 'subject' | 'parts'>, va
 }
 
 function numericItem(def: NumericDef, names: Pick<NumericItem, 'unitName' | 'topicName'>, rng: Rng): NumericItem {
-  const { vars: _vars, when: _when, parts: _parts, ...tags } = def;
+  const { vars: _vars, when: _when, parts: _parts, fixedParts, ...tags } = def;
+  if (fixedParts) return { ...tags, ...names, parts: fixedParts };
   for (let attempt = 0; attempt < 60; attempt++) {
     const values = drawVars(def, rng);
     if (def.when && !def.when(values)) continue;

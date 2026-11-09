@@ -124,7 +124,7 @@ export class Gen {
   }
 
   numeric(text: string, defs: NumericPartDef[], values: Record<string, number>, extras: Partial<NumericBody> = {}): NumericBody {
-    return { form: 'numeric', text: fillIn(text, values), parts: this.parts(defs, values), ...extras };
+    return { form: 'numeric', text: fillIn(text, values), parts: this.parts(defs, values), source: { parts: defs, values }, ...extras };
   }
 
   /** A part answered by a number worked out here. Used where no registry entry applies, as in Mathematics. */

@@ -25,7 +25,7 @@ const words = (text: string) => text.toLowerCase().replace(/[^a-z0-9]+/g, ' ').t
 const withoutCode = (text: string) => text.replace(/```[\s\S]*?```/g, ' | ');
 
 function wordingOf(def: BankDef): string[] {
-  if (def.form === 'mcq') return [def.text, ...def.options.map((o) => o.text).filter((t) => !ASSERTION_OPTIONS.includes(t))];
+  if (def.form === 'mcq') return [...withoutCode(def.text).split('|'), ...def.options.map((o) => o.text).filter((t) => !ASSERTION_OPTIONS.includes(t))];
   return withoutCode(def.text).split('|');
 }
 
@@ -45,7 +45,10 @@ describe.skipIf(!papers.length)('originality against the private papers', () => 
           for (const text of wordingOf(def)) {
             const list = words(text);
             for (let i = 0; i + RUN <= list.length; i++) {
-              if (runs.has(list.slice(i, i + RUN).join(' '))) {
+              const run = list.slice(i, i + RUN);
+              // Single letters and numbers, like the terms of a Boolean function, say nothing about where text came from.
+              if (run.every((w) => w.length === 1 || /^\d+$/.test(w))) continue;
+              if (runs.has(run.join(' '))) {
                 close.push(`${def.id}: ${list.slice(i, i + RUN).join(' ')}`);
                 break;
               }

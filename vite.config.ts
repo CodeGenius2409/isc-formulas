@@ -70,5 +70,7 @@ export default defineConfig({
     environment: 'node',
     include: ['tests/unit/**/*.test.ts', 'tests/unit/**/*.test.tsx'],
     testTimeout: 60_000,
+    // A cached transform keeps a glob's old file list, which hid the bank's chapter files from the tests.
+    fsModuleCache: false,
   },
 });

@@ -7,7 +7,7 @@ import { readJson, writeJson } from '../../lib/storage';
 import { noteMissedSteps, papersImported, recordAnswer, studentFreshness } from '../progress';
 import { seededRng, type Rng } from '../questions';
 import { loadBlueprints, type LoadedBlueprints } from '../../data/blueprints';
-import { CBQ_SHARE, defKeys, generatedCount, historyKeys, pickGenerated, planShare, type Freshness, type SlotCount } from '../gen/mix';
+import { CBQ_SHARE, defKeys, generatedCount, historyKeys, mixedBankOrder, pickGenerated, planShare, type Freshness, type SlotCount } from '../gen/mix';
 import { ensureFactHistory, factGapStore, noteFactsShown } from '../fact-history';
 import { bankQuestion, loadBank, type LoadedBank } from './index';
 import { answerSummary, isAttempted, isPassing, qualityOf, scoreOf, yourAnswerSummary } from './mark';
@@ -150,13 +150,15 @@ function shuffled<T>(list: readonly T[], rng: Rng): T[] {
  * Draws questions in proportion to the syllabus's marks for each unit, from a shuffled pool: the unit
  * furthest behind its share goes next. This keeps a paper's balance close to the real one.
  */
-function draw(pool: BankDef[], count: number, weights: Map<number, number>, used: Set<string>, rng: Rng): BankDef[] {
-  const left = shuffled(pool.filter((d) => !used.has(d.id)), rng);
+function draw(pool: BankDef[], count: number, weights: Map<number, number>, used: Set<string>, rng: Rng, shapes: Set<string> = new Set()): BankDef[] {
+  // A big pool would otherwise swamp a paper with whatever there's most of, so it's put in the papers' proportions first.
+  const left = mixedBankOrder(pool.filter((d) => !used.has(d.id)).map((def) => ({ def })), rng).map((x) => x.def);
   if (left.length < count) throw new Error(`The bank has too few ${pool[0]?.marks}-mark questions for this paper.`);
   const out: BankDef[] = [];
   const given = new Map<number, number>();
   const topicsTaken = new Set<string>();
-  while (out.length < count) {
+  const factsTaken = new Set<string>();
+  while (out.length < count && left.length) {
     const units = [...new Set(left.map((d) => d.unit))];
     let best = units[0];
     let bestGap = -Infinity;
@@ -169,8 +171,16 @@ function draw(pool: BankDef[], count: number, weights: Map<number, number>, used
     }
     // A different topic in the unit if there is one, so a paper doesn't ask the same thing twice.
     const inUnit = left.filter((d) => d.unit === best);
-    const chosen = inUnit.find((d) => !topicsTaken.has(`${d.unit}${d.topic}`)) ?? inUnit[0];
+    const open = inUnit.filter((d) => !d.shape || !shapes.has(`${d.shape}|${d.context ?? ''}`));
+    const choices = open.length ? open : inUnit;
+    const chosen = choices.find((d) => !topicsTaken.has(`${d.unit}${d.topic}`)) ?? choices[0];
+    if (chosen.shape) shapes.add(`${chosen.shape}|${chosen.context ?? ''}`);
     left.splice(left.indexOf(chosen), 1);
+    // Several questions can ask one fact, in different formats, and a paper only asks it once.
+    if (chosen.facts?.length) {
+      for (const x of chosen.facts) factsTaken.add(x);
+      for (let i = left.length - 1; i >= 0; i--) if (left[i].facts?.some((x) => factsTaken.has(x))) left.splice(i, 1);
+    }
     used.add(chosen.id);
     topicsTaken.add(`${chosen.unit}${chosen.topic}`);
     given.set(chosen.unit, (given.get(chosen.unit) ?? 0) + 1);
@@ -248,6 +258,8 @@ export function assemblePaper(subject: SubjectId, level: ClassLevel, bank: Loade
   const usedBlueprints = new Set<string>();
   const seenText = new Set<string>();
   const seenFacts = new Set<string>();
+  const usedShapes = new Set<string>();
+  const seenStructures = new Set<string>();
   const share = generated ? planShare(paperSlots(subject, level, bank), generated.share).share : 0;
   const fresh = generated?.fresh;
   let unreviewedFill = 0;
@@ -258,10 +270,10 @@ export function assemblePaper(subject: SubjectId, level: ClassLevel, bank: Loade
       const bankFor = (wantDerivation: boolean | null) => bank.defs.filter((d) => d.marks === slot.marks && inSection(d.unit) && !used.has(d.id) && notAsked(d) && (wantDerivation === null || isDerivationType(d.type) === wantDerivation));
       const anyBlueprintFor = (wantDerivation: boolean | null) => (generated?.set.blueprints ?? []).filter((b) => b.marks === slot.marks && inSection(b.unit) && (wantDerivation === null || isDerivationType(b.type) === wantDerivation));
       const blueprintsFor = (wantDerivation: boolean | null) => anyBlueprintFor(wantDerivation).filter((b) => !generated?.reviewedOnly || b.reviewed === true);
-      const pickMade = (pool: ReturnType<typeof blueprintsFor>, count: number, cbqShare = 0) => (generated && count > 0 ? pickGenerated(generated.set, pool, { count, weights, rng, used: usedBlueprints, seenText, seenFacts, cbqShare, fresh, freshOnly: true }) : []);
+      const pickMade = (pool: ReturnType<typeof blueprintsFor>, count: number, cbqShare = 0) => (generated && count > 0 ? pickGenerated(generated.set, pool, { count, weights, rng, used: usedBlueprints, seenText, seenFacts, seenStructures, cbqShare, fresh, freshOnly: true }) : []);
       const takeBank = (all: BankDef[], count: number) => {
         const pool = fresh ? all.filter((d) => !fresh.resting(defKeys(d))) : all;
-        const defs = count > 0 && pool.length ? draw(pool, Math.min(count, pool.length), weights, used, rng) : [];
+        const defs = count > 0 && pool.length ? draw(pool, Math.min(count, pool.length), weights, used, rng, usedShapes) : [];
         for (const d of defs) for (const f of d.facts ?? []) seenFacts.add(f);
         return defs;
       };
@@ -286,9 +298,9 @@ export function assemblePaper(subject: SubjectId, level: ClassLevel, bank: Loade
       const derivationCount = genDerivations.length + bankDerivations.length + lateDerivations.length + oldBankDerivations.length + oldDerivations.length;
       // Then everything else.
       const others = slot.count - derivationCount;
-      const pool = bankFor(false);
       const made = pickMade(blueprintsFor(false), generatedCount(others, share), CBQ_SHARE);
-      const defs = takeBank(pool, others - made.length);
+      // Worked out after the generated ones, which may have used facts that bank questions also ask.
+      const defs = takeBank(bankFor(false), others - made.length);
       // A paper is never handed out short: if one kind runs out, anything of the right marks fills the rest, whatever the slider says.
       let left = others - made.length - defs.length;
       const moreBank = takeBank(bankFor(null), left);

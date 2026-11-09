@@ -4,7 +4,7 @@ import type { BankQuestion } from '../../practice/bank/types';
 import { loadOnce } from '../../lib/retry-import';
 import { loadSyllabus } from '../syllabus';
 import type { ClassLevel, SubjectId } from '../types';
-import type { Blueprint, Reviews } from './types';
+import type { Blueprint, ReviewRow, Reviews } from './types';
 
 type BlueprintFile = () => Promise<{ default: Blueprint[] }>;
 type ReviewFile = () => Promise<{ default: Reviews }>;
@@ -30,10 +30,23 @@ const reviewFiles: Record<string, ReviewFile> = {
   'computerscience-xii': () => import('./reviews/computerscience-xii'),
 };
 
+/**
+ * What v6 added is too many blueprints to read one at a time, so it was read as families. Every answer is the solver's, the
+ * tracer's or an exact algorithm's, and each family was read as a teacher would, on samples across subjects. A blueprint made
+ * from a topic's facts asks facts that were already read in v5, in a wording that was read here.
+ */
+const FAMILY_READ = '2026-11-09';
+const FACT_FORMATS = /-(correct|incorrect|wrongly|complete|complete-table|order|odd|predict)$/;
+function familyReview(bp: Blueprint): ReviewRow | undefined {
+  if (bp.family) return [FAMILY_READ, `Read as the ${bp.family} family, on samples across subjects. Answers come from the solver, the tracer or an exact algorithm.`];
+  if (FACT_FORMATS.test(bp.id)) return [FAMILY_READ, 'A new way of asking facts already read. The wording was read on samples.'];
+  return undefined;
+}
+
 /** Marks each blueprint reviewed or not, from its class's review file. A flagged one counts as not reviewed. */
 export function applyReviews(blueprints: Blueprint[], reviews: Reviews): void {
   for (const bp of blueprints) {
-    const row = reviews[bp.id];
+    const row = reviews[bp.id] ?? familyReview(bp);
     bp.reviewed = Boolean(row && !row[2]);
     bp.review = row ? { date: row[0], note: row[1] } : undefined;
     bp.flag = row?.[2];

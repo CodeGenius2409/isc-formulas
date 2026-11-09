@@ -171,6 +171,8 @@ export interface NumericDef extends Tags {
   /** Keeps only sensible combinations of values. */
   when?: (v: Record<string, number>) => boolean;
   parts: NumericPartDef[];
+  /** Parts already worked, where a question's answer doesn't come from the solver registry, as in much of Mathematics. */
+  fixedParts?: NumericPart[];
 }
 
 export type BankDef = McqDef | TheoryDef | OutputDef | NumericDef;

@@ -92,8 +92,8 @@ export interface Names {
   topicName: string;
 }
 
-/** One question. Throws if a blueprint can't produce anything in many tries, which a test rules out. */
-export function generateItem(bp: Blueprint, seed: number, names: Names): BankItem {
+/** One question's content, before it's filed. The same blueprint and seed always give the same one. */
+export function generateBody(bp: Blueprint, seed: number): Body {
   const rng = seededRng((seed ^ hash(bp.id)) >>> 0);
   const g = new Gen(rng, bp.subject, bp.id);
   g.seed = seed;
@@ -102,33 +102,36 @@ export function generateItem(bp: Blueprint, seed: number, names: Names): BankIte
     try {
       const body = bp.make(g);
       const problems = problemsWith(bp, body);
-      if (problems.length) {
-        last = problems.join('; ');
-        continue;
-      }
-      const marks = body.form === 'theory' || body.form === 'numeric' ? bp.marks : bp.marks;
-      const { context, ...rest } = body;
-      const generated: GeneratedTag = { blueprint: bp.id, seed, style: bp.style, format: bp.format, ...(bp.reviewed ? {} : { unreviewed: true as const }), ...(context ? { context } : {}), ...(bp.family ? { family: bp.family } : {}) };
-      return {
-        ...rest,
-        id: generatedId(bp.id, seed),
-        subject: bp.subject,
-        level: bp.level,
-        unit: bp.unit,
-        topic: bp.topic,
-        marks,
-        type: bp.type,
-        difficulty: bp.difficulty,
-        python: body.python ?? bp.python,
-        ...names,
-        generated,
-      } as BankItem;
+      if (!problems.length) return body;
+      last = problems.join('; ');
     } catch (err) {
       if (!(err instanceof Retry)) throw err;
       last = err.message;
     }
   }
   throw new Error(`${bp.id} with seed ${seed} gave nothing usable: ${last}`);
+}
+
+/** One question. Throws if a blueprint can't produce anything in many tries, which a test rules out. */
+export function generateItem(bp: Blueprint, seed: number, names: Names): BankItem {
+  const body = generateBody(bp, seed);
+  const { context, ...rest } = body;
+  delete (rest as { source?: unknown }).source;
+  const generated: GeneratedTag = { blueprint: bp.id, seed, style: bp.style, format: bp.format, ...(bp.reviewed ? {} : { unreviewed: true as const }), ...(context ? { context } : {}), ...(bp.family ? { family: bp.family } : {}) };
+  return {
+    ...rest,
+    id: generatedId(bp.id, seed),
+    subject: bp.subject,
+    level: bp.level,
+    unit: bp.unit,
+    topic: bp.topic,
+    marks: bp.marks,
+    type: bp.type,
+    difficulty: bp.difficulty,
+    python: body.python ?? bp.python,
+    ...names,
+    generated,
+  } as BankItem;
 }
 
 export function generatedQuestion(bp: Blueprint, seed: number, names: Names): BankQuestion {

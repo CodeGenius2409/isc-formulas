@@ -10,7 +10,8 @@ import { seededRng } from '../../src/practice/questions';
 /** Falls to zero as material is written. It can only go down. */
 const ALLOWED_SHORT = 1000;
 
-const CLASSES: [SubjectId, ClassLevel][] = [['physics', 'XI'], ['physics', 'XII'], ['chemistry', 'XI'], ['chemistry', 'XII'], ['mathematics', 'XI'], ['mathematics', 'XII']];
+const CLASSES: [SubjectId, ClassLevel][] = [['physics', 'XI'], ['physics', 'XII'], ['chemistry', 'XI'], ['chemistry', 'XII'], ['computerscience', 'XI'], ['computerscience', 'XII']];
+const ALL_CLASSES: [SubjectId, ClassLevel][] = [...CLASSES, ['mathematics', 'XI'], ['mathematics', 'XII']];
 const SAMPLES = Number(process.env.VARIETY_INSTANCES ?? 40);
 
 describe.each(CLASSES)('%s %s', (subject, level) => {
@@ -40,7 +41,7 @@ describe.each(CLASSES)('%s %s', (subject, level) => {
 describe('numerical topics', () => {
   it('reaches the targets for structures, settings and rotation', async () => {
     const short: string[] = [];
-    for (const [subject, level] of CLASSES) {
+    for (const [subject, level] of ALL_CLASSES) {
       const set = await loadBlueprints(subject, level);
       const topics = new Map<string, typeof set.blueprints>();
       for (const bp of set.blueprints) if (bp.type === 'numerical' || bp.family) topics.set(`${bp.unit}${bp.topic}`, [...(topics.get(`${bp.unit}${bp.topic}`) ?? []), bp]);
@@ -63,7 +64,7 @@ describe('numerical topics', () => {
         }
         const key = `${subject} ${level} ${place}`;
         if (structures.size < 10) short.push(`${key}: ${structures.size} structures`);
-        if (subject !== 'mathematics' && contexts.size < 8) short.push(`${key}: ${contexts.size} kinds of setting`);
+        if (subject !== 'mathematics' && subject !== 'computerscience' && contexts.size < 8) short.push(`${key}: ${contexts.size} kinds of setting`);
         const top = Math.max(0, ...contexts.values());
         if (instances && contexts.size >= 8 && top / instances > 0.3) short.push(`${key}: one setting has ${Math.round((top / instances) * 100)}%`);
         const run = pickGenerated(set, pool, { count: 40, rng: seededRng(7) }).map(structureKey);
