@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Dices, Download, Flag, ListChecks, RotateCcw, Trash2, Wand2 } from 'lucide-react';
 import { RichText } from '../components/bank/RichText';
 import { manifest } from '../data/book';
-import { isExamId } from '../practice/bank/define';
+import { isExamId, isMarkedGenerated } from '../practice/bank/define';
 import { href, openWork, useRoute } from '../lib/router';
 import { useStore } from '../lib/store';
 import { deleteMistake, mistakesStore, srsStore, statsStore, today } from '../practice/progress';
@@ -146,7 +146,7 @@ export default function ProgressView() {
                       {isExamId(m.formulaId) ? (
                         <span className="font-semibold">
                           {m.formulaName}
-                          {m.formulaId.startsWith('g-') && (
+                          {(m.formulaId.startsWith('g-') || (m.question.kind === 'bank' && isMarkedGenerated(m.question.item))) && (
                             <span className="gen-mark ml-2" data-testid="generated-mark" title={GENERATED_NOTICE}>
                               <Dices size={14} aria-hidden /> Generated
                             </span>

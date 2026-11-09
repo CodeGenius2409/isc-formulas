@@ -82,10 +82,10 @@ from the other.
 
 ### Generated questions
 
-A generated question reads as a note of caution, using nothing new. These are the rules, and they're in `src/components/bank/GeneratedMark.tsx`:
+A generated question reads as a note of caution, using nothing new. This covers questions made from a blueprint and compiled bank questions, which are frozen from one and weren't read one by one (`isMarkedGenerated` in `src/practice/bank/define.ts`). These are the rules, and they're in `src/components/bank/GeneratedMark.tsx`:
 
 - A small **Generated** label with the `Dices` icon, beside the question number, in `--ink-2`. No colour of its own, so it survives black-and-white printing.
-- The margin beside the question becomes a **dotted** rule in `--ink-2`. That's what tells it apart from your own formulas, whose margin is **dashed** and marked with a pen. Bank questions have no mark beside the number. They carry the small note "Original practice question, not an official ISC question." in `--ink-3`, under the question; a paper says it once at the top.
+- The margin beside the question becomes a **dotted** rule in `--ink-2`. That's what tells it apart from your own formulas, whose margin is **dashed** and marked with a pen. Hand-written and fact-based bank questions have no mark beside the number. They carry the small note "Original practice question, not an official ISC question." in `--ink-3`, under the question; a paper says it once at the top.
 - Under the label, the notice "Generated practice question. This is not an official ISC question and may contain mistakes." sits in an expandable note, so it's one tap away and doesn't crowd the question.
 - A mock paper shows a small **legend** once, at the top of the first page, with the label and what it means, and the notice beside it.
 - In print, the label and the dotted margin remain. A printed paper has a small footer saying it contains generated questions.

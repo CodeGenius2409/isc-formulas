@@ -98,6 +98,24 @@ test('the slider snaps, moves by 5 with the keys, and says what it means', async
   expect(problems).toEqual([]);
 });
 
+/** The questions of the mock paper in progress, as saved. */
+const storedQuestions = (page: Page) =>
+  page.evaluate(() => {
+    const paper = JSON.parse(localStorage.getItem('isc-paper-current') ?? 'null') as { sections: { questions: { item: { id: string; origin?: string; generated?: object } }[] }[] };
+    return paper.sections.flatMap((s) => s.questions.map((q) => ({ id: q.item.id, origin: q.item.origin, generated: Boolean(q.item.generated) })));
+  });
+
+/** Each question on the page is marked exactly when it came from a blueprint, now or compiled. */
+async function expectMarksToMatch(page: Page) {
+  for (const q of await storedQuestions(page)) {
+    const shown = page.locator(`[id="pq-${q.id}"]`);
+    const marked = q.generated || q.origin === 'compiled';
+    await expect(shown.getByTestId('generated-mark'), q.id).toHaveCount(marked ? 1 : 0);
+    if (marked) await expect(shown, q.id).toHaveAttribute('data-generated', 'true');
+    else await expect(shown, q.id).not.toHaveAttribute('data-generated', 'true');
+  }
+}
+
 test('a question set: generated ones carry their mark, bank ones don’t, and every control works', async ({ page }) => {
   const problems = watchProblems(page);
   await openGenerator(page);
@@ -109,7 +127,8 @@ test('a question set: generated ones carry their mark, bank ones don’t, and ev
   await expect(items).toHaveCount(8);
   await expect(page.getByTestId('review-notice')).toContainText('not an official ISC question');
   const generated = items.filter({ has: page.getByTestId('generated-mark') });
-  await expect(generated).toHaveCount(4);
+  // Four from the slider, and any compiled bank questions among the rest.
+  await expect.poll(() => generated.count()).toBeGreaterThanOrEqual(4);
   for (const item of await generated.all()) await expect(item).toHaveAttribute('data-generated', 'true');
   for (const item of await items.filter({ hasNot: page.getByTestId('generated-mark') }).all()) await expect(item).not.toHaveAttribute('data-generated', 'true');
 
@@ -212,7 +231,7 @@ test('it prints: marks, legend and footer, in black and white, and an answer key
   await expect(sheet).toContainText('Riverside School');
   await expect(sheet).toHaveAttribute('style', /14pt/);
   await expect(sheet.getByTestId('print-question')).toHaveCount(6);
-  await expect(sheet.getByTestId('generated-mark')).toHaveCount(3);
+  await expect.poll(() => sheet.getByTestId('generated-mark').count()).toBeGreaterThanOrEqual(3);
   await expect(sheet.locator('.gen-legend')).toContainText('not official ISC questions');
   await expect(sheet.locator('.gen-print-footer')).toContainText('may contain mistakes');
   // Two lines each, as chosen. A derivation drawn by this random seed gets more (see answerSpace).
@@ -233,9 +252,12 @@ test('it prints: marks, legend and footer, in black and white, and an answer key
   expect(problems).toEqual([]);
 });
 
-test('a bank-only paper has no mark, legend or footer', async ({ page }) => {
+test('a paper of only hand-written and fact-based questions has no mark, legend or footer', async ({ page }) => {
   await openGenerator(page);
-  await page.getByLabel('Class XII', { exact: true }).check();
+  await page.getByLabel('Class XI', { exact: true }).check();
+  // This chapter has no compiled questions, so nothing at 0% can carry the mark.
+  await page.getByTestId('chapter-picker').locator('summary').click();
+  await page.getByLabel('Physical World and Measurement', { exact: false }).first().check();
   await setShare(page, 0);
   await page.locator('#gen-amount').fill('5');
   await page.getByRole('button', { name: 'Generate the questions' }).click();
@@ -269,7 +291,10 @@ test('Word files open, and match the paper on screen', async ({ page }, info) =>
   const xml = readZipEntry(paper.data, 'word/document.xml');
   expect(xml).toContain('Riverside School');
   expect(xml).toContain('Term test');
-  expect((xml.match(/\(Generated\)/g) ?? []).length).toBe(3);
+  // The same questions as on screen: three from the slider, and any compiled ones.
+  const onScreen = await page.getByTestId('review-item').filter({ has: page.getByTestId('generated-mark') }).count();
+  expect(onScreen).toBeGreaterThanOrEqual(3);
+  expect((xml.match(/\(Generated/g) ?? []).length).toBe(onScreen);
   const footer = readZipEntry(paper.data, 'word/footer1.xml');
   expect(footer).toContain('may contain mistakes');
   // Every question on screen is in the file: its first few words, away from any maths.
@@ -347,10 +372,12 @@ test('mock paper: off uses only the bank, on shows the slider, and generated que
   await page.getByRole('button', { name: 'Start the paper' }).click();
   await expect(page.getByRole('heading', { name: /Physics XII, 70 marks/ })).toBeVisible();
   await expect(page.getByTestId('paper-legend')).toContainText('not official ISC questions');
-  const marked = await page.locator('.paper-question').filter({ has: page.getByTestId('generated-mark') }).count();
   const total = await page.locator('.paper-question').count();
   expect(total).toBe(33);
-  expect(Math.abs(marked - 16.5)).toBeLessThanOrEqual(2);
+  // The slider decides how many come from blueprints. Compiled bank questions are marked on top of that.
+  const fromBlueprints = (await storedQuestions(page)).filter((q) => q.generated).length;
+  expect(Math.abs(fromBlueprints - 16.5)).toBeLessThanOrEqual(2);
+  await expectMarksToMatch(page);
   for (const q of await page.locator('.paper-question').filter({ hasNot: page.getByTestId('generated-mark') }).all()) await expect(q).not.toHaveAttribute('data-generated', 'true');
   // In print, the legend and marks stay.
   await page.emulateMedia({ media: 'print' });
@@ -361,9 +388,35 @@ test('mock paper: off uses only the bank, on shows the slider, and generated que
   await toggle.uncheck();
   await page.getByRole('button', { name: 'Start the paper' }).click();
   await expect(page.locator('.paper-question')).toHaveCount(33);
-  await expect(page.getByTestId('generated-mark')).toHaveCount(0);
-  await expect(page.getByTestId('paper-legend')).toHaveCount(0);
+  // With generated questions off, nothing comes from a blueprint, and only compiled bank questions carry the mark.
+  expect((await storedQuestions(page)).filter((q) => q.generated)).toEqual([]);
+  await expectMarksToMatch(page);
   expect(problems).toEqual([]);
+});
+
+test('compiled bank questions carry the Generated mark and note, and hand-written and fact-based ones don’t', async ({ page }) => {
+  const problems = watchProblems(page);
+  await page.goto('/#/paper?subject=physics&level=XII&seed=12345&share=0');
+  await page.getByRole('button', { name: 'Open the linked paper' }).click();
+  await expect(page.locator('.paper-question')).toHaveCount(33);
+  const stored = await storedQuestions(page);
+  expect(stored.filter((q) => q.generated)).toEqual([]);
+  expect(stored.filter((q) => q.origin === 'compiled').length).toBeGreaterThan(0);
+  expect(stored.filter((q) => q.origin !== 'compiled').length).toBeGreaterThan(0);
+  await expectMarksToMatch(page);
+  await expect(page.getByTestId('paper-legend')).toContainText('may contain mistakes');
+  await expect(page.locator('.paper-question[data-generated]').first()).toHaveCSS('border-left-style', 'dotted');
+  await expect(page.locator('.bank-note').first()).toContainText('original practice questions');
+  expect(problems).toEqual([]);
+});
+
+test('the mistakes list marks a compiled question, and not a fact-based one', async ({ page }) => {
+  const mistake = (id: string, name: string, origin: string) => ({ id, date: '2026-11-09', formulaId: id, formulaName: name, subject: 'physics', classLevel: 'XII', topic: 'A topic', asked: 'A question', yourAnswer: 'A', correctAnswer: 'B', resolved: false, question: { kind: 'bank', formulaId: id, item: { id, origin } } });
+  await page.addInitScript((list) => localStorage.setItem('isc-mistakes', JSON.stringify(list)), [mistake('q-p12-1a-compiled', 'Compiled one', 'compiled'), mistake('q-p12-1a-facts', 'Fact-based one', 'facts')]);
+  await page.goto('/#/practice');
+  await expect(page.locator('.mistake')).toHaveCount(2);
+  await expect(page.locator('.mistake', { hasText: 'Compiled one' }).getByTestId('generated-mark')).toBeVisible();
+  await expect(page.locator('.mistake', { hasText: 'Fact-based one' }).getByTestId('generated-mark')).toHaveCount(0);
 });
 
 test('the same seed reopens the same paper from a link', async ({ page }) => {

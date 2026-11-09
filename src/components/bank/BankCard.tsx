@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { getSubject } from '../../data/book';
 import { answerFeedback } from '../../lib/motion';
+import { isMarkedGenerated } from '../../practice/bank/define';
 import { answerSummary, isPassing, qualityOf, scoreOf, yourAnswerSummary } from '../../practice/bank/mark';
 import type { BankAnswer, BankQuestion } from '../../practice/bank/types';
 import { noteMissedSteps, recordAnswer } from '../../practice/progress';
@@ -77,7 +78,7 @@ export function BankCard({ question, mistakeId }: { question: BankQuestion; mist
         <GeneratedMark item={item} />
         <span className="bank-marks">[{item.marks}]</span>
       </p>
-      <div className="bank-body" data-generated={item.generated ? true : undefined}>
+      <div className="bank-body" data-generated={isMarkedGenerated(item) ? true : undefined}>
         <BankPrompt item={item} />
       </div>
       <GeneratedNote item={item} />

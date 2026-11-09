@@ -2,7 +2,7 @@
 // they don't move when questions are reordered.
 import type { ClassLevel, EntryStructure, SubjectId } from '../../data/types';
 import type { DiagramSpec } from './diagram';
-import type { BankDef, BankOption, BankType, Difficulty, McqDef, MarkPoint, NumericDef, OutputDef, QuestionFormat, TheoryDef } from './types';
+import type { BankDef, BankItem, BankOption, BankType, Difficulty, McqDef, MarkPoint, NumericDef, OutputDef, QuestionFormat, TheoryDef } from './types';
 
 /** Marks are written as `[unit, topic, marks, difficulty]`, the same order everywhere. */
 export type Place = [unit: number, topic: string, marks: number, difficulty: Difficulty];
@@ -31,6 +31,13 @@ function hash(text: string): string {
 }
 
 export const isBankId = (id: string): boolean => /^q-[pcmk]1[12]-/.test(id);
+
+/**
+ * Whether a question carries the Generated mark and its note. Made from a blueprint just now, or frozen from one into the bank:
+ * neither was read one by one. Hand-written and fact-based bank questions were, so they don't. Only for what a person sees:
+ * `item.generated` still says whether a question came from the bank's data or the generator.
+ */
+export const isMarkedGenerated = (item: Pick<BankItem, 'generated' | 'origin'>): boolean => Boolean(item.generated) || item.origin === 'compiled';
 
 /** A question from the bank, or one generated from a blueprint and a seed. */
 export const isExamId = (id: string): boolean => isBankId(id) || id.startsWith('g-');

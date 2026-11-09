@@ -1,5 +1,6 @@
 import { useId, useState } from 'react';
 import { Dices, Flag } from 'lucide-react';
+import { isMarkedGenerated } from '../../practice/bank/define';
 import type { BankItem } from '../../practice/bank/types';
 import { reportProblem } from '../../practice/gen/report';
 
@@ -9,9 +10,9 @@ export const PAPER_NOTICE = 'This paper contains generated questions, marked wit
 
 export const BANK_NOTICE = 'Original practice question, not an official ISC question.';
 
-/** A fixed question from the bank: a small, calm note, so that nobody takes it for a real paper's. */
+/** A hand-written or fact-based question from the bank: a small, calm note, so that nobody takes it for a real paper's. */
 export function BankNote({ item }: { item: BankItem }) {
-  if (item.generated) return null;
+  if (isMarkedGenerated(item)) return null;
   return (
     <p className="bank-note" data-testid="bank-note">
       {BANK_NOTICE}
@@ -19,14 +20,14 @@ export function BankNote({ item }: { item: BankItem }) {
   );
 }
 
-/** Beside the question number. Bank questions don't get one, so a glance is enough. */
+/** Beside the question number. Hand-written and fact-based bank questions don't get one, so a glance is enough. */
 export function GeneratedMark({ item }: { item: BankItem }) {
-  if (!item.generated) return null;
+  if (!isMarkedGenerated(item)) return null;
   return (
     <span className="gen-mark" data-testid="generated-mark" title={GENERATED_NOTICE}>
       <Dices size={14} aria-hidden /> Generated
       <span className="sr-only">. {GENERATED_NOTICE}</span>
-      {item.generated.unreviewed && (
+      {item.generated?.unreviewed && (
         <span className="gen-unreviewed" data-testid="unreviewed-mark" title={UNREVIEWED_NOTICE}>
           <span aria-hidden>·</span> Not yet reviewed
           <span className="sr-only">. {UNREVIEWED_NOTICE}</span>
@@ -38,7 +39,7 @@ export function GeneratedMark({ item }: { item: BankItem }) {
 
 /** The longer note, for a single question. A paper shows it once at the top instead. */
 export function GeneratedNote({ item }: { item: BankItem }) {
-  if (!item.generated) return null;
+  if (!isMarkedGenerated(item)) return null;
   return (
     <details className="gen-note no-print">
       <summary>What does Generated mean?</summary>

@@ -8,6 +8,7 @@ import type { ClassLevel, SubjectId } from '../data/types';
 import { useAsync } from '../lib/hooks';
 import { href, openWork, useRoute } from '../lib/router';
 import { useStore } from '../lib/store';
+import { isMarkedGenerated } from '../practice/bank/define';
 import { isAttempted, scoreOf } from '../practice/bank/mark';
 import { loadBank } from '../practice/bank';
 import { abandonPaper, answerPaper, finishMarking, PAPER_MINUTES, paperHistoryStore, paperResult, paperReviewedOnlyStore, paperSlots, paperSpec, paperStore, startPaper, submitPaper, type Paper, type PaperResult } from '../practice/bank/paper';
@@ -201,7 +202,7 @@ const PaperQuestion = memo(function PaperQuestion({ item, number, answer, markin
   const current = answer ?? {};
   const onChange = (change: Partial<BankAnswer>) => answerPaper(item.id, change);
   return (
-    <li className="paper-question" id={`pq-${item.id}`} data-generated={item.generated ? true : undefined}>
+    <li className="paper-question" id={`pq-${item.id}`} data-generated={isMarkedGenerated(item) ? true : undefined}>
       <p className="bank-meta">
         <span className="font-semibold">Question {number}</span>
         <GeneratedMark item={item} />
@@ -231,7 +232,7 @@ function PaperSheet({ paper, onFinished }: { paper: Paper; onFinished: (result: 
   const toAnswer = items.filter((i) => i.form !== 'theory');
   const unanswered = toAnswer.filter((i) => !isAttempted(i, paper.answers[i.id])).length;
   const result = marking ? paperResult(paper) : null;
-  const anyGenerated = items.some((i) => i.generated);
+  const anyGenerated = items.some(isMarkedGenerated);
   let number = 0;
 
   return (
@@ -266,7 +267,7 @@ function PaperSheet({ paper, onFinished }: { paper: Paper; onFinished: (result: 
           <p className="mt-2 max-w-[65ch] text-ink-2">Write theory answers on paper. Your work is saved as you go, so you can leave and come back, but the clock keeps running.</p>
         )}
         {anyGenerated && <PaperLegend unreviewed={paper.sections.some((s) => s.questions.some((q) => q.item.generated?.unreviewed))} />}
-        {paper.sections.some((s) => s.questions.some((q) => !q.item.generated)) && <p className="bank-note">The other questions are original practice questions, not official ISC questions.{/* {BANK_NOTICE} on single questions */}</p>}
+        {paper.sections.some((s) => s.questions.some((q) => !isMarkedGenerated(q.item))) && <p className="bank-note">The other questions are original practice questions, not official ISC questions.{/* {BANK_NOTICE} on single questions */}</p>}
 
         {paper.sections.map((section) => (
           <section key={section.name} className="today-section" aria-label={section.name}>

@@ -11,6 +11,7 @@ import { useAsync } from '../lib/hooks';
 import { markFigures, teacherDiagramsStore, type FigureMark } from '../practice/gen/figures';
 import { lazyRetry } from '../lib/retry-import';
 import { useStore } from '../lib/store';
+import { isMarkedGenerated } from '../practice/bank/define';
 import type { BankItem, Difficulty } from '../practice/bank/types';
 import { answerLines, saveBlob, STUDENT_FOOTER } from '../practice/gen/docx';
 import { describePlan, generatedCount, planShare, teacherShareStore } from '../practice/gen/mix';
@@ -128,7 +129,7 @@ function ReviewItem({ entry, number, figure, canMove, onChange, onMove, onDrop, 
   return (
     <li
       className="gen-review"
-      data-generated={item.generated ? true : undefined}
+      data-generated={isMarkedGenerated(item) ? true : undefined}
       data-locked={entry.locked || undefined}
       data-over={over || undefined}
       data-testid="review-item"
@@ -222,7 +223,7 @@ function ReviewItem({ entry, number, figure, canMove, onChange, onMove, onDrop, 
 function PrintSheet({ paper, kind }: { paper: TeacherPaper; kind: 'paper' | 'key' }) {
   const shown = useMemo(() => arranged(paper), [paper]);
   const { header, options } = shown;
-  const anyGenerated = allItems(shown).some((i) => i.question.item.generated);
+  const anyGenerated = allItems(shown).some((i) => isMarkedGenerated(i.question.item));
   const figures = markFigures(allItems(shown).map((i) => i.question.item), options.diagrams);
   let number = 0;
   return (
@@ -253,7 +254,7 @@ function PrintSheet({ paper, kind }: { paper: TeacherPaper; kind: 'paper' | 'key
             const item = withEdit(entry);
             if (kind === 'key') {
               return (
-                <div key={entry.key} className="gen-print-q" data-generated={item.generated ? true : undefined}>
+                <div key={entry.key} className="gen-print-q" data-generated={isMarkedGenerated(item) ? true : undefined}>
                   <p className="font-semibold">
                     Question {number} <GeneratedMark item={item} /> [{item.marks}]
                   </p>
@@ -275,7 +276,7 @@ function PrintSheet({ paper, kind }: { paper: TeacherPaper; kind: 'paper' | 'key
               );
             }
             return (
-              <div key={entry.key} className="gen-print-q" data-generated={item.generated ? true : undefined} data-testid="print-question">
+              <div key={entry.key} className="gen-print-q" data-generated={isMarkedGenerated(item) ? true : undefined} data-testid="print-question">
                 <p className="gen-print-num">
                   <span className="font-semibold">{number}.</span> <GeneratedMark item={item} />
                   {entry.related && <span className="gen-related">Related subtopic</span>}
@@ -323,7 +324,7 @@ function Review({ paper, onChange, onClose, sets, onSets }: { paper: TeacherPape
     onChange({ ...paper, options: { ...paper.options, ...change } });
   };
   const reviewFigures = useMemo(() => markFigures(allItems(paper).map((i) => withEdit(i)), paper.options.diagrams), [paper]);
-  const anyGenerated = allItems(paper).some((i) => i.question.item.generated);
+  const anyGenerated = allItems(paper).some((i) => isMarkedGenerated(i.question.item));
 
   const print = (kind: 'paper' | 'key') => {
     setPrintKind(kind);

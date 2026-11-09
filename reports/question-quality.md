@@ -399,7 +399,7 @@ The bank's questions come from three places, and it matters which. `reports/supp
 |---|---|---|
 | Written | Finished questions written by hand, in `src/practice/bank/written/`, plus the first bank and the derivations | Read as written. Numericals by the solver, programs by the tracer, marks by test, originality against the papers |
 | Facts | Each fact from the knowledge base, in its own words, as a fixed question | The facts were read in v5's review. The ways of asking were read on samples |
-| Compiled | Instances frozen from reviewed blueprints | The blueprint was reviewed. Numericals by the solver when opened, programs by the tracer when frozen. Not read one by one |
+| Compiled | Instances frozen from reviewed blueprints | The blueprint was reviewed. Numericals by the solver when opened, programs by the tracer when frozen. Not read one by one, so they carry the Generated mark and its “may contain mistakes” note |
 
 **“Fully reviewed” means less for the last two layers than for the first.** Nobody has read each of the compiled questions. They are held to machine checks and their family was read on samples.
 

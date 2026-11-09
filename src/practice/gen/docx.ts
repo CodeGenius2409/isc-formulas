@@ -4,6 +4,7 @@ import { BankDiagram, describe } from '../../components/bank/BankDiagram';
 import type { DiagramSpec } from '../bank/diagram';
 import { markFigures, withFigureNote } from './figures';
 import { loadStructures } from '../../data/structures';
+import { isMarkedGenerated } from '../bank/define';
 import type { BankItem } from '../bank/types';
 import { allItems, answerSpace, type PaperItem, type TeacherPaper } from './teacher';
 
@@ -176,7 +177,7 @@ export async function buildDocx(paper: TeacherPaper, kind: DocKind): Promise<Blo
   if (kind === 'paper') {
     for (const line of header.instructions.split('\n').filter(Boolean)) body.push(new Paragraph({ bullet: { level: 0 }, children: [run(line)] }));
   }
-  const anyGenerated = allItems(paper).some((i) => i.question.item.generated);
+  const anyGenerated = allItems(paper).some((i) => isMarkedGenerated(i.question.item));
   const figureMarks = markFigures(allItems(paper).map((i) => i.question.item), paper.options.diagrams);
   const picture = (png: Png, title: string) =>
     new Paragraph({ keepNext: true, children: [new ImageRun({ type: 'png', data: png.data, transformation: { width: png.width, height: png.height }, altText: { name: title, title, description: png.alt ?? title } })] });
@@ -193,7 +194,7 @@ export async function buildDocx(paper: TeacherPaper, kind: DocKind): Promise<Blo
   async function addQuestion(entry: PaperItem, n: number) {
     const q = entry.question.item;
     const text = entry.editedText ?? q.text;
-    const tag = q.generated ? (q.generated.unreviewed ? ' (Generated, not yet reviewed)' : ' (Generated)') : '';
+    const tag = isMarkedGenerated(q) ? (q.generated?.unreviewed ? ' (Generated, not yet reviewed)' : ' (Generated)') : '';
     const marks = paper.options.showMarks ? ` [${q.marks}]` : '';
     if (kind === 'key') {
       body.push(new Paragraph({ spacing: { before: 200 }, children: [run(`Question ${n}${tag}`, { bold: true })] }));
