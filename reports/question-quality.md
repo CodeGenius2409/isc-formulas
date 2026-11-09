@@ -431,6 +431,7 @@ The engine's blueprints are too many to read one at a time, so they were read as
 | 3 | Order, odd one out and predict for most-asked topics; 31 cross-topic and thin-topic numericals; Chemistry XII 7a, Physics XII 2b | A muddled explanation, a wrong ionisation order, a word the syllabus scan rightly caught | 1,189 |
 | 4 | All 23 subtopics still under 40 or 80: Physics XI 1a, 1b, 1p, XII 6p; Chemistry XI 1a, 8b, 9a, 9c, 9d, 10a–10d; Chemistry XII 2c, 6c, 10c, 11a–11d; CS XI 4a, 11a, 11b | One repeated question stem; three clumsy wordings, fixed on re-reading; a new test on Section A then showed mock papers could lose the papers' mix of formats, which is fixed in `draw` | 1,579 |
 | 5 | 281 Mathematics numericals, all 28 subtopics, for 0% generated. Four long Computer Science XI questions | A question that repeated one in the first bank. A comment that claimed a check, `written-bank.test.ts`, which never existed, so `tests/unit/written-answers.test.ts` now computes every hand-written Mathematics numerical a second time. Its first full run found no wrong answer | 1,864 |
+| 6 | 103 Physics XII numericals on electrostatics, current, induction, AC, optics, photons and nuclei, for 0% generated | Six unit spellings the solver couldn't read. Reading all the answers found one question wired to the wrong arms of a bridge, two negative roots, one answer per second to a question asking per hour, and a unit of Hz on a count, none of which a solver can catch, so these are now worked from the physics in `tests/unit/written-answers.test.ts`. One-mark numericals crowded multiple choice out of Section A, which is fixed in `draw` | 1,967 |
 
 ### Novelty check for v6
 
@@ -466,22 +467,22 @@ Written here by `tests/unit/supply-report.test.ts`. “Reviewed” is by layer, 
 | Physics XI 9a | 80 | 4 | 39 | 226 | 269 | 52 | 138 | 79 | numerical 98, data 45, mcq 41 | Yes, by layer |
 | Physics XI 10a | 80 | 6 | 38 | 291 | 335 | 68 | 159 | 108 | numerical 103, data 56, mcq 51 | Yes, by layer |
 | Physics XI 10b | 80 | 4 | 164 | 329 | 497 | 115 | 226 | 156 | numerical 121, mistake 64, mcq 61 | Yes, by layer |
-| Physics XII 1a | 80 | 12 | 188 | 352 | 552 | 146 | 254 | 152 | numerical 122, mcq 105, data 56 | Yes, by layer |
-| Physics XII 1b | 80 | 11 | 179 | 400 | 590 | 146 | 253 | 191 | numerical 123, mcq 104, data 80 | Yes, by layer |
-| Physics XII 2a | 80 | 8 | 171 | 384 | 563 | 145 | 243 | 175 | numerical 122, mcq 103, data 72 | Yes, by layer |
-| Physics XII 2b | 80 | 39 | 161 | 297 | 497 | 115 | 235 | 147 | numerical 122, mistake 60, mcq 57 | Yes, by layer |
+| Physics XII 1a | 80 | 22 | 188 | 352 | 562 | 151 | 258 | 153 | numerical 132, mcq 105, data 56 | Yes, by layer |
+| Physics XII 1b | 80 | 23 | 179 | 400 | 602 | 152 | 258 | 192 | numerical 135, mcq 104, data 80 | Yes, by layer |
+| Physics XII 2a | 80 | 18 | 171 | 384 | 573 | 151 | 245 | 177 | numerical 132, mcq 103, data 72 | Yes, by layer |
+| Physics XII 2b | 80 | 49 | 161 | 297 | 507 | 120 | 239 | 148 | numerical 132, mistake 60, mcq 57 | Yes, by layer |
 | Physics XII 3a | 80 | 85 | 201 | 384 | 670 | 177 | 297 | 196 | numerical 140, mcq 120, data 72 | Yes, by layer |
 | Physics XII 3b | 80 | 3 | 142 | 0 | 145 | 57 | 63 | 25 | statement 36, assertion 24, very-short 18 | Yes, by layer |
-| Physics XII 4a | 80 | 7 | 164 | 243 | 414 | 114 | 208 | 92 | numerical 87, mcq 61, data 48 | Yes, by layer |
-| Physics XII 4b | 80 | 56 | 204 | 311 | 571 | 153 | 274 | 144 | numerical 116, mcq 97, mistake 65 | Yes, by layer |
+| Physics XII 4a | 80 | 13 | 164 | 243 | 420 | 116 | 211 | 93 | numerical 93, mcq 61, data 48 | Yes, by layer |
+| Physics XII 4b | 80 | 69 | 204 | 311 | 584 | 160 | 279 | 145 | numerical 129, mcq 97, mistake 65 | Yes, by layer |
 | Physics XII 5a | 80 | 4 | 156 | 40 | 200 | 80 | 94 | 26 | mcq 42, statement 40, assertion 24 | Yes, by layer |
-| Physics XII 6a | 80 | 60 | 256 | 287 | 603 | 167 | 284 | 152 | numerical 124, mcq 76, mistake 70 | Yes, by layer |
-| Physics XII 6b | 80 | 5 | 137 | 163 | 305 | 86 | 158 | 61 | numerical 72, data 42, statement 32 | Yes, by layer |
-| Physics XII 6c | 80 | 10 | 169 | 259 | 438 | 120 | 216 | 102 | numerical 89, mcq 83, data 54 | Yes, by layer |
+| Physics XII 6a | 80 | 73 | 256 | 287 | 616 | 174 | 289 | 153 | numerical 137, mcq 76, mistake 70 | Yes, by layer |
+| Physics XII 6b | 80 | 9 | 137 | 163 | 309 | 89 | 159 | 61 | numerical 76, data 42, statement 32 | Yes, by layer |
+| Physics XII 6c | 80 | 15 | 169 | 259 | 443 | 122 | 219 | 102 | numerical 94, mcq 83, data 54 | Yes, by layer |
 | Physics XII 6p | 80 | 52 | 29 | 0 | 81 | 23 | 43 | 15 | mcq 25, statement 10, short 10 | Yes, by layer |
-| Physics XII 7a | 80 | 9 | 159 | 337 | 505 | 142 | 232 | 131 | numerical 106, mcq 105, mistake 52 | Yes, by layer |
-| Physics XII 8a | 80 | 7 | 155 | 43 | 205 | 73 | 94 | 38 | numerical 40, statement 38, mcq 27 | Yes, by layer |
-| Physics XII 8b | 40 | 7 | 176 | 125 | 308 | 110 | 161 | 37 | numerical 68, mcq 44, statement 42 | Yes, by layer |
+| Physics XII 7a | 80 | 19 | 159 | 337 | 515 | 145 | 238 | 132 | numerical 116, mcq 105, mistake 52 | Yes, by layer |
+| Physics XII 8a | 80 | 9 | 155 | 43 | 207 | 74 | 95 | 38 | numerical 42, statement 38, mcq 27 | Yes, by layer |
+| Physics XII 8b | 40 | 15 | 176 | 125 | 316 | 115 | 163 | 38 | numerical 76, mcq 44, statement 42 | Yes, by layer |
 | Physics XII 9a | 40 | 3 | 150 | 69 | 222 | 74 | 115 | 33 | statement 38, mcq 35, numerical 31 | Yes, by layer |
 | Physics XII 9b | 40 | 4 | 180 | 180 | 364 | 102 | 191 | 71 | numerical 64, mcq 58, statement 46 | Yes, by layer |
 | Chemistry XI 1a | 40 | 7 | 35 | 0 | 42 | 14 | 21 | 7 | assertion 13, statement 8, mcq 6 | Yes, by layer |
@@ -536,8 +537,8 @@ Written here by `tests/unit/supply-report.test.ts`. “Reviewed” is by layer, 
 | Chemistry XII 11b | 40 | 18 | 26 | 0 | 44 | 19 | 19 | 6 | mcq 14, statement 8, very-short 5 | Yes, by layer |
 | Chemistry XII 11c | 40 | 21 | 25 | 0 | 46 | 16 | 24 | 6 | mcq 19, statement 8, mistake 5 | Yes, by layer |
 | Chemistry XII 11d | 40 | 29 | 15 | 0 | 44 | 18 | 18 | 8 | mcq 24, reason 4, very-short 3 | Yes, by layer |
-| Mathematics XI 1a | 40 | 13 | 94 | 82 | 189 | 90 | 67 | 32 | numerical 79, statement 24, mcq 17 | Yes, by layer |
-| Mathematics XI 1b | 40 | 10 | 86 | 15 | 111 | 51 | 45 | 15 | mcq 25, statement 24, very-short 14 | Yes, by layer |
+| Mathematics XI 1a | 40 | 14 | 94 | 82 | 190 | 91 | 67 | 32 | numerical 80, statement 24, mcq 17 | Yes, by layer |
+| Mathematics XI 1b | 40 | 12 | 86 | 15 | 113 | 52 | 46 | 15 | mcq 25, statement 24, very-short 14 | Yes, by layer |
 | Mathematics XI 1c | 40 | 18 | 90 | 68 | 176 | 91 | 67 | 18 | numerical 59, mcq 44, statement 22 | Yes, by layer |
 | Mathematics XI 2a | 40 | 16 | 33 | 100 | 149 | 67 | 64 | 18 | numerical 88, short 17, mcq 13 | Yes, by layer |
 | Mathematics XI 2b | 40 | 13 | 35 | 83 | 131 | 57 | 60 | 14 | numerical 82, mcq 14, assertion 12 | Yes, by layer |
@@ -559,7 +560,7 @@ Written here by `tests/unit/supply-report.test.ts`. “Reviewed” is by layer, 
 | Mathematics XII 3b | 40 | 50 | 88 | 110 | 248 | 74 | 116 | 58 | numerical 52, mcq 37, cbq 30 | Yes, by layer |
 | Mathematics XII 3c | 40 | 42 | 83 | 61 | 186 | 72 | 87 | 27 | mcq 48, numerical 41, short 27 | Yes, by layer |
 | Mathematics XII 3d | 40 | 14 | 71 | 52 | 137 | 48 | 65 | 24 | numerical 52, mcq 20, statement 18 | Yes, by layer |
-| Mathematics XII 3e | 40 | 15 | 82 | 74 | 171 | 61 | 70 | 40 | numerical 49, statement 24, mcq 23 | Yes, by layer |
+| Mathematics XII 3e | 40 | 16 | 82 | 74 | 172 | 61 | 71 | 40 | numerical 50, statement 24, mcq 23 | Yes, by layer |
 | Mathematics XII 4a | 40 | 18 | 105 | 101 | 224 | 91 | 97 | 36 | numerical 80, mcq 31, statement 30 | Yes, by layer |
 | Mathematics XII 5a | 40 | 18 | 83 | 83 | 184 | 66 | 67 | 51 | numerical 66, statement 26, mcq 25 | Yes, by layer |
 | Mathematics XII 6a | 40 | 14 | 94 | 95 | 203 | 61 | 99 | 43 | numerical 81, statement 26, mcq 25 | Yes, by layer |

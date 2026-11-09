@@ -11,15 +11,15 @@ Written by `tests/unit/supply-report.test.ts`. It counts the app's own material,
 
 | Subject | Subtopics | Blueprints | Bank questions | Facts | Structures | Median to structure repeat | Median distinct | Mean variety |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
-| Physics | 41 | 2731 | 12995 | 2147 | 10968 | 12 | 200 | 94.7 |
+| Physics | 41 | 2731 | 13098 | 2147 | 10968 | 12 | 200 | 94.7 |
 | Chemistry | 52 | 1308 | 7059 | 2139 | 2940 | 12 | 68 | 90.4 |
-| Mathematics | 28 | 820 | 4871 | 1096 | 861 | 16 | 200 | 94 |
+| Mathematics | 28 | 820 | 4875 | 1096 | 861 | 16 | 200 | 94 |
 | Computer Science | 31 | 631 | 3859 | 1241 | 640 | 12 | 166 | 91.3 |
-| **All** | 152 | 5490 | 28784 | 6623 | 15409 | 12 | 200 | 92.4 |
+| **All** | 152 | 5490 | 28891 | 6623 | 15409 | 12 | 200 | 92.4 |
 
 ## What the bank targets add up to
 
-- 152 subtopics, 38 of them most asked. At 40 and 80 questions, the target is **7,600** bank questions. There are 28784.
+- 152 subtopics, 38 of them most asked. At 40 and 80 questions, the target is **7,600** bank questions. There are 28891.
 - Counting a format as fitting a subtopic only where something already exists for it, there are **5,844** subtopic × format × difficulty combinations. **4,937** have fewer than 10 bank questions. Ten in each is **58,440** questions; forty, which the stress test asks for at 0%, is **233,760**.
 
 ## Before and after
@@ -29,7 +29,7 @@ Written by `tests/unit/supply-report.test.ts`. It counts the app's own material,
 | Blueprints | 2,214 | 5,490 |
 | Distinct structures | 2,272 | 15,409 |
 | Facts | 6,623 | 6,623 |
-| Bank questions, all layers | 704 | 28,784 |
+| Bank questions, all layers | 704 | 28,891 |
 | Median questions before a structure repeats | 12 | 12 |
 | Median distinct questions per subtopic, capped at 200 | 159 | 200 |
 | Mean variety score | 66.8 | 92.4 |
@@ -40,11 +40,11 @@ Only "Written" is finished questions written by hand as bank questions. "Facts" 
 
 | Subject | Written | Facts | Compiled | Total |
 |---|---:|---:|---:|---:|
-| Physics | 610 | 4,138 | 8,247 | 12,995 |
+| Physics | 713 | 4,138 | 8,247 | 13,098 |
 | Chemistry | 522 | 4,046 | 2,491 | 7,059 |
-| Mathematics | 532 | 2,037 | 2,302 | 4,871 |
+| Mathematics | 536 | 2,037 | 2,302 | 4,875 |
 | Computer Science | 196 | 2,436 | 1,227 | 3,859 |
-| **All** | 1,860 | 12,657 | 14,267 | 28,784 |
+| **All** | 1,967 | 12,657 | 14,267 | 28,891 |
 
 ## Numericals at 0%
 
@@ -53,11 +53,11 @@ Numericals are the format 0% loses most by leaving compiled questions out, as mo
 | Class | Numericals 0% can use | Compiled, for above 0% | Subtopics with fewer than 10 at 0% |
 |---|---:|---:|---:|
 | Physics XI | 22 | 1,672 | 20 of 20 |
-| Physics XII | 45 | 1,405 | 15 of 16 |
+| Physics XII | 148 | 1,405 | 7 of 16 |
 | Chemistry XI | 17 | 493 | 11 of 11 |
 | Chemistry XII | 17 | 423 | 6 of 6 |
-| Mathematics XI | 155 | 962 | 2 of 15 |
-| Mathematics XII | 134 | 710 | 1 of 13 |
+| Mathematics XI | 158 | 962 | 0 of 15 |
+| Mathematics XII | 135 | 710 | 0 of 13 |
 | Computer Science XI | 0 | 57 | 1 of 1 |
 | Computer Science XII | 0 | 16 | 1 of 1 |
 
@@ -73,7 +73,7 @@ For each subtopic, fitting format and fitting difficulty, how many combinations 
 
 | Subject | Combinations | 0%: 10 | 0%: 20 | 0%: 40 | 50%: 10 | 50%: 20 | 50%: 40 | 100%: 10 | 100%: 20 | 100%: 40 |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| Physics | 1,550 | 123 | 64 | 0 | 423 | 348 | 303 | 381 | 331 | 303 |
+| Physics | 1,550 | 123 | 64 | 0 | 424 | 348 | 303 | 381 | 331 | 303 |
 | Chemistry | 1,574 | 116 | 38 | 1 | 244 | 146 | 104 | 213 | 138 | 104 |
 | Mathematics | 895 | 91 | 12 | 0 | 241 | 144 | 122 | 220 | 138 | 120 |
 | Computer Science | 1,031 | 105 | 9 | 0 | 216 | 95 | 76 | 193 | 93 | 76 |
@@ -92,7 +92,7 @@ For each subtopic, fitting format and fitting difficulty, how many combinations 
 | complete | 292 | 16 | 16 |
 | match | 264 | 0 | 0 |
 | distinguish | 262 | 0 | 4 |
-| numerical | 249 | 0 | 206 |
+| numerical | 249 | 0 | 207 |
 | cbq | 237 | 0 | 59 |
 | data | 156 | 0 | 77 |
 | derivation | 116 | 3 | 13 |
@@ -167,22 +167,22 @@ With the same settings and the first paper in the history, what the second share
 | XI 9a Kinetic Theory (most asked) | 0 | 55 | 24 | 269 | 18 | 283 | 10 | 12 | 11 | 200 | 93 |
 | XI 10a Oscillations (most asked) | 0 | 80 | 37 | 335 | 19 | 325 | 11 | 12 | 2 | 200 | 95 |
 | XI 10b Waves (most asked) | 0 | 101 | 49 | 497 | 84 | 577 | 13 | 12 | 11 | 200 | 96 |
-| XII 1a Electric Charges and Fields (most asked) | 0 | 122 | 49 | 552 | 101 | 324 | 15 | 12 | 2 | 200 | 97 |
-| XII 1b Electrostatic Potential, Potential Energy and Capacitance (most asked) | 0 | 143 | 67 | 590 | 95 | 497 | 14 | 12 | 11 | 200 | 97 |
-| XII 2a Conduction, Ohm's law and power (most asked) | 0 | 148 | 75 | 563 | 90 | 941 | 18 | 12 | 11 | 200 | 98 |
-| XII 2b Cells, Kirchhoff's laws and bridges (most asked) | 0 | 104 | 49 | 497 | 86 | 463 | 14 | 13 | 11 | 200 | 97 |
+| XII 1a Electric Charges and Fields (most asked) | 0 | 122 | 49 | 562 | 101 | 324 | 15 | 12 | 2 | 200 | 97 |
+| XII 1b Electrostatic Potential, Potential Energy and Capacitance (most asked) | 0 | 143 | 67 | 602 | 95 | 497 | 14 | 12 | 11 | 200 | 97 |
+| XII 2a Conduction, Ohm's law and power (most asked) | 0 | 148 | 75 | 573 | 90 | 941 | 18 | 12 | 11 | 200 | 98 |
+| XII 2b Cells, Kirchhoff's laws and bridges (most asked) | 0 | 104 | 49 | 507 | 86 | 463 | 14 | 13 | 11 | 200 | 97 |
 | XII 3a Moving charges and magnetism (most asked) | 0 | 212 | 108 | 670 | 104 | 620 | 17 | 12 | 11 | 200 | 97 |
 | XII 3b Magnetism and Matter (most asked) | 0 | 20 | 0 | 145 | 74 | 20 | 0 | 12 | 1 | 68 | 99 |
-| XII 4a Electromagnetic Induction (most asked) | 0 | 75 | 27 | 414 | 82 | 327 | 12 | 12 | 11 | 200 | 97 |
-| XII 4b Alternating Current (most asked) | 0 | 109 | 44 | 571 | 105 | 320 | 12 | 13 | 10 | 200 | 96 |
+| XII 4a Electromagnetic Induction (most asked) | 0 | 75 | 27 | 420 | 82 | 327 | 12 | 12 | 11 | 200 | 97 |
+| XII 4b Alternating Current (most asked) | 0 | 109 | 44 | 584 | 105 | 320 | 12 | 13 | 10 | 200 | 96 |
 | XII 5a Electromagnetic Waves (most asked) | 0 | 25 | 3 | 200 | 84 | 30 | 2 | 12 | 2 | 200 | 96 |
-| XII 6a Ray Optics (most asked) | 0 | 134 | 65 | 603 | 133 | 569 | 17 | 13 | 11 | 200 | 97 |
-| XII 6b Optical instruments (most asked) | 0 | 53 | 16 | 305 | 74 | 185 | 8 | 13 | 7 | 200 | 95 |
-| XII 6c Wave Optics (most asked) | 0 | 79 | 27 | 438 | 89 | 177 | 8 | 12 | 10 | 200 | 97 |
+| XII 6a Ray Optics (most asked) | 0 | 134 | 65 | 616 | 133 | 569 | 17 | 13 | 11 | 200 | 97 |
+| XII 6b Optical instruments (most asked) | 0 | 53 | 16 | 309 | 74 | 185 | 8 | 13 | 7 | 200 | 95 |
+| XII 6c Wave Optics (most asked) | 0 | 79 | 27 | 443 | 89 | 177 | 8 | 12 | 10 | 200 | 97 |
 | XII 6p Paper II: ray optics experiments (most asked) | 0 | 11 | 0 | 81 | 18 | 11 | 0 | 10 | 1 | 18 | 90 |
-| XII 7a Dual Nature of Radiation and Matter (most asked) | 0 | 106 | 41 | 505 | 87 | 268 | 14 | 12 | 6 | 200 | 98 |
-| XII 8a Atoms (most asked) | 0 | 41 | 10 | 205 | 86 | 41 | 10 | 13 | 1 | 138 | 96 |
-| XII 8b Nuclei | 0 | 49 | 13 | 308 | 92 | 53 | 8 | 12 | 4 | 200 | 98 |
+| XII 7a Dual Nature of Radiation and Matter (most asked) | 0 | 106 | 41 | 515 | 87 | 268 | 14 | 12 | 6 | 200 | 98 |
+| XII 8a Atoms (most asked) | 0 | 41 | 10 | 207 | 86 | 41 | 10 | 13 | 1 | 138 | 96 |
+| XII 8b Nuclei | 0 | 49 | 13 | 316 | 92 | 53 | 8 | 12 | 4 | 200 | 98 |
 | XII 9a Semiconductor Electronics | 0 | 28 | 5 | 222 | 78 | 28 | 2 | 12 | 5 | 200 | 97 |
 | XII 9b Semiconductor diode | 0 | 52 | 18 | 364 | 95 | 234 | 10 | 13 | 9 | 200 | 95 |
 
@@ -247,8 +247,8 @@ With the same settings and the first paper in the history, what the second share
 
 | Topic | Asked | Blueprints | Numerical | Bank | Facts | Structures | Contexts | To structure repeat | Smallest gap | Distinct | Variety |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| XI 1a Sets | 0 | 27 | 10 | 189 | 44 | 29 | 12 | 15 | 5 | 200 | 96 |
-| XI 1b Relations & Functions | 0 | 15 | 0 | 111 | 46 | 15 | 0 | 11 | 1 | 200 | 96 |
+| XI 1a Sets | 0 | 27 | 10 | 190 | 44 | 29 | 12 | 15 | 5 | 200 | 96 |
+| XI 1b Relations & Functions | 0 | 15 | 0 | 113 | 46 | 15 | 0 | 11 | 1 | 200 | 96 |
 | XI 1c Trigonometry | 0 | 28 | 11 | 176 | 56 | 28 | 11 | 19 | 1 | 200 | 96 |
 | XI 2a Complex Numbers | 0 | 26 | 11 | 149 | 15 | 26 | 9 | 15 | 5 | 200 | 94 |
 | XI 2b Quadratic Equations | 0 | 23 | 11 | 131 | 17 | 23 | 10 | 16 | 4 | 200 | 91 |
@@ -270,7 +270,7 @@ With the same settings and the first paper in the history, what the second share
 | XII 3b Applications of Derivatives | 0 | 38 | 12 | 248 | 49 | 42 | 16 | 18 | 3 | 200 | 96 |
 | XII 3c Integrals | 0 | 33 | 11 | 186 | 47 | 33 | 3 | 19 | 1 | 200 | 90 |
 | XII 3d Application of Integrals | 0 | 28 | 11 | 137 | 40 | 28 | 10 | 13 | 1 | 128 | 91 |
-| XII 3e Differential Equations | 0 | 29 | 12 | 171 | 45 | 30 | 13 | 18 | 3 | 200 | 96 |
+| XII 3e Differential Equations | 0 | 29 | 12 | 172 | 45 | 30 | 13 | 18 | 3 | 200 | 96 |
 | XII 4a Vector Algebra | 0 | 33 | 10 | 224 | 60 | 33 | 9 | 18 | 4 | 200 | 96 |
 | XII 5a Three-dimensional Geometry | 0 | 29 | 10 | 184 | 47 | 30 | 10 | 16 | 3 | 200 | 95 |
 | XII 6a Linear Programming | 0 | 27 | 11 | 203 | 50 | 29 | 13 | 14 | 10 | 200 | 97 |
@@ -312,4 +312,4 @@ With the same settings and the first paper in the history, what the second share
 | XII 8a Binary trees [Conceptual] | 0 | 21 | 0 | 152 | 56 | 21 | 0 | 13 | 1 | 166 | 95 |
 | XII 9a Complexity and Big O notation | 0 | 17 | 0 | 123 | 51 | 17 | 0 | 12 | 1 | 85 | 95 |
 
-Took 262 s.
+Took 166 s.

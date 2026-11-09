@@ -138,6 +138,9 @@ export const paperHistoryStore = createStore<PaperResult[]>(readJson<PaperResult
 
 papersImported.listeners.add((all) => paperHistoryStore.set(all as PaperResult[]));
 
+/** How much a one-mark numerical counts for in a science or Computer Science paper's mix, beside a share like multiple choice's 10. */
+const ONE_MARK_NUMERICAL = 4;
+
 function shuffled<T>(list: readonly T[], rng: Rng): T[] {
   const out = [...list];
   for (let i = out.length - 1; i > 0; i--) {
@@ -185,7 +188,9 @@ function draw(pool: BankDef[], count: number, weights: Map<number, number>, used
       const format = bankFormatOf(d);
       if (looked.has(format)) continue;
       looked.add(format);
-      const gap = (FORMAT_SHARE[d.subject][format] ?? 1) / ((formatsTaken.get(format) ?? 0) + 1);
+      // The shares are over all marks. A one-mark numerical is a small part of Section A, except in Mathematics, whose section is short calculations.
+      const share = d.marks === 1 && format === 'numerical' && d.subject !== 'mathematics' ? ONE_MARK_NUMERICAL : FORMAT_SHARE[d.subject][format] ?? 1;
+      const gap = share / ((formatsTaken.get(format) ?? 0) + 1);
       if (gap > formatGap) {
         formatGap = gap;
         chosen = d;

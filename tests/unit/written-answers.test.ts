@@ -1,8 +1,9 @@
 // Hand-worked answers, computed a second time. Each line finds a question by its wording, works its answer out here in code, and
 // holds the question's last marking point to that value. Every hand-written Mathematics numerical has to appear below.
 import { describe, expect, it } from 'vitest';
-import { loadBank } from '../../src/practice/bank';
-import type { BankDef } from '../../src/practice/bank/types';
+import { instantiate, loadBank } from '../../src/practice/bank';
+import type { BankDef, NumericItem } from '../../src/practice/bank/types';
+import { seededRng } from '../../src/practice/questions';
 import { bankFormatOf } from '../../src/practice/gen/teacher';
 
 const { PI, E, sqrt, sin, cos, tan, atan, asin, acos, hypot, abs } = Math;
@@ -381,5 +382,141 @@ describe.each([['XII', XII], ['XI', XI]] as const)('Mathematics %s', (level, che
     const { defs } = await loadBank('mathematics', level);
     const unchecked = handWritten(defs).filter((d) => !checks.some(([text]) => 'text' in d && d.text.includes(text)));
     expect(unchecked.map((d) => ('text' in d ? d.text.slice(0, 70) : ''))).toEqual([]);
+  });
+});
+
+// A solver computes whatever a question feeds it, so a question wired to the wrong quantities still gives an answer. These work
+// each one out from the physics, in the unit the question shows, and compare. Every written numerical file has to be covered.
+const k = 8.99e9;
+const eps0 = 8.85e-12;
+const h = 6.63e-34;
+const c = 3e8;
+const q_e = 1.6e-19;
+const PHYSICS_XII: [text: string, ...answers: number[]][] = [
+  ['Two small charged spheres', (k * 3e-6 * 5e-6) / 0.3 ** 2],
+  ['Two equal charges of 2 × 10⁻⁶ C repel', 100 * sqrt((k * 2e-6 ** 2) / 0.9)],
+  ['electric field 20 cm from', (k * 8e-9) / 0.2 ** 2],
+  ['Van de Graaff dome', (3.6e5 * 0.5 ** 2) / k],
+  ['plastic comb', 3.2e-9 / q_e],
+  ['dipole of moment 4 × 10⁻⁹', 4e-9 * 5e4 * sin(30 * deg)],
+  ['dipole of moment 2 × 10⁻⁸', 6e-4 / 2e-8],
+  ['very large flat sheet', 1.77e-6 / (2 * eps0)],
+  ['plates 2 cm apart', 100 / 0.02],
+  ['cell membrane', 0.07 / 8e-9],
+  ['potential 10 cm from', (k * 2e-9) / 0.1],
+  ['How far from a charge of 5 × 10⁻⁹', (100 * k * 5e-9) / 150],
+  ['It takes 6 × 10⁻⁵ J', 6e-5 / 2e-6],
+  ['potential energy of a charge of 4 × 10⁻⁶', 4e-6 * 500],
+  ['potential energy of two charges', (k * 3e-6 * 6e-6) / 0.09],
+  ['plates of area 200 cm²', (eps0 * 200e-4) / 1e-3],
+  ['plates of area 100 cm², 0.5 mm apart', (5 * eps0 * 100e-4) / 0.5e-3],
+  ['camera flash', 0.5 * 200e-6 * 300 ** 2],
+  ['defibrillator must store', sqrt((2 * 200) / 50e-6)],
+  ['Capacitors of 6 μF and 3 μF', 1 / (1 / 6e-6 + 1 / 3e-6)],
+  ['4 μF capacitor at 100 V', 0.5 * ((4e-6 * 2e-6) / 6e-6) * 60 ** 2],
+  ['plates of area 500 cm²', (eps0 * 500e-4) / 2e-3, 0.5 * ((eps0 * 500e-4) / 2e-3) * 60 ** 2, (4 * eps0 * 500e-4) / 2e-3],
+  ['torch bulb', 15 * 0.2],
+  ['copper wire 50 m long', (1.7e-8 * 50) / 2e-6],
+  ['resistance of 4 Ω, a length of 2 m', (4 * 0.5e-6) / 2],
+  ['platinum wire', 10 * (1 + 3.9e-3 * 100)],
+  ['heating coil', (26 / 20 - 1) / 5e-3],
+  ['230 V kettle', 230 * 8],
+  ['60 W lamp', 60 / 230],
+  ['heater runs on 230 V', 230 * 5 * 600],
+  ['copper wire of cross-section 1 mm²', 2 / (8.5e28 * q_e * 1e-6)],
+  ['cross-section 2 mm² carries 3 A', 3 / 2e-6],
+  ['joined to a 2.5 Ω resistor', 1.5 / 3],
+  ['car battery', 12 - 60 * 0.05],
+  ['terminal voltage of 1.6 V', (2 - 1.6) / 0.8],
+  ['if its terminals are shorted', 1.5 / 0.3],
+  ['Six cells', (6 * 1.5) / (2 * 4 + 3 * 0.2)],
+  ['Wheatstone bridge', (20 * 15) / 10],
+  ['meter bridge balances at 40 cm', (30 * 60) / 40],
+  ['potentiometer, a cell of emf 1.5 V', (1.5 * 80) / 60],
+  ['Resistors of 6 Ω and 12 Ω', 1 / (1 / 6 + 1 / 12)],
+  ['battery of emf 9 V', 1 / (1 / 6 + 1 / 3), 9 / (2 + 1), 9 - 3 * 1],
+  ['50 cm metal rod', 0.3 * 0.5 * 4],
+  ['wingspan of an aircraft', 0.4 / (4e-5 * 40)],
+  ['2 H coil', 0.5 * 2 * 3 ** 2],
+  ['0.5 H inductor', sqrt((2 * 4) / 0.5)],
+  ['100 turns and area 200 cm²', 100 * 0.2 * 200e-4 * 50],
+  ['generator coil of 200 turns', 100 / (200 * 0.1 * 0.05)],
+  ['peak voltage of 325 V', 325 / sqrt(2)],
+  ['rms value of 5 A', 5 * sqrt(2)],
+  ['R = 30 Ω, a reactance', hypot(30, 80 - 40)],
+  ['impedance of 13 Ω', sqrt(13 ** 2 - 5 ** 2) + 4],
+  ['L = 10 mH and C = 100 μF', 1 / sqrt(10e-3 * 100e-6)],
+  ['L = 2 mH and C = 500 pF', 1 / (2 * PI * sqrt(2e-3 * 500e-12))],
+  ['must tune to 1 MHz', 1 / ((2 * PI * 1e6) ** 2 * 100e-6)],
+  ['230 V and 5 A, with a phase angle', 230 * 5 * cos(60 * deg)],
+  ['R = 40 Ω and an impedance of 50 Ω', acos(40 / 50) / deg],
+  ['200 primary turns', (230 * 1000) / 200],
+  ['phone charger', (5 * 2) / 230],
+  ['resonates at 1000 rad/s', (1000 * 50e-3) / 10],
+  ['R = 60 Ω, X_L = 100 Ω', hypot(60, 80), acos(60 / 100) / deg, 200 * 2 * (60 / 100)],
+  ['30 cm in front of a concave mirror', 1 / (-1 / 10 + 1 / 30)],
+  ['dentist', 1 / (1 / 30 - 1 / 10)],
+  ['20 cm from a convex lens', 1 / (1 / 15 - 1 / 20)],
+  ['real image 40 cm from it', 1 / (1 / 40 + 1 / 40)],
+  ['radius of curvature of 40 cm', 40 / 2],
+  ['angle of incidence of 45°', asin(sin(45 * deg) / 1.5) / deg],
+  ['from glass of refractive index 1.5 into air', asin(1 / 1.5) / deg],
+  ['optical fibre', asin(1.4 / 1.6) / deg],
+  ['2 × 10⁸ m/s in a certain glass', c / 2e8],
+  ['prism of angle 60° has a minimum deviation of 40°', sin(50 * deg) / sin(30 * deg)],
+  ['thin prism of angle 5°', 0.5 * 5],
+  ['double convex lens', 1 / (0.5 * (1 / 20 + 1 / 30))],
+  ['focal lengths +20 cm and +30 cm', 1 / (1 / 20 + 1 / 30)],
+  ['simple microscope', 1 + 25 / 5],
+  ['objective of focal length 100 cm', 100 / 5],
+  ['focal lengths 80 cm and 4 cm', 80 + 4],
+  ['magnify 30 times', 30 * 2.5],
+  ['slits are 0.2 mm apart', ((600e-9 * 1) / 0.2e-3) * 1000],
+  ['slits are 0.5 mm apart', (1.8e-3 * 0.5e-3) / 1.5],
+  ['Polarised light', 80 * cos(60 * deg) ** 2],
+  ['refractive index 1.33', 600e-9 / 1.33],
+  ['single slit', ((2 * 500e-9 * 2) / 4e-3) * 1000],
+  ['energy of a photon of frequency 6', h * 6e14],
+  ['momentum of a photon', h / 500e-9],
+  ['momentum of 2.21 × 10⁻²⁷', h / 2.21e-27],
+  ['work function of 3.2 × 10⁻¹⁹ J. Find its threshold frequency', 3.2e-19 / h],
+  ['threshold wavelength', (h * c) / 4e-19],
+  ['8 × 10¹⁴ Hz falls', h * 8e14 - 3e-19],
+  ['1.5 × 10¹⁵ Hz falls', (h * 1.5e15 - 4.8e-19) / q_e],
+  ['moves at 2 × 10⁶ m/s. Find its de Broglie', h / (9.1e-31 * 2e6)],
+  ['electron microscope', h / sqrt(2 * 9.1e-31 * 1.6e-16)],
+  ['frequency 7 × 10¹⁴ Hz', h * 7e14, 3.2e-19 / h, (h * 7e14 - 3.2e-19) / q_e],
+  ['level n = 4', (4 * 3) / 2],
+  ['10 spectral lines', 5],
+  ['decay constant of 0.0693 per day', Math.LN2 / 0.0693],
+  ['half-life of 6 hours', Math.LN2 / (6 * 3600)],
+  ['decay constant of 0.02 per second', 1 / 0.02],
+  ['80 g of a nuclide', 80 / 2 ** 3],
+  ['40 mg of a tracer', 8 * Math.log2(40 / 5)],
+  ['10¹⁰ nuclei', 1e10 * E ** -1],
+  ['mass number 64', 1.2 * 64 ** (1 / 3)],
+  ['radius of 3.6 fm', (3.6 / 1.2) ** 3],
+];
+
+const physicsFiles = import.meta.glob<{ default: BankDef[] }>('../../src/practice/bank/written/physics-xii-*-numericals.ts', { eager: true });
+
+describe('Physics XII numericals, worked from the physics', () => {
+  const defs = Object.values(physicsFiles).flatMap((m) => m.default);
+  const textOf = (d: BankDef) => ('text' in d ? d.text : '');
+
+  it.each(PHYSICS_XII)('%s', async (text, ...answers) => {
+    const found = defs.filter((d) => textOf(d).includes(text));
+    expect(found.length, `questions matching “${text}”`).toBe(1);
+    const bank = await loadBank('physics', 'XII');
+    const item = instantiate(found[0], bank, seededRng(1)) as NumericItem;
+    expect(item.parts.length).toBe(answers.length);
+    item.parts.forEach((part, i) => {
+      expect(part.question.answers.length, `${text}: one answer for part ${i + 1}`).toBe(1);
+      expect(abs(part.question.answers[0] / answers[i] - 1), `${text}, part ${i + 1}: ${part.question.answerText} against ${answers[i]}`).toBeLessThan(0.02);
+    });
+  });
+
+  it('has a check for every numerical in those files', () => {
+    expect(defs.filter((d) => !PHYSICS_XII.some(([text]) => textOf(d).includes(text))).map((d) => textOf(d).slice(0, 70))).toEqual([]);
   });
 });
