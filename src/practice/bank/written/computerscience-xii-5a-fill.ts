@@ -20,7 +20,7 @@ const questions: BankDef[] = [
 
   tell(R(2, 1), 'Distinguish between direct and indirect recursion.', 'In direct recursion a method calls itself, as fact calls fact.', 'In indirect recursion a method calls another method, which in turn calls the first, as a calls b and b calls a.'),
   tell(R(2, 1), 'Distinguish between the base case and the recursive case of a recursive method.', 'The base case is the simplest input, answered at once with no further call.', 'The recursive case answers a larger input by calling the method on a smaller one.'),
-  tell(R(2, 2), 'Distinguish between the winding and unwinding phases of a recursion.', 'While winding, each call makes a deeper call, and the frames pile up on the stack until the base case is reached.', 'While unwinding, the calls return one by one in reverse order, each finishing the work after its recursive call.'),
+  tell(R(2, 2), 'Distinguish between the winding and unwinding phases of a recursion.', 'While winding, each call makes a deeper call, and the frames pile up on the call stack until the base case is reached.', 'While unwinding, the calls return one by one in reverse order, each finishing the work after its recursive call.'),
 
   match(R(4, 1), [['fact(0)', '1'], ['gcd(9, 6)', '3'], ['sumDigits(321)', '6'], ['power(3, 2)', '9']]),
   match(R(4, 2), [['return n * f(n - 1);', 'factorial'], ['return f(b, a % b);', 'GCD'], ['return n % 10 + f(n / 10);', 'sum of digits'], ['f(n / 2); System.out.print(n % 2);', 'binary of n']]),
