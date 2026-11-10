@@ -6,6 +6,20 @@ export type CircuitElement =
   | { type: 'meter'; meter: 'A' | 'V' | 'G'; label?: string }
   | { type: 'parallel'; branches: CircuitElement[][] };
 
+/** One mark on a sketch. Coordinates are in the sketch's own units, with y running down. */
+export type SketchMark =
+  /** A run of straight lines, solid or dashed, with an arrowhead at the end if asked for. */
+  | { t: 'line'; p: [number, number][]; dash?: 1; arrow?: 1 }
+  | { t: 'box'; x: number; y: number; w: number; h: number; dash?: 1 }
+  | { t: 'circle'; x: number; y: number; r: number; dash?: 1 }
+  /** A filled dot, as for a labelled point. */
+  | { t: 'dot'; x: number; y: number }
+  /** Any SVG path, for a curve. */
+  | { t: 'path'; d: string; dash?: 1; arrow?: 1 }
+  /** A closed outline, lightly shaded, as for a feasible region or a Venn overlap. */
+  | { t: 'shade'; p: [number, number][] }
+  | { t: 'text'; x: number; y: number; s: string; a?: 'start' | 'middle' | 'end' };
+
 export type DiagramSpec =
   /** A cell with internal resistance, feeding two resistors in parallel. */
   | { kind: 'cell-parallel'; emf: string; r: string; r1: string; r2: string }
@@ -87,5 +101,7 @@ export type DiagramSpec =
   | { kind: 'coil'; turns: string; r: string; I: string }
   /** A table of data, for data-based questions. */
   | { kind: 'table'; head: string[]; rows: string[][]; caption?: string }
+  /** A labelled figure drawn from marks, for anything with no figure of its own: apparatus, a cell, a Venn diagram, a logic circuit. */
+  | { kind: 'sketch'; w: number; h: number; alt: string; marks: SketchMark[] }
   /** A binary tree. Each node gives its label and its children by index. */
   | { kind: 'tree'; nodes: { label: string; left?: number; right?: number }[] };

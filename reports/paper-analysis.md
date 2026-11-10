@@ -91,11 +91,11 @@ All are 3 hours, with 15 minutes of reading time.
 | Chemistry | 70 | 14 × 1 | 10 × 2 | 7 × 3 | 3 × 5 |
 | Mathematics, recent Class XI specimens | 80 | 20 × 1 | 7 × 2 | 7 × 3 | 5 × 5 |
 
-**Mathematics, Class XII past papers** have a different shape: Section A of 65 marks (15 × 1, 5 × 2, 4 × 4, 4 × 6), then a choice of Section B or Section C of 15 marks (5, 2, 4, 4). But the 2028 syllabus gives seven units adding up to 80 marks, with no optional part. That doesn't fit an optional Section B or C, and no 2028 Class XII specimen is in the folder. So the mock paper for Class XII uses the 20, 7, 7, 5 shape of the current Class XI specimen. **This is an inference, and it needs checking against a 2028 specimen when CISCE publishes one.**
+**Mathematics, Class XII past papers** have a different shape: Section A of 65 marks (15 × 1, 5 × 2, 4 × 4, 4 × 6), then a choice of Section B or Section C of 15 marks (5, 2, 4, 4). But the 2027 specimen has the 20, 7, 7, 5 shape. It prints no class, but it's on calculus, vectors, linear programming and probability, so it's the Class XII paper, and it fits the 2028 syllabus's seven units adding up to 80 marks. The mock paper for Class XII uses that shape, so this is no longer the inference it once was. It should still be checked against a 2028 specimen when CISCE publishes one.
 
 **Computer Science** has Part I, compulsory, of 20 marks (10 × 1, 5 × 2). Part II has 50 marks in three sections of three questions each, with any two answered in each: Section A (hardware) 10 marks each, Section B (Java) 10 marks each, Section C (Python and concepts) 5 marks each. Part II questions often split into smaller parts adding up to the total.
 
-**Internal choices.** Real papers give an "OR" in some questions (three per section in Mathematics XI). The mock paper leaves these out and sets one question, keeping the marks the same.
+**Internal choices.** Real papers give an "OR" in some questions, and mock and teacher papers now do too. From the instructions printed on the 2027 specimens: two questions each in Sections B, C and D for Physics and Chemistry, and three each for Mathematics. Computer Science has one in Section A of Part II, on top of its "answer any two". The 2026 board papers varied a little, with Chemistry at one each.
 
 **Class XI and XII.** Not every paper says which class it is for. The latest specimens that do are Physics XII, Chemistry XII, Mathematics XI and XII, and Computer Science XI. The syllabus gives both classes of each of those three subjects the same paper length and marks, so the mock papers use one shape for both classes of Physics, Chemistry and Computer Science. That is an assumption for the class without a labelled specimen.
 

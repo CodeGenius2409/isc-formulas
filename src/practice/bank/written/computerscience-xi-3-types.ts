@@ -1,0 +1,14 @@
+// Written by hand: propositional logic and logic hardware, by question type. Places are at(unit, topic)(marks, difficulty).
+import { at, kit, type BankDef } from '../define';
+
+const { long } = kit('computerscience', 'XI');
+const A = at(3, 'a');
+const B = at(3, 'b');
+
+const questions: BankDef[] = [
+  long(A(10, 2), 'Answer each part.\n(i) Prove by a truth table that ¬(p ∧ q) is equivalent to ¬p ∨ ¬q. [4]\n(ii) For the statement “If the alarm rings, the lights come on”, write the converse, the inverse and the contrapositive. Which of them is logically the same as the statement? [4]\n(iii) Define a tautology, and give one example. [2]', ['(i) All four rows of p and q are listed.', '(i) The column for p ∧ q is correct, and so is its negation.', '(i) The columns for ¬p, ¬q and ¬p ∨ ¬q are correct.', '(i) The two final columns agree on every row, so they are equivalent.', '(ii) Converse: if the lights come on, the alarm rings.', '(ii) Inverse: if the alarm does not ring, the lights do not come on.', '(ii) Contrapositive: if the lights do not come on, the alarm does not ring.', '(ii) The contrapositive is the one that is the same.', '(iii) A statement that is true for every value of its variables.', '(iii) For example, p ∨ ¬p.']),
+  long(A(10, 3), 'Answer each part.\n(i) Show by a truth table whether (p → q) ∧ (q → r) → (p → r) is a tautology, a contradiction or a contingency. [5]\n(ii) Express p → q using only ¬ and ∨, and prove it by truth table. [3]\n(iii) Distinguish between a contradiction and a contingency. [2]', ['(i) All eight rows of p, q and r are listed.', '(i) The columns for p → q and q → r are correct.', '(i) The column for their conjunction is correct.', '(i) The column for p → r is correct.', '(i) The final column is true on every row, so it is a tautology.', '(ii) p → q is equivalent to ¬p ∨ q.', ['(ii) The two columns agree on all four rows.', 2], '(iii) A contradiction is false on every row.', '(iii) A contingency is true on some rows and false on others.']),
+  long(B(10, 2), 'Answer each part.\n(i) Write the truth table of a half adder, and its expressions for Sum and Carry. [4]\n(ii) A full adder adds A, B and a carry C. Write its expressions for Sum and Carry out. [2]\n(iii) Show how two half adders and one OR gate make a full adder. [2]\n(iv) Why is NAND called a universal gate? [2]', ['(i) Sum is 0, 1, 1, 0 for inputs 00, 01, 10, 11.', '(i) Carry is 0, 0, 0, 1 for those inputs.', '(i) Sum = A ⊕ B.', '(i) Carry = A · B.', '(ii) Sum = A ⊕ B ⊕ C.', '(ii) Carry out = A·B + B·C + C·A.', '(iii) The first half adder takes A and B. The second takes its Sum and C, and gives the final Sum.', '(iii) The two Carry outputs go to the OR gate, which gives Carry out.', ['(iv) NOT, AND and OR can each be made from NAND gates alone, so any logic circuit can be.', 2]]),
+];
+
+export default questions;

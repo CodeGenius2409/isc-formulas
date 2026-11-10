@@ -117,4 +117,53 @@ export function bank(subject: SubjectId, level: ClassLevel): Bank {
   };
 }
 
+/** Each kind of written answer, as the bank files write them. A point worth more than a mark is [text, marks]. */
+export function kit(subject: SubjectId, level: ClassLevel) {
+  const b = bank(subject, level);
+  type Point = string | [string, number];
+  /** Points written one after another, or as one list. */
+  type Points = (Point | Point[])[];
+  const isPoint = (x: Point | Point[]): x is Point => typeof x === 'string' || typeof x[1] === 'number';
+  const flat = (points: Points): Point[] => points.flatMap((p) => (isPoint(p) ? [p] : p));
+  const letters = 'abcdefgh';
+  /** An order for Column B that is fixed by the wording, so that a question's id and answer never move. */
+  const mixedUp = (n: number, seed: string): number[] => {
+    const start = parseInt(hash(seed), 36);
+    let order = Array.from({ length: n }, (_, i) => i).sort((x, y) => ((start * (x + 7)) % 1009) - ((start * (y + 7)) % 1009));
+    if (order.every((v, i) => v === i)) order = [...order].reverse();
+    return order;
+  };
+  return {
+    ...b,
+    /** Give a reason. The wording says how. Each point is worth a mark unless it says otherwise. */
+    reason: (place: Place, text: string, ...points: Points) => b.theory('reason', place, text, flat(points)),
+    /** A short answer, a line at one mark. */
+    short: (place: Place, text: string, ...points: Points) => b.theory('short', place, text, flat(points), { format: place[2] === 1 ? 'very-short' : 'short' }),
+    long: (place: Place, text: string, ...points: Points) => b.theory('short', place, text, flat(points), { format: 'long' }),
+    /** Distinguish between two things, or give a test that does. */
+    tell: (place: Place, text: string, ...points: Points) => b.theory('distinguish', place, text, flat(points)),
+    predict: (place: Place, text: string, ...points: Points) => b.theory('short', place, text, flat(points), { format: 'predict', style: 'cbq-style' }),
+    derive: (place: Place, text: string, ...points: Points) => b.theory('derivation', place, text, flat(points)),
+    /** Which is the odd one out, for two marks: which, then why. */
+    odd: (place: Place, items: string[], odd: string, why: string) => {
+      const order = mixedUp(items.length, items.join());
+      return b.theory('short', place, `Which is the odd one out? Give the reason.\n${order.map((i) => items[i]).join(', ')}`, [`The odd one out is ${odd}.`, why], { format: 'odd', style: 'cbq-style' });
+    },
+    /** Match the columns, a mark for each pair. */
+    match: (place: Place, pairs: [string, string][]) => {
+      const order = mixedUp(pairs.length, pairs.map((p) => p[0]).join());
+      const a = pairs.map(([x], i) => `(${i + 1}) ${x}`).join('\n');
+      const c = order.map((j, i) => `(${letters[i]}) ${pairs[j][1]}`).join('\n');
+      return b.theory('short', place, `Match each item in Column A with the one it goes with in Column B.\nColumn A\n${a}\nColumn B\n${c}`, pairs.map(([x, y], i) => `(${i + 1}) ${x} goes with (${letters[order.indexOf(i)]}), ${y}.`), { format: 'match' });
+    },
+    /** A figure to draw, to label or to read. `shown` is printed with the question, `answer` after marking and in the answer key. */
+    figure: (place: Place, text: string, points: Point[], figures: { shown?: DiagramSpec; answer?: DiagramSpec }) => b.theory('short', place, text, points, { format: 'diagram', ...(figures.shown ? { diagram: figures.shown } : {}), ...(figures.answer ? { answerDiagram: figures.answer } : {}) }),
+    /** Write a program, with a worked one to compare against. */
+    program: (place: Place, text: string, points: Point[], model: string, python?: 1) => b.theory('program', place, text, points, { model, ...(python ? { python } : {}) }),
+  };
+}
+
+/** A place in a chapter: `at(3, 'a')(2, 1)` is unit 3, topic a, 2 marks, easy. */
+export const at = (unit: number, topic: string) => (marks: number, difficulty: Difficulty): Place => [unit, topic, marks, difficulty];
+
 export type { BankDef };

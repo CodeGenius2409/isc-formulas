@@ -7,12 +7,13 @@ import { readJson, writeJson } from '../../lib/storage';
 import { noteMissedSteps, papersImported, recordAnswer, studentFreshness } from '../progress';
 import { seededRng, type Rng } from '../questions';
 import { loadBlueprints, type LoadedBlueprints } from '../../data/blueprints';
-import { bankFormatOf, CBQ_SHARE, defKeys, distinctCount, FORMAT_SHARE, generatedCount, historyKeys, mixedBankOrder, pickGenerated, planShare, type Freshness, type SlotCount } from '../gen/mix';
+import { distinctCount, historyKeys, planShare, type Freshness, type SlotCount } from '../gen/mix';
 import { ensureFactHistory, factGapStore, noteFactsShown } from '../fact-history';
 import { isCompiled } from './define';
-import { bankQuestion, loadBank, type LoadedBank } from './index';
+import { classTargets, composeSlot, createComposer, sectionTarget } from './compose';
+import { loadBank, type LoadedBank } from './index';
 import { answerSummary, isAttempted, isPassing, qualityOf, scoreOf, yourAnswerSummary } from './mark';
-import type { BankAnswer, BankDef, BankItem, BankQuestion } from './types';
+import type { BankAnswer, BankItem, BankQuestion, QuestionFormat } from './types';
 
 const CURRENT_KEY = 'isc-paper-current';
 const HISTORY_KEY = 'isc-paper-history';
@@ -32,6 +33,8 @@ export interface SectionSpec {
   units?: number[];
   /** Answer any this many. The best scores count, as a real examiner would mark them. */
   choose?: number;
+  /** How many of its questions have an "OR" alternative, as the real paper gives. */
+  or?: number;
 }
 
 export interface PaperSpec {
@@ -39,21 +42,22 @@ export interface PaperSpec {
   sections: SectionSpec[];
 }
 
+const orNote = (or: number) => (or === 1 ? ' One has an internal choice.' : ` ${or === 2 ? 'Two' : 'Three'} have an internal choice.`);
 const science = (b: number, c: number): SectionSpec[] => [
   { name: 'Section A', note: 'Fourteen one-mark parts: multiple choice, assertion and reason, and very short answers.', slots: [{ marks: 1, count: 14 }] },
-  { name: 'Section B', note: `${b} questions of two marks each.`, slots: [{ marks: 2, count: b }] },
-  { name: 'Section C', note: `${c} questions of three marks each.`, slots: [{ marks: 3, count: c }] },
-  { name: 'Section D', note: 'Three questions of five marks each.', slots: [{ marks: 5, count: 3 }] },
+  { name: 'Section B', note: `${b} questions of two marks each.${orNote(2)}`, slots: [{ marks: 2, count: b }], or: 2 },
+  { name: 'Section C', note: `${c} questions of three marks each.${orNote(2)}`, slots: [{ marks: 3, count: c }], or: 2 },
+  { name: 'Section D', note: `Three questions of five marks each.${orNote(2)}`, slots: [{ marks: 5, count: 3 }], or: 2 },
 ];
 const mathematics: SectionSpec[] = [
   { name: 'Section A', note: 'Twenty very short answer questions of one mark each.', slots: [{ marks: 1, count: 20 }] },
-  { name: 'Section B', note: 'Seven short answer questions of two marks each.', slots: [{ marks: 2, count: 7 }] },
-  { name: 'Section C', note: 'Seven questions of three marks each.', slots: [{ marks: 3, count: 7 }] },
-  { name: 'Section D', note: 'Five long answer questions of five marks each.', slots: [{ marks: 5, count: 5 }] },
+  { name: 'Section B', note: `Seven short answer questions of two marks each.${orNote(3)}`, slots: [{ marks: 2, count: 7 }], or: 3 },
+  { name: 'Section C', note: `Seven questions of three marks each.${orNote(3)}`, slots: [{ marks: 3, count: 7 }], or: 3 },
+  { name: 'Section D', note: `Five long answer questions of five marks each.${orNote(3)}`, slots: [{ marks: 5, count: 5 }], or: 3 },
 ];
 const computerScience = (a: number[], b: number[], c: number[]): SectionSpec[] => [
   { name: 'Part I', note: 'Compulsory. Ten one-mark parts, then five of two marks.', slots: [{ marks: 1, count: 10 }, { marks: 2, count: 5 }] },
-  { name: 'Part II, Section A', note: 'Answer any two.', slots: [{ marks: 10, count: 3 }], units: a, choose: 2 },
+  { name: 'Part II, Section A', note: `Answer any two.${orNote(1)}`, slots: [{ marks: 10, count: 3 }], units: a, choose: 2, or: 1 },
   { name: 'Part II, Section B', note: 'Answer any two.', slots: [{ marks: 10, count: 3 }], units: b, choose: 2 },
   { name: 'Part II, Section C', note: 'Answer any two.', slots: [{ marks: 5, count: 3 }], units: c, choose: 2 },
 ];
@@ -80,6 +84,8 @@ export interface PaperSection {
   note: string;
   choose?: number;
   questions: BankQuestion[];
+  /** The "OR" alternatives, by the id of the question each stands beside. */
+  alternatives?: Record<string, BankQuestion>;
 }
 
 export interface Paper {
@@ -90,6 +96,8 @@ export interface Paper {
   endsAt: number;
   sections: PaperSection[];
   answers: Record<string, BankAnswer>;
+  /** Where the alternative was answered instead, by the id of the question it stands beside. */
+  orChosen?: Record<string, true>;
   /** Set when time is up or the paper is handed in. Marking follows. */
   submittedAt?: number;
   /** True for a paper that ran out of time rather than being handed in. */
@@ -138,85 +146,13 @@ export const paperHistoryStore = createStore<PaperResult[]>(readJson<PaperResult
 
 papersImported.listeners.add((all) => paperHistoryStore.set(all as PaperResult[]));
 
-/** How much a one-mark numerical counts for in a science or Computer Science paper's mix, beside a share like multiple choice's 10. */
-const ONE_MARK_NUMERICAL = 4;
+/** Section A of these subjects keeps each kind together: Chemistry its fill-ins, choices and assertions, Mathematics its choices and then its short answers. */
+const GROUPED: Partial<Record<SubjectId, QuestionFormat[]>> = {
+  chemistry: ['complete', 'mcq', 'assertion', 'numerical', 'reason', 'very-short'],
+  mathematics: ['mcq', 'assertion', 'very-short'],
+};
 
-function shuffled<T>(list: readonly T[], rng: Rng): T[] {
-  const out = [...list];
-  for (let i = out.length - 1; i > 0; i--) {
-    const j = Math.floor(rng() * (i + 1));
-    [out[i], out[j]] = [out[j], out[i]];
-  }
-  return out;
-}
-
-/**
- * Draws questions in proportion to the syllabus's marks for each unit, from a shuffled pool: the unit
- * furthest behind its share goes next. This keeps a paper's balance close to the real one.
- */
-function draw(pool: BankDef[], count: number, weights: Map<number, number>, used: Set<string>, rng: Rng, shapes: Set<string> = new Set()): BankDef[] {
-  // A big pool would otherwise swamp a paper with whatever there's most of, so it's put in the papers' proportions first.
-  const left = mixedBankOrder(pool.filter((d) => !used.has(d.id)).map((def) => ({ def })), rng).map((x) => x.def);
-  if (left.length < count) throw new Error(`The bank has too few ${pool[0]?.marks}-mark questions for this paper.`);
-  const out: BankDef[] = [];
-  const given = new Map<number, number>();
-  const topicsTaken = new Set<string>();
-  const factsTaken = new Set<string>();
-  const formatsTaken = new Map<string, number>();
-  while (out.length < count && left.length) {
-    const units = [...new Set(left.map((d) => d.unit))];
-    let best = units[0];
-    let bestGap = -Infinity;
-    for (const unit of units) {
-      const gap = (weights.get(unit) ?? 1) / ((given.get(unit) ?? 0) + 1);
-      if (gap > bestGap) {
-        bestGap = gap;
-        best = unit;
-      }
-    }
-    // A different topic in the unit if there is one, so a paper doesn't ask the same thing twice.
-    const inUnit = left.filter((d) => d.unit === best);
-    const open = inUnit.filter((d) => !d.shape || !shapes.has(`${d.shape}|${d.context ?? ''}`));
-    const choices = open.length ? open : inUnit;
-    const newTopic = choices.filter((d) => !topicsTaken.has(`${d.unit}${d.topic}`));
-    // Picking by unit would lose the papers' mix of formats, so the format furthest behind its share goes next.
-    const within = newTopic.length ? newTopic : choices;
-    let chosen = within[0];
-    let formatGap = -Infinity;
-    const looked = new Set<string>();
-    for (const d of within) {
-      const format = bankFormatOf(d);
-      if (looked.has(format)) continue;
-      looked.add(format);
-      // The shares are over all marks. A one-mark numerical is a small part of Section A, except in Mathematics, whose section is short calculations.
-      const share = d.marks === 1 && format === 'numerical' && d.subject !== 'mathematics' ? ONE_MARK_NUMERICAL : FORMAT_SHARE[d.subject][format] ?? 1;
-      const gap = share / ((formatsTaken.get(format) ?? 0) + 1);
-      if (gap > formatGap) {
-        formatGap = gap;
-        chosen = d;
-      }
-    }
-    formatsTaken.set(bankFormatOf(chosen), (formatsTaken.get(bankFormatOf(chosen)) ?? 0) + 1);
-    if (chosen.shape) shapes.add(`${chosen.shape}|${chosen.context ?? ''}`);
-    left.splice(left.indexOf(chosen), 1);
-    // Several questions can ask one fact, in different formats, and a paper only asks it once.
-    if (chosen.facts?.length) {
-      for (const x of chosen.facts) factsTaken.add(x);
-      for (let i = left.length - 1; i >= 0; i--) if (left[i].facts?.some((x) => factsTaken.has(x))) left.splice(i, 1);
-    }
-    used.add(chosen.id);
-    topicsTaken.add(`${chosen.unit}${chosen.topic}`);
-    given.set(chosen.unit, (given.get(chosen.unit) ?? 0) + 1);
-    out.push(chosen);
-  }
-  return out;
-}
-
-export async function unitWeightsForTest(subject: SubjectId, level: ClassLevel): Promise<Map<number, number>> {
-  return unitWeights(subject, level);
-}
-
-async function unitWeights(subject: SubjectId, level: ClassLevel): Promise<Map<number, number>> {
+export async function unitWeights(subject: SubjectId, level: ClassLevel): Promise<Map<number, number>> {
   const syllabus = await loadSyllabus(subject);
   const groups = syllabus.classes.find((c) => c.level === level)?.markGroups ?? [];
   const weights = new Map<number, number>();
@@ -224,18 +160,17 @@ async function unitWeights(subject: SubjectId, level: ClassLevel): Promise<Map<n
   return weights;
 }
 
-/**
- * The share of each mark value that is a derivation or proof, from the board and specimen papers in the analysis.
- * Computer Science has none. See reports/derivations.md.
- */
+function derivationShare(subject: SubjectId): Record<number, number> {
+  return Object.fromEntries(classTargets(subject, 'XII').flatMap((t) => (t.mix.derivation ? [[t.marks, t.mix.derivation]] : [])));
+}
+
+/** The share of each mark value that is a derivation or proof, in the recent papers. Computer Science has none. See reports/derivations.md. */
 export const DERIVATION_SHARE: Record<SubjectId, Record<number, number>> = {
-  physics: { 2: 0.03, 3: 0.58, 5: 0.33 },
-  chemistry: { 2: 0.04, 3: 0.04 },
-  mathematics: { 2: 0.08, 3: 0.08, 4: 0.3, 5: 0.18, 6: 0.09 },
+  physics: derivationShare('physics'),
+  chemistry: derivationShare('chemistry'),
+  mathematics: derivationShare('mathematics'),
   computerscience: {},
 };
-
-const isDerivationType = (type: string) => type === 'derivation' || type === 'proof';
 
 export interface GeneratedOption {
   set: LoadedBlueprints;
@@ -277,86 +212,40 @@ export function paperSlots(subject: SubjectId, level: ClassLevel, bank: LoadedBa
 /** Builds a paper. Pure apart from reading the bank, so that a test can check its structure. */
 export function assemblePaper(subject: SubjectId, level: ClassLevel, bank: LoadedBank, weights: Map<number, number>, rng: Rng, now: number, generated?: GeneratedOption): Paper {
   const spec = paperSpec(subject, level);
-  const used = new Set<string>();
-  const usedBlueprints = new Set<string>();
-  const seenText = new Set<string>();
-  const seenFacts = new Set<string>();
-  const usedShapes = new Set<string>();
-  const seenStructures = new Set<string>();
-  const share = generated ? planShare(paperSlots(subject, level, bank), generated.share).share : 0;
-  const fresh = generated?.fresh;
-  let unreviewedFill = 0;
-  const sections = spec.sections.map((section) => {
+  const plan = generated ? planShare(paperSlots(subject, level, bank), generated.share) : null;
+  const share = plan?.share ?? 0;
+  const composer = createComposer({ subject, level, set: generated?.set, weights, share, rng, fresh: generated?.fresh, reviewedOnly: generated?.reviewedOnly, madeTarget: plan?.generated ?? 0, places: spec.sections.reduce((sum, s) => sum + s.slots.reduce((n, slot) => n + slot.count, 0), 0) });
+  // The sections of longest questions fill first: they have the fewest generated questions, so a shortfall there can still be made
+  // up in Section A, and the paper ends on the slider. They go back in their own order after. At 0% and 100% there's nothing to make up.
+  const order = spec.sections.map((s, i) => ({ i, marks: Math.max(...s.slots.map((slot) => slot.marks)) })).sort((a, b) => (share > 0 && share < 100 ? b.marks - a.marks : 0) || a.i - b.i);
+  const built = order.map(({ i }) => {
+    const section = spec.sections[i];
+    const alternatives: Record<string, BankQuestion> = {};
+    let orLeft = section.or ?? 0;
     const questions = section.slots.flatMap((slot) => {
       const inSection = (unit: number) => !section.units || section.units.includes(unit);
-      const notAsked = (d: BankDef) => !(d.facts ?? []).some((f) => seenFacts.has(f));
-      const openDefs = (wantDerivation: boolean | null) => bank.defs.filter((d) => d.marks === slot.marks && inSection(d.unit) && !used.has(d.id) && notAsked(d) && (wantDerivation === null || isDerivationType(d.type) === wantDerivation));
-      // The slider's two sides. At 0%, nothing from the generated side is used, whatever else runs short.
-      const bankFor = (wantDerivation: boolean | null) => openDefs(wantDerivation).filter((d) => !isCompiled(d));
-      const compiledFor = (wantDerivation: boolean | null) => (share > 0 ? openDefs(wantDerivation).filter(isCompiled) : []);
-      const anyBlueprintFor = (wantDerivation: boolean | null) => (generated?.set.blueprints ?? []).filter((b) => b.marks === slot.marks && inSection(b.unit) && (wantDerivation === null || isDerivationType(b.type) === wantDerivation));
-      const blueprintsFor = (wantDerivation: boolean | null) => anyBlueprintFor(wantDerivation).filter((b) => !generated?.reviewedOnly || b.reviewed === true);
-      const pickMade = (pool: ReturnType<typeof blueprintsFor>, count: number, cbqShare = 0) => (generated && share > 0 && count > 0 ? pickGenerated(generated.set, pool, { count, weights, rng, used: usedBlueprints, seenText, seenFacts, seenStructures, cbqShare, fresh, freshOnly: true }) : []);
-      const takeBank = (all: BankDef[], count: number) => {
-        const pool = fresh ? all.filter((d) => !fresh.resting(defKeys(d))) : all;
-        const defs = count > 0 && pool.length ? draw(pool, Math.min(count, pool.length), weights, used, rng, usedShapes) : [];
-        for (const d of defs) for (const f of d.facts ?? []) seenFacts.add(f);
-        return defs;
-      };
-      // When the unseen ones have run out, the ones seen longest ago come back, bank or generated, as the slider leans.
-      const takeOldBank = (all: BankDef[], count: number) => {
-        if (!fresh || count <= 0) return [];
-        const defs = [...all].sort((a, b) => fresh.lastSeen(defKeys(a)) - fresh.lastSeen(defKeys(b))).slice(0, count);
-        for (const d of defs) {
-          used.add(d.id);
-          for (const f of d.facts ?? []) seenFacts.add(f);
-        }
-        return defs;
-      };
-      const pickOld = (pool: ReturnType<typeof blueprintsFor>, count: number) => (generated && share > 0 && fresh && count > 0 ? pickGenerated(generated.set, pool, { count, weights, rng, used: usedBlueprints, seenText, seenFacts, fresh }) : []);
-      // Derivations first, in the share the real papers give them, from the bank or generated as the slider says.
-      const wantDerivations = Math.round(slot.count * (DERIVATION_SHARE[subject][slot.marks] ?? 0));
-      const genDerivations = pickMade(blueprintsFor(true), generatedCount(wantDerivations, share));
-      const bankDerivations = takeBank(bankFor(true), wantDerivations - genDerivations.length);
-      const lateDerivations = pickMade(blueprintsFor(true), wantDerivations - genDerivations.length - bankDerivations.length);
-      const oldBankDerivations = takeOldBank(bankFor(true), wantDerivations - genDerivations.length - bankDerivations.length - lateDerivations.length);
-      const oldDerivations = pickOld(blueprintsFor(true), wantDerivations - genDerivations.length - bankDerivations.length - lateDerivations.length - oldBankDerivations.length);
-      const derivationCount = genDerivations.length + bankDerivations.length + lateDerivations.length + oldBankDerivations.length + oldDerivations.length;
-      // Then everything else.
-      const others = slot.count - derivationCount;
-      const wantMade = generatedCount(others, share);
-      const made = pickMade(blueprintsFor(false), wantMade, CBQ_SHARE);
-      // A compiled question is a frozen copy of what a blueprint gives, so it makes up what the blueprints couldn't.
-      const madeCompiled = takeBank(compiledFor(false), wantMade - made.length);
-      // Worked out after the generated ones, which may have used facts that bank questions also ask.
-      const defs = takeBank(bankFor(false), others - made.length - madeCompiled.length);
-      // A paper isn't handed out short: if one side runs out, the other fills the rest, except that 0% stays 0%.
-      let left = others - made.length - madeCompiled.length - defs.length;
-      const moreBank = takeBank(bankFor(null), left);
-      left -= moreBank.length;
-      // At 0% the bank's older questions come before anything generated.
-      const oldFirst = share === 0 ? takeOldBank(bankFor(null), left) : [];
-      left -= oldFirst.length;
-      const fill = pickMade(blueprintsFor(null), left);
-      left -= fill.length;
-      const fillCompiled = takeBank(compiledFor(null), left);
-      left -= fillCompiled.length;
-      const oldMade = pickOld(blueprintsFor(null), left);
-      left -= oldMade.length;
-      const oldLast = takeOldBank(bankFor(null), left);
-      left -= oldLast.length;
-      const oldCompiled = takeOldBank(compiledFor(null), left);
-      left -= oldCompiled.length;
-      // Only when nothing reviewed is left does an unreviewed one fill a gap, and the paper says so.
-      const unreviewed = generated?.reviewedOnly && share > 0 && left > 0 ? pickGenerated(generated.set, anyBlueprintFor(null), { count: left, weights, rng, used: usedBlueprints, seenText, seenFacts, fresh }) : [];
-      left -= unreviewed.length;
-      unreviewedFill += unreviewed.length;
-      if (left > 0) throw new Error(share > 0 ? `There are too few ${slot.marks}-mark questions for this paper.` : `There aren’t enough hand-written and fact-based ${slot.marks}-mark questions for this paper. Raise the slider to use generated questions.`);
-      return shuffled([...[...bankDerivations, ...oldBankDerivations, ...madeCompiled, ...defs, ...moreBank, ...oldFirst, ...fillCompiled, ...oldLast, ...oldCompiled].map((d) => bankQuestion(d, bank, rng)), ...genDerivations, ...lateDerivations, ...oldDerivations, ...made, ...fill, ...oldMade, ...unreviewed], rng);
+      const target = sectionTarget(subject, level, section.name, slot.marks);
+      const result = composeSlot(composer, {
+        defs: bank.defs.filter((d) => inSection(d.unit)),
+        blueprints: (generated?.set.blueprints ?? []).filter((b) => inSection(b.unit)),
+        bank,
+        marks: slot.marks,
+        count: slot.count,
+        mix: target?.mix,
+        figure: target?.figure,
+        cbq: target?.cbq,
+        or: orLeft,
+        grouped: slot.marks === 1 ? GROUPED[subject] : undefined,
+      });
+      if (result.short > 0) throw new Error(share > 0 ? `There are too few ${slot.marks}-mark questions for this paper.` : `There aren’t enough hand-written and fact-based ${slot.marks}-mark questions for this paper. Raise the slider to use generated questions.`);
+      Object.assign(alternatives, result.alternatives);
+      orLeft -= Object.keys(result.alternatives).length;
+      return result.questions;
     });
-    return { name: section.name, note: section.note, choose: section.choose, questions };
+    return { i, section: { name: section.name, note: section.note, choose: section.choose, questions, ...(Object.keys(alternatives).length ? { alternatives } : {}) } };
   });
-  return { subject, level, total: spec.total, startedAt: now, endsAt: now + PAPER_MINUTES * 60_000, sections, answers: {}, generatedShare: generated ? share : 0, ...(generated?.reviewedOnly ? { reviewedOnly: true, reviewNote: reviewNoteFor(unreviewedFill) } : {}) };
+  const sections = built.sort((a, b) => a.i - b.i).map((b) => b.section);
+  return { subject, level, total: spec.total, startedAt: now, endsAt: now + PAPER_MINUTES * 60_000, sections, answers: {}, generatedShare: generated ? share : 0, ...(generated?.reviewedOnly ? { reviewedOnly: true, reviewNote: reviewNoteFor(composer.unreviewedFill) } : {}) };
 }
 
 export async function startPaper(subject: SubjectId, level: ClassLevel, options: { share?: number; seed?: number; diagrams?: boolean; reviewedOnly?: boolean } = {}): Promise<Paper> {
@@ -366,7 +255,7 @@ export async function startPaper(subject: SubjectId, level: ClassLevel, options:
   // A paper opened from a link has to come out the same, so history has no say in it.
   const fresh = options.seed === undefined ? studentFreshness() : undefined;
   const built = assemblePaper(subject, level, bank, weights, seededRng(seed), Date.now(), { set, share, fresh, reviewedOnly: options.reviewedOnly });
-  const shown = built.sections.flatMap((s) => s.questions.map(historyKeys));
+  const shown = built.sections.flatMap((s) => [...s.questions, ...Object.values(s.alternatives ?? {})].map(historyKeys));
   const repeats = fresh ? shown.filter((keys) => fresh.resting(keys)).length : 0;
   const paper = { ...built, seed, diagrams: options.diagrams ?? true, repeatNote: repeatNoteFor(repeats, factGapStore.get()) };
   noteFactsShown(shown.flat());
@@ -374,8 +263,25 @@ export async function startPaper(subject: SubjectId, level: ClassLevel, options:
   return paper;
 }
 
+/** The same, under the name the tests know it by. */
+export const unitWeightsForTest = unitWeights;
+
 export function answerPaper(id: string, change: Partial<BankAnswer>): void {
   paperStore.set((p) => (p ? { ...p, answers: { ...p.answers, [id]: { ...p.answers[id], ...change } } } : p));
+}
+
+/** Answers the "OR" alternative instead of the question it stands beside, or goes back. */
+export function chooseAlternative(id: string, chosen: boolean): void {
+  paperStore.set((p) => {
+    if (!p) return p;
+    const { [id]: _gone, ...others } = p.orChosen ?? {};
+    return { ...p, orChosen: chosen ? { ...others, [id]: true } : others };
+  });
+}
+
+/** The questions being answered: each with its alternative if that was chosen instead. */
+export function activeQuestions(section: PaperSection, chosen: Paper['orChosen']): BankQuestion[] {
+  return section.questions.map((q) => (chosen?.[q.item.id] && section.alternatives?.[q.item.id]) || q);
 }
 
 export function submitPaper(timedOut = false): void {
@@ -387,8 +293,8 @@ export function abandonPaper(): void {
 }
 
 /** The questions that count: all of them, or in an "any two" section, the best scoring. */
-export function countedQuestions(section: PaperSection, answers: Record<string, BankAnswer>): BankItem[] {
-  const items = section.questions.map((q) => q.item);
+export function countedQuestions(section: PaperSection, answers: Record<string, BankAnswer>, chosen?: Paper['orChosen']): BankItem[] {
+  const items = activeQuestions(section, chosen).map((q) => q.item);
   if (!section.choose) return items;
   return [...items].sort((a, b) => scoreOf(b, answers[b.id]) - scoreOf(a, answers[a.id])).slice(0, section.choose);
 }
@@ -398,7 +304,7 @@ export function paperResult(paper: Paper): PaperResult {
   const sections = paper.sections.map((section) => {
     let got = 0;
     let outOf = 0;
-    for (const item of countedQuestions(section, paper.answers)) {
+    for (const item of countedQuestions(section, paper.answers, paper.orChosen)) {
       const score = scoreOf(item, paper.answers[item.id]);
       got += score;
       outOf += item.marks;
@@ -431,8 +337,8 @@ export function finishMarking(): PaperResult | null {
   if (!paper) return null;
   const result = paperResult(paper);
   for (const section of paper.sections) {
-    const counted = new Set(countedQuestions(section, paper.answers).map((i) => i.id));
-    for (const question of section.questions) {
+    const counted = new Set(countedQuestions(section, paper.answers, paper.orChosen).map((i) => i.id));
+    for (const question of activeQuestions(section, paper.orChosen)) {
       const { item } = question;
       const answer = paper.answers[item.id];
       // In an "any two" section, a question left alone isn't a mistake. Choosing not to answer is allowed.

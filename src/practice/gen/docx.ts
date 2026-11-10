@@ -6,7 +6,7 @@ import { markFigures, withFigureNote } from './figures';
 import { loadStructures } from '../../data/structures';
 import { isMarkedGenerated } from '../bank/define';
 import type { BankItem } from '../bank/types';
-import { allItems, answerSpace, type PaperItem, type TeacherPaper } from './teacher';
+import { answerSpace, type PaperItem, type TeacherPaper, printedItems } from './teacher';
 
 /** LaTeX as text a person can read and edit in Word. */
 export function plainMaths(text: string): string {
@@ -177,8 +177,8 @@ export async function buildDocx(paper: TeacherPaper, kind: DocKind): Promise<Blo
   if (kind === 'paper') {
     for (const line of header.instructions.split('\n').filter(Boolean)) body.push(new Paragraph({ bullet: { level: 0 }, children: [run(line)] }));
   }
-  const anyGenerated = allItems(paper).some((i) => isMarkedGenerated(i.question.item));
-  const figureMarks = markFigures(allItems(paper).map((i) => i.question.item), paper.options.diagrams);
+  const anyGenerated = printedItems(paper).some((i) => isMarkedGenerated(i.question.item));
+  const figureMarks = markFigures(printedItems(paper).map((i) => i.question.item), paper.options.diagrams);
   const picture = (png: Png, title: string) =>
     new Paragraph({ keepNext: true, children: [new ImageRun({ type: 'png', data: png.data, transformation: { width: png.width, height: png.height }, altText: { name: title, title, description: png.alt ?? title } })] });
   let number = 0;
@@ -188,6 +188,10 @@ export async function buildDocx(paper: TeacherPaper, kind: DocKind): Promise<Blo
     for (const item of section.items) {
       number++;
       await addQuestion(item, number);
+      if (item.or) {
+        body.push(new Paragraph({ alignment: AlignmentType.CENTER, spacing: { before: 120 }, children: [run('OR', { bold: true })] }));
+        await addQuestion(item.or, number);
+      }
     }
   }
 

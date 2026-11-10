@@ -284,6 +284,44 @@ function GraphFigure({ spec }: { spec: Extract<DiagramSpec, { kind: 'graph' }> }
 
 // ---- Binary trees
 
+/** A figure drawn from a list of marks, in the theme's ink like the others. */
+function SketchFigure({ spec }: { spec: Extract<DiagramSpec, { kind: 'sketch' }> }) {
+  const points = (p: [number, number][]) => p.map(([x, y]) => `${x},${y}`).join(' ');
+  const head = (from: [number, number], to: [number, number]) => <Arrow x1={from[0]} y1={from[1]} x2={to[0]} y2={to[1]} />;
+  return (
+    <svg viewBox={`0 0 ${spec.w} ${spec.h}`} width={spec.w} height={spec.h} className="bank-svg" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" role="img" aria-label={spec.alt} data-testid="sketch-figure">
+      {spec.marks.map((m, i) => {
+        const dash = 'dash' in m && m.dash ? '5 4' : undefined;
+        switch (m.t) {
+          case 'line':
+            return m.arrow ? head(m.p[m.p.length - 2], m.p[m.p.length - 1]) && (
+              <g key={i}>
+                <polyline points={points(m.p.slice(0, -1).concat([m.p[m.p.length - 1]]))} strokeDasharray={dash} />
+                {head(m.p[m.p.length - 2], m.p[m.p.length - 1])}
+              </g>
+            ) : <polyline key={i} points={points(m.p)} strokeDasharray={dash} />;
+          case 'box':
+            return <rect key={i} x={m.x} y={m.y} width={m.w} height={m.h} strokeDasharray={dash} />;
+          case 'circle':
+            return <circle key={i} cx={m.x} cy={m.y} r={m.r} strokeDasharray={dash} />;
+          case 'dot':
+            return <circle key={i} cx={m.x} cy={m.y} r={2.5} fill="currentColor" />;
+          case 'path':
+            return <path key={i} d={m.d} strokeDasharray={dash} />;
+          case 'shade':
+            return <polygon key={i} points={points(m.p)} fill="currentColor" fillOpacity={0.12} stroke="none" />;
+          case 'text':
+            return (
+              <Label key={i} x={m.x} y={m.y} anchor={m.a ?? 'middle'}>
+                {m.s}
+              </Label>
+            );
+        }
+      })}
+    </svg>
+  );
+}
+
 function TreeFigure({ spec }: { spec: Extract<DiagramSpec, { kind: 'tree' }> }) {
   const place: { x: number; y: number }[] = [];
   let next = 0;
@@ -414,6 +452,8 @@ export function describe(spec: DiagramSpec): string {
       return `A parallel plate capacitor with plates of area ${spec.A}, ${spec.d} apart${spec.V ? `, across a supply of ${spec.V}` : ''}${spec.dielectric ? `, filled with a dielectric of ${spec.dielectric}` : ''}.`;
     case 'table':
       return `A table with columns ${spec.head.join(', ')}. ${spec.rows.map((r) => r.join(', ')).join('. ')}.`;
+    case 'sketch':
+      return spec.alt;
     case 'tree':
       return `A binary tree with root ${spec.nodes[0].label}. ${spec.nodes.map((n) => `${n.label} has ${n.left === undefined ? 'no left child' : `left child ${spec.nodes[n.left].label}`} and ${n.right === undefined ? 'no right child' : `right child ${spec.nodes[n.right].label}`}`).join('. ')}.`;
   }
@@ -466,6 +506,8 @@ function Figure({ spec }: { spec: DiagramSpec }) {
       return <LensFigure spec={spec} />;
     case 'graph':
       return <GraphFigure spec={spec} />;
+    case 'sketch':
+      return <SketchFigure spec={spec} />;
     case 'tree':
       return <TreeFigure spec={spec} />;
     case 'table':

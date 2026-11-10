@@ -1,4 +1,4 @@
-import { memo, useEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, memo, useEffect, useMemo, useRef, useState } from 'react';
 import { Wand2 } from 'lucide-react';
 import { BankInputs, BankPrompt, BankReview, marksLabel } from '../components/bank/BankParts';
 import { GeneratedMark, PaperLegend, ReportProblem } from '../components/bank/GeneratedMark';
@@ -9,9 +9,9 @@ import { useAsync } from '../lib/hooks';
 import { href, openWork, useRoute } from '../lib/router';
 import { useStore } from '../lib/store';
 import { isMarkedGenerated } from '../practice/bank/define';
-import { isAttempted, scoreOf } from '../practice/bank/mark';
+import { answerSummary, isAttempted, scoreOf } from '../practice/bank/mark';
 import { loadBank } from '../practice/bank';
-import { abandonPaper, answerPaper, finishMarking, PAPER_MINUTES, paperHistoryStore, paperResult, paperReviewedOnlyStore, paperSlots, paperSpec, paperStore, startPaper, submitPaper, type Paper, type PaperResult } from '../practice/bank/paper';
+import { abandonPaper, activeQuestions, answerPaper, chooseAlternative, finishMarking, PAPER_MINUTES, paperHistoryStore, paperResult, paperReviewedOnlyStore, paperSlots, paperSpec, paperStore, startPaper, submitPaper, type Paper, type PaperResult } from '../practice/bank/paper';
 import { markFigures, paperDiagramsStore, type FigureMark } from '../practice/gen/figures';
 import { describePlan, paperShareStore, paperUsesGeneratedStore, planShare } from '../practice/gen/mix';
 import { SimPanel } from '../components/bank/SimPanel';
@@ -198,13 +198,29 @@ function Timer({ endsAt }: { endsAt: number }) {
   );
 }
 
-const PaperQuestion = memo(function PaperQuestion({ item, number, answer, marking, figure }: { item: BankItem; number: number; answer: BankAnswer | undefined; marking: boolean; figure: FigureMark | undefined }) {
+/** The "OR" between a question and its alternative, and which of the two is being answered. */
+function OrChoice({ id, chosen, marking }: { id: string; chosen: boolean; marking: boolean }) {
+  return (
+    <li className="paper-or" data-testid="paper-or">
+      <span className="paper-or-word">OR</span>
+      {marking ? (
+        <span className="text-step--1 text-ink-2">{chosen ? 'You answered the alternative, so it’s the one marked.' : 'You answered the first, so it’s the one marked.'}</span>
+      ) : (
+        <label className="switch-row">
+          <input type="checkbox" checked={chosen} onChange={(e) => chooseAlternative(id, e.target.checked)} /> I’m answering the alternative
+        </label>
+      )}
+    </li>
+  );
+}
+
+const PaperQuestion = memo(function PaperQuestion({ item, number, answer, marking, figure, alternative }: { item: BankItem; number: number; answer: BankAnswer | undefined; marking: boolean; figure: FigureMark | undefined; alternative?: boolean }) {
   const current = answer ?? {};
   const onChange = (change: Partial<BankAnswer>) => answerPaper(item.id, change);
   return (
-    <li className="paper-question" id={`pq-${item.id}`} data-generated={isMarkedGenerated(item) ? true : undefined}>
+    <li className={alternative ? 'paper-alternative' : 'paper-question'} id={`pq-${item.id}`} data-generated={isMarkedGenerated(item) ? true : undefined}>
       <p className="bank-meta">
-        <span className="font-semibold">Question {number}</span>
+        <span className="font-semibold">Question {number}{alternative ? ', the alternative' : ''}</span>
         <GeneratedMark item={item} />
         <span className="bank-marks">{marking ? `${scoreOf(item, current)} of ${item.marks}` : `[${item.marks}]`}</span>
       </p>
@@ -227,12 +243,15 @@ function PaperSheet({ paper, onFinished }: { paper: Paper; onFinished: (result: 
     if (!paper.submittedAt && Date.now() >= paper.endsAt) submitPaper(true);
   }, [paper.endsAt, paper.submittedAt]);
 
-  const items = paper.sections.flatMap((s) => s.questions.map((q) => q.item));
+  const items = paper.sections.flatMap((s) => s.questions.flatMap((q) => [q.item, ...(s.alternatives?.[q.item.id] ? [s.alternatives[q.item.id].item] : [])]));
   const figures = useMemo(() => markFigures(items, paper.diagrams !== false), [paper.startedAt, paper.diagrams]); // eslint-disable-line react-hooks/exhaustive-deps
-  const toAnswer = items.filter((i) => i.form !== 'theory');
+  const active = paper.sections.flatMap((s) => activeQuestions(s, paper.orChosen).map((q) => q.item));
+  const toAnswer = active.filter((i) => i.form !== 'theory');
   const unanswered = toAnswer.filter((i) => !isAttempted(i, paper.answers[i.id])).length;
   const result = marking ? paperResult(paper) : null;
   const anyGenerated = items.some(isMarkedGenerated);
+  const anyUnreviewed = items.some((i) => i.generated?.unreviewed);
+  const anyBank = items.some((i) => !isMarkedGenerated(i));
   let number = 0;
 
   return (
@@ -266,8 +285,8 @@ function PaperSheet({ paper, onFinished }: { paper: Paper; onFinished: (result: 
         ) : (
           <p className="mt-2 max-w-[65ch] text-ink-2">Write theory answers on paper. Your work is saved as you go, so you can leave and come back, but the clock keeps running.</p>
         )}
-        {anyGenerated && <PaperLegend unreviewed={paper.sections.some((s) => s.questions.some((q) => q.item.generated?.unreviewed))} />}
-        {paper.sections.some((s) => s.questions.some((q) => !isMarkedGenerated(q.item))) && <p className="bank-note">The other questions are original practice questions, not official ISC questions.{/* {BANK_NOTICE} on single questions */}</p>}
+        {anyGenerated && <PaperLegend unreviewed={anyUnreviewed} />}
+        {anyBank && <p className="bank-note">The other questions are original practice questions, not official ISC questions.{/* {BANK_NOTICE} on single questions */}</p>}
 
         {paper.sections.map((section) => (
           <section key={section.name} className="today-section" aria-label={section.name}>
@@ -276,7 +295,34 @@ function PaperSheet({ paper, onFinished }: { paper: Paper; onFinished: (result: 
             <ol className="m-0 list-none p-0">
               {section.questions.map((q) => {
                 number += 1;
-                return <PaperQuestion key={q.item.id} item={q.item} number={number} answer={paper.answers[q.item.id]} marking={marking} figure={figures.get(q.item.id)} />;
+                const other = section.alternatives?.[q.item.id];
+                const chosen = Boolean(paper.orChosen?.[q.item.id]);
+                if (!other) return <PaperQuestion key={q.item.id} item={q.item} number={number} answer={paper.answers[q.item.id]} marking={marking} figure={figures.get(q.item.id)} />;
+                // Once marked, only the one answered is shown to mark. The other stays to read.
+                const [marked, unmarked] = chosen ? [other, q] : [q, other];
+                return (
+                  <Fragment key={q.item.id}>
+                    {marking ? (
+                      <>
+                        <PaperQuestion item={marked.item} number={number} answer={paper.answers[marked.item.id]} marking figure={figures.get(marked.item.id)} alternative={chosen} />
+                        <OrChoice id={q.item.id} chosen={chosen} marking />
+                        <li className="paper-alternative">
+                          <details>
+                            <summary>The question you didn’t answer</summary>
+                            <BankPrompt item={unmarked.item} figure={figures.get(unmarked.item.id) ?? 'none'} />
+                            <p className="mt-1">{answerSummary(unmarked.item)}</p>
+                          </details>
+                        </li>
+                      </>
+                    ) : (
+                      <>
+                        <PaperQuestion item={q.item} number={number} answer={paper.answers[q.item.id]} marking={false} figure={figures.get(q.item.id)} />
+                        <OrChoice id={q.item.id} chosen={chosen} marking={false} />
+                        <PaperQuestion item={other.item} number={number} answer={paper.answers[other.item.id]} marking={false} figure={figures.get(other.item.id)} alternative />
+                      </>
+                    )}
+                  </Fragment>
+                );
               })}
             </ol>
           </section>

@@ -146,6 +146,8 @@ export interface PickOptions {
   freshOnly?: boolean;
   /** Structures already in this paper or set, so that none comes back with the same setting. */
   seenStructures?: Set<string>;
+  /** Comes back short rather than repeat a structure, so that the caller can try elsewhere first. */
+  strictOnly?: boolean;
 }
 
 /** How many of the last questions must differ in structure, and in setting. */
@@ -232,7 +234,7 @@ export const FORMAT_SHARE: Record<SubjectId, Partial<Record<QuestionFormat, numb
 
 /** Draws questions from a pool of blueprints, spreading them across units by weight. Fewer come back if the pool is empty. */
 export function pickGenerated(set: LoadedBlueprints, pool: Blueprint[], options: PickOptions): BankQuestion[] {
-  const { count, weights, rng, used = new Set<string>(), seenText = new Set<string>(), seenFacts = new Set<string>(), seenStructures = new Set<string>(), cbqShare = 0, fresh, freshOnly } = options;
+  const { count, weights, rng, used = new Set<string>(), seenText = new Set<string>(), seenFacts = new Set<string>(), seenStructures = new Set<string>(), cbqShare = 0, fresh, freshOnly, strictOnly } = options;
   const out: BankQuestion[] = [];
   if (!pool.length) return out;
   const given = new Map<number, number>();
@@ -301,7 +303,7 @@ export function pickGenerated(set: LoadedBlueprints, pool: Blueprint[], options:
   }
   // Chance alone rarely finds the last few, so this goes round every blueprint in turn, one seed each time, with the seeds
   // that capacity counts. Going round keeps a blueprint's questions apart, however long the set is.
-  if (out.length < count) {
+  if (out.length < count && !strictOnly) {
     const order = shuffled(pool, rng);
     for (let k = 1; k <= PROBE_SEEDS && out.length < count; k++) {
       for (const bp of order) {
@@ -313,7 +315,7 @@ export function pickGenerated(set: LoadedBlueprints, pool: Blueprint[], options:
     }
   }
   // Every fresh fact has gone, so the ones seen longest ago come back. There is never a shorter paper for it.
-  if (out.length < count && fresh && !freshOnly) {
+  if (out.length < count && fresh && !freshOnly && !strictOnly) {
     const seeds = Math.min(PROBE_SEEDS, Math.max(12, Math.ceil(4000 / pool.length)));
     const candidates: { question: BankQuestion; at: number; bp: Blueprint }[] = [];
     for (const bp of shuffled(pool, rng)) {

@@ -416,6 +416,31 @@ mark {
   border-bottom: 1px solid var(--rule-2);
 }
 
+.gen-or {
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  margin-block: 0.5rem;
+  text-align: center;
+}
+
+.gen-or-block {
+  margin-top: 0.5rem;
+}
+
+.paper-or {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  padding: 0.5rem 0;
+}
+
+.paper-or-word {
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.paper-alternative,
 .paper-question {
   padding: 1rem 0;
   border-bottom: 1px solid var(--rule);
@@ -466,6 +491,7 @@ mark {
 }
 
 .bank-body[data-generated],
+.paper-alternative[data-generated],
 .paper-question[data-generated] {
   border-left: 2px dotted var(--ink-2);
   padding-left: 0.625rem;

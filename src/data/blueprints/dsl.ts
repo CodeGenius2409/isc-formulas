@@ -143,6 +143,8 @@ export function drawValues(g: Gen, vars: Record<string, Range>): Values {
 /** Words shown for each way of asking, so the same fact reads differently from one question to the next. */
 const ASK_REASON = ['Give a reason: {x}', 'Explain why: {x}', 'Account for the following: {x}', 'Why is this so? {x}'];
 const ASK_DEFINE = ['Define {x}.', 'What is meant by {x}?', 'State what is meant by {x}.'];
+/** One true statement among false ones. The papers word this several ways, and one stem in every chapter reads the same twice. */
+const ASK_TRUTH = ['Which of these statements is correct?', 'Only one of these statements is true. Which is it?', 'Pick out the correct statement.', 'Which one of the following is true?', 'Identify the statement that is correct.'];
 const ASK_COMPARE = ['Distinguish between {a} and {b}.', 'State the differences between {a} and {b}.', 'Give the difference between {a} and {b}.'];
 
 const capital = (text: string) => (/^\w+\(\)/.test(text) ? text : text.charAt(0).toUpperCase() + text.slice(1));
@@ -297,7 +299,7 @@ export function blueprintsFor(subject: SubjectId, level: ClassLevel, knowledge: 
       const list = f.truths!;
       add('truth', 1, 2, 'mcq', 'mcq', 'paper-style', (g) => {
         const [picked, ...rest] = g.shuffle(list);
-        return { ...g.mcq('Which of these statements is correct?', picked[0], g.sample(rest, 3 > rest.length ? rest.length : 3).map((t) => t[1])), facts: [fact(picked[0])] };
+        return { ...g.mcq(g.pick(ASK_TRUTH), picked[0], g.sample(rest, 3 > rest.length ? rest.length : 3).map((t) => t[1])), facts: [fact(picked[0])] };
       });
     }
     if (f.ar?.length) {
