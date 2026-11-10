@@ -4,24 +4,24 @@ Written by `tests/unit/type-matrix.test.ts`. It counts the app’s own material,
 
 A cell meets the target with **5 questions written by hand** in the 38 most-asked subtopics, the top quarter by how often the papers ask them, marked ★, and **3** in every other subtopic. Fact-based and compiled questions don’t count, and several questions on one fact count once. Which types fit which subtopics is written down in `tests/unit/lib/type-fit.ts`. There is no longer a target for the number of questions bank and generator give together.
 
-Still to write: **2,403** hand-written questions, all in the 114 subtopics outside the most-asked. At the start of this target, after Batch 11, it was **2,585**.
+Still to write: **2,221** hand-written questions, all in the 114 subtopics outside the most-asked. At the start of this target, after Batch 11, it was **2,585**.
 
 ## By type
 
 | Type | Cells that fit | Met at start | Met | Written | Still to write |
 |---|---:|---:|---:|---:|---:|
-| reason | 152 | 84 | 88 | 466 | 175 |
-| short | 152 | 90 | 94 | 555 | 131 |
-| match | 152 | 38 | 46 | 219 | 313 |
-| diagram | 124 | 33 | 40 | 186 | 252 |
-| predict | 152 | 38 | 46 | 227 | 305 |
-| odd | 152 | 38 | 46 | 217 | 315 |
-| distinguish | 152 | 43 | 51 | 255 | 278 |
-| program | 20 | 7 | 7 | 37 | 28 |
-| assertion | 152 | 44 | 52 | 282 | 268 |
-| long | 152 | 47 | 55 | 293 | 250 |
-| derivation | 76 | 39 | 40 | 231 | 88 |
-| **All** | 1436 | 501 | 565 | 2,968 | 2,403 |
+| reason | 152 | 84 | 91 | 475 | 166 |
+| short | 152 | 90 | 97 | 561 | 125 |
+| match | 152 | 38 | 54 | 243 | 289 |
+| diagram | 124 | 33 | 47 | 207 | 231 |
+| predict | 152 | 38 | 54 | 251 | 281 |
+| odd | 152 | 38 | 54 | 241 | 291 |
+| distinguish | 152 | 43 | 59 | 274 | 259 |
+| program | 20 | 7 | 8 | 40 | 25 |
+| assertion | 152 | 44 | 60 | 305 | 245 |
+| long | 152 | 47 | 63 | 314 | 229 |
+| derivation | 76 | 39 | 43 | 239 | 80 |
+| **All** | 1436 | 501 | 630 | 3,150 | 2,221 |
 
 ## Work list
 
@@ -37,14 +37,14 @@ Subtopics outside the most-asked, in order of how often the papers ask them, wit
 | Chemistry XII 4b | 30 | · | · | · | · | · | · | · | · | · | – | – | done |
 | Mathematics XI 1b | 30 | · | · | · | · | · | · | · | · | · | · | – | done |
 | Computer Science XII 1a | 30 | · | · | · | · | · | · | · | · | · | – | – | done |
-| Mathematics XII 3d | 28 | 3 | 3 | 3 | 2 | 3 | 3 | 3 | 2 | 3 | 2 | – | 27 |
-| Mathematics XII 6a | 28 | 3 | 3 | 3 | 2 | 3 | 3 | 3 | 1 | 3 | 3 | – | 27 |
-| Physics XII 9a | 27 | 3 | 3 | 3 | 3 | 1 | 3 | · | · | 3 | – | – | 19 |
-| Computer Science XI 7a | 26 | – | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | – | 3 | 27 |
-| Physics XII 4a | 24 | 3 | 3 | 3 | 3 | 2 | 3 | · | · | 2 | · | – | 19 |
-| Chemistry XII 10b | 24 | 3 | 3 | 3 | 3 | 2 | 3 | · | · | 3 | – | – | 20 |
-| Physics XII 3b | 22 | 3 | 3 | 3 | 3 | 2 | 3 | · | · | 3 | 3 | – | 23 |
-| Chemistry XII 6b | 21 | 3 | 3 | 3 | 2 | 3 | 3 | · | · | 3 | – | – | 20 |
+| Mathematics XII 3d | 28 | · | · | · | · | · | · | · | · | · | · | – | done |
+| Mathematics XII 6a | 28 | · | · | · | · | · | · | · | · | · | · | – | done |
+| Physics XII 9a | 27 | · | · | · | · | · | · | · | · | · | – | – | done |
+| Computer Science XI 7a | 26 | – | · | · | · | · | · | · | · | · | – | · | done |
+| Physics XII 4a | 24 | · | · | · | · | · | · | · | · | · | · | – | done |
+| Chemistry XII 10b | 24 | · | · | · | · | · | · | · | · | · | – | – | done |
+| Physics XII 3b | 22 | · | · | · | · | · | · | · | · | · | · | – | done |
+| Chemistry XII 6b | 21 | · | · | · | · | · | · | · | · | · | – | – | done |
 | Computer Science XII 2b | 20 | 3 | 3 | 3 | · | 3 | 3 | 3 | 3 | 3 | – | – | 24 |
 | Computer Science XII 9a | 20 | 3 | 3 | 3 | · | 3 | 3 | 3 | 2 | 3 | 3 | – | 26 |
 | Chemistry XI 6b | 19 | 3 | 3 | 3 | 1 | 3 | 3 | 3 | 3 | 2 | 2 | – | 26 |
@@ -178,8 +178,8 @@ Each cell is the number written by hand, with the count at the start of this tar
 | XII 2a ★ | 5 | 5 | 5 | 5 | 5 | 5 | 5 | – | 5 | 5 | 5 |
 | XII 2b ★ | 8 | 10 | 5 | 5 | 5 | 5 | 5 | – | 5 | 5 | 6 |
 | XII 3a ★ | 7 | 5 | 5 | 5 | 5 | 5 | 5 | – | 8 | 5 | 14 |
-| XII 3b | 5 | 6 | 0 | 0 | 0 | 0 | 1 | – | 0 | 0 | 0 |
-| XII 4a | 5 | 3 | 0 | 0 | 0 | 0 | 1 | – | 1 | 0 | 4 |
+| XII 3b | 5 | 6 | 0 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | 1 → 3 | – | 0 → 3 | 0 → 3 | 0 → 3 |
+| XII 4a | 5 | 3 | 0 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | 1 → 3 | – | 1 → 3 | 0 → 3 | 4 |
 | XII 4b ★ | 9 | 8 | 5 | 5 | 5 | 5 | 5 | – | 7 | 5 | 7 |
 | XII 5a | 5 | 5 | 0 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | 1 → 3 | – | 0 → 3 | 0 → 3 | – |
 | XII 6a ★ | 6 | 5 | 5 | 5 | 5 | 5 | 5 | – | 7 | 5 | 12 |
@@ -189,7 +189,7 @@ Each cell is the number written by hand, with the count at the start of this tar
 | XII 7a ★ | 5 | 6 | 5 | 5 | 5 | 5 | 5 | – | 5 | 5 | 5 |
 | XII 8a ★ | 5 | 6 | 5 | 5 | 5 | 5 | 5 | – | 5 | 5 | 5 |
 | XII 8b ★ | 5 | 5 | 5 | 5 | 5 | 5 | 5 | – | 5 | 5 | 5 |
-| XII 9a | 5 | 4 | 0 | 0 | 0 | 0 | 2 | – | 0 | 0 | – |
+| XII 9a | 5 | 4 | 0 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | 2 → 3 | – | 0 → 3 | 0 → 3 | – |
 | XII 9b ★ | 5 | 6 | 5 | 5 | 5 | 5 | 5 | – | 5 | 5 | – |
 
 ## Chemistry
@@ -232,7 +232,7 @@ Each cell is the number written by hand, with the count at the start of this tar
 | XII 4b | 4 | 6 | 0 → 3 | 1 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | – | 0 → 3 | 0 → 3 | – |
 | XII 5a ★ | 5 | 7 | 5 | 5 | 5 | 5 | 5 | – | 5 | 5 | – |
 | XII 6a ★ | 5 | 6 | 5 | 5 | 5 | 5 | 5 | – | 5 | 5 | – |
-| XII 6b | 5 | 4 | 0 | 0 | 0 | 0 | 0 | – | 0 | 1 | – |
+| XII 6b | 5 | 4 | 0 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | – | 0 → 3 | 1 → 3 | – |
 | XII 6c | 6 | 5 | 0 | 0 | 0 | 0 | 0 | – | 2 | 0 | – |
 | XII 7a ★ | 5 | 5 | 5 | 5 | 5 | 5 | 5 | – | 5 | 5 | – |
 | XII 7b | 5 | 5 | 0 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | – | 0 → 3 | 1 → 3 | – |
@@ -243,7 +243,7 @@ Each cell is the number written by hand, with the count at the start of this tar
 | XII 9b | 5 | 5 | 0 | 0 | 0 | 0 | 0 | – | 0 | 0 | – |
 | XII 9c | 5 | 5 | 0 | 0 | 0 | 0 | 0 | – | 1 | 0 | – |
 | XII 10a | 5 | 6 | 0 | 0 | 0 | 0 | 0 | – | 0 | 0 | – |
-| XII 10b | 5 | 4 | 0 | 0 | 0 | 0 | 1 | – | 0 | 0 | – |
+| XII 10b | 5 | 4 | 0 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | 1 → 3 | – | 0 → 3 | 0 → 3 | – |
 | XII 10c | 5 | 5 | 0 | 0 | 0 | 0 | 0 | – | 0 | 0 | – |
 | XII 10d | 5 | 3 | 0 | 0 | 0 | 0 | 2 | – | 0 | 0 | – |
 | XII 11a | 3 | 2 | 0 | 0 | 1 | 0 | 0 | – | 3 | 0 | – |
@@ -279,11 +279,11 @@ Each cell is the number written by hand, with the count at the start of this tar
 | XII 3a ★ | 5 | 6 | 5 | 5 | 5 | 5 | 5 | – | 5 | 5 | 5 |
 | XII 3b ★ | 5 | 10 | 5 | 5 | 5 | 5 | 5 | – | 5 | 5 | 5 |
 | XII 3c ★ | 5 | 11 | 5 | 5 | 5 | 5 | 5 | – | 5 | 5 | 5 |
-| XII 3d | 0 | 1 | 0 | 0 | 0 | 0 | 0 | – | 0 | 1 | 1 |
+| XII 3d | 0 → 3 | 1 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | – | 0 → 3 | 1 → 3 | 1 → 3 |
 | XII 3e ★ | 5 | 5 | 5 | 5 | 5 | 5 | 5 | – | 5 | 5 | 5 |
 | XII 4a ★ | 6 | 6 | 5 | 5 | 5 | 5 | 5 | – | 5 | 5 | 5 |
 | XII 5a ★ | 5 | 7 | 5 | 5 | 5 | 5 | 5 | – | 5 | 5 | 5 |
-| XII 6a | 0 | 2 | 0 | 0 | 0 | 0 | 0 | – | 0 | 1 | 0 |
+| XII 6a | 0 → 3 | 2 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | – | 0 → 3 | 1 → 3 | 0 → 3 |
 | XII 7a ★ | 6 | 10 | 5 | 5 | 5 | 5 | 5 | – | 6 | 5 | 5 |
 
 ## Computer Science
@@ -300,7 +300,7 @@ Each cell is the number written by hand, with the count at the start of this tar
 | XI 5a | 0 | 0 | 0 | – | 0 | 0 | 0 | 0 | 0 | 0 | – |
 | XI 5b | 0 | 1 | 0 | – | 0 | 0 | 0 | 0 | 0 | 0 | – |
 | XI 6a | 0 | 0 | 0 | – | 0 | 0 | 1 | 0 | 0 | 1 | – |
-| XI 7a | 0 | 0 | 0 | – | 0 | 0 | 0 | 0 | 0 | 0 | – |
+| XI 7a | 0 → 3 | 0 → 3 | 0 → 3 | – | 0 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | – |
 | XI 8a ★ | 5 | 5 | 5 | – | 5 | 5 | 5 | 5 | 5 | 5 | – |
 | XI 9a | 0 | 0 | 0 | – | 0 | 0 | 0 | 3 | 0 | 0 | – |
 | XI 10a | 0 | 0 | 0 | – | 0 | 0 | 0 | 4 | 0 | 0 | – |
