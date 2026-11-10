@@ -26,6 +26,7 @@ const questions: BankDef[] = [
   short(C(2, 2), 'What is meant by coherent sources? How does Young’s experiment get them from one lamp?', 'Sources with a constant phase difference, and the same frequency.', 'Both slits are lit by the same wavefront from one source, so they keep in step.'),
   short(C(3, 2), 'State two conditions for steady interference, and write the conditions for a bright and a dark fringe.', 'Coherent sources with nearly equal amplitudes.', 'Bright: path difference nλ.', 'Dark: path difference (n + ½)λ.'),
   short(C(3, 3), 'State three differences between interference and diffraction patterns.', 'Interference comes from two coherent sources, and diffraction from one wavefront’s parts.', 'Interference fringes are equally wide, and diffraction’s aren’t.', 'Interference’s bright fringes have similar brightness, while diffraction’s fall off quickly.'),
+  short(C(2, 2), 'In Young’s experiment the fringe width is 0.4 mm. What does it become if the slits are moved to half their distance apart, and the screen to twice its distance?', 'β = λD/d.', 'Each change doubles it, so it becomes four times as wide: 1.6 mm.'),
 ];
 
 export default questions;

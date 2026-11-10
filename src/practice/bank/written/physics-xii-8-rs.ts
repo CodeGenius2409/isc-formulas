@@ -24,6 +24,7 @@ const questions: BankDef[] = [
   short(B(2, 2), 'Define mass defect and binding energy, and give the link between them.', 'Mass defect is the mass of the separate nucleons, less the mass of the nucleus.', 'Binding energy is the energy needed to split the nucleus into them, E = Δm c².'),
   short(B(3, 2), 'Sketch in words the curve of binding energy per nucleon against mass number. Where is it highest, and what do its two ends mean for energy?', 'It rises fast, peaks near A = 56, then falls slowly.', 'Nuclei near the peak are most stable.', 'Light nuclei give energy by fusing, and heavy ones by splitting.'),
   tell(B(3, 3), 'Distinguish between nuclear fission and nuclear fusion in three points.', 'Fission splits a heavy nucleus, and fusion joins light ones.', 'Fission can go on with slow neutrons at ordinary temperatures, and fusion needs millions of kelvin.', 'Fusion gives more energy per nucleon, and leaves less radioactive waste.'),
+  short(B(2, 2), 'Find the radius of the nucleus ²⁷Al, taking R₀ = 1.2 fm. How does nuclear density depend on the mass number?', 'R = 1.2 × 27^(1/3) = 3.6 fm.', 'It doesn’t: the volume is proportional to A, so density is the same for all nuclei.'),
 ];
 
 export default questions;

@@ -239,15 +239,16 @@ function GraphFigure({ spec }: { spec: Extract<DiagramSpec, { kind: 'graph' }> }
   const all = spec.lines.flatMap((l) => l.points);
   const xs = all.map((p) => p[0]);
   const ys = all.map((p) => p[1]);
-  const minX = Math.min(0, ...xs);
+  const minX = spec.xFrom ?? Math.min(0, ...xs);
   const maxX = Math.max(...xs);
-  const minY = Math.min(0, ...ys);
+  const minY = spec.yFrom ?? Math.min(0, ...ys);
   const maxY = Math.max(...ys);
   const [left, right, top, bottom] = [46, 300, 28, 170];
   const px = (x: number) => left + ((x - minX) / (maxX - minX || 1)) * (right - left);
   const py = (y: number) => bottom - ((y - minY) / (maxY - minY || 1)) * (bottom - top);
-  const originY = py(0);
-  const originX = px(0);
+  // An axis that starts away from zero is drawn along the edge, where zero would have been.
+  const originY = spec.yFrom !== undefined ? bottom : py(0);
+  const originX = spec.xFrom !== undefined ? left : px(0);
   return (
     <svg className="bank-diagram" viewBox="0 0 320 210" role="img" aria-label={describe(spec)} fill="none" stroke="currentColor" strokeWidth={1.5}>
       <Arrow x1={originX} y1={bottom + 6} x2={originX} y2={top - 6} />

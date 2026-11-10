@@ -16,6 +16,7 @@ const questions: BankDef[] = [
   short(B(2, 2), 'Write the Arrhenius equation, and say what each symbol stands for.', 'k = A e^(−Eₐ/RT).', 'k is the rate constant, A the frequency factor, Eₐ the activation energy, R the gas constant and T the temperature.'),
   short(B(3, 2), 'Sketch in words an energy profile for an exothermic reaction, and name what the peak stands for. What does a catalyst change on it?', 'The products lie lower than the reactants.', 'The peak is the activated complex.', 'A catalyst lowers the peak, and doesn’t change the ends.'),
   short(B(3, 3), 'What two factors decide the rate according to simple collision theory? Say how each appears in the Arrhenius equation.', 'The frequency of suitably oriented collisions appears as A.', 'The share of molecules with enough energy appears as e^(−Eₐ/RT).', 'So rate depends on both.'),
+  short(A(2, 1), 'How is the instantaneous rate found from a graph of a reactant’s concentration against time? Why is a minus sign put in the rate?', 'From the slope of the tangent to the curve at that time.', 'A reactant’s concentration falls, so −d[R]/dt makes the rate positive.'),
 ];
 
 export default questions;

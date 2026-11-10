@@ -24,6 +24,7 @@ const questions: BankDef[] = [
   short(B(2, 2), 'If $A$ is a $3 \\times 3$ matrix with $|A| = 4$, find $|\\operatorname{adj} A|$ and $|2A|$.', '$|\\operatorname{adj} A| = |A|^{n-1} = 4^2 = 16$.', '$|2A| = 2^3 \\times 4 = 32$.'),
   short(B(2, 2), 'For what values of $k$ does the system $x + 2y = 3$, $2x + ky = 6$ have more than one solution?', 'The determinant $k - 4$ must be zero, so $k = 4$.', 'Then the second equation is twice the first, so there are infinitely many solutions.'),
   short(B(3, 3), 'Describe how to tell, using $A^{-1}$ or adj $A$, whether the system $AX = B$ is consistent with one solution, consistent with many, or inconsistent.', 'If $|A| \\ne 0$, it is consistent with the unique solution $X = A^{-1}B$.', 'If $|A| = 0$ and $(\\operatorname{adj} A)B \\ne O$, it is inconsistent.', 'If $|A| = 0$ and $(\\operatorname{adj} A)B = O$, it may be consistent with many solutions, or inconsistent, which has to be checked.'),
+  short(B(2, 1), 'Use a determinant to find the area of the triangle with vertices $(1, 0)$, $(6, 0)$ and $(4, 3)$.', 'The determinant of the rows $(1, 0, 1)$, $(6, 0, 1)$, $(4, 3, 1)$ is $-3 + 18 = 15$.', 'The area is $\\frac{15}{2}$ square units.'),
 ];
 
 export default questions;

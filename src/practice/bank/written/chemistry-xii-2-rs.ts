@@ -35,6 +35,7 @@ const questions: BankDef[] = [
   short(C(2, 2), 'Name the anode, the cathode and the electrolyte of a dry cell.', 'The anode is the zinc case, and the cathode is a graphite rod with MnO₂ around it.', 'The electrolyte is a paste of NH₄Cl and ZnCl₂.'),
   short(C(3, 2), 'Write the reactions at each electrode of a hydrogen–oxygen fuel cell, in alkali, and its overall reaction.', 'Anode: 2H₂ + 4OH⁻ → 4H₂O + 4e⁻.', 'Cathode: O₂ + 2H₂O + 4e⁻ → 4OH⁻.', 'Overall: 2H₂ + O₂ → 2H₂O.'),
   short(C(3, 3), 'Explain rusting as an electrochemical process, naming the anode and cathode reactions.', 'At one part of the iron, the anode: Fe → Fe²⁺ + 2e⁻.', 'At another, the cathode: O₂ + 4H⁺ + 4e⁻ → 2H₂O.', 'Fe²⁺ is then oxidised by air to form hydrated Fe₂O₃, rust.'),
+  short(A(2, 1), 'Name the electrode against which standard electrode potentials are measured, and state its conditions.', 'The standard hydrogen electrode, taken as 0 V.', 'Hydrogen at 1 bar over platinum black, in H⁺ ions at 1 mol L⁻¹, at 298 K.'),
 ];
 
 export default questions;
