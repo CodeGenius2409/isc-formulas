@@ -1,0 +1,15 @@
+// Written by hand: coordination compounds, long answers in parts. Places are at(unit, topic)(marks, difficulty).
+import { at, kit, type BankDef } from '../define';
+
+const { long } = kit('chemistry', 'XII');
+const A = at(5, 'a');
+
+const questions: BankDef[] = [
+  long(A(5, 1), 'Answer each part on [Co(NH₃)₆]Cl₃.\n(a) Give its IUPAC name. [1]\n(b) Give the oxidation state and coordination number of cobalt. [2]\n(c) How many moles of AgCl does one mole of it give with excess AgNO₃? [2]', '(a) Hexaamminecobalt(III) chloride.', '(b) The oxidation state is +3.', '(b) The coordination number is 6.', '(c) Three moles.', '(c) All three chloride ions are outside the coordination sphere, so all are free to react.'),
+  long(A(5, 2), 'Answer each part on Werner’s theory.\n(a) State three main points of Werner’s theory. [3]\n(b) Explain, with it, why CoCl₃·5NH₃ gives only two moles of AgCl per mole. [2]', '(a) A metal has primary valency, its oxidation state, satisfied by negative ions.', '(a) It has secondary valency, its coordination number, satisfied by ligands.', '(a) The secondary valencies point in fixed directions in space, giving a definite shape.', '(b) Its formula is [Co(NH₃)₅Cl]Cl₂: one chloride is bonded to cobalt as a ligand.', '(b) Only the two outside the bracket are free ions, so only two give AgCl.'),
+  long(A(5, 2), 'Answer each part on valence bond theory.\n(a) Explain the bonding and shape of [Ni(CN)₄]²⁻. [3]\n(b) Is it paramagnetic or diamagnetic? Why? [2]', '(a) Ni²⁺ is 3d⁸. Strong-field CN⁻ makes the d electrons pair up, leaving one 3d orbital empty.', '(a) One 3d, the 4s and two 4p orbitals mix to give dsp² hybrids.', '(a) Four CN⁻ ligands give their pairs to these, so the ion is square planar.', '(b) Diamagnetic.', '(b) All eight d electrons are paired.'),
+  long(A(5, 3), 'Answer each part on crystal field theory.\n(a) Show how the d orbitals split in an octahedral field. [2]\n(b) Explain why [Fe(H₂O)₆]²⁺ is high spin and [Fe(CN)₆]⁴⁻ is low spin. [2]\n(c) How many unpaired electrons does each have? [1]', '(a) The two orbitals pointing at the ligands, eg, rise in energy.', '(a) The three between them, t₂g, fall; the gap is Δo.', '(b) H₂O is a weak-field ligand: Δo is less than the pairing energy, so the six electrons spread out as t₂g⁴ eg².', '(b) CN⁻ is strong-field: Δo is larger, so all six pair in t₂g.', '(c) Four in the aqua complex, none in the cyanide complex.'),
+  long(A(5, 3), 'Answer each part on isomerism in complexes.\n(a) Name and explain two kinds of structural isomerism, with an example of each. [2]\n(b) Draw the cis and trans isomers of [Co(NH₃)₄Cl₂]⁺. [2]\n(c) Which of the two is optically active, if either? [1]', '(a) Ionisation isomerism: a ligand and a counter-ion swap, as [Co(NH₃)₅Br]SO₄ and [Co(NH₃)₅SO₄]Br.', '(a) Linkage isomerism: a ligand binds through a different atom, as –NO₂ and –ONO.', '(b) Cis: the two Cl ligands on neighbouring corners of the octahedron.', '(b) Trans: the two Cl ligands on opposite corners.', '(c) Neither: both have a plane of symmetry.'),
+];
+
+export default questions;

@@ -1,0 +1,15 @@
+// Written by hand: d- and f-block elements, long answers in parts. Places are at(unit, topic)(marks, difficulty).
+import { at, kit, type BankDef } from '../define';
+
+const { long } = kit('chemistry', 'XII');
+const A = at(4, 'a');
+
+const questions: BankDef[] = [
+  long(A(5, 1), 'Answer each part on transition elements.\n(a) What is a transition element? Why is zinc not counted as one? [2]\n(b) Give three typical properties of transition elements. [3]', '(a) An element with a partly filled d set in the atom or in a common ion.', '(a) Zinc is 3d¹⁰ in both the atom and Zn²⁺, so its d set is never partly filled.', '(b) They show variable oxidation states.', '(b) They form coloured ions and complexes.', '(b) They and their compounds are often paramagnetic and good catalysts.'),
+  long(A(5, 2), 'Answer each part on colour and magnetism.\n(a) Why are most transition-metal ions coloured? [2]\n(b) Find the spin-only magnetic moment of Fe²⁺ (Z = 26). [2]\n(c) Why is Ti⁴⁺ colourless? [1]', '(a) In a complex, the d orbitals split into two energy levels.', '(a) A d electron absorbs visible light to jump between them, and we see the remaining colour.', '(b) Fe²⁺ is 3d⁶, with four unpaired electrons.', '(b) μ = √(4 × 6) = √24 ≈ 4.9 BM.', '(c) It is 3d⁰, so there is no d electron to make a d–d transition.'),
+  long(A(5, 2), 'Answer each part on oxidation states.\n(a) Why do transition elements show variable oxidation states? [2]\n(b) Which element of the 3d series shows the most, and what is its highest? [1]\n(c) Why are the highest oxidation states often found in oxides and fluorides? [2]', '(a) The 3d and 4s electrons are close in energy.', '(a) So different numbers of them can be lost or shared.', '(b) Manganese, up to +7.', '(c) Oxygen and fluorine are the most electronegative elements.', '(c) Oxygen can also form multiple bonds, which helps it hold a high state, as in Mn₂O₇.'),
+  long(A(5, 3), 'Answer each part on catalysis and alloys.\n(a) Why are transition metals good catalysts? Give two examples. [3]\n(b) Why do they form alloys so easily? [2]', '(a) They can change oxidation state, passing electrons to and from the reactants.', '(a) They offer a surface that holds the reactants, using their d orbitals.', '(a) Iron in the Haber process, and V₂O₅ in the contact process.', '(b) Their atoms are of similar size.', '(b) So one can take another’s place in the metal lattice.'),
+  long(A(5, 3), 'Answer each part on the lanthanoids and actinoids.\n(a) What is the lanthanoid contraction, and what causes it? [2]\n(b) Give two of its results. [2]\n(c) Give one way the actinoids differ from the lanthanoids. [1]', '(a) The steady fall in atomic and ionic size from La to Lu.', '(a) The 4f electrons screen the nucleus poorly, so each added proton pulls the electrons in more.', '(b) Zr and Hf, in the second and third transition series, have almost the same size.', '(b) The lanthanoids are hard to separate, as their sizes and properties are so alike.', '(c) The actinoids show a wider range of oxidation states, and most are radioactive.'),
+];
+
+export default questions;

@@ -26,6 +26,18 @@ const questions: BankDef[] = [
       line([[110, 100], [110, 180]], { dash: 1, arrow: 1 }), label(110, 198, 'final image'),
     ]),
   }),
+  // Worked to scale: lens at x = 200 with f = 60, object 40 before it and 20 tall, so the virtual image is 120 before it, 3 times as
+  // tall, at x = 80.
+  figure(B(2, 2), 'Draw a ray diagram of a simple microscope forming a magnified image of a small object placed inside its focus.', ['The object is between the lens and its focus; a ray parallel to the axis passes through the far focus, and a ray through the centre goes straight on.', 'Traced back, the two rays meet on the same side as the object, in a virtual, upright, enlarged image.'], {
+    answer: sketch(320, 160, 'A simple microscope. A convex lens stands in the middle, with its foci marked F on both sides. A small upright object stands between the left focus and the lens. Two rays from its tip pass through the lens and spread out to the right; traced back as dashed lines, they meet far to the left in a large upright virtual image.', [
+      line([[10, 100], [310, 100]], { dash: 1 }), line([[200, 40], [200, 150]]), label(200, 34, 'lens'),
+      { t: 'dot', x: 140, y: 100 }, label(140, 116, 'F'), { t: 'dot', x: 260, y: 100 }, label(260, 116, 'F'),
+      arrow([160, 100], [160, 80]), label(175, 130, 'object'),
+      line([[160, 80], [200, 80], [290, 110]]), line([[160, 80], [290, 145]]),
+      line([[200, 80], [80, 40]], { dash: 1 }), line([[160, 80], [80, 40]], { dash: 1 }),
+      line([[80, 100], [80, 40]], { dash: 1, arrow: 1 }), label(80, 116, 'image'),
+    ]),
+  }),
   figure(B(2, 1), 'The figure shows a refracting astronomical telescope in normal adjustment. Name the lenses P and Q, and give the distance between them.', ['P is the objective, of long focal length f₀, and Q is the eyepiece, of short focal length fₑ.', 'In normal adjustment their foci meet, so the distance is f₀ + fₑ.'], {
     shown: sketch(320, 140, 'Two convex lenses on one axis. The left one, P, is large; the right one, Q, is small. Parallel rays from a distant object enter P, cross at a point between the lenses, and leave Q parallel again.', [
       // P at x = 70 with f = 160 and Q at x = 260 with f = 30 share a focal plane at x = 230. Rays sloping at 0.1 meet there at

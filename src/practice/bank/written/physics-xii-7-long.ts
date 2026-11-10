@@ -1,0 +1,15 @@
+// Written by hand: dual nature of radiation and matter, long answers in parts. Places are at(unit, topic)(marks, difficulty).
+import { at, kit, type BankDef } from '../define';
+
+const { long } = kit('physics', 'XII');
+const A = at(7, 'a');
+
+const questions: BankDef[] = [
+  long(A(5, 1), 'Answer each part on the photoelectric effect.\n(a) Write Einstein’s photoelectric equation, and name each term. [2]\n(b) Use it to explain why there is a threshold frequency. [2]\n(c) Why does the photocurrent rise with intensity? [1]', '(a) hν = φ + K_max.', '(a) hν is the photon’s energy, φ the work function, and K_max the greatest kinetic energy of a photoelectron.', '(b) A photon must give at least φ to free an electron.', '(b) So hν ≥ φ, and no electrons come out below ν₀ = φ/h.', '(c) Brighter light has more photons, so more electrons are freed each second.'),
+  long(A(5, 2), 'Answer each part on light of wavelength 400 nm falling on a metal with work function 2.0 eV.\n(a) Find the energy of a photon, in eV. [2]\n(b) Find the greatest kinetic energy of the photoelectrons, and the stopping potential. [2]\n(c) Find the threshold wavelength. [1]', '(a) E = hc/λ = 6.6 × 10⁻³⁴ × 3 × 10⁸ / 400 × 10⁻⁹ ≈ 4.95 × 10⁻¹⁹ J.', '(a) That is about 3.1 eV.', '(b) K_max = 3.1 − 2.0 = 1.1 eV.', '(b) The stopping potential is 1.1 V.', '(c) λ₀ = hc/φ ≈ 1240/2.0 = 620 nm.'),
+  long(A(5, 2), 'Answer each part on Hertz’s and Lenard’s observations.\n(a) What did Hertz notice about sparks and ultraviolet light? [1]\n(b) State two of Lenard’s results that the wave picture couldn’t explain. [2]\n(c) How does the photon picture explain each? [2]', '(a) A spark jumped more easily across a gap lit by ultraviolet light.', '(b) Below a threshold frequency no electrons came out, however bright the light.', '(b) Electrons came out at once, even in very dim light.', '(c) Each photon gives its energy to one electron, so only hν matters, not brightness.', '(c) The energy arrives in a packet, so there is no wait for it to build up.'),
+  long(A(5, 3), 'Answer each part on matter waves.\n(a) State de Broglie’s relation. [1]\n(b) Find the de Broglie wavelength of an electron accelerated through 100 V. [2]\n(c) What did the Davisson–Germer experiment show? [2]', '(a) λ = h/p, for any moving particle.', '(b) λ = h/√(2meV) = 1.227/√V nm.', '(b) For 100 V, λ ≈ 0.123 nm.', '(c) A beam of electrons, scattered by a nickel crystal, was strongest at certain angles, as a wave would be.', '(c) The wavelength found agreed with de Broglie’s, so electrons behave as waves.'),
+  long(A(5, 3), 'Answer each part on the graph of stopping potential against frequency.\n(a) Show that it is a straight line. [2]\n(b) What does its slope give? [1]\n(c) What does it meet the frequency axis at, and how is the work function found from it? [2]', '(a) eV₀ = hν − φ, so V₀ = (h/e)ν − φ/e.', '(a) That is a straight line in ν.', '(b) Its slope is h/e, the same for every metal.', '(c) It meets the ν axis at the threshold frequency ν₀.', '(c) The work function is hν₀, or e times the intercept on the V₀ axis, made positive.'),
+];
+
+export default questions;
