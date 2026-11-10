@@ -36,7 +36,7 @@ export type DiagramSpec =
   /** Two slits and a screen. */
   | { kind: 'ydse'; d: string; D: string; lambda: string }
   /** Axes with one or more straight or curved lines from points. */
-  | { kind: 'graph'; x: string; y: string; lines: { label?: string; points: [number, number][]; smooth?: 1 }[]; ticksX?: [number, string][]; ticksY?: [number, string][] }
+  | { kind: 'graph'; x: string; y: string; lines: { label?: string; points: [number, number][]; smooth?: 1 }[]; ticksX?: [number, string][]; ticksY?: [number, string][]; /** Where an axis starts, when the data sit far from zero, as atomic numbers do. The axis is then drawn at that edge. */ xFrom?: number; yFrom?: number }
   | { kind: 'projectile'; v: string; angle: string; h?: string }
   | { kind: 'incline'; angle: string; m: string; mu?: string; force?: string }
   | { kind: 'pulley'; m1: string; m2: string }

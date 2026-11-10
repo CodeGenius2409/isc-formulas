@@ -3,7 +3,7 @@
 //
 // Capacity is worked out for every combination on each run, and a sample is really built, so the count can't drift from what a
 // request gets. STRESS_FULL=1 builds every one. STRESS_REPORT=1 writes reports/filter-stress.json for the supply report.
-// Where a combination can't be filled, that's material still to write. The numbers in stress-allowed.json can only go down.
+// Where a combination can't be filled, that's material still to write. How many combinations can be filled, saved in reports/filter-stress.json, can only go up. stress-allowed.json keeps the shortfalls, for reading.
 import fs from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
@@ -146,7 +146,13 @@ describe('every filter can be filled from exact matches', () => {
       fs.writeFileSync(ALLOWED, `${JSON.stringify(shortfalls, null, 1)}\n`);
       return;
     }
-    const allowed = fs.existsSync(ALLOWED) ? (JSON.parse(fs.readFileSync(ALLOWED, 'utf8')) as Record<string, number>) : {};
-    for (const [k, v] of Object.entries(shortfalls)) if (k in allowed) expect(v, k).toBeLessThanOrEqual(allowed[k]);
+    // What can be filled must not fall. The shortfall alone isn't the measure: a subtopic's first question of a new type and
+    // difficulty adds a combination that is short at first, so the shortfall rises while the supply only grows.
+    const saved = path.resolve(__dirname, '../../reports/filter-stress.json');
+    const was = fs.existsSync(saved) ? (JSON.parse(fs.readFileSync(saved, 'utf8')) as { totals: typeof totals }).totals : {};
+    for (const [subject, t] of Object.entries(totals)) {
+      for (const [k, filled] of Object.entries(was[subject]?.filled ?? {})) expect(t.filled[k] ?? 0, `${subject} ${k} filled`).toBeGreaterThanOrEqual(filled);
+    }
+    expect(Object.keys(shortfalls).length).toBeGreaterThan(0);
   });
 });
