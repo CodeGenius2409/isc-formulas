@@ -12,7 +12,7 @@ export const MIN_WRITTEN = 5;
 
 /** Topics with something to derive or prove, by "level unit+topic". Everything else has no derivation to ask. */
 const DERIVES: Partial<Record<SubjectId, RegExp>> = {
-  physics: /^XI (2[ab]|3[ab]|4[ab]|5[abc]|6[ab]|7[abc]|8[ab]|9a|10[ab])$|^XII (1[ab]|2[ab]|3[ab]|4[ab]|6[abc]|7a|8[ab]|9b)$/,
+  physics: /^XI (2[ab]|3[ab]|4[ab]|5[abc]|6[ab]|7[abc]|8[ab]|9a|10[ab])$|^XII (1[ab]|2[ab]|3[ab]|4[ab]|6[abc]|7a|8[ab])$/,
   chemistry: /^XI (1b|2[ab]|5[ab]|6[ab])$|^XII (1a|2[ab]|3[ab])$/,
   mathematics: /./,
   computerscience: /^XI 2a$|^XII (1b|9[a-z])$/,
