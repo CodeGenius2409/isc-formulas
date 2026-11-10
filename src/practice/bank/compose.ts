@@ -133,10 +133,17 @@ export interface PaperComposer {
   unreviewedFill: number;
   /** How many places took another format, as the one wanted had nothing left. */
   substituted: number;
+  /** Places filled so far, and how many of them were generated, so the slider holds over the whole paper and not per section. */
+  placed: number;
+  madeSoFar: number;
+  /** How many places the whole paper has, when known, so each place can be decided against what the paper still needs. */
+  places?: number;
+  /** How many of them should be generated, as the slider's message said; otherwise the share of the places, rounded. */
+  madeTarget?: number;
 }
 
-export function createComposer(options: Pick<PaperComposer, 'subject' | 'level' | 'set' | 'weights' | 'share' | 'rng' | 'fresh' | 'reviewedOnly'>): PaperComposer {
-  return { ...options, used: new Set(), usedBlueprints: new Set(), seenText: new Set(), seenFacts: new Set(), seenStructures: new Set(), shapes: new Set(), unitMarks: new Map(), topicTaken: new Map(), asked: topicAsked(options.subject, options.level), unreviewedFill: 0, substituted: 0 };
+export function createComposer(options: Pick<PaperComposer, 'subject' | 'level' | 'set' | 'weights' | 'share' | 'rng' | 'fresh' | 'reviewedOnly' | 'places' | 'madeTarget'>): PaperComposer {
+  return { ...options, used: new Set(), usedBlueprints: new Set(), seenText: new Set(), seenFacts: new Set(), seenStructures: new Set(), shapes: new Set(), unitMarks: new Map(), topicTaken: new Map(), asked: topicAsked(options.subject, options.level), unreviewedFill: 0, substituted: 0, placed: 0, madeSoFar: 0 };
 }
 
 export interface SlotRequest {
@@ -333,8 +340,19 @@ function pickPlace(c: PaperComposer, req: SlotRequest, format: QuestionFormat | 
 export function composeSlot(c: PaperComposer, req: SlotRequest): SlotResult {
   const plan: (QuestionFormat | null)[] = req.mix ? planFormats(req.mix, req.count, c.rng) : [];
   while (plan.length < req.count) plan.push(null);
-  // The slider, as whole questions, spread over the section at random.
-  const made = new Set(shuffled(plan.map((_, i) => i), c.rng).slice(0, Math.round((req.count * Math.max(0, Math.min(100, c.share))) / 100)));
+  // The slider, as whole questions over the whole paper: this run takes what brings the paper's running total to the share, so
+  // halves don't pile up section by section, and a run that couldn't find a generated question is made up for in the next.
+  const share = Math.max(0, Math.min(100, c.share)) / 100;
+  const wanted = Math.max(0, Math.min(req.count, Math.round(share * (c.placed + req.count)) - c.madeSoFar));
+  const made = new Set(shuffled(plan.map((_, i) => i), c.rng).slice(0, wanted));
+  // With the paper's size known, each place is drawn against what's still needed, so a place that wanted a generated question and
+  // found none is made up for later, and the paper ends on the share.
+  const wantsMade = (i: number): boolean => {
+    if (c.places === undefined) return made.has(i);
+    const need = (c.madeTarget ?? Math.round(share * c.places)) - c.madeSoFar;
+    const left = c.places - c.placed;
+    return need > 0 && (need >= left || c.rng() < need / left);
+  };
   const questions: BankQuestion[] = [];
   let figures = 0;
   let thinking = 0;
@@ -344,9 +362,11 @@ export function composeSlot(c: PaperComposer, req: SlotRequest): SlotResult {
     return gap > 0.5 ? true : gap < -0.5 ? false : null;
   };
   plan.forEach((format, i) => {
-    const q = pickPlace(c, req, format, made.has(i), { figure: behind(req.figure, figures, i), thinking: behind(req.cbq, thinking, i) });
+    const q = pickPlace(c, req, format, wantsMade(i), { figure: behind(req.figure, figures, i), thinking: behind(req.cbq, thinking, i) });
     if (!q) return;
     questions.push(q);
+    c.placed++;
+    if (q.item.generated || isCompiled(q.item)) c.madeSoFar++;
     if (hasFigure(q.item)) figures++;
     if (isCompetency(q.item.generated?.format ?? q.item.format ?? (q.item.type as QuestionFormat), q.item.generated?.style ?? q.item.style, q.item.difficulty)) thinking++;
   });

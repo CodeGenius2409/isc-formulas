@@ -212,9 +212,14 @@ export function paperSlots(subject: SubjectId, level: ClassLevel, bank: LoadedBa
 /** Builds a paper. Pure apart from reading the bank, so that a test can check its structure. */
 export function assemblePaper(subject: SubjectId, level: ClassLevel, bank: LoadedBank, weights: Map<number, number>, rng: Rng, now: number, generated?: GeneratedOption): Paper {
   const spec = paperSpec(subject, level);
-  const share = generated ? planShare(paperSlots(subject, level, bank), generated.share).share : 0;
-  const composer = createComposer({ subject, level, set: generated?.set, weights, share, rng, fresh: generated?.fresh, reviewedOnly: generated?.reviewedOnly });
-  const sections = spec.sections.map((section) => {
+  const plan = generated ? planShare(paperSlots(subject, level, bank), generated.share) : null;
+  const share = plan?.share ?? 0;
+  const composer = createComposer({ subject, level, set: generated?.set, weights, share, rng, fresh: generated?.fresh, reviewedOnly: generated?.reviewedOnly, madeTarget: plan?.generated ?? 0, places: spec.sections.reduce((sum, s) => sum + s.slots.reduce((n, slot) => n + slot.count, 0), 0) });
+  // The sections of longest questions fill first: they have the fewest generated questions, so a shortfall there can still be made
+  // up in Section A, and the paper ends on the slider. They go back in their own order after. At 0% and 100% there's nothing to make up.
+  const order = spec.sections.map((s, i) => ({ i, marks: Math.max(...s.slots.map((slot) => slot.marks)) })).sort((a, b) => (share > 0 && share < 100 ? b.marks - a.marks : 0) || a.i - b.i);
+  const built = order.map(({ i }) => {
+    const section = spec.sections[i];
     const alternatives: Record<string, BankQuestion> = {};
     let orLeft = section.or ?? 0;
     const questions = section.slots.flatMap((slot) => {
@@ -237,8 +242,9 @@ export function assemblePaper(subject: SubjectId, level: ClassLevel, bank: Loade
       orLeft -= Object.keys(result.alternatives).length;
       return result.questions;
     });
-    return { name: section.name, note: section.note, choose: section.choose, questions, ...(Object.keys(alternatives).length ? { alternatives } : {}) };
+    return { i, section: { name: section.name, note: section.note, choose: section.choose, questions, ...(Object.keys(alternatives).length ? { alternatives } : {}) } };
   });
+  const sections = built.sort((a, b) => a.i - b.i).map((b) => b.section);
   return { subject, level, total: spec.total, startedAt: now, endsAt: now + PAPER_MINUTES * 60_000, sections, answers: {}, generatedShare: generated ? share : 0, ...(generated?.reviewedOnly ? { reviewedOnly: true, reviewNote: reviewNoteFor(composer.unreviewedFill) } : {}) };
 }
 

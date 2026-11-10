@@ -10,7 +10,8 @@ import { loadSyllabus } from '../../src/data/syllabus';
 import type { ClassLevel, SubjectId } from '../../src/data/types';
 import { loadBank } from '../../src/practice/bank';
 import { classTargets, formatOfQuestion, hasFigure, isCompetency, topicAsked } from '../../src/practice/bank/compose';
-import { assemblePaper, paperSpec, unitWeightsForTest } from '../../src/practice/bank/paper';
+import { assemblePaper, paperSlots, paperSpec, unitWeightsForTest } from '../../src/practice/bank/paper';
+import { planShare } from '../../src/practice/gen/mix';
 import type { BankQuestion, QuestionFormat } from '../../src/practice/bank/types';
 import { seededRng } from '../../src/practice/questions';
 import { allItems, buildFullPaper, emptyFilters, officialStructure } from '../../src/practice/gen/teacher';
@@ -123,6 +124,11 @@ describe.each(CLASSES)('%s %s', (subject, level) => {
       });
       const ids = paper.sections.flatMap((s) => [...s.questions, ...Object.values(s.alternatives ?? {})].map((q) => q.item.id));
       expect(new Set(ids).size, 'a question twice, counting alternatives').toBe(ids.length);
+      // The slider holds over the whole paper, to within a question, and not section by section.
+      const asked = paper.sections.flatMap((s) => s.questions);
+      const made = asked.filter((q) => Boolean(q.item.generated) || q.item.origin === 'compiled').length;
+      // At 100% a place with no generated question left takes a bank one, rather than stay empty.
+      if (share < 100) expect(Math.abs(made - planShare(paperSlots(subject, level, bank), share).generated), 'generated questions against what the slider says').toBeLessThanOrEqual(1);
       const facts = paper.sections.flatMap((s) => [...s.questions, ...Object.values(s.alternatives ?? {})].flatMap((q) => q.item.facts ?? []));
       expect(new Set(facts).size, 'a fact twice, counting alternatives').toBe(facts.length);
     }

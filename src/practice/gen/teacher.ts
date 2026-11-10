@@ -546,11 +546,13 @@ const GROUPED: Partial<Record<SubjectId, FormatChoice[]>> = {
 export async function buildFullPaper(filters: Filters, level: ClassLevel, structure: (CustomSection & { units?: number[] })[], subjectLabel: string, seed: number, avoid: Set<string> = new Set(), fresh?: Freshness): Promise<TeacherPaper> {
   const rng = seededRng(seed);
   const weights = await unitWeights(filters.subject, level);
-  const composer = createComposer({ subject: filters.subject, level, set: undefined, weights, share: filters.share, rng, fresh, reviewedOnly: filters.reviewedOnly });
+  const composer = createComposer({ subject: filters.subject, level, set: undefined, weights, share: filters.share, rng, fresh, reviewedOnly: filters.reviewedOnly, places: structure.reduce((sum, part) => sum + part.count, 0), madeTarget: structure.reduce((sum, part) => sum + generatedCount(part.count, filters.share), 0) });
   let short = 0;
   const related: PaperItem[] = [];
-  const sections: PaperSectionDraft[] = [];
-  for (const part of structure) {
+  const placed: { i: number; section: PaperSectionDraft }[] = [];
+  // Longest questions first, as in a mock paper: they have the fewest generated questions, so Section A can make up a shortfall.
+  const order = structure.map((part, i) => ({ part, i })).sort((a, b) => (filters.share > 0 && filters.share < 100 ? b.part.marks - a.part.marks : 0) || a.i - b.i);
+  for (const { part, i } of order) {
     const units = part.units?.map((u) => `${level} ${u}`);
     const f: Filters = { ...filters, levels: [level], marks: [part.marks], formats: part.formats, units: units ?? filters.units, topics: units ? [] : filters.topics };
     const target = part.formats.length ? undefined : sectionTarget(filters.subject, level, part.name, part.marks);
@@ -587,8 +589,9 @@ export async function buildFullPaper(filters: Filters, level: ClassLevel, struct
     short += left;
     const orCount = items.filter((i) => i.or).length;
     const orText = orCount ? ` Internal choice in ${orCount} ${orCount === 1 ? 'question' : 'questions'}.` : '';
-    sections.push({ name: part.name, note: `${part.choose ? `Answer any ${part.choose}.` : `${part.count} ${part.count === 1 ? 'question' : 'questions'} of ${part.marks} ${part.marks === 1 ? 'mark' : 'marks'}${part.count === 1 ? '' : ' each'}.`}${orText}`, choose: part.choose, items });
+    placed.push({ i, section: { name: part.name, note: `${part.choose ? `Answer any ${part.choose}.` : `${part.count} ${part.count === 1 ? 'question' : 'questions'} of ${part.marks} ${part.marks === 1 ? 'mark' : 'marks'}${part.count === 1 ? '' : ' each'}.`}${orText}`, choose: part.choose, items } });
   }
+  const sections = placed.sort((a, b) => a.i - b.i).map((p) => p.section);
   const paper: TeacherPaper = {
     id: `t-${seed}-${Date.now().toString(36)}`,
     mode: 'paper',

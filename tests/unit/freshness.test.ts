@@ -24,9 +24,12 @@ const share = (a: string[], b: string[]) => {
 /**
  * What a question asks, with its numbers and formulas taken out. A structure is a question's blueprint or its own id, so two
  * hand-written questions asking the same thing of different functions count as different structures. This catches them.
+ * A program to trace and a choice's options are part of what's asked: "Write the output of the following program." heads many
+ * different questions, and so does "Which of these statements is correct?".
  */
 const askOf = (q: ReturnType<typeof questionsOf>[number]) =>
-  q.item.text
+  [q.item.text, 'code' in q.item ? q.item.code : '', 'options' in q.item ? q.item.options.map((o) => o.text).join(' ') : '']
+    .join(' ')
     .replace(/\$[^$]*\$/g, ' ')
     .replace(/[−-]?\d[\d.,]*/g, ' ')
     .toLowerCase()
