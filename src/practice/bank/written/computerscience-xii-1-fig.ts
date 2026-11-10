@@ -1,15 +1,9 @@
 // Written by hand: Boolean algebra and logic gates, figures to draw and read. Places are at(unit, topic)(marks, difficulty).
 import { at, kit, type BankDef } from '../define';
-import type { SketchMark } from '../diagram';
-import { label, line, sketch, table } from '../figures';
+import { andGate, label, line, notGate, orGate, sketch, table } from '../figures';
 
 const { figure } = kit('computerscience', 'XII');
 const B = at(1, 'b');
-
-/** Gate outlines, with inputs on the left and the output at (x + 40, y). */
-const andGate = (x: number, y: number): SketchMark => ({ t: 'path', d: `M${x} ${y - 18} L${x + 20} ${y - 18} A 18 18 0 0 1 ${x + 20} ${y + 18} L${x} ${y + 18} Z` });
-const orGate = (x: number, y: number): SketchMark => ({ t: 'path', d: `M${x} ${y - 18} Q ${x + 30} ${y - 18}, ${x + 40} ${y} Q ${x + 30} ${y + 18}, ${x} ${y + 18} Q ${x + 10} ${y}, ${x} ${y - 18} Z` });
-const notGate = (x: number, y: number): SketchMark[] => [{ t: 'path', d: `M${x} ${y - 12} L${x + 24} ${y} L${x} ${y + 12} Z` }, { t: 'circle', x: x + 28, y, r: 4 }];
 
 const questions: BankDef[] = [
   figure(B(2, 2), 'The Karnaugh map shows F(A, B, C, D). Group its 1s, and write F in its simplest sum-of-products form.', ['The four 1s form one quad, in rows A′B and AB, and columns C′D and CD.', 'A and C change across the quad, so F = B·D.'], {

@@ -1,9 +1,8 @@
-// The balanced-supply table: for every subtopic and question type, how many different questions there are, and how many were
-// written by hand. Only writes the report when asked:
-//   $env:TYPE_MATRIX='before'; npx vitest run tests/unit/type-matrix.test.ts
-// "Total" is what a request can really use, with no fact asked twice, so several questions on one fact count once.
-// Hand-written questions are needed only in the most-asked quarter of subtopics, 38 of 152. The rest can rely on generated and
-// fact-based ones.
+// The balanced-supply table: for every subtopic and question type, how many questions were written by hand. Only writes the
+// report when asked:
+//   $env:TYPE_MATRIX='after'; npx vitest run tests/unit/type-matrix.test.ts
+// The target is 5 hand-written questions of every fitting type in the 38 most-asked subtopics, the top quarter of 152 by how often
+// the papers ask them, and 3 in every other. Fact-based and compiled questions don't count. Several questions on one fact count once.
 import fs from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
@@ -11,15 +10,15 @@ import { loadBank } from '../../src/practice/bank';
 import { isCompiled } from '../../src/practice/bank/define';
 import type { QuestionFormat } from '../../src/practice/bank/types';
 import { distinctCount } from '../../src/practice/gen/mix';
-import { bankFormatOf, capacityOf, emptyFilters } from '../../src/practice/gen/teacher';
+import { bankFormatOf } from '../../src/practice/gen/teacher';
 import { allTopics, mostAsked } from './lib/supply';
-import { fitsTopic, MIN_TOTAL, MIN_WRITTEN, WORK_ORDER } from './lib/type-fit';
+import { FILL_ORDER, fitsTopic, MIN_WRITTEN, MIN_WRITTEN_REST, WORK_ORDER } from './lib/type-fit';
 
 const WHICH = process.env.TYPE_MATRIX;
 const reports = path.resolve(__dirname, '../../reports');
 const SUBJECT_NAME: Record<string, string> = { physics: 'Physics', chemistry: 'Chemistry', mathematics: 'Mathematics', computerscience: 'Computer Science' };
-/** Measured as well, though they aren't what's being worked on. */
-const ALSO: QuestionFormat[] = ['mcq', 'numerical', 'very-short'];
+/** Where this target began: the matrix after Batch 11, when the most-asked subtopics were done. */
+const START = path.join(reports, 'type-matrix-rest-start.json');
 
 interface Cell {
   key: string;
@@ -27,9 +26,11 @@ interface Cell {
   fits: boolean;
   /** In the most-asked quarter, where 5 must be hand-written. */
   top?: boolean;
+  asked?: number;
   written: number;
   facts: number;
-  total: number;
+  /** Older reports also measured what the generator could add; it is no longer a target. */
+  total?: number;
 }
 
 const isWritten = (d: { origin?: string }) => !d.origin || d.origin === 'written';
@@ -41,56 +42,72 @@ async function measure(): Promise<Cell[]> {
   for (const t of topics) {
     const bank = await loadBank(t.subject, t.level);
     const here = bank.defs.filter((d) => d.unit === t.unit && d.topic === t.topic);
-    for (const format of [...WORK_ORDER, ...ALSO]) {
-      const fits = WORK_ORDER.includes(format) ? fitsTopic(t.subject, `${t.level} ${t.unit}${t.topic}`, format) : true;
+    for (const format of WORK_ORDER) {
       const own = here.filter((d) => bankFormatOf(d) === format);
-      const f = { ...emptyFilters(t.subject), levels: [t.level], topics: [`${t.level} ${t.unit} ${t.topic}`], formats: [format], share: 50 };
-      const total = (await capacityOf(f, new Set(), 60)).exact;
-      cells.push({ key: t.key, format, fits, top: top.has(t.key), written: distinctCount(own.filter(isWritten)), facts: distinctCount(own.filter((d) => d.origin === 'facts')), total: total });
+      cells.push({
+        key: t.key,
+        format,
+        fits: fitsTopic(t.subject, `${t.level} ${t.unit}${t.topic}`, format),
+        top: top.has(t.key),
+        asked: t.asked,
+        written: distinctCount(own.filter(isWritten)),
+        facts: distinctCount(own.filter((d) => d.origin === 'facts')),
+      });
     }
     expect(here.filter(isCompiled).every((d) => d.origin === 'compiled')).toBe(true);
   }
   return cells;
 }
 
-/** The written target applies in the most-asked subtopics only. */
-const needsWritten = (c: Cell) => (c.top ? MIN_WRITTEN : 0);
-const met = (c: Cell) => Math.max(c.total, c.written) >= MIN_TOTAL && c.written >= needsWritten(c);
+const needsWritten = (c: Pick<Cell, 'top'>) => (c.top ? MIN_WRITTEN : MIN_WRITTEN_REST);
+const short = (c: Cell) => (c.fits ? Math.max(0, needsWritten(c) - c.written) : 0);
+const met = (c: Cell) => short(c) === 0;
+const sum = (list: Cell[], f: (c: Cell) => number) => list.reduce((s, c) => s + f(c), 0);
+const n = (x: number) => x.toLocaleString('en-GB');
 
-function report(cells: Cell[], before: Cell[] | null): string {
-  const fitting = (list: Cell[]) => list.filter((c) => c.fits && WORK_ORDER.includes(c.format));
+function report(cells: Cell[], start: Cell[] | null): string {
+  const fitting = (list: Cell[]) => list.filter((c) => c.fits);
+  const was = (c: Cell) => start?.find((x) => x.key === c.key && x.format === c.format);
   const out: string[] = [`# Subtopic × question type, ${WHICH}`, '', 'Written by `tests/unit/type-matrix.test.ts`. It counts the app’s own material, and holds no wording from any paper.', ''];
-  out.push(`A cell meets the target at **${MIN_TOTAL} different questions**, bank and generated together with no fact asked twice, of which **${MIN_WRITTEN} written by hand** in the 38 most-asked subtopics, the top quarter by how often the papers ask them, marked ★. Elsewhere generated and fact-based questions can make up all 15. Fact-based and compiled questions don’t count as hand-written. Which types fit which subtopics is written down in \`tests/unit/lib/type-fit.ts\`.`, '');
-  out.push('## By type', '', `| Type | Cells that fit | ${before ? 'Met before | ' : ''}Met | Written, all cells | Empty |`, `|---|---:|${before ? '---:|' : ''}---:|---:|---:|`);
-  for (const format of WORK_ORDER) {
-    const list = fitting(cells).filter((c) => c.format === format);
-    const old = before ? fitting(before).filter((c) => c.format === format) : [];
-    out.push(`| ${format} | ${list.length} | ${before ? `${old.filter(met).length} | ` : ''}${list.filter(met).length} | ${list.reduce((s, c) => s + c.written, 0)} | ${list.filter((c) => c.total === 0).length} |`);
-  }
+  out.push(
+    `A cell meets the target with **${MIN_WRITTEN} questions written by hand** in the 38 most-asked subtopics, the top quarter by how often the papers ask them, marked ★, and **${MIN_WRITTEN_REST}** in every other subtopic. Fact-based and compiled questions don’t count, and several questions on one fact count once. Which types fit which subtopics is written down in \`tests/unit/lib/type-fit.ts\`. There is no longer a target for the number of questions bank and generator give together.`,
+    '',
+  );
   const all = fitting(cells);
-  out.push(`| **All** | ${all.length} | ${before ? `${fitting(before).filter(met).length} | ` : ''}${all.filter(met).length} | ${all.reduce((s, c) => s + c.written, 0)} | ${all.filter((c) => c.total === 0).length} |`);
-  const short = all.reduce((s, c) => s + Math.max(0, needsWritten(c) - c.written), 0);
-  const totalShort = all.reduce((s, c) => s + Math.max(0, MIN_TOTAL - Math.max(c.total, c.written)), 0);
-  out.push('', `Still to write for the target: **${short.toLocaleString('en-GB')}** hand-written questions, and in all **${totalShort.toLocaleString('en-GB')}** more different questions, which can be facts or blueprints. Each hand-written one counts towards both.`, '');
-  if (before) {
-    const was = fitting(before);
-    const wasShort = was.reduce((s, c) => s + Math.max(0, needsWritten(c) - c.written), 0);
-    const wasTotal = was.reduce((s, c) => s + Math.max(0, MIN_TOTAL - Math.max(c.total, c.written)), 0);
-    out.push(`Before, under the same target: **${wasShort.toLocaleString('en-GB')}** hand-written and **${wasTotal.toLocaleString('en-GB')}** in all.`, '');
+  const rest = all.filter((c) => !c.top);
+  const startShort = start ? sum(fitting(start).map((c) => ({ ...c, top: cells.find((x) => x.key === c.key)?.top })), short) : null;
+  out.push(`Still to write: **${n(sum(all, short))}** hand-written questions, all in the ${new Set(rest.map((c) => c.key)).size} subtopics outside the most-asked.${startShort !== null ? ` At the start of this target, after Batch 11, it was **${n(startShort)}**.` : ''}`, '');
+  out.push('## By type', '', `| Type | Cells that fit | ${start ? 'Met at start | ' : ''}Met | Written | Still to write |`, `|---|---:|${start ? '---:|' : ''}---:|---:|---:|`);
+  for (const format of WORK_ORDER) {
+    const list = all.filter((c) => c.format === format);
+    const old = start ? list.map((c) => was(c) ?? c).map((c) => ({ ...c, top: cells.find((x) => x.key === c.key)?.top })) : [];
+    out.push(`| ${format} | ${list.length} | ${start ? `${old.filter(met).length} | ` : ''}${list.filter(met).length} | ${n(sum(list, (c) => c.written))} | ${n(sum(list, short))} |`);
   }
+  out.push(`| **All** | ${all.length} | ${start ? `${all.map((c) => was(c) ?? c).map((c) => ({ ...c, top: cells.find((x) => x.key === c.key)?.top })).filter(met).length} | ` : ''}${all.filter(met).length} | ${n(sum(all, (c) => c.written))} | ${n(sum(all, short))} |`, '');
+
+  // The work list: subtopics outside the most-asked, most-asked first, with what each still needs in the order it is filled.
+  const keys = [...new Set(rest.map((c) => c.key))].sort((a, b) => (cells.find((c) => c.key === b)!.asked ?? 0) - (cells.find((c) => c.key === a)!.asked ?? 0));
+  out.push('## Work list', '', 'Subtopics outside the most-asked, in order of how often the papers ask them, with how many hand-written questions each type still needs, the emptiest kinds first.', '', `| Subtopic | Asked | ${FILL_ORDER.join(' | ')} | Left |`, `|---|---:|${FILL_ORDER.map(() => '---:').join('|')}|---:|`);
+  for (const key of keys) {
+    const row = FILL_ORDER.map((format) => {
+      const c = cells.find((x) => x.key === key && x.format === format)!;
+      return c.fits ? String(short(c) || '·') : '–';
+    });
+    const left = sum(cells.filter((c) => c.key === key), short);
+    out.push(`| ${SUBJECT_NAME[key.split(' ')[0]]} ${key.split(' ').slice(1).join(' ')} | ${cells.find((c) => c.key === key)!.asked ?? 0} | ${row.join(' | ')} | ${left || 'done'} |`);
+  }
+  out.push('');
+
   for (const subject of Object.keys(SUBJECT_NAME)) {
-    out.push(`## ${SUBJECT_NAME[subject]}`, '', 'Each cell is total, then hand-written. A dash is a type that doesn’t fit that subtopic.', '', `| Subtopic | ${WORK_ORDER.join(' | ')} | ${ALSO.join(' | ')} |`, `|---|${[...WORK_ORDER, ...ALSO].map(() => '---:').join('|')}|`);
-    const keys = [...new Set(cells.filter((c) => c.key.startsWith(`${subject} `)).map((c) => c.key))];
-    for (const key of keys) {
-      const row = [...WORK_ORDER, ...ALSO].map((format) => {
+    out.push(`## ${SUBJECT_NAME[subject]}`, '', `Each cell is the number written by hand${start ? ', with the count at the start of this target before the arrow where it has changed' : ''}. A dash is a type that doesn’t fit that subtopic.`, '', `| Subtopic | ${WORK_ORDER.join(' | ')} |`, `|---|${WORK_ORDER.map(() => '---:').join('|')}|`);
+    for (const key of [...new Set(cells.filter((c) => c.key.startsWith(`${subject} `)).map((c) => c.key))]) {
+      const row = WORK_ORDER.map((format) => {
         const c = cells.find((x) => x.key === key && x.format === format)!;
         if (!c.fits) return '–';
-        const text = `${c.total}/${c.written}`;
-        const was = before?.find((x) => x.key === key && x.format === format);
-        return was && (was.total !== c.total || was.written !== c.written) ? `${was.total}/${was.written} → ${text}` : text;
+        const before = was(c);
+        return before && before.written !== c.written ? `${before.written} → ${c.written}` : String(c.written);
       });
-      const star = cells.find((x) => x.key === key)?.top ? ' ★' : '';
-      out.push(`| ${key.replace(`${subject} `, '')}${star} | ${row.join(' | ')} |`);
+      out.push(`| ${key.replace(`${subject} `, '')}${cells.find((x) => x.key === key)?.top ? ' ★' : ''} | ${row.join(' | ')} |`);
     }
     out.push('');
   }
@@ -101,10 +118,8 @@ describe.skipIf(!WHICH)('type matrix', () => {
   it('measures every subtopic and type', async () => {
     const cells = await measure();
     fs.writeFileSync(path.join(reports, `type-matrix-${WHICH}.json`), JSON.stringify(cells));
-    const beforeFile = path.join(reports, 'type-matrix-before.json');
-    // The before file was measured under the old target, so it takes today's most-asked marks to be compared fairly.
-    const before = WHICH !== 'before' && fs.existsSync(beforeFile) ? (JSON.parse(fs.readFileSync(beforeFile, 'utf8')) as Cell[]).map((c) => ({ ...c, top: cells.find((x) => x.key === c.key)?.top })) : null;
-    fs.writeFileSync(path.join(reports, `type-matrix-${WHICH}.md`), report(cells, before));
+    const start = WHICH !== 'rest-start' && fs.existsSync(START) ? (JSON.parse(fs.readFileSync(START, 'utf8')) as Cell[]) : null;
+    fs.writeFileSync(path.join(reports, `type-matrix-${WHICH}.md`), report(cells, start));
     expect(cells.length).toBeGreaterThan(0);
-  }, 1_800_000);
+  }, 600_000);
 });

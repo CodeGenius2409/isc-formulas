@@ -1,14 +1,18 @@
-// Which question types fit which subtopic, for the balanced-supply target: at least 15 questions of each fitting type, bank and
-// generated together, and at least 5 of them written by hand. Used by type-matrix.test.ts. "Fits" is a judgement, written down here
-// so that it can be argued with: a type fits when an ISC examiner could set it on that subtopic without strain.
+// Which question types fit which subtopic, for the balanced-supply target: in every fitting type, 5 questions written by hand in
+// the 38 most-asked subtopics and 3 in every other. Used by type-matrix.test.ts. "Fits" is a judgement, written down here so that
+// it can be argued with: a type fits when an ISC examiner could set it on that subtopic without strain.
 import type { SubjectId } from '../../../src/data/types';
 import type { QuestionFormat } from '../../../src/practice/bank/types';
 
 /** The types being balanced, in the order they are being worked on. */
 export const WORK_ORDER: QuestionFormat[] = ['reason', 'short', 'match', 'diagram', 'predict', 'odd', 'distinguish', 'program', 'assertion', 'long', 'derivation'];
 
-export const MIN_TOTAL = 15;
+/** Hand-written questions per fitting type, in the most-asked quarter of subtopics and in the rest. */
 export const MIN_WRITTEN = 5;
+export const MIN_WRITTEN_REST = 3;
+
+/** The order a subtopic's types are filled in: the emptiest kinds first. */
+export const FILL_ORDER: QuestionFormat[] = ['diagram', 'predict', 'odd', 'long', 'distinguish', 'match', 'reason', 'short', 'assertion', 'derivation', 'program'];
 
 /** Topics with something to derive or prove, by "level unit+topic". Everything else has no derivation to ask. */
 const DERIVES: Partial<Record<SubjectId, RegExp>> = {
