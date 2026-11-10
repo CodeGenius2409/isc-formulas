@@ -1,7 +1,7 @@
 // Written by hand: magnetism and matter, three of each type the subtopic lacked. Places are at(unit, topic)(marks, difficulty).
 // Assertion–reason answers: 1 both true and R explains, 2 both true but R doesn't explain, 3 A true and R false, 4 A false and R true.
 import { at, kit, type BankDef } from '../define';
-import { arrow, graph, label, line, plot, sketch } from '../figures';
+import { graph, label, line, plot, sketch } from '../figures';
 
 const { figure, predict, odd, long, tell, match, ar, derive } = kit('physics', 'XII');
 const M = at(3, 'b');
