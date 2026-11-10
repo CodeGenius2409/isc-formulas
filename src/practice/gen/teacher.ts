@@ -324,6 +324,8 @@ interface DrawRequest {
   singleFact?: boolean;
   /** Prefers facts not used lately. */
   fresh?: Freshness;
+  /** Takes all the bank can give before any generated question, as capacity counts them. */
+  bankFirst?: boolean;
 }
 
 /**
@@ -334,18 +336,37 @@ async function drawQuestions(req: DrawRequest): Promise<{ items: PaperItem[]; sh
   const { usedBlueprints = new Set<string>(), seenText = new Set<string>(), seenFacts = new Set<string>() } = req;
   const startText = new Set(seenText);
   const startFacts = new Set(seenFacts);
+  const startBlueprints = new Set(usedBlueprints);
+  // Each try starts from where the request began: the blueprints, wording and facts an earlier try used are free again.
+  const restart = () => {
+    seenText.clear();
+    for (const x of startText) seenText.add(x);
+    seenFacts.clear();
+    for (const x of startFacts) seenFacts.add(x);
+    usedBlueprints.clear();
+    for (const x of startBlueprints) usedBlueprints.add(x);
+  };
   const first = await drawOnce(req, usedBlueprints, seenText, seenFacts);
   if (first.short === 0) return first;
   // A matching question uses up several facts, so if that left it short, it starts again without them.
-  seenText.clear();
-  for (const x of startText) seenText.add(x);
-  seenFacts.clear();
-  for (const x of startFacts) seenFacts.add(x);
-  return drawOnce({ ...req, singleFact: true }, usedBlueprints, seenText, seenFacts);
+  restart();
+  const second = await drawOnce({ ...req, singleFact: true }, usedBlueprints, seenText, seenFacts);
+  if (second.short === 0 || req.filters.share <= 0 || req.filters.share >= 100) return second;
+  // Still short: generated questions took facts that the bank's fact-based questions needed. Capacity counts the bank first, so
+  // the last try does too. The set then leans on the bank more than the slider asked, but has the number asked for.
+  // It tries with questions that use several facts at once, as capacity counts those too, and then without.
+  let best = second;
+  for (const singleFact of [false, true]) {
+    restart();
+    const next = await drawOnce({ ...req, singleFact, bankFirst: true }, usedBlueprints, seenText, seenFacts);
+    if (next.items.length > best.items.length) best = next;
+    if (best.short === 0) break;
+  }
+  return best;
 }
 
 async function drawOnce(req: DrawRequest, usedBlueprints: Set<string>, seenText: Set<string>, seenFacts: Set<string>): Promise<{ items: PaperItem[]; short: number }> {
-  const { count, filters: f, rng, avoid, slot, singleFact, fresh } = req;
+  const { count, filters: f, rng, avoid, slot, singleFact, fresh, bankFirst } = req;
   const sources = await loadSources(f);
   const matching = sources.flatMap((s) => s.bank.defs.filter((d) => bankMatches(d, s.level, f) && !avoid.has(d.id)).map((def) => ({ def, bank: s.bank })));
   // The slider's two sides: compiled questions count as generated, so they're only for a share above 0%.
@@ -355,7 +376,7 @@ async function drawOnce(req: DrawRequest, usedBlueprints: Set<string>, seenText:
   const blueprintTotal = pools.reduce((n, p) => n + p.list.length, 0);
   const wantGen = blueprintTotal || compiledPool.length ? generatedCount(count, f.share) : 0;
   const bankOrder = mixedBankOrder(fresh ? bankPool.filter(({ def }) => !fresh.resting(defKeys(def))) : bankPool, rng);
-  const wantBank = f.share >= 100 ? 0 : Math.min(count - wantGen, bankOrder.length);
+  const wantBank = f.share >= 100 ? 0 : Math.min(bankFirst ? count : count - wantGen, bankOrder.length);
   // No fact twice, and no structure twice with the same setting, while there are others to take.
   const shapes = new Set<string>();
   const fits = (def: BankDef) => !(def.facts ?? []).some((x) => seenFacts.has(x)) && !(def.shape && shapes.has(`${def.shape}|${def.context ?? ''}`));

@@ -27,7 +27,7 @@ const DRAWS: Partial<Record<SubjectId, RegExp>> = {
 };
 
 /** Topics that are programming, where a program is what the papers ask. */
-const PROGRAMS = /^XI (4[a-z]|5[a-z]|6[a-z]|7[a-z]|8[a-z]|9[a-z]|10[a-z]|11[a-z]|12[a-z])$|^XII (3[a-z]|4[a-z]|5[a-z]|6[a-z]|7[a-z]|8[a-z])$/;
+const PROGRAMS = /^XI (4[a-z]|5[a-z]|6[a-z]|7[a-z]|8[a-z]|9[a-z]|10[a-z]|11[a-z]|12[a-z])$|^XII (3[a-z]|4[a-z]|5[a-z]|6[a-z]|7[a-z])$/;
 
 export function fitsTopic(subject: SubjectId, place: string, format: QuestionFormat): boolean {
   switch (format) {
