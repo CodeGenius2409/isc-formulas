@@ -426,7 +426,7 @@ The engine's blueprints are too many to read one at a time, so they were read as
 From Batch 12 the target is 3 hand-written questions of every type that fits, in each of the 114 subtopics outside the 38 most-asked, which already have 5. Subtopics are taken in order of how often the papers ask them. `reports/type-matrix-after.md` keeps the work list.
 
 <!-- still-needed -->
-**Hand-written questions still needed: 1,267** after Batch 18, from 2,585 at the start of this target.
+**Hand-written questions still needed: 1,081** after Batch 19, from 2,585 at the start of this target.
 <!-- /still-needed -->
 
 | Batch | What was added | Problems found | Written so far |
@@ -450,6 +450,7 @@ From Batch 12 the target is 3 hand-written questions of every type that fits, in
 | 16 | The next eight: Computer Science XII 6b and XI 3a, Physics XI 10b, Chemistry XI 1c and 8a, Chemistry XII 8b and 10c, Mathematics XI 5b (188), with three interface programs traced by hand, as the tracer skips interfaces | On viewing, the tick labels of a wave graph sat exactly where the curve crossed the axis, so the ticks are now at the crests, which still give the wavelength. Every concentration, normality, pH-free volumetric sum, wave number, harmonic, beat frequency and probability worked again by hand, and every equation balanced | 4,808 |
 | 17 | The next eight: Chemistry XII 3b, 9b and 2c, Chemistry XI 1b, Mathematics XI 3a, 3b and 2c, Physics XI 4a (191) | The figure check caught two labels off the edge. On viewing: a label across an arrow, an Arrhenius plot whose values were all negative and so lost its axis, two graph-line labels on top of each other at a shared end point, now drawn as sketches with placed labels, a reagent cut off at the edge, two point labels across a circle, and a figure line drawn the wrong way. An amalgam written Zn(Hg) in an equation would have read as extra mercury, so it is written in words. Every rate constant, activation energy, chord, angle, count and mole sum worked again by hand | 4,999 |
 | 18 | The next eight: Mathematics XI 2e, Computer Science XI 2a, 3b and 11b, Chemistry XI 2b, 4b and 9b, Physics XI 2a (192), with one file-handling program traced by hand, as the tracer skips file classes | On viewing, the spin arrows ↑ and ↓ in orbital diagrams showed as coloured symbols, so electron spins are now drawn as arrow lines. Orbital names written with an underscore, such as p_y, were changed to the bank’s form, py. Every code, binary form, configuration, bond order, motion graph and series sum worked again by hand | 5,191 |
+| 19 | The next eight: Mathematics XI 2b and 4a, Computer Science XI 5b and 12a, Physics XI 3a, Chemistry XI 4a and 5b, Chemistry XII 11c (186), with three exception-handling programs traced by hand | The tracer has no parser for try … catch, so its test now skips programs that use it, as it skips other features it doesn’t cover. On viewing: a parabola running through a root’s label, now drawn between its roots, and two labels on the lines of a secant-and-tangent figure. Two figure labels off the edge, caught before rendering. Every root, limit, derivative, impulse, entropy and Gibbs energy worked again by hand | 5,377 |
 
 ### Novelty check for v6
 

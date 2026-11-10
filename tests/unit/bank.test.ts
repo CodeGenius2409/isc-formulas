@@ -184,7 +184,7 @@ describe('Computer Science programs', () => {
   it('has model programs that run, where the interpreter covers the feature', async () => {
     let checked = 0;
     for (const d of await allOutputs()) {
-      if (d.form !== 'theory' || !d.model || d.python || !/static void main/.test(d.model) || /\bextends\b|\binterface\b|\bimplements\b|\bFileReader\b|\bthrows\b/.test(d.model)) continue;
+      if (d.form !== 'theory' || !d.model || d.python || !/static void main/.test(d.model) || /\bextends\b|\binterface\b|\bimplements\b|\bFileReader\b|\bthrows\b|\btry\b/.test(d.model)) continue;
       const code = /```\n?([\s\S]*?)```/.exec(d.model)?.[1] ?? d.model;
       const run = runProgram(code, ['5', '3', '1', '2', '3', '4', '5', '6', '7', '8', '9'].join(' '));
       expect(run.error, `${d.id}: ${run.error}`).toBeFalsy();
