@@ -35,7 +35,8 @@ export function askedCounts(): Map<string, number> {
   const titles: Record<string, SubjectId> = { Physics: 'physics', Chemistry: 'chemistry', Mathematics: 'mathematics', 'Computer Science': 'computerscience' };
   let subject: SubjectId | null = null;
   const from = text.indexOf('### By topic');
-  for (const line of text.slice(from).split('\n')) {
+  // The report may have Windows line endings, and a stray \r would stop the headings matching.
+  for (const line of text.slice(from).split(/\r?\n/)) {
     const heading = /^#### (.+)$/.exec(line);
     if (heading) subject = titles[heading[1].trim()] ?? null;
     const row = /^\| (XI|XII) \| (\d+)([a-z]) .*?\| (\d+) \|/.exec(line);
