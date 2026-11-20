@@ -4,24 +4,24 @@ Written by `tests/unit/type-matrix.test.ts`. It counts the app’s own material,
 
 A cell meets the target with **5 questions written by hand** in the 38 most-asked subtopics, the top quarter by how often the papers ask them, marked ★, and **3** in every other subtopic. Fact-based and compiled questions don’t count, and several questions on one fact count once. Which types fit which subtopics is written down in `tests/unit/lib/type-fit.ts`. There is no longer a target for the number of questions bank and generator give together.
 
-Still to write: **539** hand-written questions, all in the 114 subtopics outside the most-asked. At the start of this target, after Batch 11, it was **2,585**.
+Still to write: **362** hand-written questions, all in the 114 subtopics outside the most-asked. At the start of this target, after Batch 11, it was **2,585**.
 
 ## By type
 
 | Type | Cells that fit | Met at start | Met | Written | Still to write |
 |---|---:|---:|---:|---:|---:|
-| reason | 152 | 84 | 138 | 610 | 31 |
-| short | 152 | 90 | 142 | 665 | 21 |
-| match | 152 | 38 | 126 | 456 | 76 |
-| diagram | 124 | 33 | 102 | 372 | 66 |
-| predict | 152 | 38 | 126 | 465 | 67 |
-| odd | 152 | 38 | 126 | 454 | 78 |
-| distinguish | 152 | 43 | 129 | 473 | 60 |
+| reason | 152 | 84 | 142 | 619 | 22 |
+| short | 152 | 90 | 145 | 670 | 16 |
+| match | 152 | 38 | 134 | 480 | 52 |
+| diagram | 124 | 33 | 110 | 396 | 42 |
+| predict | 152 | 38 | 134 | 488 | 44 |
+| odd | 152 | 38 | 134 | 478 | 54 |
+| distinguish | 152 | 43 | 137 | 495 | 38 |
 | program | 20 | 7 | 16 | 58 | 7 |
-| assertion | 152 | 44 | 129 | 495 | 55 |
-| long | 152 | 47 | 126 | 479 | 64 |
-| derivation | 76 | 39 | 70 | 305 | 14 |
-| **All** | 1436 | 501 | 1230 | 4,832 | 539 |
+| assertion | 152 | 44 | 137 | 515 | 35 |
+| long | 152 | 47 | 134 | 500 | 43 |
+| derivation | 76 | 39 | 72 | 310 | 9 |
+| **All** | 1436 | 501 | 1295 | 5,009 | 362 |
 
 ## Work list
 
@@ -117,14 +117,14 @@ Subtopics outside the most-asked, in order of how often the papers ask them, wit
 | Physics XI 5c | 1 | · | · | · | · | · | · | · | · | · | · | – | done |
 | Physics XI 6b | 1 | · | · | · | · | · | · | · | · | · | · | – | done |
 | Physics XI 7b | 1 | · | · | · | · | · | · | · | · | · | · | – | done |
-| Physics XI 8a | 1 | 3 | 3 | 3 | 3 | 2 | 3 | · | · | 3 | 3 | – | 23 |
-| Physics XI 9a | 1 | 3 | 3 | 3 | 3 | 3 | 3 | · | · | 2 | 2 | – | 22 |
-| Physics XI 10a | 1 | 3 | 3 | 3 | 3 | 3 | 3 | · | · | 3 | · | – | 21 |
-| Chemistry XI 8b | 1 | 3 | 3 | 3 | 2 | 2 | 3 | 2 | 2 | 3 | – | – | 23 |
-| Chemistry XI 8c | 1 | 3 | 3 | 3 | 2 | 3 | 3 | 3 | 1 | 2 | – | – | 23 |
-| Chemistry XI 9a | 1 | 3 | 3 | 3 | 2 | 3 | 3 | 2 | · | 3 | – | – | 22 |
-| Chemistry XI 10a | 1 | 3 | 2 | 3 | 3 | 3 | 3 | 2 | 2 | 3 | – | – | 24 |
-| Chemistry XII 6c | 1 | 3 | 3 | 3 | 3 | 3 | 3 | · | · | 1 | – | – | 19 |
+| Physics XI 8a | 1 | · | · | · | · | · | · | · | · | · | · | – | done |
+| Physics XI 9a | 1 | · | · | · | · | · | · | · | · | · | · | – | done |
+| Physics XI 10a | 1 | · | · | · | · | · | · | · | · | · | · | – | done |
+| Chemistry XI 8b | 1 | · | · | · | · | · | · | · | · | · | – | – | done |
+| Chemistry XI 8c | 1 | · | · | · | · | · | · | · | · | · | – | – | done |
+| Chemistry XI 9a | 1 | · | · | · | · | · | · | · | · | · | – | – | done |
+| Chemistry XI 10a | 1 | · | · | · | · | · | · | · | · | · | – | – | done |
+| Chemistry XII 6c | 1 | · | · | · | · | · | · | · | · | · | – | – | done |
 | Computer Science XII 7a | 1 | – | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | – | 1 | 25 |
 | Physics XI 1p | 0 | 3 | 1 | 3 | 1 | · | 2 | · | · | · | – | – | 10 |
 | Physics XI 3b | 0 | 3 | 3 | 3 | 3 | 3 | 3 | · | · | 3 | 3 | – | 24 |
@@ -168,10 +168,10 @@ Each cell is the number written by hand, with the count at the start of this tar
 | XI 7a | 5 | 5 | 0 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | – | 0 → 3 | 0 → 3 | 0 → 3 |
 | XI 7b | 5 | 5 | 0 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | 1 → 3 | – | 0 → 3 | 0 → 3 | 1 → 3 |
 | XI 7c | 6 | 5 | 0 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | – | 0 → 3 | 0 → 3 | 1 → 3 |
-| XI 8a | 5 | 4 | 0 | 0 | 0 | 0 | 1 | – | 0 | 0 | 0 |
+| XI 8a | 5 | 4 | 0 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | 1 → 3 | – | 0 → 3 | 0 → 3 | 0 → 3 |
 | XI 8b | 5 | 5 | 0 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | – | 0 → 3 | 0 → 3 | 5 |
-| XI 9a | 6 | 6 | 0 | 0 | 0 | 0 | 0 | – | 1 | 0 | 1 |
-| XI 10a | 5 | 5 | 0 | 0 | 0 | 0 | 0 | – | 0 | 0 | 3 |
+| XI 9a | 6 | 6 | 0 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | – | 1 → 3 | 0 → 3 | 1 → 3 |
+| XI 10a | 5 | 5 | 0 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | – | 0 → 3 | 0 → 3 | 3 |
 | XI 10b | 5 | 5 | 0 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | 1 → 3 | – | 0 → 3 | 0 → 3 | 1 → 3 |
 | XII 1a ★ | 5 | 5 | 5 | 5 | 5 | 5 | 5 | – | 5 | 5 | 8 |
 | XII 1b ★ | 5 | 5 | 5 | 5 | 5 | 5 | 5 | – | 5 | 5 | 5 |
@@ -212,13 +212,13 @@ Each cell is the number written by hand, with the count at the start of this tar
 | XI 6b | 0 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | – | 1 → 3 | 2 → 3 | 1 → 3 |
 | XI 7a | 0 → 3 | 2 → 3 | 0 → 3 | – | 0 → 3 | 0 → 3 | 0 → 3 | – | 0 → 3 | 2 → 3 | – |
 | XI 8a | 0 → 3 | 1 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | – | 0 → 3 | 1 → 3 | – |
-| XI 8b | 1 | 1 | 0 | 0 | 0 | 0 | 1 | – | 0 | 1 | – |
-| XI 8c | 0 | 2 | 0 | 0 | 0 | 0 | 0 | – | 1 | 1 | – |
-| XI 9a | 1 | 3 | 0 | 0 | 0 | 0 | 0 | – | 0 | 1 | – |
+| XI 8b | 1 → 3 | 1 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | 1 → 3 | – | 0 → 3 | 1 → 3 | – |
+| XI 8c | 0 → 3 | 2 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | – | 1 → 3 | 1 → 3 | – |
+| XI 9a | 1 → 3 | 3 | 0 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | – | 0 → 3 | 1 → 3 | – |
 | XI 9b | 0 → 3 | 1 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | – | 0 → 3 | 1 → 3 | – |
 | XI 9c | 0 | 2 | 0 | 0 | 0 | 0 | 0 | – | 1 | 2 | – |
 | XI 9d | 1 | 3 | 0 | 0 | 0 | 0 | 0 | – | 0 | 2 | – |
-| XI 10a | 1 | 1 | 0 | 0 | 1 | 0 | 0 | – | 0 | 0 | – |
+| XI 10a | 1 → 3 | 1 → 3 | 0 → 3 | 0 → 3 | 1 → 3 | 0 → 3 | 0 → 3 | – | 0 → 3 | 0 → 3 | – |
 | XI 10b | 2 | 2 | 0 | 0 | 1 | 0 | 2 | – | 2 | 0 | – |
 | XI 10c | 3 | 3 | 0 | 0 | 1 | 0 | 1 | – | 2 | 0 | – |
 | XI 10d | 2 | 4 | 0 | 0 | 1 | 0 | 1 | – | 2 | 0 | – |
@@ -233,7 +233,7 @@ Each cell is the number written by hand, with the count at the start of this tar
 | XII 5a ★ | 5 | 7 | 5 | 5 | 5 | 5 | 5 | – | 5 | 5 | – |
 | XII 6a ★ | 5 | 6 | 5 | 5 | 5 | 5 | 5 | – | 5 | 5 | – |
 | XII 6b | 5 | 4 | 0 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | – | 0 → 3 | 1 → 3 | – |
-| XII 6c | 6 | 5 | 0 | 0 | 0 | 0 | 0 | – | 2 | 0 | – |
+| XII 6c | 6 | 5 | 0 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | – | 2 → 3 | 0 → 3 | – |
 | XII 7a ★ | 5 | 5 | 5 | 5 | 5 | 5 | 5 | – | 5 | 5 | – |
 | XII 7b | 5 | 5 | 0 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | – | 0 → 3 | 1 → 3 | – |
 | XII 7c | 5 | 5 | 0 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | – | 1 → 3 | 0 → 3 | – |
