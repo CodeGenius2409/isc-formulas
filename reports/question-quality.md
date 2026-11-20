@@ -426,7 +426,7 @@ The engine's blueprints are too many to read one at a time, so they were read as
 From Batch 12 the target is 3 hand-written questions of every type that fits, in each of the 114 subtopics outside the 38 most-asked, which already have 5. Subtopics are taken in order of how often the papers ask them. `reports/type-matrix-after.md` keeps the work list.
 
 <!-- still-needed -->
-**Hand-written questions still needed: 362** after Batch 23, from 2,585 at the start of this target.
+**Hand-written questions still needed: 200** after Batch 24, from 2,585 at the start of this target.
 <!-- /still-needed -->
 
 | Batch | What was added | Problems found | Written so far |
@@ -455,6 +455,7 @@ From Batch 12 the target is 3 hand-written questions of every type that fits, in
 | 21 | The next eight: Physics XI 7c, 8b, 1a and 1b, Chemistry XI 2a and 3a, Chemistry XII 11a, Mathematics XI 2d (169) | Before rendering: a label past the frame. On viewing: a word spilling out of its circle, a cycle named by corner letters the graph didn’t show, a label wider than its box, and an axis title lying over four-digit tick labels, redrawn as a sketch. Every titre, molarity, purity, error, dimension, capillary rise and binomial term worked again by hand | 5,738 |
 | 22 | The next eight: Physics XI 5a, 6a, 5c, 6b and 7b, Chemistry XI 1a and 6a, Computer Science XI 11a (181) | The quality gate caught two questions asking outright for an expression, reworded to set it up. On viewing: a label on a water line, two label lines in the wrong order, long tick labels cut off, a falling path that missed the Earth, and two curve labels lying on each other, redrawn as a sketch. Every centre of mass, moment of inertia, orbit, escape speed, terminal velocity, equilibrium constant and conversion worked again by hand; the three Scanner programs run in the tracer | 5,919 |
 | 23 | The next eight: Physics XI 8a, 9a and 10a, Chemistry XI 8b, 8c, 9a and 10a, Chemistry XII 6c (177) | On viewing: a cooler black-body curve that rose above the hotter one, crowded H labels on a Newman projection, a label on a receiving flask, and an axis title touching negative tick labels, replotted in kelvin. Every heat balance, gas law, rms speed, SHM quantity, Kjeldahl and Carius percentage, titre and molarity worked again by hand | 6,096 |
+| 24 | The next eight: Computer Science XII 7a, Physics XI 1p, 3b, 3c, 4b and 5b, Physics XII 6p, Chemistry XI 5a (162) | The quality gate caught one question asking outright for a formula, reworded. Before rendering: a label past the frame. Before viewing, two blocks drawn inside their slopes instead of on them, a force triangle not to scale, masses hung at the wrong marks and a perpendicular drawn to the wrong point were caught and redrawn. On viewing: labels on lines and sides, and an axis title over long tick labels, rescaled. The Python string answers were traced by hand, as the tracer runs only Java; every friction, banking, collision, torque, deviation and enthalpy value worked again by hand | 6,258 |
 
 ### Novelty check for v6
 
