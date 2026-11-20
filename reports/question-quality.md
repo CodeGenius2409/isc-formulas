@@ -426,7 +426,7 @@ The engine's blueprints are too many to read one at a time, so they were read as
 From Batch 12 the target is 3 hand-written questions of every type that fits, in each of the 114 subtopics outside the 38 most-asked, which already have 5. Subtopics are taken in order of how often the papers ask them. `reports/type-matrix-after.md` keeps the work list.
 
 <!-- still-needed -->
-**Hand-written questions still needed: 889** after Batch 20, from 2,585 at the start of this target.
+**Hand-written questions still needed: 720** after Batch 21, from 2,585 at the start of this target.
 <!-- /still-needed -->
 
 | Batch | What was added | Problems found | Written so far |
@@ -452,6 +452,7 @@ From Batch 12 the target is 3 hand-written questions of every type that fits, in
 | 18 | The next eight: Mathematics XI 2e, Computer Science XI 2a, 3b and 11b, Chemistry XI 2b, 4b and 9b, Physics XI 2a (192), with one file-handling program traced by hand, as the tracer skips file classes | On viewing, the spin arrows ↑ and ↓ in orbital diagrams showed as coloured symbols, so electron spins are now drawn as arrow lines. Orbital names written with an underscore, such as p_y, were changed to the bank’s form, py. Every code, binary form, configuration, bond order, motion graph and series sum worked again by hand | 5,191 |
 | 19 | The next eight: Mathematics XI 2b and 4a, Computer Science XI 5b and 12a, Physics XI 3a, Chemistry XI 4a and 5b, Chemistry XII 11c (186), with three exception-handling programs traced by hand | The tracer has no parser for try … catch, so its test now skips programs that use it, as it skips other features it doesn’t cover. On viewing: a parabola running through a root’s label, now drawn between its roots, and two labels on the lines of a secant-and-tangent figure. Two figure labels off the edge, caught before rendering. Every root, limit, derivative, impulse, entropy and Gibbs energy worked again by hand | 5,377 |
 | 20 | The next eight: Computer Science XI 13a and 10a, Chemistry XI 7a, Mathematics XI 2a, 3d and 5a, Physics XI 2b and 7a (192) | Before rendering: an arrow and an axis that ran off the frame. On viewing: point labels lying on the edges of a cuboid, and a velocity label on a projectile’s path. Every oxidation number, balanced equation, complex root, distance, section point, variance and modulus worked again by hand | 5,569 |
+| 21 | The next eight: Physics XI 7c, 8b, 1a and 1b, Chemistry XI 2a and 3a, Chemistry XII 11a, Mathematics XI 2d (169) | Before rendering: a label past the frame. On viewing: a word spilling out of its circle, a cycle named by corner letters the graph didn’t show, a label wider than its box, and an axis title lying over four-digit tick labels, redrawn as a sketch. Every titre, molarity, purity, error, dimension, capillary rise and binomial term worked again by hand | 5,738 |
 
 ### Novelty check for v6
 
