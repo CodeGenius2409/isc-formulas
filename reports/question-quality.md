@@ -426,7 +426,7 @@ The engine's blueprints are too many to read one at a time, so they were read as
 From Batch 12 the target is 3 hand-written questions of every type that fits, in each of the 114 subtopics outside the 38 most-asked, which already have 5. Subtopics are taken in order of how often the papers ask them. `reports/type-matrix-after.md` keeps the work list.
 
 <!-- still-needed -->
-**Hand-written questions still needed: 49** after Batch 25, from 2,585 at the start of this target.
+**Hand-written questions still needed: 0** after Batch 26, from 2,585 at the start of this target.
 <!-- /still-needed -->
 
 | Batch | What was added | Problems found | Written so far |
@@ -457,6 +457,7 @@ From Batch 12 the target is 3 hand-written questions of every type that fits, in
 | 23 | The next eight: Physics XI 8a, 9a and 10a, Chemistry XI 8b, 8c, 9a and 10a, Chemistry XII 6c (177) | On viewing: a cooler black-body curve that rose above the hotter one, crowded H labels on a Newman projection, a label on a receiving flask, and an axis title touching negative tick labels, replotted in kelvin. Every heat balance, gas law, rms speed, SHM quantity, Kjeldahl and Carius percentage, titre and molarity worked again by hand | 6,096 |
 | 24 | The next eight: Computer Science XII 7a, Physics XI 1p, 3b, 3c, 4b and 5b, Physics XII 6p, Chemistry XI 5a (162) | The quality gate caught one question asking outright for a formula, reworded. Before rendering: a label past the frame. Before viewing, two blocks drawn inside their slopes instead of on them, a force triangle not to scale, masses hung at the wrong marks and a perpendicular drawn to the wrong point were caught and redrawn. On viewing: labels on lines and sides, and an axis title over long tick labels, rescaled. The Python string answers were traced by hand, as the tracer runs only Java; every friction, banking, collision, torque, deviation and enthalpy value worked again by hand | 6,258 |
 | 25 | The next eight: Chemistry XI 9c, 9d, 10b, 10c and 10d, Chemistry XII 11b and 11d, Computer Science XI 4a (151) | Before rendering: labels past the frame in two sketches. On viewing, nothing further. Chemistry XII 11d covers the same salt analysis as XI 10b, so its questions were written to ask different things. Every yield, molar mass, Rf value, Nernst potential and pH worked again by hand; the three class programs run in the tracer | 6,409 |
+| 26 | The last two: Computer Science XII 7b and 7c (49) | No problems found. The Python list and tuple answers were traced by hand, as the tracer runs only Java. Every subtopic now has at least 3 hand-written questions of each type that fits it | 6,458 |
 
 ### Novelty check for v6
 

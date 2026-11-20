@@ -4,24 +4,24 @@ Written by `tests/unit/type-matrix.test.ts`. It counts the app’s own material,
 
 A cell meets the target with **5 questions written by hand** in the 38 most-asked subtopics, the top quarter by how often the papers ask them, marked ★, and **3** in every other subtopic. Fact-based and compiled questions don’t count, and several questions on one fact count once. Which types fit which subtopics is written down in `tests/unit/lib/type-fit.ts`. There is no longer a target for the number of questions bank and generator give together.
 
-Still to write: **49** hand-written questions, all in the 114 subtopics outside the most-asked. At the start of this target, after Batch 11, it was **2,585**.
+Still to write: **0** hand-written questions, all in the 114 subtopics outside the most-asked. At the start of this target, after Batch 11, it was **2,585**.
 
 ## By type
 
 | Type | Cells that fit | Met at start | Met | Written | Still to write |
 |---|---:|---:|---:|---:|---:|
-| reason | 152 | 84 | 150 | 635 | 6 |
-| short | 152 | 90 | 150 | 680 | 6 |
-| match | 152 | 38 | 150 | 526 | 6 |
+| reason | 152 | 84 | 152 | 641 | 0 |
+| short | 152 | 90 | 152 | 686 | 0 |
+| match | 152 | 38 | 152 | 532 | 0 |
 | diagram | 124 | 33 | 124 | 438 | 0 |
-| predict | 152 | 38 | 150 | 526 | 6 |
-| odd | 152 | 38 | 150 | 526 | 6 |
-| distinguish | 152 | 43 | 150 | 527 | 6 |
-| program | 20 | 7 | 18 | 62 | 3 |
-| assertion | 152 | 44 | 150 | 544 | 6 |
-| long | 152 | 47 | 150 | 539 | 4 |
+| predict | 152 | 38 | 152 | 532 | 0 |
+| odd | 152 | 38 | 152 | 532 | 0 |
+| distinguish | 152 | 43 | 152 | 533 | 0 |
+| program | 20 | 7 | 20 | 65 | 0 |
+| assertion | 152 | 44 | 152 | 550 | 0 |
+| long | 152 | 47 | 152 | 543 | 0 |
 | derivation | 76 | 39 | 76 | 319 | 0 |
-| **All** | 1436 | 501 | 1418 | 5,322 | 49 |
+| **All** | 1436 | 501 | 1436 | 5,371 | 0 |
 
 ## Work list
 
@@ -141,8 +141,8 @@ Subtopics outside the most-asked, in order of how often the papers ask them, wit
 | Chemistry XII 11b | 0 | · | · | · | · | · | · | · | · | · | – | – | done |
 | Chemistry XII 11d | 0 | · | · | · | · | · | · | · | · | · | – | – | done |
 | Computer Science XI 4a | 0 | – | · | · | · | · | · | · | · | · | – | · | done |
-| Computer Science XII 7b | 0 | – | 3 | 3 | 2 | 3 | 3 | 3 | 3 | 3 | – | 1 | 24 |
-| Computer Science XII 7c | 0 | – | 3 | 3 | 2 | 3 | 3 | 3 | 3 | 3 | – | 2 | 25 |
+| Computer Science XII 7b | 0 | – | · | · | · | · | · | · | · | · | – | · | done |
+| Computer Science XII 7c | 0 | – | · | · | · | · | · | · | · | · | – | · | done |
 
 ## Physics
 
@@ -319,7 +319,7 @@ Each cell is the number written by hand, with the count at the start of this tar
 | XII 6a | 0 → 3 | 0 → 3 | 0 → 3 | – | 0 → 3 | 0 → 3 | 0 → 3 | 2 → 3 | 0 → 3 | 0 → 3 | – |
 | XII 6b | 0 → 3 | 1 → 3 | 0 → 3 | – | 0 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | 1 → 3 | – |
 | XII 7a | 0 → 3 | 0 → 3 | 0 → 3 | – | 0 → 3 | 0 → 3 | 0 → 3 | 2 → 3 | 0 → 3 | 0 → 3 | – |
-| XII 7b | 0 | 0 | 0 | – | 0 | 0 | 0 | 2 | 0 | 1 | – |
-| XII 7c | 0 | 0 | 0 | – | 0 | 0 | 0 | 1 | 0 | 1 | – |
+| XII 7b | 0 → 3 | 0 → 3 | 0 → 3 | – | 0 → 3 | 0 → 3 | 0 → 3 | 2 → 3 | 0 → 3 | 1 → 3 | – |
+| XII 7c | 0 → 3 | 0 → 3 | 0 → 3 | – | 0 → 3 | 0 → 3 | 0 → 3 | 1 → 3 | 0 → 3 | 1 → 3 | – |
 | XII 8a ★ | 5 | 5 | 5 | 5 | 5 | 5 | 5 | – | 5 | 5 | – |
 | XII 9a | 0 → 3 | 1 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | 0 → 3 | – | 0 → 3 | 5 | 0 → 3 |
