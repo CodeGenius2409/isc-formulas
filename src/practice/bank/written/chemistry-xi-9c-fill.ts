@@ -1,7 +1,7 @@
 // Written by hand: alkynes, three of each type the subtopic lacked. Places are at(unit, topic)(marks, difficulty).
 // Assertion–reason answers: 1 both true and R explains, 2 both true but R doesn't explain, 3 A true and R false, 4 A false and R true.
 import { at, kit, type BankDef } from '../define';
-import { arrow, label, line, sketch, table } from '../figures';
+import { label, line, sketch, table } from '../figures';
 
 const { figure, predict, odd, long, tell, match, reason, short, ar } = kit('chemistry', 'XI');
 const Y = at(9, 'c');
