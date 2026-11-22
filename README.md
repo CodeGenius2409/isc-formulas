@@ -52,6 +52,11 @@ command `npm run build`, output folder `dist`.
 Either host must serve over HTTPS, or the service worker and installing won't work. Both do
 by default.
 
+`dist/` also holds Pyodide, about 11 MB in `pyodide/`, for the Python tracer. Both hosts serve
+its `.wasm` and `.mjs` files correctly. It's downloaded only by someone who opens the Python
+tracer, and it isn't part of the offline download unless they turn on "Keep Python for offline
+use" in Settings.
+
 ## Install it on a phone
 
 - **Android:** open the site in Chrome, then choose Install app from the menu.

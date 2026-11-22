@@ -2,6 +2,7 @@
 // computed by the solver, every program runs and prints what the bank says, and a paper can be built.
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ClassLevel, EntryStructure, Syllabus, SubjectId } from '../../src/data/types';
@@ -181,17 +182,53 @@ describe('Computer Science programs', () => {
     }
   });
 
+  /** Exceptions and files, which the tracer doesn't run. Inheritance and interfaces it does, since v5. */
+  const beyondTracer = /\bFileReader\b|\bFileWriter\b|\bthrows?\b|\btry\b/;
+  const modelCode = (model: string) => /```\n?([\s\S]*?)```/.exec(model)?.[1] ?? model;
+  const MODEL_INPUT = ['5', '3', '1', '2', '3', '4', '5', '6', '7', '8', '9'].join(' ');
+
   it('has model programs that run, where the interpreter covers the feature', async () => {
     let checked = 0;
+    let inherits = 0;
     for (const d of await allOutputs()) {
-      if (d.form !== 'theory' || !d.model || d.python || !/static void main/.test(d.model) || /\bextends\b|\binterface\b|\bimplements\b|\bFileReader\b|\bthrows\b|\btry\b/.test(d.model)) continue;
-      const code = /```\n?([\s\S]*?)```/.exec(d.model)?.[1] ?? d.model;
-      const run = runProgram(code, ['5', '3', '1', '2', '3', '4', '5', '6', '7', '8', '9'].join(' '));
-      expect(run.error, `${d.id}: ${run.error}`).toBeFalsy();
+      if (d.form !== 'theory' || !d.model || d.python || !/static void main/.test(d.model) || beyondTracer.test(d.model)) continue;
+      const run = runProgram(modelCode(d.model), MODEL_INPUT);
+      expect(run.error, `${d.id}: ${run.error?.message}`).toBeFalsy();
       checked++;
+      if (/\bextends\b|\bimplements\b/.test(d.model)) inherits++;
     }
     expect(checked).toBeGreaterThan(3);
+    expect(inherits, 'the inheritance and interface models run too').toBeGreaterThan(20);
   });
+
+  it('has model programs with exceptions and files that compile and run, on a real JDK where there is one', async () => {
+    const version = spawnSync('javac', ['-version'], { encoding: 'utf8' });
+    if (version.status !== 0) return;
+    let checked = 0;
+    for (const d of await allOutputs()) {
+      if (d.form !== 'theory' || !d.model || d.python || !/static void main/.test(d.model) || !beyondTracer.test(d.model)) continue;
+      const code = modelCode(d.model);
+      // The class that holds main is the last one declared before it.
+      const main = code.indexOf('static void main');
+      const name = [...code.slice(0, main).matchAll(/\bclass\s+(\w+)/g)].pop()?.[1];
+      expect(name, d.id).toBeTruthy();
+      const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'isc-model-'));
+      try {
+        // A public class must be in a file of its own name.
+        const file = path.join(dir, `${/\bpublic\s+class\s+(\w+)/.exec(code)?.[1] ?? name}.java`);
+        fs.writeFileSync(file, code);
+        const built = spawnSync('javac', ['-nowarn', '-encoding', 'UTF-8', '-d', dir, file], { encoding: 'utf8' });
+        expect(built.status, `${d.id} doesn't compile:\n${built.stderr}`).toBe(0);
+        const run = spawnSync('java', ['-cp', dir, name!], { cwd: dir, input: MODEL_INPUT.replace(/ /g, '\n'), encoding: 'utf8', timeout: 60_000 });
+        expect(run.status, `${d.id} fails:\n${run.stderr}`).toBe(0);
+        expect(run.stderr, d.id).toBe('');
+      } finally {
+        fs.rmSync(dir, { recursive: true, force: true });
+      }
+      checked++;
+    }
+    expect(checked).toBeGreaterThanOrEqual(6);
+  }, 300_000);
 });
 
 describe('marking', () => {

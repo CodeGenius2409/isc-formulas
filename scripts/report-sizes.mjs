@@ -31,10 +31,9 @@ const firstLoad = files.filter((f) => firstNames.has(f.path));
 const sw = readFileSync(join(DIST, 'sw.js'), 'utf8');
 const precached = files.filter((f) => sw.includes(`"${f.path}"`) || sw.includes(`url:"${f.path}"`));
 
-// The two workers share a name pattern; the Python tracer's carries its tracer.
-const isPythonWorker = (f) => /^worker-.*\.js$/.test(basename(f.path)) && readFileSync(join(DIST, f.path), 'utf8').includes('trace_program');
-const pyodide = files.filter((f) => f.path.startsWith('pyodide/'));
-const pythonCode = files.filter((f) => isPythonWorker(f) || /^(PythonTracer|PythonEditor)-.*\.js$/.test(basename(f.path)));
+// Pyodide's own files, and the Python tracer's page, editor and worker, which are kept with it rather than precached.
+const pyodide = files.filter((f) => f.path.startsWith('pyodide/') && /\.(mjs|wasm|zip)$/.test(f.path));
+const pythonCode = named(/^(PythonTracer|PythonEditor|python-worker)-.*\.(js|css)$/);
 
 const groups = [
   ['First load: HTML, CSS and JS needed to show the first screen', firstLoad],
@@ -45,7 +44,7 @@ const groups = [
   ['KaTeX fonts', named(/^KaTeX_.*\.woff2$/)],
   ['Interface fonts', files.filter((f) => f.path.endsWith('.woff2') && !basename(f.path).startsWith('KaTeX_'))],
   ['Solver registry and maths engine', named(/^(registry|expr)-.*\.js$/)],
-  ['Search worker', named(/^worker-.*\.js$/).filter((f) => !isPythonWorker(f))],
+  ['Search worker', named(/^worker-.*\.js$/)],
   ['Java tracer', named(/^JavaTracer-.*\.js$/)],
   ['Python tracer: its own code, worker and editor', pythonCode],
   ['Pyodide: downloaded when the Python tracer first opens', pyodide],
@@ -61,7 +60,7 @@ lines.push(
   '',
   'Pyodide is CPython in WebAssembly, served from `pyodide/` on this site. Nothing loads it until the Python tracer opens, and it is saved for offline use only when "Keep Python for offline use" is on, in a cache of its own.',
   '',
-  `Pyodide files in the service worker's precache: ${pyodide.filter((f) => precached.includes(f)).length} of ${pyodide.length}.`,
+  `Pyodide files in the service worker's precache: ${pyodide.filter((f) => precached.includes(f)).length} of ${pyodide.length}. The tracer's own files there: ${pythonCode.filter((f) => precached.includes(f)).length} of ${pythonCode.length}.`,
   '',
   '| File | Raw | Gzip | Brotli |',
   '| --- | ---: | ---: | ---: |',

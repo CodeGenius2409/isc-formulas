@@ -1,6 +1,6 @@
 // Written by hand: data file handling, three of each type the subtopic lacked. Places are at(unit, topic)(marks, difficulty).
 // Assertion–reason answers: 1 both true and R explains, 2 both true but R doesn't explain, 3 A true and R false, 4 A false and R true.
-// The tracer doesn't run programs that use FileReader or throws, so the model program here was traced by hand.
+// The tracer doesn't run FileReader or throws, so tests/unit/bank.test.ts compiles and runs the model program here on a real JDK.
 import { at, kit, type BankDef } from '../define';
 
 const { predict, odd, long, tell, match, reason, short, ar, program } = kit('computerscience', 'XI');

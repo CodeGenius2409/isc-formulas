@@ -1,6 +1,6 @@
 // Shared by both Computer Science classes. Java answers come from really running the program in the app's tracer,
-// so they can't drift from what the code does. Python answers come from small functions with the same rules, which
-// tests/unit/python-answers.test.ts holds to a real Python interpreter.
+// so they can't drift from what the code does. Python answers are what the Python tracer printed: see
+// python-programs.ts.
 import { runProgram } from '../../java/trace';
 import type { Gen } from '../../practice/gen/gen';
 import type { OutputBody, TheoryBody } from './types';
@@ -59,33 +59,6 @@ export function designClass(g: Gen, spec: string, model: string, points: [string
 export function designChecked(g: Gen, spec: string, model: string, main: string, points: [string, number][]): TheoryBody {
   run(g, `${model}\n${main}`);
   return g.theory(spec, points, { model: fence(model) });
-}
-
-/** Python's slice, for a string or a list, with its rules on negative numbers and limits. */
-export function pySlice<T extends string | unknown[]>(value: T, start?: number, stop?: number, step = 1): T {
-  const items = (typeof value === 'string' ? [...value] : [...value]) as unknown[];
-  const n = items.length;
-  const norm = (i: number | undefined, fallback: number, low: number, high: number) => {
-    if (i === undefined) return fallback;
-    const at = i < 0 ? i + n : i;
-    return Math.max(low, Math.min(high, at));
-  };
-  const out: unknown[] = [];
-  if (step > 0) {
-    const from = norm(start, 0, 0, n);
-    const to = norm(stop, n, 0, n);
-    for (let i = from; i < to; i += step) out.push(items[i]);
-  } else {
-    const from = norm(start, n - 1, -1, n - 1);
-    const to = norm(stop, -1, -1, n - 1);
-    for (let i = from; i > to; i += step) out.push(items[i]);
-  }
-  return (typeof value === 'string' ? out.join('') : out) as T;
-}
-
-/** How Python prints a list of numbers or strings. */
-export function pyList(items: unknown[]): string {
-  return `[${items.map((x) => (typeof x === 'string' ? `'${x}'` : String(x))).join(', ')}]`;
 }
 
 export const SHORT_WORDS = ['COMPUTER', 'PROGRAM', 'NETWORK', 'KEYBOARD', 'MONITOR', 'SCIENCE', 'LIBRARY', 'NOTEBOOK', 'TEACHER', 'STUDENT', 'PRINTER', 'SYSTEM', 'BINARY', 'MEMORY', 'CIRCUIT', 'VARIABLE'];
