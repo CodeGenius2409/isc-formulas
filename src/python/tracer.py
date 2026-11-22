@@ -284,7 +284,8 @@ class _Run:
         self.stdout = io.StringIO()
         self.stderr = io.StringIO()
         self.err_seen = 0
-        self.extras = []  # [kind, position in the output, text]: input echoed, input run out, or stderr
+        # [kind, position in the output, text, steps recorded by then]: input echoed, input run out, or stderr.
+        self.extras = []
         self.count = 0
         self.truncated = False
         self.stopped = None
@@ -308,14 +309,14 @@ class _Run:
         if self.stderr.tell() > self.err_seen:
             text = self.stderr.getvalue()[self.err_seen:]
             self.err_seen = self.stderr.tell()
-            self.extras.append(['err', self.out_length, text])
+            self.extras.append(['err', self.out_length, text, len(self.steps)])
 
     def read_line(self, line):
         self.take_stderr()
         if line:
-            self.extras.append(['in', self.out_length, line.rstrip('\n')])
+            self.extras.append(['in', self.out_length, line.rstrip('\n'), len(self.steps)])
         else:
-            self.extras.append(['eof', self.out_length, ''])
+            self.extras.append(['eof', self.out_length, '', len(self.steps)])
 
     # Tracing
 

@@ -5,6 +5,16 @@ import type { TraceRow } from '../java/trace';
 
 export type { TraceRow };
 
+/** The same limits as the Java tracer, so the two behave alike, plus a clock as a last resort. */
+export const LIMITS = {
+  /** Events before a program counts as a likely infinite loop. */
+  steps: 500_000,
+  /** Steps that can be stepped through. The console still shows all the output. */
+  recorded: 20_000,
+  output: 200_000,
+  seconds: 20,
+};
+
 export type PyEvent = 'line' | 'call' | 'return' | 'exception' | 'unwind' | 'error' | 'stop' | 'end';
 
 export interface PyPlace {
@@ -63,8 +73,11 @@ export interface PyLoop {
 /** Input that was read, shown after its prompt; the point where input ran out; and anything sent to stderr. */
 export interface ConsoleExtra {
   kind: 'in' | 'eof' | 'err';
+  /** Where in the output it goes. */
   at: number;
   text: string;
+  /** The first step at which it has happened. */
+  step: number;
 }
 
 export interface PyError {
@@ -103,7 +116,7 @@ type RawStep = [number, PyEvent, RawFrame[], number, number, string | null];
 export interface RawRun {
   steps: RawStep[];
   output: string;
-  extras: [ConsoleExtra['kind'], number, string][];
+  extras: [ConsoleExtra['kind'], number, string, number][];
   error: PyError | null;
   stopped: StopReason | null;
   totalSteps: number;
@@ -209,7 +222,7 @@ export function shapeRun(raw: RawRun): PyRunResult {
   return {
     steps,
     output: raw.output,
-    extras: raw.extras.map(([kind, at, text]) => ({ kind, at, text })),
+    extras: raw.extras.map(([kind, at, text, step]) => ({ kind, at, text, step })),
     error: raw.error,
     stopped: raw.stopped,
     rows,

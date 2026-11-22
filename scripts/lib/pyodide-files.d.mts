@@ -25,3 +25,6 @@ export const PYODIDE_VERSION: string;
 export function trimZip(zip: Buffer, keep: (name: string) => boolean): Buffer;
 export function pythonFiles(): PythonFiles;
 export function pyodidePlugin(): Plugin;
+/** Globs for the Python tracer's own chunks, which are saved with Pyodide rather than precached. */
+export const TRACER_CHUNKS: string[];
+export const TRACER_LIST: string;

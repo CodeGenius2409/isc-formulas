@@ -3,6 +3,7 @@ import { defineConfig, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import { VitePWA } from 'vite-plugin-pwa';
+import { pyodidePlugin, TRACER_CHUNKS, TRACER_LIST } from './scripts/lib/pyodide-files.mjs';
 
 /** KaTeX's stylesheet also lists .woff and .ttf files. Every browser that can run
  *  this app reads woff2, so the others would only bloat the offline precache. */
@@ -23,6 +24,8 @@ export default defineConfig({
   base: './',
   plugins: [
     katexWoff2Only(),
+    // Pyodide's files, served from the app's own origin and never part of the offline download.
+    pyodidePlugin(),
     react(),
     tailwindcss(),
     VitePWA({
@@ -57,8 +60,28 @@ export default defineConfig({
       workbox: {
         // Everything the app can ask for, so every route works after one visit. The
         // splash images are left out: iOS reads those once, when it installs the app.
-        globPatterns: ['**/*.{js,css,html,woff2,svg,png,webmanifest}'],
-        globIgnores: ['splash/**'],
+        globPatterns: ['**/*.{js,css,html,woff2,svg,png,webmanifest}', `pyodide/*/${TRACER_LIST}`],
+        // Nor is Pyodide, at over 10 MB, or the Python tracer's own code, which is no use without it. Both are
+        // kept for offline use only if someone asks, in a cache of their own. The list of the tracer's files
+        // is saved, so the page can tell offline whether they're all there.
+        globIgnores: ['splash/**', 'pyodide/**/*.{mjs,wasm,zip}', ...TRACER_CHUNKS],
+        runtimeCaching: [
+          {
+            // The Python tracer's code comes from that cache when it's there, and from the network when not.
+            // When the cache exists, which is only while "Keep Python for offline use" is on, a newer copy
+            // goes into it, so an update to the app keeps the tracer working offline.
+            urlPattern: ({ url }) => /\/assets\/(PythonTracer|PythonEditor|python-worker)-[\w-]+\.(js|css)$/.test(url.pathname),
+            handler: async ({ request }) => {
+              // A host may send Vary: Origin, and a module's request carries an Origin the saved copy doesn't.
+              const saved = await caches.match(request, { ignoreVary: true });
+              if (saved) return saved;
+              const response = await fetch(request);
+              const keep = (await caches.keys()).filter((name) => name.startsWith('python-offline-'));
+              if (response.ok && keep.length) await (await caches.open(keep[keep.length - 1])).put(request, response.clone());
+              return response;
+            },
+          },
+        ],
         maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
         navigateFallback: 'index.html',
         cleanupOutdatedCaches: true,

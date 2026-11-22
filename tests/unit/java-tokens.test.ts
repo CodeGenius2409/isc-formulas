@@ -4,7 +4,8 @@ import { highlightTree } from '@lezer/highlight';
 import { parser } from '@lezer/java';
 import { describe, expect, it } from 'vitest';
 import { SAMPLES } from '../../src/java/samples';
-import { tokenizeJava, tokenizeLines } from '../../src/java/tokens';
+import { tokenizeJava } from '../../src/java/tokens';
+import { tokenizeLines } from '../../src/sims/tracer-parts';
 import { javaHighlighter } from '../../src/sims/java-highlight';
 
 /** The class each character gets from the real Java grammar, as the editor colours it. */

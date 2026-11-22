@@ -59,6 +59,14 @@ Java uses only ink colours and weight: keywords `--accent` and semibold, primiti
 `--ink` and semibold, strings `--good`, numbers and literals `--warn`, comments `--ink-3`
 in italic, operators `--ink-2`. Subject colours stay out of it. The classes are `.tok-*`.
 
+Python uses the same classes: keywords `--accent` and semibold, the built-in type names (`int`, `str`,
+`list` and so on) `--ink` and semibold, strings `--good`, numbers and `True`, `False` and `None` `--warn`,
+comments `--ink-3` in italic. The Python tracer adds three things, in words rather than colour. A name that
+shares its list with another has a note under its value, in `--ink-2` italic: "Same list as b." What was typed
+into the input box follows its prompt in the console, in `--ink-2` italic, as a terminal shows it. And Python's
+own error line is set in the mono face, with the plain-words reading under it in `--ink`. A download's
+progress is a 4 px bar of `--accent` on `--paper-3`, which doesn't animate.
+
 Questions in practice and mock papers use the same tokens. A code block sits on
 `--paper-2`, and a generated circuit is drawn in `--ink` with `currentColor`, like the
 structures. The right and wrong states of an option are `--good` and `--bad` with words, and a

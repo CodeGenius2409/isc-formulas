@@ -1,23 +1,16 @@
-import { Suspense, useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react';
+import { Suspense, useEffect, useState, type KeyboardEvent } from 'react';
 import { lazyRetry } from '../lib/retry-import';
-import { CircleAlert, Pause, Pencil, Play, SkipBack, SkipForward, StepBack, StepForward } from 'lucide-react';
-import { runProgram, type FrameView, type RunResult, type TraceRow, type TraceStep } from '../java/trace';
+import { CircleAlert, Pencil, Play } from 'lucide-react';
+import { runProgram, type FrameView, type RunResult, type TraceStep } from '../java/trace';
 import { SAMPLES } from '../java/samples';
-import { tokenizeLines } from '../java/tokens';
-import { JavaTokens } from '../components/JavaCode';
 import { readJson, writeJson } from '../lib/storage';
+import { CodeView, DryRun, SPEEDS, SpeedPicker, StepControls } from './tracer-parts';
 
 // Most people only trace the samples, so the editor loads when someone chooses to edit.
 const CodeEditor = lazyRetry(() => import('./CodeEditor'));
 
 const OWN_KEY = 'isc-java-draft';
 const OWN_ID = 'own';
-const SHOWN_ROWS = 200;
-const SPEEDS = [
-  { id: 'slow', label: 'Slow', ms: 900 },
-  { id: 'normal', label: 'Normal', ms: 400 },
-  { id: 'fast', label: 'Fast', ms: 120 },
-];
 
 const STARTER = `class MyProgram {
     public static void main(String[] args) {
@@ -161,34 +154,7 @@ export function JavaTracer() {
 
       <div className="tracer-steps">
         {run && steps.length > 0 && (
-          <div className="flex flex-wrap items-center gap-1" role="group" aria-label="Step through the program">
-            <button type="button" className="btn btn-line" disabled={at === 0} onClick={() => goTo(0)} aria-label="Back to the start" title="Back to the start">
-              <SkipBack size={16} aria-hidden="true" />
-            </button>
-            <button type="button" className="btn btn-line" disabled={at === 0} onClick={() => goTo(at - 1)} aria-label="Previous step" title="Previous step">
-              <StepBack size={16} aria-hidden="true" />
-            </button>
-            <button type="button" className="btn btn-solid" disabled={at >= last} onClick={() => goTo(at + 1)}>
-              <StepForward size={16} aria-hidden="true" />
-              Step
-            </button>
-            <button type="button" className="btn btn-line" disabled={at >= last && !playing} onClick={() => setPlaying((p) => !p)} aria-pressed={playing} aria-label={playing ? 'Pause' : 'Play'} title={playing ? 'Pause' : 'Play'}>
-              {playing ? <Pause size={16} aria-hidden="true" /> : <Play size={16} aria-hidden="true" />}
-            </button>
-            <button
-              type="button"
-              className="btn btn-line"
-              disabled={at >= last}
-              onClick={() => {
-                setPlaying(false);
-                goTo(last);
-              }}
-              aria-label="Run to the end"
-              title="Run to the end"
-            >
-              <SkipForward size={16} aria-hidden="true" />
-            </button>
-          </div>
+          <StepControls at={at} last={last} playing={playing} goTo={goTo} setPlaying={setPlaying} />
         )}
         <p className="tool-hint" role="status" aria-live={playing ? 'off' : 'polite'}>
           {status}
@@ -209,18 +175,7 @@ export function JavaTracer() {
           )}
 
           {run && steps.length > 0 && (
-            <div className="tracer-speed">
-              <span className="lbl" style={{ margin: 0 }}>
-                Playing speed
-              </span>
-              <div className="seg" role="group" aria-label="Playing speed">
-                {SPEEDS.map((s) => (
-                  <button key={s.id} type="button" aria-pressed={speed === s.id} onClick={() => setSpeed(s.id)}>
-                    {s.label}
-                  </button>
-                ))}
-              </div>
-            </div>
+            <SpeedPicker speed={speed} setSpeed={setSpeed} />
           )}
           {run?.error && (!steps.length || atEnd) && (
             <p className="notice" data-tone="bad">
@@ -257,34 +212,15 @@ export function JavaTracer() {
         </div>
       </div>
 
-      {run && <DryRun run={run} step={step} atEnd={atEnd} />}
-    </div>
-  );
-}
-
-function CodeView({ code, currentLine, errorLine, onKeyDown }: { code: string; currentLine?: number; errorLine?: number; onKeyDown: (e: KeyboardEvent) => void }) {
-  const pane = useRef<HTMLDivElement>(null);
-  const lines = useMemo(() => tokenizeLines(code), [code]);
-
-  // Keep the current line in view by scrolling the pane only, never the page.
-  useEffect(() => {
-    const box = pane.current;
-    const row = box?.querySelector<HTMLElement>('[data-current="true"]');
-    if (!box || !row) return;
-    const top = row.offsetTop - box.offsetTop;
-    if (top < box.scrollTop || top + row.offsetHeight > box.scrollTop + box.clientHeight) {
-      box.scrollTop = Math.max(top - box.clientHeight / 3, 0);
-    }
-  }, [currentLine]);
-
-  return (
-    <div ref={pane} className="code-pane" tabIndex={0} role="region" aria-label="Program code. Left and right arrow keys step through it." onKeyDown={onKeyDown}>
-      {lines.map((tokens, i) => (
-        <div key={i} className="code-line" data-current={currentLine === i + 1 || undefined} data-error={errorLine === i + 1 || undefined}>
-          <span>{i + 1}</span>
-          <code>{tokens.length ? <JavaTokens tokens={tokens} /> : ' '}</code>
-        </div>
-      ))}
+      {run && (
+        <DryRun
+          id="java-dry-h"
+          rows={run.rows}
+          columns={run.columns}
+          count={atEnd ? run.rows.length : (step?.traceRows ?? 0)}
+          empty={run.error && !run.steps.length ? 'Fix the error above to see a dry run.' : 'This program has no loops, so there is no table to fill in.'}
+        />
+      )}
     </div>
   );
 }
@@ -339,70 +275,5 @@ function Variables({ step, previous, frameIndex }: { step?: TraceStep; previous?
         </tbody>
       </table>
     </div>
-  );
-}
-
-function DryRun({ run, step, atEnd }: { run: RunResult; step?: TraceStep; atEnd: boolean }) {
-  const box = useRef<HTMLDivElement>(null);
-  const count = atEnd ? run.rows.length : (step?.traceRows ?? 0);
-  const rows: TraceRow[] = run.rows.slice(Math.max(count - SHOWN_ROWS, 0), count);
-  const multiMethod = new Set(run.rows.map((r) => r.method)).size > 1;
-
-  useEffect(() => {
-    if (box.current) box.current.scrollTop = box.current.scrollHeight;
-  }, [count]);
-
-  return (
-    <section aria-labelledby="java-dry-h" className="tracer-dry">
-      <h2 id="java-dry-h" className="tool-h">
-        Dry run
-      </h2>
-      {!run.columns.length ? (
-        <p className="tool-empty">{run.error && !run.steps.length ? 'Fix the error above to see a dry run.' : 'This program has no loops, so there is no table to fill in.'}</p>
-      ) : (
-        <>
-          <p className="tool-hint">One row each time a loop's condition is tested or a variable changes. Bold marks what changed.{count > SHOWN_ROWS ? ` Showing the latest ${SHOWN_ROWS} of ${count.toLocaleString('en-GB')} rows.` : ''}</p>
-          <div ref={box} className="table-scroll" tabIndex={0} role="region" aria-labelledby="java-dry-h">
-            <table className="trace-table">
-              <thead>
-                <tr>
-                  <th scope="col">Line</th>
-                  {multiMethod && <th scope="col">Method</th>}
-                  {run.columns.map((c) => (
-                    <th key={c} scope="col">
-                      {c}
-                    </th>
-                  ))}
-                  <th scope="col">Condition</th>
-                  <th scope="col">Output</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.length === 0 && (
-                  <tr>
-                    <td colSpan={run.columns.length + (multiMethod ? 4 : 3)} className="trace-wait">
-                      Step into a loop to fill this in.
-                    </td>
-                  </tr>
-                )}
-                {rows.map((row, i) => (
-                  <tr key={count - rows.length + i} data-current={i === rows.length - 1 || undefined}>
-                    <td>{row.line}</td>
-                    {multiMethod && <td>{row.method}</td>}
-                    {run.columns.map((c) => (
-                      <td key={c} data-changed={row.changed.includes(c) || undefined}>
-                        {row.values[c] ?? ''}
-                      </td>
-                    ))}
-                    <td>{row.condition ?? ''}</td>
-                    <td className="trace-out">{row.output ?? ''}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </>
-      )}
-    </section>
   );
 }

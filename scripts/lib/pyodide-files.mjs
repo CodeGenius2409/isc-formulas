@@ -107,6 +107,15 @@ export function pythonFiles() {
 
 const VIRTUAL = 'virtual:python-files';
 
+/**
+ * The Python tracer's own code: its page, its editor and its worker. They're no use offline without Pyodide,
+ * so they're left out of the offline download with it, and saved with it. vite.config.ts leaves them out
+ * of the precache and serves them from the saved copy.
+ */
+export const TRACER_CHUNKS = ['assets/PythonTracer-*', 'assets/PythonEditor-*', 'assets/python-worker-*'];
+export const TRACER_LIST = 'tracer-files.json';
+const isTracerChunk = (fileName) => /^assets\/(PythonTracer|PythonEditor|python-worker)-[\w-]+\.(js|css)$/.test(fileName);
+
 /** Serves the files in development, writes them into dist/ in a build, and tells the app their names and sizes. */
 export function pyodidePlugin() {
   return {
@@ -124,15 +133,26 @@ export function pyodidePlugin() {
       const { dir, files } = pythonFiles();
       server.middlewares.use((req, res, next) => {
         const path = (req.url ?? '').split('?')[0];
+        // In development nothing is hashed or precached, so there is no list to keep.
+        if (path.endsWith(`/${dir}${TRACER_LIST}`)) {
+          res.setHeader('Content-Type', 'application/json');
+          res.end(JSON.stringify({ files: [] }));
+          return;
+        }
         const file = files.find((f) => path.endsWith(`/${dir}${f.name}`));
         if (!file) return next();
         res.setHeader('Content-Type', file.type);
         res.end(file.data);
       });
     },
-    generateBundle() {
+    generateBundle(_options, bundle) {
       const { dir, files } = pythonFiles();
       for (const f of files) this.emitFile({ type: 'asset', fileName: `${dir}${f.name}`, source: f.data });
+      const tracer = Object.values(bundle)
+        .map((item) => item.fileName)
+        .filter(isTracerChunk)
+        .sort();
+      this.emitFile({ type: 'asset', fileName: `${dir}${TRACER_LIST}`, source: JSON.stringify({ files: tracer }) });
     },
   };
 }

@@ -173,10 +173,14 @@ describe('input', () => {
   it('reads the input box a line at a time, and shows each line after its prompt', async () => {
     const r = await run('a = input("First: ")\nb = int(input("Second: "))\nprint(a * b)', 'ab\n3');
     expect(r.output).toBe('First: Second: ababab\n');
-    expect(r.extras).toEqual([
+    expect(r.extras.map(({ kind, at, text }) => ({ kind, at, text }))).toEqual([
       { kind: 'in', at: 7, text: 'ab' },
       { kind: 'in', at: 15, text: '3' },
     ]);
+    // Each shows from the step after the line that read it.
+    const [first, second] = r.extras;
+    expect(r.steps[first.step - 1].line).toBe(1);
+    expect(r.steps[second.step - 1].line).toBe(2);
   });
 
   it('says where the input ran out, with Python’s own EOFError', async () => {

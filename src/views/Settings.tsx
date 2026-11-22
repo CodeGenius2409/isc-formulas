@@ -3,6 +3,7 @@ import { manifest } from '../data/book';
 import { useStore } from '../lib/store';
 import { contrastStore, themeStore, type ContrastChoice, type ThemeChoice } from '../state/prefs';
 import { OfflineStatus } from '../components/OfflineStatus';
+import { PythonOffline } from '../components/PythonOffline';
 import { cleanGap, ensureFactHistory, factGapStore, resetFactHistory, seenFactsStore } from '../practice/fact-history';
 
 const THEMES: { id: ThemeChoice; label: string }[] = [
@@ -112,6 +113,8 @@ export default function Settings() {
         </section>
 
         <OfflineStatus />
+
+        <PythonOffline />
 
         <section className="today-section" aria-labelledby="about-h">
           <h2 id="about-h">About this book</h2>

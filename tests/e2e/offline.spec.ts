@@ -25,7 +25,7 @@ test('every page and simulator works with no connection', async ({ page, context
   }
 
   const sims = simulatorIds();
-  expect(sims.length).toBe(41);
+  expect(sims.length).toBe(42);
   for (const id of sims) {
     await openRoute(page, `tools/${id}`);
     await expect(page.locator('main h1').first(), id).not.toContainText('No tool');

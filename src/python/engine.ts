@@ -2,17 +2,9 @@
 // tests use it in Node, so what the tests check is the tracer itself.
 import type { PyodideAPI } from 'pyodide';
 import TRACER from './tracer.py?raw';
-import { shapeRun, type PyRunResult, type RawRun } from './trace';
+import { LIMITS, shapeRun, type PyRunResult, type RawRun } from './trace';
 
-/** The same limits as the Java tracer, so the two behave alike, plus a clock as a last resort. */
-export const LIMITS = {
-  /** Events before a program counts as a likely infinite loop. */
-  steps: 500_000,
-  /** Steps that can be stepped through. The console still shows all the output. */
-  recorded: 20_000,
-  output: 200_000,
-  seconds: 20,
-};
+export { LIMITS };
 
 export interface PythonEngine {
   run(code: string, input: string): PyRunResult;

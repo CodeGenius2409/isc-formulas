@@ -1,0 +1,72 @@
+/* The Python tracer's own styles, loaded with it so the rest of the app doesn't carry them. It shares the
+   Java tracer's look from tools.css and adds only what Python needs. */
+
+/* Another name for the same list, under its value: a note in the margin, not a colour. */
+.var-same {
+  display: block;
+  margin-top: 0.125rem;
+  color: var(--ink-2);
+  font-family: var(--font-body);
+  font-size: var(--step--1);
+  font-style: italic;
+  font-weight: 400;
+}
+
+.var-sub {
+  margin: 0.75rem 0 0.25rem;
+  font-family: var(--font-body);
+  font-size: var(--step--1);
+  font-weight: 700;
+  color: var(--ink-2);
+}
+
+/* What was typed into the input box, after its prompt, as a terminal shows it. */
+.console-in {
+  color: var(--ink-2);
+  font-style: italic;
+}
+
+.console-err {
+  color: var(--bad);
+}
+
+.py-error {
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  overflow-wrap: anywhere;
+}
+
+.py-plain {
+  color: var(--ink);
+}
+
+.py-load {
+  display: grid;
+  gap: 0.375rem;
+  color: var(--ink-2);
+  font-size: var(--step--1);
+}
+
+/* A download's progress: a hairline that fills in red pen or yellow chalk. */
+.load-bar {
+  appearance: none;
+  display: block;
+  width: 100%;
+  max-width: 24rem;
+  height: 0.25rem;
+  border: 0;
+  background: var(--paper-3);
+  color: var(--accent);
+}
+
+.load-bar::-webkit-progress-bar {
+  background: var(--paper-3);
+}
+
+.load-bar::-webkit-progress-value {
+  background: var(--accent);
+}
+
+.load-bar::-moz-progress-bar {
+  background: var(--accent);
+}
