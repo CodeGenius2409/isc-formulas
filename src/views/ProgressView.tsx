@@ -200,7 +200,7 @@ export default function ProgressView() {
 
         <section className="today-section" aria-labelledby="how-h">
           <h2 id="how-h">How reviews are scheduled</h2>
-          <p className="mt-2 max-w-[65ch] text-ink-2">
+          <p className="mt-2 max-w-(--measure) text-ink-2">
             Reviews use the SM-2 method. Each right answer spaces the next review further out: one day, then six, then longer each time. Anything you miss comes back the same day and starts again, and what you find harder comes back more often. A written answer you mark yourself counts as missed if it earned half the marks or less.
           </p>
         </section>

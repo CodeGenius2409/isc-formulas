@@ -676,7 +676,7 @@ export default function GeneratorView() {
     <div className="page" data-subject={filters.subject}>
       <div className="page-pad max-w-[56rem]">
         <h1 className="text-step-3">Generate questions</h1>
-        <p className="mt-2 max-w-[65ch] text-ink-2">Make a worksheet or a whole paper, offline. Every filter is optional, and leaving one empty means all. Generated questions are marked, and aren’t official ISC questions, so please check them before use.</p>
+        <p className="mt-2 max-w-(--measure) text-ink-2">Make a worksheet or a whole paper, offline. Every filter is optional, and leaving one empty means all. Generated questions are marked, and aren’t official ISC questions, so please check them before use.</p>
 
         <div className="seg mt-3" role="group" aria-label="What to make">
           <button type="button" aria-pressed={mode === 'set'} onClick={() => setMode('set')}>

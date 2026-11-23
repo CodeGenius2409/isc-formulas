@@ -498,7 +498,7 @@ kbd {
 }
 
 .syllabus-body {
-  max-width: 72ch;
+  max-width: var(--measure);
   margin-top: 0.25rem;
   padding-left: 0.75rem;
   border-left: 1px solid var(--rule-2);

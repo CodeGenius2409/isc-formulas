@@ -126,6 +126,8 @@ All are bundled. Greek letters in plain text fall back to the system font.
 | `--step-3` | 28 px | View titles |
 | `--step-4` | 36 px | Today's date only |
 
+Reading text holds a measure of about 70 characters, `--measure` (36em), which every paragraph in `main` takes. Don't use `ch` for it: Atkinson's digits are wide, so `65ch` runs to about 90.
+
 Write in sentence case, with no all-caps labels and no label above a heading. Name
 controls by what they do, such as "Solve with this" or "Copy LaTeX".
 

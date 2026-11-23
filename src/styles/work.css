@@ -273,6 +273,8 @@ mark {
 .text-action {
   display: inline-flex;
   align-items: center;
+  /* Flex drops the space between an icon and its words, so the gap puts it back. */
+  gap: 0.375rem;
   min-height: 1.5rem;
   padding: 0 0.125rem;
   margin-right: 0.25rem;
@@ -290,7 +292,8 @@ mark {
 /* Exam-style questions, in practice and in mock papers */
 .bank-meta {
   display: flex;
-  justify-content: space-between;
+  /* The question, then its Generated label beside it, as DESIGN.md has it; the marks go to the far edge. */
+  align-items: baseline;
   gap: 0.75rem;
   color: var(--ink-2);
   font-size: var(--step--1);
@@ -299,6 +302,7 @@ mark {
 
 .bank-marks {
   flex: none;
+  margin-left: auto;
   font-family: var(--font-mono);
   color: var(--ink-2);
 }
@@ -590,9 +594,11 @@ mark {
 
 .gen-check {
   display: flex;
-  align-items: center;
+  /* On a label's first line, so a two-line label hangs under its own text and not around the box. */
+  align-items: baseline;
   gap: 0.5rem;
   min-height: 1.75rem;
+  padding-block: 0.125rem;
 }
 
 .gen-checks {

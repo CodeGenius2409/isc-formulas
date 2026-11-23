@@ -40,6 +40,14 @@
     text-wrap: pretty;
   }
 
+  li {
+    text-wrap: pretty;
+  }
+
+  main p {
+    max-width: var(--measure);
+  }
+
   a {
     color: inherit;
     text-decoration-color: var(--rule-2);
