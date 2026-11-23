@@ -2,7 +2,8 @@
 // Quine–McCluskey, and trees are worked out by code.
 import { classify, coverIsRight, groupNames, minimalCover, primeImplicants, sopText, termText, truthColumn, VARS } from '../../practice/gen/boolean';
 import type { Gen } from '../../practice/gen/gen';
-import { complete, designChecked, designClass, findError, inMain, outputOf, pyList, pySlice, SHORT_WORDS, withMethods } from './cs-common';
+import { complete, designChecked, designClass, findError, inMain, outputOf, SHORT_WORDS, withMethods } from './cs-common';
+import { pythonOutput } from './python-programs';
 import { derivationBlueprints } from '../derivations';
 import KNOWLEDGE from './knowledge/computerscience-xii';
 import { blueprintsFor } from './dsl';
@@ -287,50 +288,6 @@ const OUTPUT_MATRIX = (g: Gen): Body => {
   const m = [[g.int(1, 9), g.int(1, 9), g.int(1, 9)], [g.int(1, 9), g.int(1, 9), g.int(1, 9)], [g.int(1, 9), g.int(1, 9), g.int(1, 9)]];
   return outputOf(g, inMain(`int[][] m = {${m.map((r) => `{${r.join(', ')}}`).join(', ')}};\nint s = 0;\nfor (int i = 0; i < 3; i++) {\n  s += m[i][i];\n}\nSystem.out.println(s);\nSystem.out.println(m[0][2] + m[2][0]);`), 'm[i][i] runs down the main diagonal.');
 };
-
-function pythonOutput(g: Gen): Body {
-  const word = g.pick(SHORT_WORDS).toLowerCase();
-  const form = g.int(0, 3);
-  const a = g.int(1, 3);
-  const b = g.int(a + 1, 5);
-  const whys = ['A slice stops one short of its second index, and [::-1] reverses.', 'A negative index counts from the end, and a slice stops one short of its second index.', 'A slice stops one short of its second index, and + joins the two parts.', 'count finds every match, and an index counts from 0.'];
-  const lines: Record<number, [string, string]> = {
-    0: [`s = "${word}"\nprint(s[${a}:${b}])\nprint(s[::-1])`, `${pySlice(word, a, b)}\n${pySlice(word, undefined, undefined, -1)}`],
-    1: [`s = "${word}"\nprint(s[-${a}])\nprint(s[:${b}].upper())`, `${word[word.length - a]}\n${pySlice(word, undefined, b).toUpperCase()}`],
-    2: [`s = "${word}"\nprint(len(s))\nprint(s[${a}:] + s[:${a}])`, `${word.length}\n${pySlice(word, a) + pySlice(word, undefined, a)}`],
-    3: [`s = "${word}"\nprint(s.count("${word[a]}"))\nprint(s[${a}])`, `${[...word].filter((c) => c === word[a]).length}\n${word[a]}`],
-  };
-  const [code, expected] = lines[form];
-  return { form: 'output', text: 'Write the output of the following Python code.', code, expected, python: 1, why: whys[form] };
-}
-
-function pythonList(g: Gen): Body {
-  const list = Array.from({ length: g.int(4, 6) }, () => g.int(1, 20));
-  const x = g.int(21, 30);
-  const after = [...list, x];
-  const rev = [...after].reverse();
-  return {
-    form: 'output',
-    text: 'Write the output of the following Python code.',
-    code: `a = ${pyList(list)}\na.append(${x})\nprint(len(a))\nprint(a[1:3])\na.reverse()\nprint(a[0])\nprint(sum(a))`,
-    expected: `${after.length}\n${pyList(after.slice(1, 3))}\n${rev[0]}\n${after.reduce((s, v) => s + v, 0)}`,
-    python: 1,
-    why: 'append adds to the end, and reverse changes the list in place.',
-  };
-}
-
-function pythonTuple(g: Gen): Body {
-  const t = Array.from({ length: g.int(4, 6) }, () => g.int(1, 9));
-  const a = g.int(1, 2);
-  return {
-    form: 'output',
-    text: 'Write the output of the following Python code.',
-    code: `t = (${t.join(', ')})\nprint(t[${a}])\nprint(len(t))\nprint(max(t))\nprint(t.count(${t[0]}))`,
-    expected: `${t[a]}\n${t.length}\n${Math.max(...t)}\n${t.filter((v) => v === t[0]).length}`,
-    python: 1,
-    why: 'A tuple can be indexed and counted like a list, but not changed.',
-  };
-}
 
 const LOOPS: [string, string, string[], string][] = [
   ['for (int i = 0; i < n; i++) {\n  s = s + i;\n}', 'O(n)', ['O(1)', 'O(n²)', 'O(log n)'], 'A single loop that runs n times.'],
@@ -762,22 +719,10 @@ const blueprints: Blueprint[] = [
   }),
 
   // ---- Unit 7: Python
-  custom('py-string', [7, 'a', 2, 1], { type: 'output', format: 'output', python: 1 }, pythonOutput),
-  custom('py-list', [7, 'b', 2, 1], { type: 'output', format: 'output', python: 1 }, pythonList),
-  custom('py-tuple', [7, 'c', 2, 1], { type: 'output', format: 'output', python: 1 }, pythonTuple),
-  custom('py-5', [7, 'b', 5, 2], { type: 'output', format: 'output', python: 1 }, (g) => {
-    const list = Array.from({ length: g.int(5, 7) }, () => g.int(1, 20));
-    const evens = list.filter((v) => v % 2 === 0);
-    const sq = list.map((v) => v * v);
-    return {
-      form: 'output',
-      text: 'Write the output of the following Python code.',
-      code: `a = ${pyList(list)}\nb = []\nfor x in a:\n    if x % 2 == 0:\n        b.append(x)\nprint(b)\nprint(len(b))\nc = [x * x for x in a]\nprint(c[0])\nprint(c[-1])\nprint(a[::2])`,
-      expected: `${pyList(evens)}\n${evens.length}\n${sq[0]}\n${sq[sq.length - 1]}\n${pyList(pySlice(list, undefined, undefined, 2))}`,
-      python: 1,
-      why: 'The loop keeps the even numbers, the comprehension squares each element, and [::2] takes every second one.',
-    };
-  }),
+  custom('py-string', [7, 'a', 2, 1], { type: 'output', format: 'output', python: 1 }, pythonOutput('py-string')),
+  custom('py-list', [7, 'b', 2, 1], { type: 'output', format: 'output', python: 1 }, pythonOutput('py-list')),
+  custom('py-tuple', [7, 'c', 2, 1], { type: 'output', format: 'output', python: 1 }, pythonOutput('py-tuple')),
+  custom('py-5', [7, 'b', 5, 2], { type: 'output', format: 'output', python: 1 }, pythonOutput('py-5')),
   ...facts(7, 'a', {
     recall: [
       ['"AB".lower() gives:', '"ab"', '"AB"', '"aB"', 'an error'],

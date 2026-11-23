@@ -30,6 +30,7 @@ export const SIMS: SimInfo[] = [
   { id: 'titration', title: 'Titration curves', desc: 'pH against volume, equivalence points, and which indicator to choose.', subject: 'chemistry', load: from(() => import('./Titration'), 'Titration') },
   { id: 'plotter', title: 'Graph plotter', desc: 'Plot several functions, with tangents, areas and intersections.', subject: 'mathematics', load: from(() => import('./Plotter'), 'Plotter') },
   { id: 'java', title: 'Java program tracer', desc: 'Step through ISC-level Java, with variables, the call stack and a dry-run table.', subject: 'computerscience', load: from(() => import('./JavaTracer'), 'JavaTracer') },
+  { id: 'python', title: 'Python program tracer', desc: 'Step through real Python, with variables, which names share a list, the call stack and a dry-run table.', subject: 'computerscience', load: from(() => import('./PythonEntry'), 'PythonEntry') },
 
   // Physics
   { id: 'shm', title: 'Simple harmonic motion', desc: 'A moving mass on a spring, with its displacement and velocity.', subject: 'physics', load: from(mech, 'Shm') },

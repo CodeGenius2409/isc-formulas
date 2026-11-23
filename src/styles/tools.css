@@ -209,6 +209,9 @@ input[type='range'] {
   display: grid;
   grid-template-columns: 2.5rem minmax(0, 1fr);
   white-space: pre;
+  /* A long line scrolls with room after it, rather than running into the pane's edge. */
+  width: max-content;
+  min-width: 100%;
 }
 
 .code-line > span:first-child {
@@ -220,7 +223,7 @@ input[type='range'] {
 }
 
 .code-line > code {
-  padding-left: 0.5rem;
+  padding-inline: 0.5rem 0.75rem;
   font-family: inherit;
 }
 

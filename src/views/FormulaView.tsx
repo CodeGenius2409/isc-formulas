@@ -92,7 +92,7 @@ export default function FormulaView({ id }: { id: string }) {
             ))}
           </dl>
         )}
-        {f.note && <p className="mt-3 max-w-[65ch]">{f.note}</p>}
+        {f.note && <p className="mt-3 max-w-(--measure)">{f.note}</p>}
         {f.aka && f.aka.length > 0 && <p className="mt-2 text-ink-2">Also called {f.aka.join(', ')}.</p>}
         {f.shared && f.shared.placements.length > 1 && (
           <div className="mt-3">

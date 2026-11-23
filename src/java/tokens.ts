@@ -62,7 +62,8 @@ const PY_KEYWORDS = new Set(
     'return try while with yield'
   ).split(' '),
 );
-const PY_TYPES = new Set('int float str bool list tuple dict set'.split(' '));
+/** Built-in type names, coloured as Java's primitive types are. The Python editor marks them the same way. */
+export const PY_TYPES = new Set('int float str bool list tuple dict set'.split(' '));
 const PY_LITERALS = new Set(['True', 'False', 'None']);
 const PY_PATTERN = new RegExp(
   [
@@ -96,16 +97,4 @@ export function tokenizePython(code: string): Token[] {
   }
   if (code.length > at) tokens.push({ text: code.slice(at), kind: 'plain' });
   return tokens;
-}
-
-/** The same tokens grouped by line, for a pane that draws one line at a time. */
-export function tokenizeLines(code: string): Token[][] {
-  const lines: Token[][] = [[]];
-  for (const token of tokenizeJava(code)) {
-    token.text.split('\n').forEach((part, i) => {
-      if (i > 0) lines.push([]);
-      if (part) lines[lines.length - 1].push({ text: part, kind: token.kind });
-    });
-  }
-  return lines;
 }

@@ -3,6 +3,8 @@ import { manifest } from '../data/book';
 import { useStore } from '../lib/store';
 import { contrastStore, themeStore, type ContrastChoice, type ThemeChoice } from '../state/prefs';
 import { OfflineStatus } from '../components/OfflineStatus';
+import { PythonOffline } from '../components/PythonOffline';
+import { TourSettings } from '../tour/TourSettings';
 import { cleanGap, ensureFactHistory, factGapStore, resetFactHistory, seenFactsStore } from '../practice/fact-history';
 
 const THEMES: { id: ThemeChoice; label: string }[] = [
@@ -63,7 +65,7 @@ export default function Settings() {
           <label className="lbl mt-3 block" htmlFor="fact-gap">
             Days before a fact can come back
           </label>
-          <input id="fact-gap" className="field mt-1 w-24" type="number" min={0} max={365} value={gap} onChange={(e) => factGapStore.set(cleanGap(e.target.valueAsNumber))} />
+          <input id="fact-gap" className="field mt-1 max-w-24" type="number" min={0} max={365} value={gap} onChange={(e) => factGapStore.set(cleanGap(e.target.valueAsNumber))} />
           <p className="mt-3 text-ink-2" data-testid="fact-count">
             {remembered === 1 ? 'One fact is' : `${remembered} facts are`} remembered on this device.
           </p>
@@ -112,6 +114,10 @@ export default function Settings() {
         </section>
 
         <OfflineStatus />
+
+        <PythonOffline />
+
+        <TourSettings />
 
         <section className="today-section" aria-labelledby="about-h">
           <h2 id="about-h">About this book</h2>

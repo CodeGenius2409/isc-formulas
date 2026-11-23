@@ -1,3 +1,4 @@
+import { Tip } from '../../tour/Tip';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import { AlertTriangle, ArrowLeft, CircleCheck, Info } from 'lucide-react';
 import { canonicalId } from '../../data/aliases';
@@ -114,6 +115,7 @@ function Solver({ entry, initialUnknown }: { entry: ResolvedEntry; initialUnknow
       <div className="math-host mt-1">
         <MathTex latex={eqTex} />
       </div>
+      <Tip id="solver">Press the symbol you want to find, fill in the others, and Find works it out with every step shown.</Tip>
 
       <fieldset className="mt-3 border-0 p-0 m-0">
         <legend className="lbl mb-1">

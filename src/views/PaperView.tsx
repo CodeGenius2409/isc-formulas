@@ -74,7 +74,7 @@ function PaperHome() {
     <div className="page">
       <div className="page-pad max-w-[48rem]">
         <h1 className="text-step-3">Build a mock paper</h1>
-        <p className="mt-2 max-w-[65ch] text-ink-2">Three hours, with the same sections and marks as the real paper. The questions are written for this app in the style of past papers, not copied from them. Numericals get fresh values each time. When you hand it in, you mark the written answers against the marking scheme and see how you did in each topic.</p>
+        <p className="mt-2 max-w-(--measure) text-ink-2">Three hours, with the same sections and marks as the real paper. The questions are written for this app in the style of past papers, not copied from them. Numericals get fresh values each time. When you hand it in, you mark the written answers against the marking scheme and see how you did in each topic.</p>
         <p className="mt-2">
           <a className="text-action" href={href('generate')}>
             <Wand2 size={15} aria-hidden className="inline" /> Generate questions, for teachers and for worksheets
@@ -279,11 +279,11 @@ function PaperSheet({ paper, onFinished }: { paper: Paper; onFinished: (result: 
           </p>
         )}
         {marking ? (
-          <p className="mt-2 max-w-[65ch] text-ink-2">
+          <p className="mt-2 max-w-(--measure) text-ink-2">
             {paper.timedOut ? 'Time is up, so the paper was handed in. ' : ''}Multiple choice, numericals and program output are already marked. For each written answer, tick the points you earned, then finish below.
           </p>
         ) : (
-          <p className="mt-2 max-w-[65ch] text-ink-2">Write theory answers on paper. Your work is saved as you go, so you can leave and come back, but the clock keeps running.</p>
+          <p className="mt-2 max-w-(--measure) text-ink-2">Write theory answers on paper. Your work is saved as you go, so you can leave and come back, but the clock keeps running.</p>
         )}
         {anyGenerated && <PaperLegend unreviewed={anyUnreviewed} />}
         {anyBank && <p className="bank-note">The other questions are original practice questions, not official ISC questions.{/* {BANK_NOTICE} on single questions */}</p>}

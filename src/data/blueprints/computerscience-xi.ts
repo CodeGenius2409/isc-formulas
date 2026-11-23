@@ -1,7 +1,8 @@
 // Computer Science, Class XI. Java answers come from running the program, and conversions and logic are computed.
 import { classify, truthColumn } from '../../practice/gen/boolean';
 import type { Gen } from '../../practice/gen/gen';
-import { complete, designClass, findError, inMain, outputOf, pyList, pySlice, SHORT_WORDS, withMethods } from './cs-common';
+import { complete, designClass, findError, inMain, outputOf, SHORT_WORDS, withMethods } from './cs-common';
+import { pythonOutput } from './python-programs';
 import { derivationBlueprints } from '../derivations';
 import KNOWLEDGE from './knowledge/computerscience-xi';
 import { blueprintsFor } from './dsl';
@@ -88,17 +89,6 @@ const LOOP_PROGRAMS: ((g: Gen) => OutputBody)[] = [
     return outputOf(g, inMain(`for (int i = 1; i <= ${rows}; i++) {\n  for (int j = 1; j <= i; j++) {\n    System.out.print(j);\n  }\n  System.out.println();\n}`), 'The inner loop runs up to the current row number.');
   },
 ];
-
-function pythonBasic(g: Gen): Body {
-  const a = g.int(2, 15);
-  const b = g.int(2, 6);
-  const word = g.pick(SHORT_WORDS).toLowerCase();
-  const pick = g.int(0, 2);
-  if (pick === 0) return { form: 'output', text: 'Write the output of the following Python code.', code: `a = ${a}\nb = ${b}\nprint(a // b)\nprint(a % b)\nprint(a ** 2)`, expected: `${Math.floor(a / b)}\n${a % b}\n${a * a}`, python: 1, why: '// is floor division, % is the remainder, and ** is a power.' };
-  if (pick === 1) return { form: 'output', text: 'Write the output of the following Python code.', code: `s = "${word}"\nprint(s[0])\nprint(s[-1])\nprint(s[1:3])\nprint(len(s))`, expected: `${word[0]}\n${word[word.length - 1]}\n${pySlice(word, 1, 3)}\n${word.length}`, python: 1, why: 'Indexes start at 0, and −1 is the last character.' };
-  const list = Array.from({ length: g.int(3, 5) }, () => g.int(1, 9));
-  return { form: 'output', text: 'Write the output of the following Python code.', code: `a = ${pyList(list)}\na.append(${a})\nprint(a)\nprint(len(a))\nprint(sum(a))`, expected: `${pyList([...list, a])}\n${list.length + 1}\n${list.reduce((s, v) => s + v, 0) + a}`, python: 1, why: 'append adds to the end of the list.' };
-}
 
 const blueprints: Blueprint[] = [
   // ---- Units 1 and 2: Numbers and codes
@@ -594,20 +584,8 @@ const blueprints: Blueprint[] = [
   }),
 
   // ---- Units 12 and 13
-  custom('py-basic', [12, 'a', 2, 1], { type: 'output', format: 'output', python: 1 }, pythonBasic),
-  custom('py-5-xi', [12, 'a', 5, 2], { type: 'output', format: 'output', python: 1 }, (g) => {
-    const n = g.int(3, 6);
-    const squares = Array.from({ length: n }, (_, i) => (i + 1) * (i + 1));
-    const total = squares.reduce((a, b) => a + b, 0);
-    return {
-      form: 'output',
-      text: 'Write the output of the following Python code.',
-      code: `s = []\nfor i in range(1, ${n + 1}):\n    s.append(i * i)\nprint(s)\nprint(sum(s))\nprint(s[-1])\nprint(s[:2])\nprint(len(s))`,
-      expected: `${pyList(squares)}\n${total}\n${squares[squares.length - 1]}\n${pyList(squares.slice(0, 2))}\n${n}`,
-      python: 1,
-      why: 'range stops one short of its second argument, and −1 is the last index.',
-    };
-  }),
+  custom('py-basic', [12, 'a', 2, 1], { type: 'output', format: 'output', python: 1 }, pythonOutput('py-basic')),
+  custom('py-5-xi', [12, 'a', 5, 2], { type: 'output', format: 'output', python: 1 }, pythonOutput('py-5-xi')),
   ...facts(12, 'a', {
     define: [
       ['indentation in Python', 'The spaces at the start of a line, which mark out blocks of code.'],

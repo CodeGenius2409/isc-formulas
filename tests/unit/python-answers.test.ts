@@ -1,5 +1,5 @@
-// Generated Python questions are answered by functions in the app, not by Python. This holds them to the real thing,
-// and skips itself on a machine without Python, as the Java test does without a JDK.
+// Generated Python questions take their answers from what the Python tracer printed (python-runs.json). This holds
+// them to a real Python as well, and skips itself on a machine without Python, as the Java test does without a JDK.
 import { spawnSync } from 'node:child_process';
 import { describe, expect, it } from 'vitest';
 import { loadBlueprints } from '../../src/data/blueprints';

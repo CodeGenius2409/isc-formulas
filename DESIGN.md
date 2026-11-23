@@ -59,6 +59,14 @@ Java uses only ink colours and weight: keywords `--accent` and semibold, primiti
 `--ink` and semibold, strings `--good`, numbers and literals `--warn`, comments `--ink-3`
 in italic, operators `--ink-2`. Subject colours stay out of it. The classes are `.tok-*`.
 
+Python uses the same classes: keywords `--accent` and semibold, the built-in type names (`int`, `str`,
+`list` and so on) `--ink` and semibold, strings `--good`, numbers and `True`, `False` and `None` `--warn`,
+comments `--ink-3` in italic. The Python tracer adds three things, in words rather than colour. A name that
+shares its list with another has a note under its value, in `--ink-2` italic: "Same list as b." What was typed
+into the input box follows its prompt in the console, in `--ink-2` italic, as a terminal shows it. And Python's
+own error line is set in the mono face, with the plain-words reading under it in `--ink`. A download's
+progress is a 4 px bar of `--accent` on `--paper-3`, which doesn't animate.
+
 Questions in practice and mock papers use the same tokens. A code block sits on
 `--paper-2`, and a generated circuit is drawn in `--ink` with `currentColor`, like the
 structures. The right and wrong states of an option are `--good` and `--bad` with words, and a
@@ -90,6 +98,10 @@ A generated question reads as a note of caution, using nothing new. This covers 
 - A mock paper shows a small **legend** once, at the top of the first page, with the label and what it means, and the notice beside it.
 - In print, the label and the dotted margin remain. A printed paper has a small footer saying it contains generated questions.
 
+### The tour and tips
+
+The first-visit tour is a note on the page, like a teacher's slip tucked into a book: `--paper`, a `--rule-2` hairline, sharp corners, no shadow, and nothing dimmed behind it, so the app keeps working under it. A small notch in its edge points at what the step is about, and that is circled in the red pen or the yellow chalk, a 2 px `--accent` outline drawn inside its edge. It fades in over 160 ms when a pointer moved it on, and simply appears after a key. One-time tips are quieter still: a `--rule` hairline and `--ink-2` text with a lightbulb, and a Got it button. The tour's `?` sits beside Today's date.
+
 ### Figures
 
 Physics figures are line drawings from `src/components/bank/BankDiagram.tsx`, in `currentColor` so they follow both themes, with `--paper` to mask lines behind labels and `--paper-3` for water and glass. No other fill. Each has a text description as its accessible name. On screen, it opens larger when tapped, and it scales to the page's width up to 20rem. In a Word file, it's a black PNG on white.
@@ -117,6 +129,8 @@ All are bundled. Greek letters in plain text fall back to the system font.
 | `--step-2` | 22 px | Subject name |
 | `--step-3` | 28 px | View titles |
 | `--step-4` | 36 px | Today's date only |
+
+Reading text holds a measure of about 70 characters, `--measure` (36em), which every paragraph in `main` takes. Don't use `ch` for it: Atkinson's digits are wide, so `65ch` runs to about 90.
 
 Write in sentence case, with no all-caps labels and no label above a heading. Name
 controls by what they do, such as "Solve with this" or "Copy LaTeX".

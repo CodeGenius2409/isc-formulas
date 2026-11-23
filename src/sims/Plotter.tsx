@@ -1,3 +1,4 @@
+import { Tip } from '../tour/Tip';
 import { useCallback, useLayoutEffect, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent } from 'react';
 import { Maximize, Minus, Plus, Trash2 } from 'lucide-react';
 import { Math as MathTex } from '../components/Math';
@@ -354,6 +355,7 @@ export function Plotter() {
     <ToolLayout
       controls={
         <>
+          <Tip id="plotter">Type a function of x on each line, such as x^2 - 3 or sin(x), then point at a curve to read its values.</Tip>
           <fieldset className="m-0 border-0 p-0">
             <legend className="lbl">Functions of x</legend>
             {compiled.map((c, i) => (

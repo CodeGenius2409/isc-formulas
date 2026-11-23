@@ -128,3 +128,40 @@ test('the same build works from a sub-path, as on GitHub Pages, including offlin
     rmSync(dir, { recursive: true, force: true });
   }
 });
+
+test('the Python tracer loads from a sub-path, and works offline there once kept', async ({ browser }) => {
+  test.setTimeout(240_000);
+  const dir = mkdtempSync(join(tmpdir(), 'isc-subpath-'));
+  cpSync('dist', join(dir, 'isc-formulas'), { recursive: true });
+  const server = await serveStatic(dir);
+  const context = await browser.newContext();
+  const page = await context.newPage();
+  const problems = watchProblems(page);
+  const trace = async () => {
+    await page.evaluate(() => {
+      location.hash = '#/tools/python';
+    });
+    await expect(page.getByRole('button', { name: 'Trace again' })).toBeEnabled({ timeout: 60_000 });
+    await page.getByRole('button', { name: 'Run to the end' }).click();
+    await expect(page.getByRole('log', { name: 'Console' })).toContainText('a = [10, 20, 30, 40]');
+  };
+  try {
+    await page.goto(`${server.url}isc-formulas/`);
+    await waitForServiceWorker(page);
+    await trace();
+    await page.evaluate(() => {
+      location.hash = '#/settings';
+    });
+    await page.getByRole('checkbox', { name: 'Keep Python for offline use' }).check();
+    await expect(page.getByTestId('python-offline-state')).toHaveText('Python is saved on this device, so the tracer works offline.', { timeout: 60_000 });
+
+    await context.setOffline(true);
+    await page.reload();
+    await trace();
+    expect(problems).toEqual([]);
+  } finally {
+    await context.close();
+    await server.close();
+    rmSync(dir, { recursive: true, force: true });
+  }
+});

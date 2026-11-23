@@ -1,3 +1,4 @@
+import { Tip } from '../tour/Tip';
 import { Fragment, useEffect, useMemo, useRef, useState, type DragEvent, Suspense } from 'react';
 import { ArrowDown, ArrowUp, Dices, Download, FileText, FileUp, GripVertical, Lock, LockOpen, PenLine, Plus, Printer, RefreshCw, Save, Trash2, Wand2 } from 'lucide-react';
 import { BankPrompt } from '../components/bank/BankParts';
@@ -676,7 +677,8 @@ export default function GeneratorView() {
     <div className="page" data-subject={filters.subject}>
       <div className="page-pad max-w-[56rem]">
         <h1 className="text-step-3">Generate questions</h1>
-        <p className="mt-2 max-w-[65ch] text-ink-2">Make a worksheet or a whole paper, offline. Every filter is optional, and leaving one empty means all. Generated questions are marked, and aren’t official ISC questions, so please check them before use.</p>
+        <p className="mt-2 max-w-(--measure) text-ink-2">Make a worksheet or a whole paper, offline. Every filter is optional, and leaving one empty means all. Generated questions are marked, and aren’t official ISC questions, so please check them before use.</p>
+        <Tip id="generator">Pick a subject, say how many questions, and press Generate; Sets A, B and C and the Word files come after.</Tip>
 
         <div className="seg mt-3" role="group" aria-label="What to make">
           <button type="button" aria-pressed={mode === 'set'} onClick={() => setMode('set')}>

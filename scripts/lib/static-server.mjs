@@ -9,6 +9,9 @@ import { gzipSync } from 'node:zlib';
 const TYPES = {
   '.html': 'text/html; charset=utf-8',
   '.js': 'text/javascript; charset=utf-8',
+  '.mjs': 'text/javascript; charset=utf-8',
+  '.wasm': 'application/wasm',
+  '.zip': 'application/zip',
   '.css': 'text/css; charset=utf-8',
   '.json': 'application/json',
   '.webmanifest': 'application/manifest+json',
@@ -17,7 +20,8 @@ const TYPES = {
   '.woff2': 'font/woff2',
 };
 
-const COMPRESSIBLE = new Set(['.html', '.js', '.css', '.json', '.webmanifest', '.svg']);
+// WebAssembly compresses well, and hosts such as Vercel compress it. A zip is compressed already.
+const COMPRESSIBLE = new Set(['.html', '.js', '.mjs', '.css', '.json', '.webmanifest', '.svg', '.wasm']);
 
 export function serveStatic(dir, port = 0, { noStore = false } = {}) {
   const server = createServer((req, res) => {

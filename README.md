@@ -4,8 +4,7 @@ Every ISC 2028 formula for Physics, Chemistry, Mathematics and Computer Science,
 problem solver, practice with spaced repetition, and simulators. It installs as an app
 and works with no network after the first visit.
 
-7,822 formulas mapped to the official 2028 syllabus, with Computer Science written as Java, verified bond-line structures for organic chemistry, about 28,000 fixed exam-style questions, about 5,500 question blueprints that generate new ones offline, your own formulas alongside the printed ones, timed mock papers, 448 solvable for any variable, 41 simulators including a step-through Java
-tracer.
+7,822 formulas mapped to the official 2028 syllabus, with Computer Science written as Java, verified bond-line structures for organic chemistry, about 28,000 fixed exam-style questions, about 5,500 question blueprints that generate new ones offline, your own formulas alongside the printed ones, timed mock papers, 448 solvable for any variable, and 42 simulators, including step-through tracers for Java and for real Python.
 
 ## Run it
 
@@ -53,6 +52,15 @@ command `npm run build`, output folder `dist`.
 Either host must serve over HTTPS, or the service worker and installing won't work. Both do
 by default.
 
+`dist/` also holds Pyodide, about 11 MB in `pyodide/`, for the Python tracer. Both hosts serve
+its `.wasm` and `.mjs` files correctly. It's downloaded only by someone who opens the Python
+tracer, and it isn't part of the offline download unless they turn on "Keep Python for offline
+use" in Settings.
+
+## The tour
+
+A short tour opens on the first visit, after asking whether you're a student or a teacher. Skip it at any point; take it again from the `?` beside Today's date, or from Settings, which can also bring back the one-time tips. Under automation, as in the browser tests, it opens only if `isc-tour-test` is `on` in local storage.
+
 ## Install it on a phone
 
 - **Android:** open the site in Chrome, then choose Install app from the menu.
@@ -60,7 +68,7 @@ by default.
 
 ## Check it
 
-    npm test              # unit tests, and a comparison with real Java if a JDK is installed
+    npm test              # unit tests, and comparisons with real Java and real Python where they're installed
     npm run e2e           # browser tests, using Microsoft Edge
     npm run lighthouse    # writes reports/lighthouse.md
     npm run sizes         # writes reports/bundle-sizes.md
@@ -115,6 +123,19 @@ the generated files is lost the next time that runs.
 **A Java sample.** Add it to `src/java/samples.ts` with its expected output, and a test
 checks it automatically.
 
+**A Python sample.** Add it to `src/python/samples.ts` with its expected output. A test runs it
+in the Python tracer, and `tests/unit/python-real.test.ts` runs it through the Python on your
+computer too, if there is one, and requires the same output.
+
+**A generated Python output question.** Add its program to `src/data/blueprints/python-programs.ts`,
+then record what Python prints for each of its programs, in PowerShell:
+
+    $env:WRITE_PYTHON_RUNS=1; npx vitest run tests/unit/python-runs.test.ts
+
+**A newer Pyodide.** Change the exact version of `pyodide` in `package.json`. If Python then
+needs a library file the tracer leaves out, `tests/unit/python-stdlib.test.ts` fails and names it;
+add it to `KEEP_FILES` in `scripts/lib/pyodide-files.mjs`.
+
 **App icons and splash screens.** Change `scripts/make-icons.mjs`, then run
 `node scripts/make-icons.mjs`. The results in `public/` are committed, so a normal build
 doesn't need this.
@@ -139,6 +160,8 @@ doesn't need this.
 | `src/data/lewis/` | Structures with lone pairs as data, and the automated check every one must pass |
 | `src/sims/` | The simulators |
 | `src/java/` | The Java lexer, parser, interpreter and samples |
+| `src/python/` | The Python tracer: `tracer.py`, which runs in Pyodide, its worker, loading and offline storage, and samples |
+| `scripts/lib/pyodide-files.mjs` | Which of Pyodide's files are served, and the cut-down standard library |
 | `src/views/`, `src/components/` | Pages and shared interface |
 | `src/styles/` | Tokens and stylesheets |
 | `reports/` | Dedupe, audit, bundle size and Lighthouse reports |

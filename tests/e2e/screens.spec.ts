@@ -30,6 +30,7 @@ const ROUTES: [string, string][] = [
   ['titration', 'tools/titration'],
   ['plotter', 'tools/plotter'],
   ['java', 'tools/java'],
+  ['python', 'tools/python'],
   ['settings', 'settings'],
   ['solve', 'f/p-xi-2-7?work=solve&wf=p-xi-2-7'],
   ['check', 'book/physics/XI/1?work=check'],

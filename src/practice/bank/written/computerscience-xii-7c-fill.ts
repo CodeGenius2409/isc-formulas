@@ -1,6 +1,6 @@
 // Written by hand: Python tuples, three of each type the subtopic lacked. Places are at(unit, topic)(marks, difficulty).
 // Assertion–reason answers: 1 both true and R explains, 2 both true but R doesn't explain, 3 A true and R false, 4 A false and R true.
-// The tracer runs only Java, so every Python output here was traced by hand.
+// Every Python answer here is run in the Python tracer by tests/unit/python-bank.test.ts.
 import { at, kit, type BankDef } from '../define';
 
 const { predict, odd, long, tell, match, reason, short, ar, program } = kit('computerscience', 'XII');

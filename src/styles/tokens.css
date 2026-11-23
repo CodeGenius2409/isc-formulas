@@ -12,6 +12,8 @@
   --step-2: 1.375rem; /* 22px: sub-heads */
   --step-3: 1.75rem; /* 28px: view titles */
   --step-4: 2.25rem; /* 36px: Today only */
+  /* A reading line of about 70 characters. Atkinson's digits are wide, so 65ch ran to 90. */
+  --measure: 36em;
 
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
