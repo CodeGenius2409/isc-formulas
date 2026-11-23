@@ -57,6 +57,10 @@ its `.wasm` and `.mjs` files correctly. It's downloaded only by someone who open
 tracer, and it isn't part of the offline download unless they turn on "Keep Python for offline
 use" in Settings.
 
+## The tour
+
+A short tour opens on the first visit, after asking whether you're a student or a teacher. Skip it at any point; take it again from the `?` beside Today's date, or from Settings, which can also bring back the one-time tips. Under automation, as in the browser tests, it opens only if `isc-tour-test` is `on` in local storage.
+
 ## Install it on a phone
 
 - **Android:** open the site in Chrome, then choose Install app from the menu.

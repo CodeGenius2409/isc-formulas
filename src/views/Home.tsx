@@ -17,7 +17,13 @@ export default function Home() {
     <div className="page">
       <div className="page-pad">
         <AnimatedContent>
-          <h1 className="today-date">{DATE_FORMAT.format(new Date())}</h1>
+          <div className="today-head">
+            <h1 className="today-date">{DATE_FORMAT.format(new Date())}</h1>
+            {/* The tour loads with the event, so Today carries none of its code. */}
+            <button type="button" className="btn btn-line help-button" aria-label="Take the tour" title="Take the tour" onClick={() => window.dispatchEvent(new Event('isc-tour-start'))}>
+              ?
+            </button>
+          </div>
           <OfflineLine />
 
           <ReviewQueue />

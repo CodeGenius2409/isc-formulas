@@ -98,6 +98,10 @@ A generated question reads as a note of caution, using nothing new. This covers 
 - A mock paper shows a small **legend** once, at the top of the first page, with the label and what it means, and the notice beside it.
 - In print, the label and the dotted margin remain. A printed paper has a small footer saying it contains generated questions.
 
+### The tour and tips
+
+The first-visit tour is a note on the page, like a teacher's slip tucked into a book: `--paper`, a `--rule-2` hairline, sharp corners, no shadow, and nothing dimmed behind it, so the app keeps working under it. A small notch in its edge points at what the step is about, and that is circled in the red pen or the yellow chalk, a 2 px `--accent` outline drawn inside its edge. It fades in over 160 ms when a pointer moved it on, and simply appears after a key. One-time tips are quieter still: a `--rule` hairline and `--ink-2` text with a lightbulb, and a Got it button. The tour's `?` sits beside Today's date.
+
 ### Figures
 
 Physics figures are line drawings from `src/components/bank/BankDiagram.tsx`, in `currentColor` so they follow both themes, with `--paper` to mask lines behind labels and `--paper-3` for water and glass. No other fill. Each has a text description as its accessible name. On screen, it opens larger when tapped, and it scales to the page's width up to 20rem. In a Word file, it's a black PNG on white.

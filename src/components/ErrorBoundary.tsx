@@ -8,6 +8,8 @@ interface Props {
   resetKey?: string;
   /** What failed, as the student would name it: "This page", "The working area". */
   label?: string;
+  /** Something extra, such as the tour, that should simply not appear if it fails. */
+  quiet?: boolean;
 }
 
 /**
@@ -34,6 +36,7 @@ export class ErrorBoundary extends Component<Props, { failed: boolean }> {
 
   render() {
     if (!this.state.failed) return this.props.children;
+    if (this.props.quiet) return null;
     return (
       <div className="page-pad" role="alert">
         <h2 className="text-step-1">{this.props.label ?? 'This page'} could not open</h2>

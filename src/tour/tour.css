@@ -1,0 +1,85 @@
+/* The tour: a note on the page, like a teacher's slip tucked into a book. A hairline and the paper, no shadow, no
+   dimmed page behind it. The part of the page it is about is circled in the red pen, or the yellow chalk. */
+
+.tour {
+  position: fixed;
+  z-index: 60;
+  width: min(21rem, calc(100vw - 1rem));
+  padding: 0.875rem 1rem 0.75rem;
+  background: var(--paper);
+  color: var(--ink);
+  border: 1px solid var(--rule-2);
+  animation: tour-in 160ms ease both;
+}
+
+/* After a keyboard action nothing moves or fades: the next step is simply there. */
+.tour[data-instant] {
+  animation: none;
+}
+
+@keyframes tour-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/* The pointer: a small notch in the note's edge, aimed at what the step is about. */
+.tour[data-side='below']::before,
+.tour[data-side='above']::before {
+  content: '';
+  position: absolute;
+  left: calc(var(--pointer, 50%) - 7px);
+  width: 12px;
+  height: 12px;
+  background: var(--paper);
+  border: 1px solid var(--rule-2);
+  rotate: 45deg;
+}
+
+.tour[data-side='below']::before {
+  top: -7px;
+  border-right: 0;
+  border-bottom: 0;
+}
+
+.tour[data-side='above']::before {
+  bottom: -7px;
+  border-left: 0;
+  border-top: 0;
+}
+
+.tour h2 {
+  font-size: var(--step-1);
+  outline-offset: 4px;
+}
+
+.tour p {
+  margin-top: 0.25rem;
+  color: var(--ink-2);
+}
+
+.tour .tour-count {
+  margin: 0 0 0.125rem;
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  color: var(--ink-3);
+}
+
+.tour-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.tour-skip {
+  margin-top: 0.25rem;
+  margin-left: -0.5rem;
+}
+
+/* The pen mark round the part of the page a step is about. Drawn inside its edge, so a tab at the window's edge
+   or a button in the dock keeps the whole mark. */
+[data-tour-target] {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}

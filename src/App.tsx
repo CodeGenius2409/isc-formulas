@@ -1,5 +1,5 @@
 import { ensureCustomLoaded } from './custom/store';
-import { Suspense, useEffect, useLayoutEffect, useRef, type RefObject } from 'react';
+import { Suspense, useEffect, useLayoutEffect, useRef, useState, type RefObject } from 'react';
 import { lazyRetry } from './lib/retry-import';
 import { SUBJECT_IDS } from './data/book';
 import type { ClassLevel, SubjectId } from './data/types';
@@ -34,6 +34,8 @@ const ToolsView = lazyRetry(() => import('./views/ToolsView'));
 const GeneratorView = lazyRetry(() => import('./views/GeneratorView'));
 const SearchView = lazyRetry(() => import('./views/SearchView'));
 const FindPalette = lazyRetry<object>(() => import('./components/FindPalette').then((m) => ({ default: m.FindPalette })));
+// The first-visit tour, loaded once the first screen is drawn and the browser is idle, or when someone asks for it.
+const Tour = lazyRetry<{ asked: number }>(() => import('./tour/Tour'));
 
 interface BookPlace {
   subject: SubjectId;
@@ -121,6 +123,18 @@ export function App() {
   }, []);
   const route = useRoute();
   const last = useStore(lastReadStore);
+  const [tour, setTour] = useState({ load: false, asked: 0 });
+  useEffect(() => {
+    const load = () => setTour((t) => ({ ...t, load: true }));
+    const ask = () => setTour((t) => ({ load: true, asked: t.asked + 1 }));
+    const idle = window.requestIdleCallback ? window.requestIdleCallback(load, { timeout: 3000 }) : window.setTimeout(load, 1500);
+    window.addEventListener('isc-tour-start', ask);
+    return () => {
+      if (window.cancelIdleCallback) window.cancelIdleCallback(idle);
+      else window.clearTimeout(idle);
+      window.removeEventListener('isc-tour-start', ask);
+    };
+  }, []);
   const contentsOpen = useStore(contentsSheetStore);
   const paletteOpen = useStore(paletteStore);
   const paletteUsed = useRef(false);
@@ -218,6 +232,13 @@ export function App() {
         <ErrorBoundary label="Find">
           <Suspense fallback={null}>
             <FindPalette />
+          </Suspense>
+        </ErrorBoundary>
+      )}
+      {tour.load && (
+        <ErrorBoundary label="The tour" quiet>
+          <Suspense fallback={null}>
+            <Tour asked={tour.asked} />
           </Suspense>
         </ErrorBoundary>
       )}
