@@ -5,6 +5,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProp
 import { findTarget, STEPS, type Step } from './steps';
 import { endTour, placePanel, saveRole, savedRole, tourWanted, type Placed, type Role } from './state';
 import './tour.css';
+import { EASE, play, shouldAnimate } from '../lib/motion';
 
 const MARKED = 'data-tour-target';
 
@@ -122,6 +123,23 @@ export default function Tour({ asked }: { asked: number }) {
     measure();
     return () => cancelAnimationFrame(frame);
   }, [open, target, at, role]);
+
+  // Moving on, the note travels from where the last step's note was to its new target, rather than
+  // vanishing and reappearing. From the keyboard it simply appears there.
+  const lastBox = useRef<{ top: number; left: number; step: string } | null>(null);
+  useLayoutEffect(() => {
+    const box = panel.current;
+    if (!open) lastBox.current = null;
+    if (!open || !placed || !box) return;
+    const stepKey = `${role ?? 'role'}-${at}`;
+    const prev = lastBox.current;
+    lastBox.current = { top: placed.top, left: placed.left, step: stepKey };
+    if (!prev || prev.step === stepKey || instant || !shouldAnimate()) return;
+    const dx = prev.left - placed.left;
+    const dy = prev.top - placed.top;
+    if (Math.hypot(dx, dy) < 2) return;
+    play(box, [{ transform: `translate(${dx}px, ${dy}px)` }, { transform: 'none' }], { duration: 460, easing: EASE.drawer });
+  }, [open, placed, role, at, instant]);
 
   // Focus goes to each step, so a keyboard or a screen reader is taken along with it. The note can only take it once
   // it is placed and visible.

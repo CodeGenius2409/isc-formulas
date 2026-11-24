@@ -112,7 +112,7 @@ export default function UnitView({ subject, level, unitIndex, subtopicIndex, nav
       </div>
 
       <header className="unit-title">
-        <h1>{unitTitle(meta.name)}</h1>
+        <h1 data-morph-hero={`unit:${subject}-${level}-${unitIndex}`}>{unitTitle(meta.name)}</h1>
         <p>
           {meta.count + (added?.total ?? 0)} formulas in {meta.subtopics.length + (added?.extraSections.length ?? 0)} sections{added?.total ? `, ${added.total} of them yours` : ''}
         </p>
@@ -120,7 +120,7 @@ export default function UnitView({ subject, level, unitIndex, subtopicIndex, nav
         <SyllabusNote subject={subject} level={level} number={Number(splitUnitName(meta.name).number)} />
       </header>
 
-      {state.status === 'loading' && <p className="spinner-line">Opening {unitTitle(meta.name)}</p>}
+      {state.status === 'loading' && <p className="spinner-line page-loading" data-loading>Opening {unitTitle(meta.name)}</p>}
       {state.status === 'error' && <p className="spinner-line">This unit could not load. Reload the page to try again.</p>}
       {unit && (
         <FormulaList items={items} scrollRef={scrollRef} scrollKey={navigation} highlightId={highlightId} scrollToIndex={highlightId && items.some((i) => i.key === highlightId) ? items.findIndex((i) => i.key === highlightId) : subtopicIndex != null ? (sectionPositions.get(subtopicIndex) ?? null) : null} onTopItemChange={onTopItemChange} />

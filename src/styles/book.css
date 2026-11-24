@@ -205,7 +205,7 @@
   margin: -0.35rem -0.25rem -0.35rem 0;
   color: var(--ink-3);
   border-radius: 3px;
-  transition: transform var(--dur-press) var(--ease-out), color var(--dur-fast) ease;
+  transition: transform var(--dur-press) var(--ease-out), color var(--dur-quick) ease;
 }
 
 .row-star:active {
@@ -494,8 +494,8 @@ kbd {
     min-height: 2.75rem;
     margin-block: -0.5rem;
   }
-}
-
+}
+
 /* The official wording for a unit. Closed by default, and quiet when closed. */
 .syllabus-note {
   margin-top: 0.25rem;
@@ -533,8 +533,8 @@ kbd {
 
 .syllabus-source {
   color: var(--ink-3);
-}
-
+}
+
 /* Bond-line structures. Stroke and fill are currentColor, so each theme draws them in its own ink. */
 /* Takes the row's width and adds nothing to it, so a long reaction can't squeeze the columns. */
 .row-structure {
@@ -716,8 +716,8 @@ kbd {
   .molecule-button {
     cursor: auto;
   }
-}
-
+}
+
 /* Your own formulas: a note handwritten into a printed book. A pen mark takes the place of the number,
    and the margin rule breaks into a dashed stretch beside the row. */
 .row[data-custom] {
@@ -751,28 +751,6 @@ kbd {
   font-style: italic;
   color: var(--ink-2);
   white-space: nowrap;
-}
-
-.row[data-flash] {
-  animation: row-flash 2.4s ease-out;
-}
-
-@keyframes row-flash {
-  from,
-  40% {
-    background: var(--paper-3);
-  }
-  to {
-    background: transparent;
-  }
-}
-
-/* The same mark, held still and then gone, with nothing moving. */
-@media (prefers-reduced-motion: reduce) {
-  .row[data-flash] {
-    animation: none;
-    background: var(--paper-3);
-  }
 }
 
 .section-head:has(.section-add) {

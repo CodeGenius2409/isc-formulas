@@ -88,7 +88,15 @@ export default defineConfig({
       },
     }),
   ],
-  build: { target: 'es2020', sourcemap: false, chunkSizeWarningLimit: 900 },
+  build: {
+    target: 'es2020',
+    sourcemap: false,
+    chunkSizeWarningLimit: 900,
+    // The motion core is shared by the first screen and by pages that load later. On its own it would be one
+    // more file on the first load, so it travels with the stores, which every screen loads anyway.
+    // Vite's preload helper goes with them for the same reason: v8's idle imports would otherwise split it out.
+    rolldownOptions: { output: { advancedChunks: { groups: [{ name: 'store', test: /src[\\/]lib[\\/](store|motion)\.ts$|preload-helper/ }] } } },
+  },
   test: {
     environment: 'node',
     include: ['tests/unit/**/*.test.ts', 'tests/unit/**/*.test.tsx'],

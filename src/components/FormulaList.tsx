@@ -2,7 +2,11 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState, type RefObje
 import { flushSync } from 'react-dom';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import type { Formula } from '../data/types';
-import { listReveal } from '../lib/motion';
+import { usingKeyboard } from '../lib/motion';
+import { listReveal } from '../lib/motion-kit';
+
+/** Lists already revealed this visit. The reveal is for first sight only. */
+const revealed = new Set<string>();
 import { FormulaRow } from './FormulaRow';
 import { PenLine } from 'lucide-react';
 
@@ -68,7 +72,10 @@ export function FormulaList({ items, scrollRef, showWhere, scrollToIndex, scroll
 
   useEffect(() => {
     const root = listRef.current;
-    if (root) listReveal([...root.querySelectorAll('.row')]);
+    const key = items.length ? `${items[0].key}:${items.length}` : '';
+    if (!root || !key || revealed.has(key)) return;
+    revealed.add(key);
+    listReveal([...root.querySelectorAll('.section-head, .row')]);
     // Once per list.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [items]);
@@ -85,7 +92,17 @@ export function FormulaList({ items, scrollRef, showWhere, scrollToIndex, scroll
     };
   }, []);
 
-  const onToggle = useCallback((id: string) => setOpenId((cur) => (cur === id ? null : id)), []);
+  // Opening a row changes its height, and the rows below glide to their new places rather than jump.
+  const settleTimer = useRef(0);
+  const onToggle = useCallback((id: string) => {
+    const list = listRef.current;
+    if (list && !usingKeyboard()) {
+      list.dataset.settling = '';
+      window.clearTimeout(settleTimer.current);
+      settleTimer.current = window.setTimeout(() => delete list.dataset.settling, 420);
+    }
+    setOpenId((cur) => (cur === id ? null : id));
+  }, []);
 
   useEffect(() => {
     if (!measured || servedKey.current === scrollKey) return;

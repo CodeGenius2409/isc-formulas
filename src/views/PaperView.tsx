@@ -6,6 +6,7 @@ import { ShareSlider } from '../components/bank/ShareSlider';
 import { manifest, getSubject } from '../data/book';
 import type { ClassLevel, SubjectId } from '../data/types';
 import { useAsync } from '../lib/hooks';
+import { CountUp } from '../lib/motion-kit';
 import { href, openWork, useRoute } from '../lib/router';
 import { useStore } from '../lib/store';
 import { isMarkedGenerated } from '../practice/bank/define';
@@ -214,7 +215,7 @@ function OrChoice({ id, chosen, marking }: { id: string; chosen: boolean; markin
   );
 }
 
-const PaperQuestion = memo(function PaperQuestion({ item, number, answer, marking, figure, alternative }: { item: BankItem; number: number; answer: BankAnswer | undefined; marking: boolean; figure: FigureMark | undefined; alternative?: boolean }) {
+const PaperQuestion = memo(function PaperQuestion({ item, number, answer, marking, figure, alternative, answering }: { item: BankItem; number: number; answer: BankAnswer | undefined; marking: boolean; figure: FigureMark | undefined; alternative?: boolean; answering?: boolean }) {
   const current = answer ?? {};
   const onChange = (change: Partial<BankAnswer>) => answerPaper(item.id, change);
   return (
@@ -222,7 +223,13 @@ const PaperQuestion = memo(function PaperQuestion({ item, number, answer, markin
       <p className="bank-meta">
         <span className="font-semibold">Question {number}{alternative ? ', the alternative' : ''}</span>
         <GeneratedMark item={item} />
-        <span className="bank-marks">{marking ? `${scoreOf(item, current)} of ${item.marks}` : `[${item.marks}]`}</span>
+        {/* Of an OR pair, which one is being answered: the note moves across as the choice does. */}
+        {answering !== undefined && (
+          <span className="or-answering" data-on={answering}>
+            Answering this one
+          </span>
+        )}
+        <span className="bank-marks">{marking ? <><CountUp value={scoreOf(item, current)} from={0} /> of {item.marks}</> : `[${item.marks}]`}</span>
       </p>
       <BankPrompt item={item} figure={figure ?? 'none'} />
       <BankInputs item={item} answer={current} onChange={onChange} marked={marking} />
@@ -260,7 +267,7 @@ function PaperSheet({ paper, onFinished }: { paper: Paper; onFinished: (result: 
         <span className="font-semibold">{label} mock paper</span>
         {marking ? (
           <span>
-            <span className="num font-semibold">{result!.got}</span> of <span className="num">{result!.total}</span> so far
+            <CountUp className="num font-semibold" value={result!.got} from={0} /> of <span className="num">{result!.total}</span> so far
           </span>
         ) : (
           <Timer endsAt={paper.endsAt} />
@@ -316,9 +323,9 @@ function PaperSheet({ paper, onFinished }: { paper: Paper; onFinished: (result: 
                       </>
                     ) : (
                       <>
-                        <PaperQuestion item={q.item} number={number} answer={paper.answers[q.item.id]} marking={false} figure={figures.get(q.item.id)} />
+                        <PaperQuestion item={q.item} number={number} answer={paper.answers[q.item.id]} marking={false} figure={figures.get(q.item.id)} answering={!chosen} />
                         <OrChoice id={q.item.id} chosen={chosen} marking={false} />
-                        <PaperQuestion item={other.item} number={number} answer={paper.answers[other.item.id]} marking={false} figure={figures.get(other.item.id)} alternative />
+                        <PaperQuestion item={other.item} number={number} answer={paper.answers[other.item.id]} marking={false} figure={figures.get(other.item.id)} alternative answering={chosen} />
                       </>
                     )}
                   </Fragment>

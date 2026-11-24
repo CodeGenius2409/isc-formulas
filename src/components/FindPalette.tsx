@@ -242,7 +242,7 @@ function navigateToSolver(id: string, unknown: string) {
   openWork('solve', id);
   // Add which variable to find, without adding a second history entry.
   const hash = window.location.hash;
-  history.replaceState(null, '', `${hash}&find=${encodeURIComponent(unknown)}`);
+  history.replaceState(history.state, '', `${hash}&find=${encodeURIComponent(unknown)}`);
   window.dispatchEvent(new HashChangeEvent('hashchange'));
 }
 

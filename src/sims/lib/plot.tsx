@@ -1,6 +1,8 @@
 // A small canvas plotting layer, bundled with the app. It reads colours from the
 // design tokens at draw time, so plots follow the theme.
 import { useCallback, useEffect, useLayoutEffect, useRef, useSyncExternalStore, type CSSProperties, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react';
+import { DUR, prefersReducedMotion, shouldAnimate } from '../../lib/motion';
+import '../../styles/motion-later.css';
 
 const themeListeners = new Set<() => void>();
 let themeVersion = 0;
@@ -48,6 +50,21 @@ interface CanvasProps {
   children?: ReactNode;
 }
 
+/** The drawing as it was, laid over the new one and faded away, so curves change rather than jump. */
+function dissolveFrom(canvas: HTMLCanvasElement, wrap: HTMLElement): void {
+  if (!shouldAnimate() || typeof canvas.animate !== 'function') return;
+  const ghost = document.createElement('canvas');
+  ghost.width = canvas.width;
+  ghost.height = canvas.height;
+  ghost.getContext('2d')?.drawImage(canvas, 0, 0);
+  ghost.className = 'plot-ghost';
+  ghost.setAttribute('aria-hidden', 'true');
+  wrap.append(ghost);
+  const fade = ghost.animate([{ opacity: 1 }, { opacity: 0 }], { duration: DUR.standard + 40, easing: 'ease-out', fill: 'forwards' });
+  const remove = () => ghost.remove();
+  fade.finished.then(remove, remove);
+}
+
 /** A canvas that redraws on resize and theme change, sharp on high-density screens. */
 export function Canvas({ draw, height = 280, label, className = '', style, interactive, onWheel, onKeyDown, onBlur, children, ...pointer }: CanvasProps) {
   const wrapRef = useRef<HTMLDivElement>(null);
@@ -56,7 +73,8 @@ export function Canvas({ draw, height = 280, label, className = '', style, inter
   drawRef.current = draw;
   const theme = useThemeVersion();
 
-  const paint = useCallback(() => {
+  const lastPaint = useRef(0);
+  const paint = useCallback((dissolve?: unknown) => {
     const canvas = canvasRef.current;
     const wrap = wrapRef.current;
     if (!canvas || !wrap) return;
@@ -64,7 +82,12 @@ export function Canvas({ draw, height = 280, label, className = '', style, inter
     const h = wrap.clientHeight;
     if (!width || !h) return;
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    if (canvas.width !== Math.round(width * dpr) || canvas.height !== Math.round(h * dpr)) {
+    const now = performance.now();
+    const sized = canvas.width === Math.round(width * dpr) && canvas.height === Math.round(h * dpr);
+    // A change that arrives on its own (a preset, a button), not mid-drag, dissolves from the old drawing into the new.
+    if (dissolve === true && sized && lastPaint.current && now - lastPaint.current > 250) dissolveFrom(canvas, wrap);
+    lastPaint.current = now;
+    if (!sized) {
       canvas.width = Math.round(width * dpr);
       canvas.height = Math.round(h * dpr);
     }
@@ -75,13 +98,13 @@ export function Canvas({ draw, height = 280, label, className = '', style, inter
     drawRef.current(ctx, width, h);
   }, []);
 
-  useLayoutEffect(paint);
-  useEffect(paint, [theme, paint]);
+  useLayoutEffect(() => paint(true));
+  useEffect(() => paint(), [theme, paint]);
 
   useEffect(() => {
     const wrap = wrapRef.current;
     if (!wrap || typeof ResizeObserver === 'undefined') return undefined;
-    const observer = new ResizeObserver(paint);
+    const observer = new ResizeObserver(() => paint());
     observer.observe(wrap);
     return () => observer.disconnect();
   }, [paint]);
@@ -436,7 +459,7 @@ export function useAnimation(onFrame: (seconds: number) => void, active = true):
   callback.current = onFrame;
   useEffect(() => {
     if (!active) return undefined;
-    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+    if (prefersReducedMotion()) {
       callback.current(0);
       return undefined;
     }

@@ -8,7 +8,8 @@ The reference for keeping new work consistent. Values live in
 
 A ruled exercise book crossed with a printed handbook: the two objects an ISC
 student actually studies from. Formulas are the content, so type and rules do the
-work. There are no cards, shadows, gradients, glass or glow.
+work. There are no cards, gradients, glass or glow, and no shadows on anything at rest (only a
+lifted sheet has one, while it is lifted; see Motion).
 
 Two things carry the identity. Everything else stays quiet.
 
@@ -65,7 +66,7 @@ comments `--ink-3` in italic. The Python tracer adds three things, in words rath
 shares its list with another has a note under its value, in `--ink-2` italic: "Same list as b." What was typed
 into the input box follows its prompt in the console, in `--ink-2` italic, as a terminal shows it. And Python's
 own error line is set in the mono face, with the plain-words reading under it in `--ink`. A download's
-progress is a 4 px bar of `--accent` on `--paper-3`, which doesn't animate.
+progress is a 4 px bar of `--accent` on `--paper-3`, which eases forward as the bytes arrive.
 
 Questions in practice and mock papers use the same tokens. A code block sits on
 `--paper-2`, and a generated circuit is drawn in `--ink` with `currentColor`, like the
@@ -100,7 +101,7 @@ A generated question reads as a note of caution, using nothing new. This covers 
 
 ### The tour and tips
 
-The first-visit tour is a note on the page, like a teacher's slip tucked into a book: `--paper`, a `--rule-2` hairline, sharp corners, no shadow, and nothing dimmed behind it, so the app keeps working under it. A small notch in its edge points at what the step is about, and that is circled in the red pen or the yellow chalk, a 2 px `--accent` outline drawn inside its edge. It fades in over 160 ms when a pointer moved it on, and simply appears after a key. One-time tips are quieter still: a `--rule` hairline and `--ink-2` text with a lightbulb, and a Got it button. The tour's `?` sits beside Today's date.
+The first-visit tour is a note on the page, like a teacher's slip tucked into a book: `--paper`, a `--rule-2` hairline, sharp corners, no shadow, and nothing dimmed behind it, so the app keeps working under it. A small notch in its edge points at what the step is about, and that is circled in the red pen or the yellow chalk, a 2 px `--accent` outline drawn inside its edge. When a pointer moves it on, the note travels to its next target and fades in over 160 ms; after a key it simply appears there. One-time tips are quieter still: a `--rule` hairline and `--ink-2` text with a lightbulb, and a Got it button. The tour's `?` sits beside Today's date.
 
 ### Figures
 
@@ -148,26 +149,87 @@ smaller.
 
 ## Motion
 
-| What | Duration | Easing | How |
-|---|---|---|---|
-| Press feedback | 120 ms | `--ease-out` | CSS, `scale(0.97)` |
-| Hover, colour | 160 ms | `ease` | CSS |
-| View change | 200 ms | `expo.out` | GSAP, `viewEnter` |
-| List reveal | 180 ms, 12 ms stagger, first 10 rows only | `expo.out` | GSAP, `listReveal` |
-| Solver steps | 200 ms, 40 ms stagger | `expo.out` | GSAP, `stepsReveal` |
-| Sheet | 240 ms | `expo.out` | GSAP, `sheetEnter` |
-| Today page entrance | 220 ms, 30 ms stagger | `expo.out` | GSAP, `AnimatedContent` (once) |
+Motion is how the book behaves when it is handled: a page laid over the last, a sheet of paper
+slid in from the edge, a pen mark written on. It should be noticed, and it should feel made with
+care, but it is never decoration. Every movement answers something the reader did, or shows where
+something went.
 
-Rules:
+The values live in [src/styles/tokens.css](src/styles/tokens.css) and, for scripts, in
+[src/lib/motion.ts](src/lib/motion.ts). Nothing uses a value of its own.
+
+### Tokens
+
+| Token | Value | For |
+|---|---|---|
+| `--dur-press` | 110 ms | Press feedback |
+| `--dur-quick` | 160 ms | Hover, colour, small exits |
+| `--dur-standard` | 240 ms | Controls: tabs, segments, toasts, a list item leaving |
+| `--dur-emphasis` | 380 ms | Something that matters arriving: an answer, a list item, the working |
+| `--dur-page` | 460 ms | A page turn and a morph |
+| `--ease-out` | `cubic-bezier(0.23, 1, 0.32, 1)` | Anything entering or exiting |
+| `--ease-in-out` | `cubic-bezier(0.77, 0, 0.175, 1)` | Something moving across the screen, such as the theme blind |
+| `--ease-drawer` | `cubic-bezier(0.32, 0.72, 0, 1)` | Page turns, and sheets where springs aren't available |
+| `--spring-sheet` | response 0.4 s, damping 0.9, settles in 440 ms | Sheets, the sliding fills of tabs and segments, FLIP lists |
+| `--spring-pop` | response 0.3 s, damping 0.6, settles in 520 ms | Small controls only: a star filling, a slider's thumb |
+
+Springs are `linear()` curves sampled from a damped spring, so they run on the compositor like
+any other easing. Browsers without `linear()` get the drawer curve or ease-out. The sheet spring
+barely overshoots (0.1%), because paper doesn't bounce; only `--spring-pop` does, and only on
+controls.
+
+### What moves
+
+| What | Motion | Where |
+|---|---|---|
+| Moving deeper (book, unit, formula, a tool) | A page turn. Desktop: the new page comes 3rem in from the right as the old one slips 1.75rem left and goes; their opacity is staged so the two never show through each other. Phone: the new page is pushed over the whole width with a shadowed edge, and the old one slides a third as far beneath it and pales. The title arrives a beat later, as its own layer | View Transitions: `page-transition.ts`, `motion.css` |
+| Going back, or up | The top sheet is lifted away to the right and the one beneath comes forward | Same |
+| Between the main sections, or the classes | The old page fades in 160 ms, the new one rises 0.75rem into place | Same |
+| Something pressed that becomes the page | A morph: a formula row's maths into the formula page, a subject on Today or its rail tab into the subject's contents, a unit's line into its title, a tool into its page | `data-morph`, `data-morph-hero` |
+| Without View Transitions | The new page slides in from the side it came from, by GSAP | `page-transition.ts` |
+| The theme | The new theme is drawn down over the old like a blind, 620 ms, ease-in-out | View Transitions |
+| Sheets (work, contents) | In on the sheet spring from their edge as the page dims; out in 380 ms on the drawer curve. On a phone they follow the finger and can be thrown down: past a third of their height, or a flick faster than about 0.45 px/ms, and they go at the speed they were thrown | `Sheet.tsx`, `controls-motion.ts`, `sheet-drag.ts` |
+| Find | Opens instantly, always. Closes with a 160 ms fade | `motion.css` |
+| Toast, update prompt | Up on the sheet spring, down in 160 ms | `motion.css` |
+| Press | Buttons `scale(0.97)`; dock, rail, tabs and segments `scale(0.96)`; links in lists `scale(0.99)` | CSS |
+| Tabs and segmented controls | The fill, or the tabs' red-pen underline, slides from the old choice to the new on the sheet spring. So does the solver's symbol to find, across rows | `controls-motion.ts` |
+| Dock and rail | The current place is underlined in the red pen, drawn out from the middle; the rail's subject tabs slide out from under its edge | `shell.css` |
+| Checkboxes | The tick is written on, left to right | `motion-later.css` |
+| Collapsible sections | Unroll downward, clipped from the top edge, as a folded note opens | `motion-later.css` |
+| Lists | Reveal on first sight only: the first 10 items rise 8 px in a wave whose gaps shrink, never while a page turn carries them in. Items entering, leaving and reordering glide (FLIP); a leaving one fades where it was while the rest close the gap. Rows below a formula that opens glide to their places | `motion-kit.tsx` |
+| Reordering a paper | The question picked up lifts and pales; the red pen draws the line where it will land | `motion-later.css` |
+| The solver | The working is written out line by line, each revealed from the left like a pen stroke, then the answer lands with a small settle | `motion-kit.tsx` |
+| Marking | Right: the notice settles in and a tick is written on. Wrong: three small shakes, 5 px at most, and a cross is written on. No bounce on any answer, mark or formula | `PenMark.tsx`, `motion-kit.tsx` |
+| Practice and papers | The next question comes in from the right as the last goes; the session's red-pen line fills; marks count up to their value; of an OR pair, "Answering this one" cross-fades to the one chosen | `motion-kit.tsx` |
+| Tracers | The current line's highlight is one band that glides from line to line; a value that changes is washed with the highlighter, which fades | `tracer-parts.tsx` |
+| Plots | A change that arrives on its own (a preset, a button) dissolves from the old drawing into the new; a drag stays direct | `plot.tsx` |
+| Sliders | A round thumb in the red pen that grows under the finger | `motion-later.css` |
+| Loading | "Opening" appears only if a page takes more than 260 ms, and fades in. A download's 4 px red-pen line eases forward as bytes arrive, or a short stroke travels along it while the size is unknown | `LoadBar.tsx` |
+| The tour | The note travels from one step's target to the next | `Tour.tsx` |
+| Today, first visit | The date is written in from the left, then the sections settle in below it, once a visit | `AnimatedContent.tsx` |
+| Small marks | A star fills with a pop; Copy shows a tick written in, in `--good`, for a moment; your own formula, just saved, has its dashed margin drawn down and its pen mark written in | Rows and the formula page |
+
+### Rules
 
 - Motion answers an action or shows what changed. Nothing animates to look lively.
-- Nothing animates after a keyboard action. The find palette opens instantly, always.
-- Never use ease-in on interface motion, or start from `scale(0)`.
-- Animate only `transform` and `opacity`.
-- With `prefers-reduced-motion`, colour and opacity still change gently, so a state
-  change is easy to notice, but nothing moves. GSAP isn't even fetched.
-- GSAP loads after first paint. Motion is decoration, so nothing may wait for it, and
-  until it arrives things just appear.
+- Only `transform`, `opacity` and `clip-path` move. A layout change is a FLIP. Colours may still
+  cross-fade, as they always have.
+- A keyboard action never waits for motion. Find opens instantly from `/` or Ctrl or ⌘ K; a page
+  changed from the keyboard is simply there; a sheet opened or closed from the keyboard appears or
+  goes; the working and a result are shown at once. `<html data-input="key">` lets a stylesheet tell.
+- Nothing blocks input. Pages are usable mid-turn (the overlay passes pointer events through), a
+  closing sheet stops being modal at once, and a new action cancels an old one where it is drawn.
+- Entering is ease-out, never ease-in, and nothing starts from `scale(0)`. Exits are faster than
+  entrances.
+- One entrance per container: when the page turns, its contents ride with it rather than staggering.
+- Shadows appear only on something lifted, while it is lifted: an open sheet, and the sheet on top
+  in a phone's page turn. Nothing at rest has one.
+- Reduced motion is a setting (Match device, Reduced, Full) as well as the device's preference.
+  It is set on `<html data-motion>` before first paint. Reduced keeps every fade and cross-fade and
+  removes all movement.
+- The first screen pays almost nothing: page turns, the springs and the sliding fills load just
+  after first paint, as GSAP does, and the motion for later pages loads with them. Until then,
+  things simply change.
+
 
 ## Accessibility floor
 

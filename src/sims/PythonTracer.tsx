@@ -12,8 +12,9 @@ import { beyondNote, explainError } from '../python/explain';
 import { keepPythonStore, megabytes, PYTHON_BYTES, pythonOfferedStore, pythonSaveStore } from '../python/offline';
 import { PY_SAMPLES } from '../python/samples';
 import { LIMITS, stopMessage, type ConsoleExtra, type PyFrame, type PyRunResult, type PyStep, type PyVar } from '../python/trace';
-import { CodeView, DryRun, SPEEDS, SpeedPicker, StepControls } from './tracer-parts';
+import { CodeView, DryRun, SPEEDS, SpeedPicker, StepControls, useFlashChanged } from './tracer-parts';
 import './python-tracer.css';
+import { LoadBar } from '../components/LoadBar';
 
 // Most people only trace the samples, so the editor loads when someone chooses to edit.
 const PythonEditor = lazyRetry(() => import('./PythonEditor'));
@@ -343,7 +344,7 @@ function LoadPanel({ load }: { load: LoadState }) {
         {load.phase === 'starting' ? 'Starting Python.' : `Getting Python ready. It downloads once each visit, about ${megabytes(PYTHON_BYTES)} before compression.`}
         {share !== null ? ` ${share}%` : ''}
       </p>
-      <progress className="load-bar" max={100} value={share ?? undefined} aria-label={downloading ? 'Downloading Python' : 'Starting Python'} />
+      <LoadBar share={share} label={downloading ? 'Downloading Python' : 'Starting Python'} />
     </div>
   );
 }
@@ -471,8 +472,10 @@ function sameNote(v: PyVar, step: PyStep, frameIndex: number): string | null {
 }
 
 function VarTable({ frame, frameIndex, step, before, label }: { frame: PyFrame; frameIndex: number; step: PyStep; before?: PyFrame; label: string }) {
+  const tableRef = useRef<HTMLDivElement>(null);
+  useFlashChanged(tableRef, step);
   return (
-    <div className="table-scroll" tabIndex={0} role="region" aria-label={label}>
+    <div ref={tableRef} className="table-scroll" tabIndex={0} role="region" aria-label={label}>
       <table className="trace-table var-table">
         <thead>
           <tr>

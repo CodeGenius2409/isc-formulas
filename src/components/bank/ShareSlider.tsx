@@ -1,4 +1,5 @@
-import { useId } from 'react';
+import { useId, useRef } from 'react';
+import { flash } from '../../lib/motion-kit';
 import { clampShare } from '../../practice/gen/mix';
 
 const SNAPS = [0, 25, 50, 75, 100];
@@ -14,6 +15,9 @@ function fromDrag(raw: number): number {
 export function ShareSlider({ value, onChange, message, warning, label = 'Generated questions' }: { value: number; onChange: (share: number) => void; message: string; warning?: string; label?: string }) {
   const id = useId();
   const listId = useId();
+  // When a drag ends, what it means is marked for a moment with the highlighter.
+  const messageRef = useRef<HTMLParagraphElement>(null);
+  const heldMessage = useRef<string | null>(null);
   const onKey = (e: React.KeyboardEvent) => {
     const moves: Record<string, () => number> = {
       ArrowRight: () => value + 5,
@@ -35,7 +39,7 @@ export function ShareSlider({ value, onChange, message, warning, label = 'Genera
       <label className="lbl" htmlFor={id}>
         {label}: <span className="num">{value}%</span>
       </label>
-      <input id={id} type="range" min={0} max={100} step={1} value={value} list={listId} aria-valuetext={`${value}% generated. ${message}`} onChange={(e) => onChange(fromDrag(Number(e.target.value)))} onKeyDown={onKey} />
+      <input id={id} type="range" min={0} max={100} step={1} value={value} list={listId} aria-valuetext={`${value}% generated. ${message}`} onChange={(e) => onChange(fromDrag(Number(e.target.value)))} onKeyDown={onKey} onPointerDown={() => { heldMessage.current = message; }} onPointerUp={() => { window.setTimeout(() => { if (heldMessage.current !== null && messageRef.current && messageRef.current.textContent !== heldMessage.current) flash(messageRef.current); heldMessage.current = null; }, 0); }} />
       <datalist id={listId}>
         {SNAPS.map((s) => (
           <option key={s} value={s} />
@@ -46,7 +50,7 @@ export function ShareSlider({ value, onChange, message, warning, label = 'Genera
           <span key={s}>{s}</span>
         ))}
       </div>
-      <p className="mt-1 text-step--1 text-ink-2" role="status" data-testid="share-message">
+      <p ref={messageRef} className="mt-1 text-step--1 text-ink-2" role="status" data-testid="share-message">
         {message}
       </p>
       {warning && (

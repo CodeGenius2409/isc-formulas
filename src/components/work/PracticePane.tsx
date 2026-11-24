@@ -1,7 +1,8 @@
 import { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import { noteFactsShown } from '../../practice/fact-history';
 import { historyKeys } from '../../practice/gen/mix';
-import { CircleCheck, CircleX, FileText, ListChecks, Lightbulb, RotateCcw, Sparkles, Wand2 } from 'lucide-react';
+import { PenMark } from '../PenMark';
+import { FileText, ListChecks, Lightbulb, RotateCcw, Sparkles, Wand2 } from 'lucide-react';
 import { loadSyllabus } from '../../data/syllabus';
 import type { ClassLevel, SubjectId } from '../../data/types';
 import { loadBank, loadBankUnits } from '../../practice/bank';
@@ -11,7 +12,7 @@ import { ShareSlider } from '../bank/ShareSlider';
 import { findFormula, getSubject, unitTitle } from '../../data/book';
 import type { Formula } from '../../data/types';
 import { useAsync } from '../../lib/hooks';
-import { answerFeedback, stepsReveal } from '../../lib/motion';
+import { answerFeedback, CountUp, stepsReveal, useSwap } from '../../lib/motion-kit';
 import { href, useRoute } from '../../lib/router';
 import { useStore } from '../../lib/store';
 import { lastReadStore } from '../../state/library';
@@ -35,6 +36,9 @@ function topicOf(f: Formula | null): string {
 export default function PracticePane() {
   const session = useStore(sessionStore);
   const busy = useStore(practiceBusyStore);
+  // Each new question comes in from the right as the last one goes.
+  const cardRef = useRef<HTMLDivElement>(null);
+  useSwap(cardRef, session ? session.index : -1, 'forward');
 
   if (busy) return <p className="text-ink-3">Preparing questions</p>;
   if (!session) return <PracticeHome />;
@@ -51,16 +55,22 @@ export default function PracticePane() {
           End session
         </button>
       </div>
+      {/* How far through: the red pen line fills as questions are done. */}
+      <div className="session-progress" aria-hidden="true">
+        <span style={{ transform: `scaleX(${session.index / session.items.length})` }} />
+      </div>
       {session.note && session.index === 0 && (
         <p className="notice mb-2" role="status" data-testid="repeat-note">
           {session.note}
         </p>
       )}
-      {item.question.kind === 'bank' ? (
-        <BankCard key={`${session.index}-${item.question.formulaId}`} question={item.question} mistakeId={item.mistakeId} />
-      ) : (
-        <QuestionCard key={`${session.index}-${item.question.formulaId}`} question={item.question} mistakeId={item.mistakeId} />
-      )}
+      <div ref={cardRef}>
+        {item.question.kind === 'bank' ? (
+          <BankCard key={`${session.index}-${item.question.formulaId}`} question={item.question} mistakeId={item.mistakeId} />
+        ) : (
+          <QuestionCard key={`${session.index}-${item.question.formulaId}`} question={item.question} mistakeId={item.mistakeId} />
+        )}
+      </div>
     </div>
   );
 }
@@ -191,7 +201,7 @@ function SessionSummary() {
     <div>
       <h2 className="work-title">{session.title}: finished</h2>
       <p className="mt-2 text-step-1">
-        <span className="num font-bold">{session.correct}</span> of <span className="num">{session.answered}</span> right.
+        <CountUp className="num font-bold" value={session.correct} from={0} /> of <span className="num">{session.answered}</span> right.
       </p>
       <p className="work-hint">Anything you missed comes back sooner, and is in your mistakes list.</p>
       <button ref={focus} type="button" className="btn btn-solid mt-3" onClick={endSession}>
@@ -353,7 +363,7 @@ function NumericCard({ question, formula, record }: { question: NumericQuestion;
       {mark && (
         <>
           <div ref={noticeRef} className="notice" data-tone={mark.correct ? 'good' : 'bad'} role={mark.correct ? 'status' : 'alert'}>
-            {mark.correct ? <CircleCheck size={18} aria-hidden /> : <CircleX size={18} aria-hidden />}
+            <PenMark right={mark.correct} />
             <p>
               {mark.correct ? `Right. ${question.answerText}.` : `Not quite. You gave ${mark.shown}. The answer is ${question.answerText}.`} {mark.reason}
             </p>
@@ -424,7 +434,7 @@ function McqCard({ question, record }: { question: McqQuestion; record: Record }
       {chosen !== null && (
         <>
           <div ref={noticeRef} className="notice" data-tone={isRight ? 'good' : 'bad'} role={isRight ? 'status' : 'alert'}>
-            {isRight ? <CircleCheck size={18} aria-hidden /> : <CircleX size={18} aria-hidden />}
+            <PenMark right={isRight} />
             <p>{isRight ? 'Right.' : 'Not quite. The correct answer is outlined.'}</p>
           </div>
           <NextButton afterAnswer />

@@ -61,6 +61,18 @@ use" in Settings.
 
 A short tour opens on the first visit, after asking whether you're a student or a teacher. Skip it at any point; take it again from the `?` beside Today's date, or from Settings, which can also bring back the one-time tips. Under automation, as in the browser tests, it opens only if `isc-tour-test` is `on` in local storage.
 
+## Motion
+
+Pages turn, sheets slide and can be swiped away, and marks are written on. Settings has Reduce motion
+(Match device, Reduced, Full); Reduced keeps fades and drops all movement. `DESIGN.md` describes the system and
+`reports/motion-review.md` how it was checked. To see a transition frame by frame, or measure its frame rate on a
+throttled phone profile, run `npm run build` and `npm run preview`, then:
+
+    node scripts/motion/capture.mjs unit-forward phone      # frames and a filmstrip, in ./frames
+    node scripts/motion/perf.mjs                            # frame rates, in test-results/motion-perf.json
+
+The scenarios are in `scripts/motion/scenarios.mjs`.
+
 ## Install it on a phone
 
 - **Android:** open the site in Chrome, then choose Install app from the menu.

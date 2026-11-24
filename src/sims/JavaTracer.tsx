@@ -1,10 +1,10 @@
-import { Suspense, useEffect, useState, type KeyboardEvent } from 'react';
+import { Suspense, useEffect, useRef, useState, type KeyboardEvent } from 'react';
 import { lazyRetry } from '../lib/retry-import';
 import { CircleAlert, Pencil, Play } from 'lucide-react';
 import { runProgram, type FrameView, type RunResult, type TraceStep } from '../java/trace';
 import { SAMPLES } from '../java/samples';
 import { readJson, writeJson } from '../lib/storage';
-import { CodeView, DryRun, SPEEDS, SpeedPicker, StepControls } from './tracer-parts';
+import { CodeView, DryRun, SPEEDS, SpeedPicker, StepControls, useFlashChanged } from './tracer-parts';
 
 // Most people only trace the samples, so the editor loads when someone chooses to edit.
 const CodeEditor = lazyRetry(() => import('./CodeEditor'));
@@ -250,12 +250,14 @@ function selectedFrame(step: TraceStep | undefined, index: number): FrameView | 
 }
 
 function Variables({ step, previous, frameIndex }: { step?: TraceStep; previous?: TraceStep; frameIndex: number }) {
+  const tableRef = useRef<HTMLDivElement>(null);
+  useFlashChanged(tableRef, step);
   const frame = selectedFrame(step, frameIndex);
   if (!frame) return <p className="tool-empty">Variables appear here while a method runs.</p>;
   if (!frame.vars.length) return <p className="tool-empty">{frame.method} has no variables yet.</p>;
   const before = previous && previous.depth === step?.depth ? selectedFrame(previous, frameIndex) : undefined;
   return (
-    <div className="table-scroll" tabIndex={0} role="region" aria-label="Table of variables">
+    <div ref={tableRef} className="table-scroll" tabIndex={0} role="region" aria-label="Table of variables">
       <table className="trace-table var-table">
         <thead>
           <tr>

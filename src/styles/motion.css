@@ -1,0 +1,616 @@
+/* Motion that the whole app shares. DESIGN.md has the system, tokens.css the values, and
+   src/lib/motion.ts the scripted half. Only transform, opacity and clip-path move.
+   Reduced motion is :root[data-motion='reduce'], set before first paint from the setting,
+   or from the device when the setting is Match device. */
+
+/* Springs ----------------------------------------------------------------------- */
+
+/* A damped spring from 0 to 1, sampled. Sheet: response 0.4 s, damping 0.9, so it lands
+   with no visible bounce, as paper would. Pop: response 0.3 s, damping 0.6, for controls only. */
+@supports (transition-timing-function: linear(0, 1)) {
+  :root {
+    --spring-sheet: linear(0, 0.058, 0.171, 0.304, 0.436, 0.555, 0.658, 0.742, 0.81, 0.863, 0.903, 0.935, 0.956, 0.971, 0.982, 0.989, 0.994, 0.997, 0.999, 1);
+    --spring-pop: linear(0, 0.118, 0.341, 0.582, 0.79, 0.95, 1.04, 1.082, 1.091, 1.078, 1.057, 1.035, 1.017, 1.004, 0.996, 0.992, 0.993, 0.995, 0.997, 1);
+  }
+}
+
+/* Page turns -------------------------------------------------------------- */
+
+/* The reading page is its own layer in a page turn. */
+.shell > main {
+  view-transition-name: page;
+}
+
+/* A theme change is one picture of the whole screen, and the new theme is drawn complete, so the
+   colours' own transitions are held off while it is. */
+:root[data-vt] .shell > main {
+  view-transition-name: none;
+}
+
+:root[data-vt] *,
+:root[data-vt] *::before,
+:root[data-vt] *::after {
+  transition: none !important;
+}
+
+/* The app works under a transition: pointer events go straight to the new page. */
+::view-transition {
+  pointer-events: none;
+}
+
+/* The rail, contents and work page change in place, underneath. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/* The page's box usually stays put. When it changes (a tool takes the whole width), it moves
+   between the two on the page curve, and what's in it is drawn at its own size, from its top left,
+   and stays inside it. */
+::view-transition-group(page) {
+  animation-duration: var(--dur-page);
+  animation-timing-function: var(--ease-drawer);
+  overflow: clip;
+}
+
+::view-transition-image-pair(page) {
+  isolation: auto;
+}
+
+::view-transition-old(page),
+::view-transition-new(page) {
+  inline-size: auto;
+  block-size: auto;
+  mix-blend-mode: normal;
+  animation-duration: var(--dur-page);
+  animation-timing-function: var(--ease-drawer);
+  animation-fill-mode: both;
+  /* The sheet on top casts a shadow while it moves, and never at rest. */
+  box-shadow: var(--turn-shadow, none);
+}
+
+/* Desktop: the new page comes in a short way from the side it's going, and the old one goes
+   back and fades, as if a page were laid on top. On a phone the new page travels the whole
+   width, like a sheet pushed over the last, and the old one slides a third as far beneath it. */
+:root {
+  --turn-in: 3rem;
+  --turn-under: -1.75rem;
+  --turn-under-opacity: 0;
+  --turn-title: 5.5rem;
+}
+
+@media (max-width: 47.99em) {
+  :root {
+    --turn-in: 100%;
+    --turn-under: -28%;
+    --turn-under-opacity: 0.6;
+    --turn-title: 130%;
+  }
+  :root[data-page='forward']::view-transition-new(page),
+  :root[data-page='back']::view-transition-old(page) {
+    --turn-shadow: -1px 0 0 var(--rule), -18px 0 36px -14px rgb(8 14 18 / 0.32);
+  }
+}
+
+/* Opacity is staged so the two pages never show through each other: the old one is gone by 30%,
+   and the new one arrives from 20%. Their movement runs the whole way. */
+@keyframes turn-in {
+  from {
+    transform: translateX(var(--turn-in));
+    opacity: var(--turn-in-opacity, 0);
+  }
+  20% {
+    opacity: var(--turn-in-opacity, 0);
+  }
+  70% {
+    opacity: 1;
+  }
+}
+
+@keyframes turn-under {
+  30% {
+    opacity: var(--turn-under-opacity);
+  }
+  to {
+    transform: translateX(var(--turn-under));
+    opacity: var(--turn-under-opacity);
+  }
+}
+
+@keyframes turn-away {
+  30% {
+    opacity: var(--turn-in-opacity, 0);
+  }
+  to {
+    transform: translateX(var(--turn-in));
+    opacity: var(--turn-in-opacity, 0);
+  }
+}
+
+@keyframes turn-from-under {
+  from {
+    transform: translateX(var(--turn-under));
+    opacity: var(--turn-under-opacity);
+  }
+  20% {
+    opacity: var(--turn-under-opacity);
+  }
+  70% {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 47.99em) {
+  :root {
+    --turn-in-opacity: 1;
+  }
+}
+
+:root[data-page='forward']::view-transition-new(page) {
+  animation-name: turn-in;
+}
+
+:root[data-page='forward']::view-transition-old(page) {
+  animation-name: turn-under;
+}
+
+/* Back: the top sheet is lifted away to the right, and the one beneath comes forward. */
+:root[data-page='back']::view-transition-old(page) {
+  animation-name: turn-away;
+  z-index: 1;
+}
+
+:root[data-page='back']::view-transition-new(page) {
+  animation-name: turn-from-under;
+}
+
+/* Between the main sections: the old page fades quickly, the new one rises into place. */
+@keyframes rise-in {
+  from {
+    transform: translateY(0.75rem) scale(0.992);
+    opacity: 0;
+  }
+}
+
+@keyframes fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+:root[data-page='lateral']::view-transition-old(page) {
+  animation: fade-out var(--dur-quick) var(--ease-out) both;
+}
+
+:root[data-page='lateral']::view-transition-new(page) {
+  animation: rise-in var(--dur-emphasis) var(--ease-out) 60ms both;
+}
+
+/* Reduced motion: a plain cross-fade, with nothing moving. */
+:root[data-page='fade']::view-transition-old(page) {
+  animation: fade-out var(--dur-standard) ease both;
+}
+
+:root[data-page='fade']::view-transition-new(page) {
+  animation: fade-in var(--dur-standard) ease both;
+}
+
+/* The new title is a layer of its own, a beat behind the page, so the two read as depth. */
+::view-transition-group(page-title) {
+  animation: none;
+}
+
+::view-transition-new(page-title) {
+  animation: title-in calc(var(--dur-page) + 80ms) var(--ease-drawer) 30ms both;
+}
+
+@keyframes title-in {
+  from {
+    transform: translateX(var(--turn-title));
+    opacity: 0;
+  }
+}
+
+:root[data-page='back']::view-transition-new(page-title) {
+  animation-name: title-back;
+}
+
+@keyframes title-back {
+  from {
+    transform: translateX(calc(var(--turn-under) * 1.6));
+    opacity: 0;
+  }
+}
+
+:root[data-page='lateral']::view-transition-new(page-title) {
+  animation: rise-in var(--dur-emphasis) var(--ease-out) 100ms both;
+}
+
+/* What was pressed grows into the page it opens: a row into its formula, a tab into its subject. */
+::view-transition-group(morph) {
+  z-index: 2;
+  animation-duration: var(--dur-page);
+  animation-timing-function: var(--ease-drawer);
+}
+
+::view-transition-old(morph),
+::view-transition-new(morph) {
+  animation-duration: var(--dur-page);
+  animation-timing-function: var(--ease-drawer);
+}
+
+::view-transition-old(morph) {
+  animation-duration: calc(var(--dur-page) * 0.5);
+}
+
+/* Nothing on the new page to grow into: the old one leaves with its page. */
+:root[data-morph-missing]::view-transition-group(morph) {
+  animation: none;
+}
+
+:root[data-morph-missing]::view-transition-old(morph) {
+  animation: fade-out var(--dur-quick) var(--ease-out) both;
+}
+
+/* Theme: the new one is drawn down over the old, like a blind, or cross-fades with reduced motion. */
+@keyframes blind {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+:root[data-vt='theme']::view-transition-new(root) {
+  animation: blind 620ms var(--ease-in-out) both;
+}
+
+:root[data-vt='theme-fade']::view-transition-old(root) {
+  animation: fade-out var(--dur-standard) ease both;
+}
+
+:root[data-vt='theme-fade']::view-transition-new(root) {
+  animation: fade-in var(--dur-standard) ease both;
+}
+
+/* A page that takes a moment shows "Opening" only after a moment, and then softly. */
+.page-loading {
+  animation: fade-in var(--dur-standard) ease 260ms both;
+}
+
+/* Sheets -------------------------------------------------------------------- */
+
+/* In on the sheet spring (Sheet.tsx, which opens it where it rests and then draws it in, so the focus
+   it takes scrolls nothing), out a little faster here. A closed sheet stays drawn while it leaves,
+   but stops being modal at once, so the page answers straight away. */
+.sheet {
+  --sheet-away: translateX(100%);
+  transform: none;
+}
+
+.sheet[data-side='left'] {
+  --sheet-away: translateX(-100%);
+}
+
+@media (max-width: 47.99em) {
+  .sheet,
+  .sheet[data-side='left'] {
+    --sheet-away: translateY(100%);
+  }
+}
+
+/* Only leaving is a transition here; arriving is Sheet.tsx's animation, and a drag's snap back sets its own. */
+.sheet:not([open]) {
+  transform: var(--sheet-away);
+  pointer-events: none;
+  transition:
+    transform var(--dur-emphasis) var(--ease-drawer),
+    opacity var(--dur-standard) ease,
+    overlay var(--dur-emphasis) allow-discrete,
+    display var(--dur-emphasis) allow-discrete;
+}
+
+/* Lifted above the page, so it has a shadow while it's open. */
+.sheet[open] {
+  box-shadow: 0 0 0 1px rgb(8 14 18 / 0.04), 0 18px 48px -12px rgb(8 14 18 / 0.32);
+}
+
+.sheet::backdrop {
+  opacity: 1;
+}
+
+.sheet:not([open])::backdrop {
+  transition:
+    opacity var(--dur-emphasis) var(--ease-out),
+    overlay var(--dur-emphasis) allow-discrete,
+    display var(--dur-emphasis) allow-discrete;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.sheet[data-dragging],
+.sheet[data-instant],
+.sheet[data-instant]::backdrop {
+  transition: none;
+}
+
+/* The grip says a phone sheet can be pulled down. */
+@media (max-width: 47.99em) {
+  .sheet::before {
+    content: '';
+    position: absolute;
+    top: 6px;
+    left: 50%;
+    width: 2.25rem;
+    height: 4px;
+    margin-left: -1.125rem;
+    border-radius: 2px;
+    background: var(--rule-2);
+    opacity: 0.7;
+    pointer-events: none;
+  }
+}
+
+/* Find: opens instantly, always, and closes with a short fade so the page underneath is seen to return. */
+.palette:not([open]) {
+  opacity: 0;
+  transform: translateX(-50%) translateY(-6px) scale(0.985);
+  transition:
+    opacity var(--dur-quick) var(--ease-out),
+    transform var(--dur-quick) var(--ease-out),
+    overlay var(--dur-quick) allow-discrete,
+    display var(--dur-quick) allow-discrete;
+  pointer-events: none;
+}
+
+.palette:not([open])::backdrop {
+  opacity: 0;
+  transition:
+    opacity var(--dur-quick) var(--ease-out),
+    overlay var(--dur-quick) allow-discrete,
+    display var(--dur-quick) allow-discrete;
+}
+
+@media (max-width: 47.99em) {
+  .palette:not([open]) {
+    transform: translateY(-6px);
+  }
+}
+
+/* Press feedback ------------------------------------------------------------ */
+
+.dock-item,
+.rail-link,
+.work-tab,
+.seg > *,
+.leaders,
+.text-action {
+  transition: transform var(--dur-press) var(--ease-out), color var(--dur-quick) ease, background-color var(--dur-quick) ease;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.dock-item:active,
+.rail-link:active,
+.work-tab:active,
+.seg > :active {
+  transform: scale(0.96);
+}
+
+.leaders:active,
+.text-action:active {
+  transform: scale(0.99);
+}
+
+/* A segment or tab changing: the fill slides from the old choice to the new (controls-motion.ts). */
+.seg,
+.work-tablist {
+  position: relative;
+  isolation: isolate;
+}
+
+.slide-mark {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: -1;
+  pointer-events: none;
+  transform-origin: 0 0;
+  background: var(--ink);
+}
+
+.seg > .slide-mark {
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+}
+
+.work-tablist .slide-mark {
+  top: auto;
+  bottom: -1px;
+  height: 3px !important;
+  background: var(--accent);
+}
+
+.seg[data-sliding] > [aria-pressed='true'],
+.seg[data-sliding] > [aria-current='true'],
+.seg[data-sliding] > [aria-selected='true'] {
+  background: transparent;
+  transition: color var(--dur-quick) ease 90ms;
+}
+
+.work-tablist[data-sliding] > [aria-selected='true'] {
+  border-bottom-color: transparent;
+}
+
+/* Toast and update prompt ------------------------------------------------------ */
+
+.toast {
+  transform: translate(-50%, 0.75rem) scale(0.97);
+  transition: transform var(--dur-quick) var(--ease-out), opacity var(--dur-quick) ease;
+}
+
+.toast[data-show='true'] {
+  transform: translate(-50%, 0);
+  opacity: 1;
+  transition: transform var(--dur-spring-sheet) var(--spring-sheet), opacity var(--dur-quick) ease;
+}
+
+.update-note {
+  animation: note-up var(--dur-spring-sheet) var(--spring-sheet) both;
+}
+
+@keyframes note-up {
+  from {
+    transform: translate(-50%, 120%);
+    opacity: 0;
+  }
+}
+
+/* A value that just changed: a wash of the highlighter, fading (motion.ts flash). */
+.value-flash {
+  position: relative;
+  isolation: isolate;
+}
+
+.value-flash::after {
+  content: '';
+  position: absolute;
+  inset: -1px -3px;
+  z-index: -1;
+  border-radius: 2px;
+  background: var(--mark);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Reduced motion ------------------------------------------------------------- */
+
+:root[data-motion='reduce'] .sheet,
+:root[data-motion='reduce'] .sheet:not([open]),
+:root[data-motion='reduce'] .palette:not([open]),
+:root[data-motion='reduce'] .toast,
+:root[data-motion='reduce'] .toast[data-show='true'] {
+  transform: none;
+}
+
+:root[data-motion='reduce'] .palette:not([open]) {
+  transform: translateX(-50%);
+}
+
+@media (max-width: 47.99em) {
+  :root[data-motion='reduce'] .palette:not([open]) {
+    transform: none;
+  }
+}
+
+:root[data-motion='reduce'] .toast {
+  transform: translate(-50%, 0);
+}
+
+:root[data-motion='reduce'] .sheet:not([open]) {
+  opacity: 0;
+}
+
+:root[data-motion='reduce'] .update-note {
+  animation-name: fade-in;
+}
+
+:root[data-motion='reduce'] .dock-item[aria-current='true'] svg {
+  transform: none;
+}
+
+/* Formula rows --------------------------------------------------------------- */
+
+/* Written in from the left, as by hand: a copied tick here, and a pen mark on a formula of your own. */
+@keyframes pen-write {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+/* Copied: the tick is written in, in the green of a right answer, then the button returns. */
+.copy-done {
+  color: var(--good);
+  animation: pen-write 360ms var(--ease-out) backwards;
+}
+
+/* On touch a row's actions wait until it's opened; then they come down from under the name. */
+@media (hover: none), (pointer: coarse) {
+  .row[data-open='true'] .row-acts {
+    animation: acts-in var(--dur-standard) var(--ease-out) both;
+  }
+}
+
+@keyframes acts-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+/* While a row opens or closes, the rows below glide to their new places (FormulaList). */
+.ruled[data-settling] > div {
+  transition: transform var(--dur-standard) var(--ease-out);
+}
+
+:root[data-motion='reduce'] .copy-done,
+:root[data-motion='reduce'] .row[data-open='true'] .row-acts {
+  animation-name: fade-in;
+}
+
+:root[data-motion='reduce'] .ruled[data-settling] > div {
+  transition: none;
+}
+
+
+/* A figure or structure opened larger: it settles in from slightly smaller, centred like any modal,
+   as the page dims. It's never moved off-screen, so the focus it takes scrolls nothing. */
+.molecule-zoom[open] {
+  transition: transform var(--dur-spring-sheet) var(--spring-sheet), opacity var(--dur-quick) ease;
+}
+
+@starting-style {
+  .molecule-zoom[open] {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+}
+
+.molecule-zoom::backdrop {
+  transition: opacity var(--dur-emphasis) var(--ease-out);
+}
+
+@starting-style {
+  .molecule-zoom[open]::backdrop {
+    opacity: 0;
+  }
+}
+
+:root[data-input='key'] .molecule-zoom[open],
+:root[data-input='key'] .molecule-zoom::backdrop {
+  transition: none;
+}
+
+@starting-style {
+  :root[data-motion='reduce'] .molecule-zoom[open] {
+    transform: none;
+  }
+}
+
+/* Reduced motion: even a page box that changes size doesn't travel; the pictures just cross-fade. */
+:root[data-page='fade']::view-transition-group(page) {
+  animation: none;
+}

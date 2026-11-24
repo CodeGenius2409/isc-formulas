@@ -1,7 +1,8 @@
 import { LazyLewis } from './LazyLewis';
 import { memo } from 'react';
-import { useState } from 'react';
-import { Calculator, Copy, ExternalLink, ListChecks, PenLine, Pencil, Star, Trash2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { pop } from '../lib/motion';
+import { Calculator, Check, Copy, ExternalLink, ListChecks, PenLine, Pencil, Star, Trash2 } from 'lucide-react';
 import { deleteCustomFormula } from '../custom/actions';
 import { customStore } from '../custom/store';
 import { canSolveCustom } from '../solver/index-lite';
@@ -73,10 +74,17 @@ export const FormulaRow = memo(function FormulaRow({ formula: f, open, onToggle,
   const solvable = f.custom ? canSolveCustom(custom.formulas.find((c) => c.id === f.id)) : printedSolvable;
   const isCode = isBodyExpr(f.latex);
   const copyLabel = isCode ? 'Copy' : 'Copy LaTeX';
+  // Copying confirms in the button itself for a moment, as well as in the toast.
+  const [copied, setCopied] = useState(false);
+  useEffect(() => {
+    if (!copied) return undefined;
+    const timer = window.setTimeout(() => setCopied(false), 1400);
+    return () => window.clearTimeout(timer);
+  }, [copied]);
   const mathRef = useFocusableOverflow(`Formula for ${f.name}, scrolls sideways`, useKatexReady());
 
   return (
-    <article className="row" data-open={open} data-subject={f.subject} data-custom={f.custom || undefined} data-flash={flash || undefined} data-formula-row={f.id}>
+    <article className="row" data-morph-scope data-open={open} data-subject={f.subject} data-custom={f.custom || undefined} data-flash={flash || undefined} data-formula-row={f.id}>
       <div className="row-num">
         {f.custom ? (
           <PenLine size={15} aria-hidden className="row-pen" />
@@ -88,7 +96,7 @@ export const FormulaRow = memo(function FormulaRow({ formula: f, open, onToggle,
         )}
       </div>
       <div className="row-main">
-        <div ref={mathRef} className="row-math math-host">
+        <div ref={mathRef} className="row-math math-host" data-morph={`formula:${f.id}`}>
           <Math latex={f.latex} />
         </div>
         <h3 className="row-name">
@@ -102,8 +110,10 @@ export const FormulaRow = memo(function FormulaRow({ formula: f, open, onToggle,
           className="row-star"
           aria-pressed={saved}
           aria-label={saved ? `Remove ${f.name} from saved` : `Save ${f.name}`}
-          onClick={() => {
-            toast(toggleFavourite(f.id) ? 'Saved' : 'Removed from saved');
+          onClick={(e) => {
+            const nowSaved = toggleFavourite(f.id);
+            if (nowSaved) pop(e.currentTarget.querySelector('svg'));
+            toast(nowSaved ? 'Saved' : 'Removed from saved');
           }}
         >
           <Star size={17} fill={saved ? 'currentColor' : 'none'} aria-hidden />
@@ -161,8 +171,18 @@ export const FormulaRow = memo(function FormulaRow({ formula: f, open, onToggle,
           >
             <ListChecks size={15} aria-hidden /> <span className="act-label">Practise</span>
           </button>
-          <button type="button" className="btn btn-quiet" title={copyLabel} aria-label={`${copyLabel} of ${f.name}`} onClick={() => void copyText(copyableExpr(f.latex), isCode ? 'Copied' : 'Copied LaTeX')}>
-            <Copy size={15} aria-hidden /> <span className="act-label">{copyLabel}</span>
+          <button
+            type="button"
+            className="btn btn-quiet copy-button"
+            data-copied={copied || undefined}
+            title={copyLabel}
+            aria-label={`${copyLabel} of ${f.name}`}
+            onClick={() => {
+              setCopied(true);
+              void copyText(copyableExpr(f.latex), isCode ? 'Copied' : 'Copied LaTeX');
+            }}
+          >
+            {copied ? <Check size={15} aria-hidden className="copy-done" /> : <Copy size={15} aria-hidden />} <span className="act-label">{copied ? 'Copied' : copyLabel}</span>
           </button>
           <a className="btn btn-quiet" title="Open" aria-label={`Open ${f.name}`} href={href(`f/${f.id}`)} onClick={() => noteRecent(f.id)}>
             <ExternalLink size={15} aria-hidden /> <span className="act-label">Open</span>
