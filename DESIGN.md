@@ -64,7 +64,8 @@ Python uses the same classes: keywords `--accent` and semibold, the built-in typ
 `list` and so on) `--ink` and semibold, strings `--good`, numbers and `True`, `False` and `None` `--warn`,
 comments `--ink-3` in italic. The Python tracer adds three things, in words rather than colour. A name that
 shares its list with another has a note under its value, in `--ink-2` italic: "Same list as b." What was typed
-into the input box follows its prompt in the console, in `--ink-2` italic, as a terminal shows it. And Python's
+into the input box follows its prompt in the console, in `--ink-2` italic, as a terminal shows it; the Java
+tracer does the same (`.console-in`), showing each line from the step that reads it. And Python's
 own error line is set in the mono face, with the plain-words reading under it in `--ink`. A download's
 progress is a 4 px bar of `--accent` on `--paper-3`, which eases forward as the bytes arrive.
 

@@ -1,17 +1,49 @@
 // What the program reads: the text in the Input box, for Scanner and BufferedReader.
 import { bool, dbl, int, NULL, runtimeError, str, VOID, type JValue } from './values';
 
+/** A line of the Input box, shown in the console where a terminal would show it as typed. */
+export interface InputEcho {
+  /** Where in the output it goes. */
+  at: number;
+  text: string;
+}
+
 export class ProgramInput {
   private state: { text: string; pos: number };
+  /** The lines the program has reached so far, each echoed once, the first time anything on it is read. */
+  readonly echoes: InputEcho[] = [];
+  private echoedUpTo = 0;
 
-  constructor(text: string) {
+  /** outputLength says how much the program has printed, so an echo lands after the prompt before it. */
+  constructor(
+    text: string,
+    private outputLength: () => number = () => 0,
+  ) {
     this.state = { text, pos: 0 };
+  }
+
+  /** Echoes every line not yet echoed, up to and including the one holding pos. */
+  private echoThrough(pos: number) {
+    const { text } = this.state;
+    while (this.echoedUpTo <= pos && this.echoedUpTo < text.length) {
+      const end = text.indexOf('\n', this.echoedUpTo);
+      const stop = end < 0 ? text.length : end;
+      this.echoes.push({ at: this.outputLength(), text: text.slice(this.echoedUpTo, stop).replace(/\r$/, '') });
+      this.echoedUpTo = stop + 1;
+    }
+  }
+
+  /** Like a terminal waiting at a hasNext…() test: the line with the next token is typed in. */
+  private echoNextToken() {
+    const next = this.state.text.slice(this.state.pos).search(/\S/);
+    if (next >= 0) this.echoThrough(this.state.pos + next);
   }
 
   nextToken(line: number): string {
     const s = this.state;
     while (s.pos < s.text.length && /\s/.test(s.text[s.pos])) s.pos++;
     if (s.pos >= s.text.length) throw runtimeError('java.util.NoSuchElementException: the program asked for more input than the Input box holds. Add more values there.', line);
+    this.echoThrough(s.pos);
     const start = s.pos;
     while (s.pos < s.text.length && !/\s/.test(s.text[s.pos])) s.pos++;
     return s.text.slice(start, s.pos);
@@ -26,6 +58,7 @@ export class ProgramInput {
     if (s.pos >= s.text.length) {
       throw runtimeError('java.util.NoSuchElementException: the program asked for another line, but the Input box has run out.', line);
     }
+    this.echoThrough(s.pos);
     const end = s.text.indexOf('\n', s.pos);
     const out = end < 0 ? s.text.slice(s.pos) : s.text.slice(s.pos, end);
     s.pos = end < 0 ? s.text.length : end + 1;
@@ -67,14 +100,18 @@ export class ProgramInput {
         return bool(t === 'true');
       }
       case 'hasNext':
+        this.echoNextToken();
         return bool(this.hasToken());
       case 'hasNextLine':
+        if (this.state.pos < this.state.text.length) this.echoThrough(this.state.pos);
         return bool(this.state.pos < this.state.text.length);
       case 'hasNextInt': {
+        this.echoNextToken();
         const m = /^\s*([+-]?\d+)(\s|$)/.exec(this.state.text.slice(this.state.pos));
         return bool(Boolean(m));
       }
       case 'hasNextDouble': {
+        this.echoNextToken();
         const m = /^\s*(\S+)/.exec(this.state.text.slice(this.state.pos));
         return bool(Boolean(m) && !Number.isNaN(Number(m![1])));
       }

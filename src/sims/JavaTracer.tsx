@@ -1,7 +1,7 @@
-import { Suspense, useEffect, useRef, useState, type KeyboardEvent } from 'react';
+import { Fragment, Suspense, useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
 import { lazyRetry } from '../lib/retry-import';
 import { CircleAlert, Pencil, Play } from 'lucide-react';
-import { runProgram, type FrameView, type RunResult, type TraceStep } from '../java/trace';
+import { runProgram, type FrameView, type InputEchoView, type RunResult, type TraceStep } from '../java/trace';
 import { SAMPLES } from '../java/samples';
 import { readJson, writeJson } from '../lib/storage';
 import { CodeView, DryRun, SPEEDS, SpeedPicker, StepControls, useFlashChanged } from './tracer-parts';
@@ -206,7 +206,7 @@ export function JavaTracer() {
               Console
             </h2>
             <pre className="console-pane" tabIndex={0} role="log" aria-labelledby="java-out-h" aria-live={playing ? 'off' : 'polite'}>
-              {output}
+              {run ? <ConsoleText output={run.output} echoes={run.echoes} upTo={output.length} at={at} atEnd={atEnd} /> : ''}
             </pre>
           </section>
         </div>
@@ -277,5 +277,25 @@ function Variables({ step, previous, frameIndex }: { step?: TraceStep; previous?
         </tbody>
       </table>
     </div>
+  );
+}
+
+/** The console as a terminal shows it: the program's output, with each line of input after the prompt it answers. */
+function ConsoleText({ output, echoes, upTo, at, atEnd }: { output: string; echoes: InputEchoView[]; upTo: number; at: number; atEnd: boolean }) {
+  const parts: ReactNode[] = [];
+  let from = 0;
+  echoes.forEach((echo, i) => {
+    if (!atEnd && (echo.step > at || echo.at > upTo)) return;
+    if (echo.at > from) parts.push(output.slice(from, echo.at));
+    from = Math.max(from, echo.at);
+    parts.push(<span key={`in-${i}`} className="console-in">{`${echo.text}\n`}</span>);
+  });
+  parts.push(output.slice(from, upTo));
+  return (
+    <>
+      {parts.map((p, i) => (
+        <Fragment key={i}>{p}</Fragment>
+      ))}
+    </>
   );
 }

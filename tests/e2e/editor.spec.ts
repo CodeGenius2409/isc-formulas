@@ -110,6 +110,19 @@ for (const theme of ['paper', 'board'] as const) {
   });
 }
 
+test('the console shows what was typed, in italics, after its prompt, once the program has read it', async ({ page }) => {
+  await page.goto('/#/tools/java');
+  await page.locator('#java-program').selectOption({ label: 'Sum of digits, with Scanner' });
+  await page.getByRole('button', { name: 'Trace again' }).click();
+  const typed = page.locator('.console-pane .console-in');
+  await expect(typed).toHaveCount(0);
+  await page.getByRole('button', { name: 'Run to the end' }).click();
+  await expect(typed).toHaveText('4728');
+  await expect(typed).toHaveCSS('font-style', 'italic');
+  await expect(page.locator('.console-pane')).toHaveText('Enter a number: 4728\nSum of digits = 21\n');
+  if (process.env.SHOT) await page.locator('.console-pane').screenshot({ path: process.env.SHOT });
+});
+
 test('the trace keeps its current line, controls and highlighting after an edit', async ({ page }) => {
   const problems = watchProblems(page);
   await openEditor(page);

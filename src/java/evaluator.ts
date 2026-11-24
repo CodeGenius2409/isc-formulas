@@ -24,11 +24,16 @@ export abstract class Evaluator {
   private internedStrings = new Map<string, JValue>();
   output = '';
 
+  /** The lines of input read so far, and where they go in the output. */
+  get inputEchoes() {
+    return this.input.echoes;
+  }
+
   constructor(
     protected program: Program,
     input: string,
   ) {
-    this.input = new ProgramInput(input);
+    this.input = new ProgramInput(input, () => this.output.length);
     for (const c of program.classes) {
       if (this.classes.has(c.name)) throw new JavaError(`There are two classes named ${c.name}.`, c.line);
       this.classes.set(c.name, c);

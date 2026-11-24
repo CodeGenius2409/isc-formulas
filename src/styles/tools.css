@@ -418,6 +418,12 @@ input[type='range'] {
   overflow: auto;
 }
 
+/* What was typed into the input box, after its prompt, as a terminal shows it. Both tracers use it. */
+.console-in {
+  color: var(--ink-2);
+  font-style: italic;
+}
+
 .grid-input {
   display: grid;
   gap: 0.25rem;

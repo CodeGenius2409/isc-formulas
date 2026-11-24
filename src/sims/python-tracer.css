@@ -20,12 +20,6 @@
   color: var(--ink-2);
 }
 
-/* What was typed into the input box, after its prompt, as a terminal shows it. */
-.console-in {
-  color: var(--ink-2);
-  font-style: italic;
-}
-
 .console-err {
   color: var(--bad);
 }

@@ -38,9 +38,19 @@ export interface TraceRow {
   output?: string;
 }
 
+/** A line of input, echoed in the console after the prompt before it, as a terminal shows what was typed. */
+export interface InputEchoView {
+  /** Where in the output it goes. */
+  at: number;
+  text: string;
+  /** The first step at which it has been read. */
+  step: number;
+}
+
 export interface RunResult {
   steps: TraceStep[];
   output: string;
+  echoes: InputEchoView[];
   error: { message: string; line: number; kind: 'compile' | 'runtime' } | null;
   rows: TraceRow[];
   columns: string[];
@@ -75,7 +85,20 @@ export function runProgram(source: string, input = ''): RunResult {
   let totalSteps = 0;
   let interpreter: Interpreter | null = null;
 
-  const finish = (error: RunResult['error']): RunResult => ({ steps, output: interpreter?.output ?? '', error, rows, columns, truncated, totalSteps });
+  // A line is read while one step runs, so it first shows at the step recorded next.
+  const echoes: InputEchoView[] = [];
+  const noteEchoes = () => {
+    const read = interpreter?.inputEchoes ?? [];
+    for (let i = echoes.length; i < read.length; i++) echoes.push({ ...read[i], step: steps.length });
+  };
+  const record = (step: TraceStep) => {
+    noteEchoes();
+    steps.push(step);
+  };
+  const finish = (error: RunResult['error']): RunResult => {
+    noteEchoes();
+    return { steps, output: interpreter?.output ?? '', echoes, error, rows, columns, truncated, totalSteps };
+  };
 
   // Each call compares against its own previous row, so a loop that calls a method
   // doesn't see every variable as changed when control comes back.
@@ -131,19 +154,19 @@ export function runProgram(source: string, input = ''): RunResult {
       lastLine = result.value.line;
       if (result.value.condition !== undefined) continue;
       if (steps.length < MAX_RECORDED) {
-        steps.push({ line: result.value.line, frames: snapshot(frames), depth: frames.length, outputLength: interpreter.output.length, traceRows: rows.length });
+        record({ line: result.value.line, frames: snapshot(frames), depth: frames.length, outputLength: interpreter.output.length, traceRows: rows.length });
       } else {
         truncated = true;
       }
     }
-    if (!truncated) steps.push({ line: lastLine, frames: [], depth: 0, outputLength: interpreter.output.length, traceRows: rows.length });
+    if (!truncated) record({ line: lastLine, frames: [], depth: 0, outputLength: interpreter.output.length, traceRows: rows.length });
     return finish(null);
   } catch (err) {
     // The last step shows the state the program stopped in, including anything it printed.
     if (interpreter && !truncated) {
       const frames = interpreter.frameList;
       const line = err instanceof JavaError ? err.line : lastLine;
-      steps.push({ line, frames: err instanceof StopProgram ? [] : snapshot(frames), depth: frames.length, outputLength: interpreter.output.length, traceRows: rows.length });
+      record({ line, frames: err instanceof StopProgram ? [] : snapshot(frames), depth: frames.length, outputLength: interpreter.output.length, traceRows: rows.length });
     }
     if (err instanceof StopProgram) return finish(null);
     if (err instanceof JavaError) return finish({ message: err.message, line: err.line, kind: err.kind });
