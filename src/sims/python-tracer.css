@@ -48,25 +48,4 @@
 }
 
 /* A download's progress: a hairline that fills in red pen or yellow chalk. */
-.load-bar {
-  appearance: none;
-  display: block;
-  width: 100%;
-  max-width: 24rem;
-  height: 0.25rem;
-  border: 0;
-  background: var(--paper-3);
-  color: var(--accent);
-}
-
-.load-bar::-webkit-progress-bar {
-  background: var(--paper-3);
-}
-
-.load-bar::-webkit-progress-value {
-  background: var(--accent);
-}
-
-.load-bar::-moz-progress-bar {
-  background: var(--accent);
-}
+/* The load bar is shared, in tools.css. */

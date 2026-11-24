@@ -3,8 +3,9 @@ import { navigate } from '../lib/router';
 import { CustomStructure } from '../components/custom/CustomStructure';
 import { PenLine } from 'lucide-react';
 import { LazyLewis } from '../components/LazyLewis';
-import { useEffect } from 'react';
-import { Calculator, Copy, ListChecks, Star } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { pop } from '../lib/motion';
+import { Calculator, Check, Copy, ListChecks, Star } from 'lucide-react';
 import { isRemovedId } from '../data/aliases';
 import { findFormula, getSubject, unitTitle } from '../data/book';
 import { copyableExpr, isBodyExpr } from '../data/expr';
@@ -21,6 +22,13 @@ import { EntryStructures } from '../components/Structures';
 export default function FormulaView({ id }: { id: string }) {
   const state = useAsync(() => findFormula(id), id);
   const favourites = useStore(favouritesStore);
+  // Copying confirms in the button for a moment, as well as in the toast.
+  const [copied, setCopied] = useState(false);
+  useEffect(() => {
+    if (!copied) return undefined;
+    const timer = window.setTimeout(() => setCopied(false), 1400);
+    return () => window.clearTimeout(timer);
+  }, [copied]);
   const solvable = useSolvableIds();
   const f = state.status === 'ready' ? state.value : null;
 
@@ -32,7 +40,7 @@ export default function FormulaView({ id }: { id: string }) {
     }
   }, [f]);
 
-  if (state.status === 'loading') return <p className="spinner-line">Opening formula</p>;
+  if (state.status === 'loading') return <p className="spinner-line page-loading" data-loading>Opening formula</p>;
   if (!f && isRemovedId(id)) {
     return (
       <div className="page-pad">
@@ -64,7 +72,9 @@ export default function FormulaView({ id }: { id: string }) {
           {f.name}
         </h1>
         <div className="big-formula mt-3 math-host" tabIndex={0} role="group" aria-label="Formula">
-          <Math latex={f.latex} />
+          <div data-morph-hero={`formula:${f.id}`}>
+            <Math latex={f.latex} />
+          </div>
         </div>
         {f.structure && <EntryStructures structure={f.structure} scale={1.15} />}
         {f.lewis && <LazyLewis ids={f.lewis} scale={1.1} />}
@@ -119,14 +129,23 @@ export default function FormulaView({ id }: { id: string }) {
             type="button"
             className="btn btn-line"
             aria-pressed={saved}
-            onClick={() => {
-              toast(toggleFavourite(f.id) ? 'Saved' : 'Removed from saved');
+            onClick={(e) => {
+              const nowSaved = toggleFavourite(f.id);
+              if (nowSaved) pop(e.currentTarget.querySelector('svg'));
+              toast(nowSaved ? 'Saved' : 'Removed from saved');
             }}
           >
             <Star size={16} fill={saved ? 'currentColor' : 'none'} aria-hidden /> {saved ? 'Saved' : 'Save'}
           </button>
-          <button type="button" className="btn btn-line" onClick={() => void copyText(copyableExpr(f.latex), isBodyExpr(f.latex) ? 'Copied' : 'Copied LaTeX')}>
-            <Copy size={16} aria-hidden /> {isBodyExpr(f.latex) ? 'Copy' : 'Copy LaTeX'}
+          <button
+            type="button"
+            className="btn btn-line"
+            onClick={() => {
+              setCopied(true);
+              void copyText(copyableExpr(f.latex), isBodyExpr(f.latex) ? 'Copied' : 'Copied LaTeX');
+            }}
+          >
+            {copied ? <Check size={16} aria-hidden className="copy-done" /> : <Copy size={16} aria-hidden />} {copied ? 'Copied' : isBodyExpr(f.latex) ? 'Copy' : 'Copy LaTeX'}
           </button>
         </div>
       </div>

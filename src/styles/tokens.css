@@ -15,12 +15,22 @@
   /* A reading line of about 70 characters. Atkinson's digits are wide, so 65ch ran to 90. */
   --measure: 36em;
 
+  /* Motion. DESIGN.md has the system, and src/lib/motion.ts the same values for scripts.
+     Entering uses ease-out, moving on screen ease-in-out, sheets and pages the drawer curve. */
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
   --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
-  --dur-press: 120ms;
-  --dur-fast: 160ms;
-  --dur-view: 200ms;
-  --dur-sheet: 240ms;
+  /* Springs, as linear() curves where the browser has it (motion.css, just after first paint). */
+  --spring-sheet: var(--ease-drawer);
+  --spring-pop: var(--ease-out);
+  --dur-press: 110ms;
+  --dur-quick: 160ms;
+  --dur-standard: 240ms;
+  --dur-emphasis: 380ms;
+  --dur-page: 460ms;
+  /* The springs settle in this long. */
+  --dur-spring-sheet: 440ms;
+  --dur-spring-pop: 520ms;
 
   --rail: 4.75rem;
   --contents: 17.25rem;

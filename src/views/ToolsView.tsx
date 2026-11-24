@@ -37,8 +37,8 @@ export default function ToolsView({ toolId }: { toolId: string | null }) {
             </h2>
             <div className="tool-index">
               {SIMS.filter((s) => s.subject === subject.id).map((s) => (
-                <a key={s.id} className="tool-link" href={href(`tools/${s.id}`)}>
-                  <b>{s.title}</b>
+                <a key={s.id} className="tool-link" data-morph-scope href={href(`tools/${s.id}`)}>
+                  <b data-morph={`tool:${s.id}`}>{s.title}</b>
                   <span>{s.desc}</span>
                 </a>
               ))}
@@ -59,7 +59,7 @@ function ToolPage({ simId }: { simId: string }) {
         <a className="btn btn-quiet -ml-2" href={href('tools')}>
           <ArrowLeft size={16} aria-hidden /> All tools
         </a>
-        <h1 className="mt-1 text-step-3" style={{ color: 'var(--subject)' }}>
+        <h1 className="mt-1 text-step-3" data-morph-hero={`tool:${sim.id}`} style={{ color: 'var(--subject)' }}>
           {sim.title}
         </h1>
         <p className="mb-4 mt-1 text-ink-2">{sim.desc}</p>

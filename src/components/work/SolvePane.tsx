@@ -4,7 +4,8 @@ import { AlertTriangle, ArrowLeft, CircleCheck, Info } from 'lucide-react';
 import { canonicalId } from '../../data/aliases';
 import { findFormula } from '../../data/book';
 import { useAsync } from '../../lib/hooks';
-import { stepsReveal, usingKeyboard } from '../../lib/motion';
+import { staggerDelay, usingKeyboard } from '../../lib/motion';
+import { landResult, stepsReveal } from '../../lib/motion-kit';
 import { clearWorkFormula } from '../../lib/router';
 import { startPracticeOn } from '../../practice/session-link';
 import { unitLabel as displayUnit } from '../../solver/unit-label';
@@ -76,6 +77,7 @@ function Solver({ entry, initialUnknown }: { entry: ResolvedEntry; initialUnknow
   const [inputs, setInputs] = useState(() => initialInputs(entry));
   const [outcome, setOutcome] = useState<SolveOutcome | null>(null);
   const stepsRef = useRef<HTMLOListElement>(null);
+  const resultRef = useRef<HTMLDivElement>(null);
   const eqTex = useMemo(() => equationTex(entry), [entry]);
   const firstField = useRef<HTMLInputElement>(null);
 
@@ -87,7 +89,10 @@ function Solver({ entry, initialUnknown }: { entry: ResolvedEntry; initialUnknow
 
   useLayoutEffect(() => {
     if (outcome && stepsRef.current) {
-      stepsReveal([...stepsRef.current.children]);
+      // The working is written out line by line, and the answer lands once it is.
+      const steps = [...stepsRef.current.children];
+      stepsReveal(steps);
+      landResult(resultRef.current, steps.length ? 260 + staggerDelay(Math.min(steps.length, 14) - 1, 70, 520) : 0);
       stepsRef.current.scrollIntoView({ block: 'nearest' });
     }
   }, [outcome]);
@@ -121,7 +126,7 @@ function Solver({ entry, initialUnknown }: { entry: ResolvedEntry; initialUnknow
         <legend className="lbl mb-1">
           Find <small>press a symbol to choose what to solve for</small>
         </legend>
-        <div>
+        <div data-slide-group>
           {entry.vars.map((v) => {
             const isUnknown = v.symbol === unknown;
             const options = unitOptions(v);
@@ -131,6 +136,7 @@ function Solver({ entry, initialUnknown }: { entry: ResolvedEntry; initialUnknow
                 <button
                   type="button"
                   className="var-sym"
+                  data-slide-item
                   aria-pressed={isUnknown}
                   onClick={() => {
                     setUnknown(v.symbol);
@@ -143,7 +149,7 @@ function Solver({ entry, initialUnknown }: { entry: ResolvedEntry; initialUnknow
                   <span className="sr-only">Solve for {v.name}</span>
                 </button>
                 {isUnknown ? (
-                  <span className="font-semibold text-ink-2" style={{ gridColumn: '2 / -1' }}>
+                  <span className="var-finding font-semibold text-ink-2" style={{ gridColumn: '2 / -1' }}>
                     This is what you are finding
                   </span>
                 ) : (
@@ -219,7 +225,7 @@ function Solver({ entry, initialUnknown }: { entry: ResolvedEntry; initialUnknow
             ))}
           </ol>
           {outcome.ok ? (
-            <div className="notice" data-tone="good" role="status">
+            <div className="notice" data-tone="good" role="status" ref={resultRef}>
               <CircleCheck size={18} aria-hidden />
               <p>
                 {target.name}: {outcome.roots.filter((r) => !r.rejected).map((r) => `${r.text}${r.unit === 'deg' ? '°' : r.unit ? ` ${displayUnit(r.unit)}` : ''}`).join(' or ')}

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { FlipList } from '../lib/motion-kit';
 import { Dices, Download, Flag, ListChecks, RotateCcw, Trash2, Wand2 } from 'lucide-react';
 import { RichText } from '../components/bank/RichText';
 import { manifest } from '../data/book';
@@ -139,9 +140,9 @@ export default function ProgressView() {
               </button>
 
               {shown.length === 0 && <p className="empty">No mistakes match this filter.</p>}
-              <ul className="m-0 mt-2 list-none p-0">
+              <FlipList className="m-0 mt-2 list-none p-0">
                 {shown.slice(0, 200).map((m) => (
-                  <li key={m.id} className="mistake" data-subject={m.subject || undefined}>
+                  <li key={m.id} data-flip={m.id} className="mistake" data-subject={m.subject || undefined}>
                     <div className="flex items-start justify-between gap-2">
                       {isExamId(m.formulaId) ? (
                         <span className="font-semibold">
@@ -174,7 +175,7 @@ export default function ProgressView() {
                     </p>
                   </li>
                 ))}
-              </ul>
+              </FlipList>
               {shown.length > 200 && <p className="mt-2 text-ink-2">Showing the latest 200 of {shown.length}. Filter to see the rest.</p>}
             </>
           )}

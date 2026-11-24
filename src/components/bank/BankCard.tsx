@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { getSubject } from '../../data/book';
-import { answerFeedback } from '../../lib/motion';
+import { answerFeedback } from '../../lib/motion-kit';
 import { isMarkedGenerated } from '../../practice/bank/define';
 import { answerSummary, isPassing, qualityOf, scoreOf, yourAnswerSummary } from '../../practice/bank/mark';
 import type { BankAnswer, BankQuestion } from '../../practice/bank/types';

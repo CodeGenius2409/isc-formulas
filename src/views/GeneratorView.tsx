@@ -1,5 +1,6 @@
 import { Tip } from '../tour/Tip';
 import { Fragment, useEffect, useMemo, useRef, useState, type DragEvent, Suspense } from 'react';
+import { FlipList } from '../lib/motion-kit';
 import { ArrowDown, ArrowUp, Dices, Download, FileText, FileUp, GripVertical, Lock, LockOpen, PenLine, Plus, Printer, RefreshCw, Save, Trash2, Wand2 } from 'lucide-react';
 import { BankPrompt } from '../components/bank/BankParts';
 import { GeneratedMark, GENERATED_NOTICE, PAPER_NOTICE, ReportProblem } from '../components/bank/GeneratedMark';
@@ -126,6 +127,8 @@ const withEdit = (entry: PaperItem): BankItem => (entry.editedText !== undefined
 function ReviewItem({ entry, number, figure, orFigure, canMove, onChange, onMove, onDrop, onRegenerate, busy }: { entry: PaperItem; number: number; figure: FigureMark | undefined; orFigure?: FigureMark; canMove: [boolean, boolean]; onChange: (change: Partial<PaperItem> | null) => void; onMove: (by: number) => void; onDrop: (from: string) => void; onRegenerate: () => void; busy: boolean }) {
   const [editing, setEditing] = useState(false);
   const [over, setOver] = useState(false);
+  // Picked up: the question lifts out of the page while it is dragged.
+  const [lifted, setLifted] = useState(false);
   const item = withEdit(entry);
   return (
     <li
@@ -133,8 +136,10 @@ function ReviewItem({ entry, number, figure, orFigure, canMove, onChange, onMove
       data-generated={isMarkedGenerated(item) ? true : undefined}
       data-locked={entry.locked || undefined}
       data-over={over || undefined}
+      data-lifted={lifted || undefined}
       data-testid="review-item"
       data-key={entry.key}
+      data-flip={entry.key}
       onDragOver={(e: DragEvent) => {
         e.preventDefault();
         setOver(true);
@@ -155,7 +160,9 @@ function ReviewItem({ entry, number, figure, orFigure, canMove, onChange, onMove
           onDragStart={(e: DragEvent) => {
             e.dataTransfer.setData('text/plain', entry.key);
             e.dataTransfer.effectAllowed = 'move';
+            setLifted(true);
           }}
+          onDragEnd={() => setLifted(false)}
         >
           <GripVertical size={16} />
         </span>
@@ -483,7 +490,7 @@ function Review({ paper, onChange, onClose, sets, onSets }: { paper: TeacherPape
             <div key={section.name} className="mt-3">
               {paper.sections.length > 1 && <h3 className="font-semibold">{section.name}</h3>}
               {section.note && <p className="text-ink-2">{section.note}</p>}
-              <ol className="m-0 list-none p-0">
+              <FlipList as="ol" className="m-0 list-none p-0">
                 {section.items.map((entry, i) => {
                   number += 1;
                   return (
@@ -504,7 +511,7 @@ function Review({ paper, onChange, onClose, sets, onSets }: { paper: TeacherPape
                     />
                   );
                 })}
-              </ol>
+              </FlipList>
             </div>
           ))}
         </section>

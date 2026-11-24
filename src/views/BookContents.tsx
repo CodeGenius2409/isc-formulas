@@ -10,7 +10,7 @@ export default function BookContents({ subject, level }: { subject: SubjectId; l
   return (
     <div className="page" data-subject={subject}>
       <div className="page-pad">
-        <h1 className="text-step-3" style={{ color: 'var(--subject)' }}>
+        <h1 className="text-step-3" data-morph-hero={`subject:${subject}`} style={{ color: 'var(--subject)' }}>
           {info.label}, Class {level}
         </h1>
         <p className="mt-1 text-ink-2">
@@ -25,10 +25,10 @@ export default function BookContents({ subject, level }: { subject: SubjectId; l
         </div>
         <nav aria-label="Units" className="mt-5">
           {cls.units.map((unit, i) => (
-            <a key={unit.name} className="leaders" href={href(`book/${subject}/${level}/${i}`)}>
+            <a key={unit.name} className="leaders" data-morph-scope href={href(`book/${subject}/${level}/${i}`)}>
               <span className="lnum num">{splitUnitName(unit.name).number}</span>
               <span className="ltitle">
-                {unitTitle(unit.name)}
+                <span data-morph={`unit:${subject}-${level}-${i}`}>{unitTitle(unit.name)}</span>
                 {STATUS_LABEL[unit.status] && <span className="status-label block">{STATUS_LABEL[unit.status]}</span>}
               </span>
               <span className="fill" aria-hidden />

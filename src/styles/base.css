@@ -167,7 +167,7 @@
   font-weight: 600;
   white-space: nowrap;
   text-decoration: none;
-  transition: transform var(--dur-press) var(--ease-out), background-color var(--dur-fast) ease, border-color var(--dur-fast) ease;
+  transition: transform var(--dur-press) var(--ease-out), background-color var(--dur-quick) ease, border-color var(--dur-quick) ease;
 }
 
 .btn:active:not(:disabled) {
@@ -251,7 +251,7 @@
   font-weight: 600;
   color: var(--ink-2);
   text-decoration: none;
-  transition: background-color var(--dur-fast) ease;
+  transition: background-color var(--dur-quick) ease;
 }
 
 .seg > * + * {
@@ -279,21 +279,28 @@
 }
 
 /* For users who ask for less motion, colour and opacity still change gently, so a state
-   change stays easy to notice, but nothing moves. */
-@media (prefers-reduced-motion: reduce) {
+   change stays easy to notice, but nothing moves. The Reduce motion setting decides, and it
+   follows the device unless one is chosen. Keyframes in motion.css have fade-only variants. */
+:root[data-motion='reduce'] {
   *,
   *::before,
   *::after {
     scroll-behavior: auto !important;
     transition-property: color, background-color, border-color, opacity !important;
-    animation-duration: 1ms !important;
     animation-iteration-count: 1 !important;
   }
-  .btn:active:not(:disabled) {
+  .btn:active:not(:disabled),
+  .dock-item:active,
+  .rail-link:active,
+  .work-tab:active,
+  .seg > :active,
+  .leaders:active,
+  .text-action:active,
+  input[type='checkbox']:active:not(:disabled) {
     transform: none;
   }
-}
-
+}
+
 /* Java, in the editor, the tracer and Computer Science entries. Subject colours mean a place in
    the book and nothing else, so code leans on the ink colours and weight. */
 .tok-keyword {
@@ -325,8 +332,8 @@
 
 .java-code {
   font-family: var(--font-mono);
-}
-
+}
+
 /* Computer Science entries, written as code rather than typeset. */
 .body-expr {
   display: block;

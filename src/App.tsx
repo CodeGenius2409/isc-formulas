@@ -4,7 +4,7 @@ import { lazyRetry } from './lib/retry-import';
 import { SUBJECT_IDS } from './data/book';
 import type { ClassLevel, SubjectId } from './data/types';
 import { useMediaQuery } from './lib/hooks';
-import { viewEnter } from './lib/motion';
+import { turns } from './lib/motion';
 import { closeWork, useRoute, workState, type Route } from './lib/router';
 import { useStore } from './lib/store';
 import { lastReadStore, rememberPlace } from './state/library';
@@ -106,6 +106,15 @@ function View({ route, place, scrollRef }: { route: Route; place: BookPlace; scr
   }
 }
 
+/** Shown only if a page takes a moment to arrive, so a quick one never flashes it. */
+function PageLoading() {
+  return (
+    <p className="spinner-line page-loading" data-loading>
+      Opening
+    </p>
+  );
+}
+
 function NotFound() {
   return (
     <div className="page-pad">
@@ -139,6 +148,19 @@ export function App() {
   const paletteOpen = useStore(paletteStore);
   const paletteUsed = useRef(false);
   paletteUsed.current ||= paletteOpen;
+  // Find is put on the page, closed, once the browser is idle, so even its first opening from a key is instant.
+  const [paletteReady, setPaletteReady] = useState(false);
+  useEffect(() => {
+    const ready = () => setPaletteReady(true);
+    const idle = window.requestIdleCallback ? window.requestIdleCallback(ready, { timeout: 2500 }) : window.setTimeout(ready, 1500);
+    return () => {
+      if (window.cancelIdleCallback) window.cancelIdleCallback(idle);
+      else window.clearTimeout(idle);
+    };
+  }, []);
+  // Kept once opened, so it can slide away rather than vanish.
+  const contentsUsed = useRef(false);
+  contentsUsed.current ||= contentsOpen;
   const fallback = { subject: last?.subject ?? ('physics' as SubjectId), level: last?.classLevel ?? ('XI' as ClassLevel) };
   const place = bookPlace(route, fallback);
   const mainRef = useRef<HTMLElement>(null);
@@ -179,13 +201,15 @@ export function App() {
   const firstRender = useRef(true);
   useLayoutEffect(() => {
     mainRef.current?.scrollTo({ top: 0 });
+    turns.committed?.();
     if (firstRender.current) {
       firstRender.current = false;
       return;
     }
     closeContentsSheet();
     mainRef.current?.focus({ preventScroll: true });
-    viewEnter(viewRef.current);
+    // A page turn draws the change itself. Without one, the page slides in from the side it came from.
+    if (!turns.turning?.()) turns.enter?.(viewRef.current, turns.kind);
     if (route.path.length === 0) document.title = 'Today: ISC Formula Book';
     // Only when the page itself changes, not when the working area changes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -205,7 +229,7 @@ export function App() {
       <main id="main" ref={mainRef} tabIndex={-1}>
         <div ref={viewRef}>
           <ErrorBoundary resetKey={pathKey}>
-            <Suspense fallback={<p className="spinner-line">Opening</p>}>
+            <Suspense fallback={<PageLoading />}>
               <View route={route} place={place} scrollRef={mainRef} />
             </Suspense>
           </ErrorBoundary>
@@ -226,9 +250,9 @@ export function App() {
           </ErrorBoundary>
         </Sheet>
       )}
-      {!contentsBeside && contentsOpen && <BookSheet subject={place.subject} level={place.level} unitIndex={place.unitIndex} subtopicIndex={place.subtopicIndex} />}
+      {!contentsBeside && contentsUsed.current && <BookSheet subject={place.subject} level={place.level} unitIndex={place.unitIndex} subtopicIndex={place.subtopicIndex} />}
       <Dock route={route} />
-      {paletteUsed.current && (
+      {(paletteUsed.current || paletteReady) && (
         <ErrorBoundary label="Find">
           <Suspense fallback={null}>
             <FindPalette />

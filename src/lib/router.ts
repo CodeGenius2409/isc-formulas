@@ -1,6 +1,7 @@
 // A small hash router. Hash URLs work on GitHub Pages and Vercel without any
 // server rewrite, and they survive offline reloads.
 import { useSyncExternalStore } from 'react';
+import { pageChange, pointedJustNow } from './motion';
 
 export type WorkTab = 'solve' | 'check' | 'practice';
 
@@ -46,13 +47,40 @@ function rememberWork(route: Route): void {
 
 rememberWork(current);
 
+// Each history entry is numbered, so a page change knows whether it went back. Entries made by
+// following a link arrive unnumbered and take the next number.
+function entryIndex(): number {
+  const state = window.history.state as { iscIndex?: unknown } | null;
+  return typeof state?.iscIndex === 'number' ? state.iscIndex : -1;
+}
+
+function numberEntry(index: number): void {
+  const state = window.history.state as Record<string, unknown> | null;
+  window.history.replaceState({ ...(state && typeof state === 'object' ? state : {}), iscIndex: index }, '');
+}
+
+let historyIndex = entryIndex();
+if (historyIndex < 0) numberEntry((historyIndex = 0));
+
 window.addEventListener('hashchange', () => {
   const next = parseHash(window.location.hash);
+  let index = entryIndex();
+  // An entry already numbered is a move through history: Back, Forward, or a swipe.
+  const traversal = index >= 0;
+  const wentBack = traversal && index < historyIndex;
+  if (index < 0) numberEntry((index = historyIndex + 1));
+  historyIndex = index;
   // Opening the working area changes the hash too, and that must not move the page.
-  const moved = next.path.join('/') !== current.path.join('/') || next.query.get('s') !== current.query.get('s');
+  const pathMoved = next.path.join('/') !== current.path.join('/');
+  const moved = pathMoved || next.query.get('s') !== current.query.get('s');
+  const from = current.path;
   current = { ...next, navigation: current.navigation + (moved ? 1 : 0) };
   rememberWork(current);
-  listeners.forEach((l) => l());
+  const notify = () => listeners.forEach((l) => l());
+  // A page turns when the reader turned it: a press or tap just now, or a move through history.
+  // A change made by code, such as the tour's, is simply there.
+  if (pathMoved && (traversal || pointedJustNow())) pageChange(notify, { from, to: next.path, back: wentBack });
+  else notify();
 });
 
 /** Writes the section being read to the URL. It replaces the entry, so Back still leaves the unit. */

@@ -1,34 +1,35 @@
-// Adapted from React Bits (https://reactbits.dev), AnimatedContent, copied in by
-// hand as its docs describe. MIT + Commons Clause, by David Haz.
-//
-// Trimmed to what this app needs: the mount trigger only, so ScrollTrigger is not
-// bundled, and no blur, tilt or wipe effects. Timing follows DESIGN.md rather than
-// the component's defaults (0.8 s and 100 px, which are far too slow and loud here).
-// Used once, on the Today page. Never in the formula-reading area.
+// The first sight of Today, once a visit: the date is written in from the left as if by pen,
+// then the sections settle in below it, each a little sooner after the last.
+// Originally adapted from React Bits' AnimatedContent (MIT + Commons Clause, David Haz); now on the
+// Web Animations API, so it plays at first paint without waiting for GSAP, and it's cut to what
+// this page needs. Never used in the formula-reading area.
 import { useLayoutEffect, useRef, type ReactNode } from 'react';
-import { motionEngine, prefersReducedMotion } from '../lib/motion';
+import { DUR, EASE, play, prefersReducedMotion, staggerDelay, usingKeyboard } from '../lib/motion';
 
-interface Props {
-  children: ReactNode;
-  className?: string;
-  distance?: number;
-  duration?: number;
-  stagger?: number;
-}
+let played = false;
 
-export function AnimatedContent({ children, className, distance = 8, duration = 0.22, stagger = 0.03 }: Props) {
+export function AnimatedContent({ children, className }: { children: ReactNode; className?: string }) {
   const ref = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
     const el = ref.current;
-    const gsap = motionEngine();
-    if (!gsap || !el || prefersReducedMotion()) return undefined;
-    const ctx = gsap.context(() => {
-      gsap.fromTo(el.children, { y: distance, opacity: 0 }, { y: 0, opacity: 1, duration, stagger, ease: 'expo.out', clearProps: 'opacity,transform' });
-    }, el);
-    return () => ctx.revert();
-    // Plays once, when the page opens.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // Once a visit, and not when a page turn is already bringing the page in.
+    if (!el || played || document.documentElement.dataset.page || usingKeyboard()) {
+      played = true;
+      return;
+    }
+    played = true;
+    const [lead, ...rest] = Array.from(el.children);
+    if (prefersReducedMotion()) {
+      play(el, [{ opacity: 0 }, { opacity: 1 }], { duration: DUR.standard, easing: 'ease' });
+      return;
+    }
+    const date = lead?.querySelector('h1');
+    play(date, [{ clipPath: 'inset(-10% 100% -20% 0)', transform: 'translateY(6px)' }, { clipPath: 'inset(-10% 0 -20% 0)', transform: 'none' }], { duration: 640, easing: EASE.out });
+    play(lead?.querySelector('.help-button'), [{ opacity: 0 }, { opacity: 1 }], { duration: DUR.emphasis, delay: 420, easing: 'ease' });
+    rest.slice(0, 6).forEach((child, i) => {
+      play(child, [{ opacity: 0, transform: 'translateY(14px)' }, { opacity: 1, transform: 'none' }], { duration: 520, delay: 220 + staggerDelay(i, 70, 360), easing: EASE.out });
+    });
   }, []);
 
   return (

@@ -86,7 +86,10 @@
   align-items: center;
   justify-content: center;
   height: 64px;
-  margin-right: 14px;
+  margin-right: -1px;
+  /* Tucked 15 px under the rail's edge, with the label kept centred in what shows. */
+  padding-left: 15px;
+  transform: translateX(-15px);
   background: var(--tab);
   color: var(--on-subject);
   border-radius: 0 6px 6px 0;
@@ -94,7 +97,7 @@
   font-weight: 700;
   font-size: var(--step-1);
   text-decoration: none;
-  transition: margin-right var(--dur-fast) var(--ease-out);
+  transition: transform var(--dur-standard) var(--ease-out);
 }
 
 .thumb[data-subject='physics'] { --tab: var(--physics); }
@@ -104,13 +107,17 @@
 
 /* The open subject's tab reaches the page edge, as if the book were open there. */
 .thumb[aria-current='true'] {
-  margin-right: -1px;
+  transform: none;
   border-radius: 0;
 }
 
-@media (hover: hover) {
+.thumb:not([aria-current='true']):active {
+  transform: translateX(-11px) scale(0.98);
+}
+
+@media (hover: hover) and (pointer: fine) {
   .thumb:not([aria-current='true']):hover {
-    margin-right: 6px;
+    transform: translateX(-8px);
   }
 }
 
@@ -133,7 +140,7 @@
   font-size: 0.75rem;
   font-weight: 500;
   text-decoration: none;
-  transition: background-color var(--dur-fast) ease;
+  transition: background-color var(--dur-quick) ease;
 }
 
 .rail-link[aria-current='true'] {
@@ -220,7 +227,7 @@
   padding: 0.45rem 1rem;
   text-align: left;
   text-decoration: none;
-  transition: background-color var(--dur-fast) ease;
+  transition: background-color var(--dur-quick) ease;
 }
 
 .toc-unit .toc-num,
@@ -320,7 +327,7 @@
   transform: translateY(-50%);
   background: var(--rule-2);
   border-radius: 3px;
-  transition: background-color var(--dur-fast) ease;
+  transition: background-color var(--dur-quick) ease;
 }
 
 @media (hover: hover) {
@@ -376,7 +383,7 @@ html[data-resizing] * {
   color: var(--ink-2);
   border-bottom: 3px solid transparent;
   margin-bottom: -1px;
-  transition: color var(--dur-fast) ease;
+  transition: color var(--dur-quick) ease;
 }
 
 .work-tab[aria-selected='true'] {
@@ -422,9 +429,16 @@ html[data-resizing] * {
   flex-direction: column;
 }
 
-/* A closed dialog must stay hidden, even with a class that sets `display`. */
-dialog:not([open]) {
+/* A closed dialog must stay hidden, even with a class that sets `display`. Sheets and Find are
+   drawn for a moment more as they leave (motion.css), so they have the rule below instead. */
+dialog:not([open]):not(.sheet, .palette) {
   display: none !important;
+}
+
+/* Without !important, so a transition can hold it on screen while it leaves. */
+dialog.sheet:not([open]),
+dialog.palette:not([open]) {
+  display: none;
 }
 
 .sheet::backdrop {
@@ -576,7 +590,7 @@ dialog:not([open]) {
   border-radius: 3px;
   font-weight: 600;
   max-width: calc(100vw - 2rem);
-  transition: transform var(--dur-fast) var(--ease-out), opacity var(--dur-fast) ease;
+  transition: transform var(--dur-quick) var(--ease-out), opacity var(--dur-quick) ease;
 }
 
 .toast[data-show='true'] {
@@ -726,8 +740,8 @@ dialog:not([open]) {
   .palette-filters .seg > * {
     min-height: 2.75rem;
   }
-}
-
+}
+
 .toast-action {
   margin-left: 0.75rem;
   min-height: 2.75rem;
@@ -760,4 +774,66 @@ dialog:not([open]) {
   .palette-mine {
     min-height: 2.75rem;
   }
+}
+
+/* Motion that must be there at first paint; the rest of it is in motion.css, loaded just after. */
+
+/* The reading page has its own paper, so a page turn can picture it. */
+.shell > main {
+  background: var(--paper);
+}
+
+/* The current place in the dock and rail is underlined in the red pen, drawn from the middle. */
+.dock-item,
+.rail-link {
+  position: relative;
+}
+
+.dock-item::after,
+.rail-link::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  width: 1.5rem;
+  height: 2px;
+  margin-left: -0.75rem;
+  border-radius: 1px;
+  background: var(--accent);
+  clip-path: inset(0 50%);
+  transition: clip-path var(--dur-standard) var(--ease-out);
+}
+
+.dock-item::after {
+  top: 4px;
+}
+
+.rail-link::after {
+  bottom: 6px;
+}
+
+.dock-item[aria-current='true']::after,
+.rail-link[aria-current='true']::after {
+  clip-path: inset(0 0);
+}
+
+.dock-item svg,
+.rail-link svg {
+  transition: transform var(--dur-spring-pop) var(--spring-pop);
+}
+
+.dock-item[aria-current='true'] svg {
+  transform: translateY(-1px);
+}
+
+/* Something that grows into the next page must be a box of its own to be pictured. */
+span[data-morph] {
+  display: inline-block;
+}
+
+/* Both ends of a morph are drawn tight around what they show, so text grows into text
+   rather than a line into a whole column. */
+[data-morph]:not(.thumb),
+[data-morph-hero] {
+  width: fit-content;
+  max-width: 100%;
 }

@@ -56,8 +56,8 @@ export default function Home() {
             <h2 id="book-h">The book</h2>
             <div className="title-grid">
               {manifest.subjects.map((subject) => (
-                <div key={subject.id} data-subject={subject.id} className="py-2">
-                  <h3 className="text-step-1" style={{ color: 'var(--subject)' }}>
+                <div key={subject.id} data-subject={subject.id} data-morph-scope className="py-2">
+                  <h3 className="text-step-1" data-morph={`subject:${subject.id}`} style={{ color: 'var(--subject)' }}>
                     {subject.label}
                   </h3>
                   {subject.classes.map((cls) => (

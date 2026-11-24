@@ -27,7 +27,7 @@ export function Rail({ route, activeSubject }: Props) {
         {SUBJECT_IDS.map((id) => {
           const subject = getSubject(id);
           return (
-            <a key={id} className="thumb" data-subject={id} href={href(`book/${id}/${memory[id] ?? 'XI'}`)} aria-current={activeSubject === id ? 'true' : undefined} aria-label={`${THUMB_LABEL[id]}: ${subject.label}`} title={subject.label}>
+            <a key={id} className="thumb" data-subject={id} data-morph={`subject:${id}`} href={href(`book/${id}/${memory[id] ?? 'XI'}`)} aria-current={activeSubject === id ? 'true' : undefined} aria-label={`${THUMB_LABEL[id]}: ${subject.label}`} title={subject.label}>
               {THUMB_LABEL[id]}
             </a>
           );

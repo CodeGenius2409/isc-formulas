@@ -26,11 +26,15 @@
     <script>
       // Set the theme before first paint so the page never flashes the wrong one.
       (function () {
-        var theme = 'system', contrast = 'normal';
+        var theme = 'system', contrast = 'normal', motion = 'device';
         try {
           theme = localStorage.getItem('isc-theme') || 'system';
           contrast = localStorage.getItem('isc-contrast') || 'normal';
+          motion = localStorage.getItem('isc-motion') || 'device';
         } catch (e) {}
+        // Reduce motion: the setting wins over the device when one is chosen.
+        if (motion === 'device') motion = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'reduce' : 'full';
+        document.documentElement.dataset.motion = motion === 'reduce' ? 'reduce' : 'full';
         if (theme === 'light') theme = 'paper';
         if (theme === 'dark') theme = 'board';
         if (theme === 'system') theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'board' : 'paper';

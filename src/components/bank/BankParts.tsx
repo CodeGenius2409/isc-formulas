@@ -1,5 +1,5 @@
 import { memo, Suspense, useId } from 'react';
-import { CircleCheck, CircleX } from 'lucide-react';
+import { PenMark } from '../PenMark';
 import type { BankAnswer, BankItem, NumericItem, TheoryItem } from '../../practice/bank/types';
 import { markPart, normaliseOutput } from '../../practice/bank/mark';
 import { unitLabel } from '../../solver/unit-label';
@@ -139,7 +139,7 @@ function NumericReview({ item, answer }: { item: NumericItem; answer: BankAnswer
         return (
           <div key={i} className="bank-part">
             <div className="notice" data-tone={mark.correct ? 'good' : 'bad'}>
-              {mark.correct ? <CircleCheck size={18} aria-hidden /> : <CircleX size={18} aria-hidden />}
+              <PenMark right={mark.correct} />
               <p>
                 {item.parts.length > 1 && `(${i + 1}) `}
                 {mark.correct ? `Right, ${marksLabel(part.marks)}. ${part.question.answerText}.` : `No marks. You gave ${mark.shown}. The answer is ${part.question.answerText}.`} {mark.reason}
@@ -212,7 +212,7 @@ function ReviewBody({ item, answer, onChange }: { item: BankItem; answer: BankAn
   return (
     <>
       <div className="notice" data-tone={right ? 'good' : 'bad'}>
-        {right ? <CircleCheck size={18} aria-hidden /> : <CircleX size={18} aria-hidden />}
+        <PenMark right={right} />
         <p>{right ? `Right, ${marksLabel(item.marks)}.` : item.form === 'mcq' ? 'No marks. The correct answer is outlined.' : 'No marks. The output is below.'}</p>
       </div>
       {item.form === 'output' && !right && <CodeBlock code={item.expected} python />}

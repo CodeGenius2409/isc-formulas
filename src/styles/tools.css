@@ -633,8 +633,8 @@ input[type='range'] {
   .slider input[type='range'] {
     height: 2.75rem;
   }
-}
-
+}
+
 .plot-preview {
   margin-top: 0.25rem;
   font-size: var(--step--1);
@@ -670,7 +670,7 @@ input[type='range'] {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: background-color var(--dur-fast) ease, transform var(--dur-press) var(--ease-out);
+  transition: background-color var(--dur-quick) ease, transform var(--dur-press) var(--ease-out);
 }
 
 .keypad-key:active {
@@ -694,3 +694,4 @@ input[type='range'] {
   font-size: var(--step--1);
   font-weight: 600;
 }
+

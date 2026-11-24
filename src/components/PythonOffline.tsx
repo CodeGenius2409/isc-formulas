@@ -1,6 +1,7 @@
 // "Keep Python for offline use", in Settings. Off by default, since Python is far larger than the rest of
 // the book. Turning it on saves Pyodide's files in a cache of their own; turning it off deletes them.
 import { useEffect } from 'react';
+import { LoadBar } from './LoadBar';
 import { useStore } from '../python/state';
 import { checkSavedPython, keepPythonStore, megabytes, PYTHON_BYTES, pythonSaveStore, savePython } from '../python/offline';
 
@@ -29,7 +30,7 @@ export function PythonOffline() {
         {keep && save.phase === 'idle' && 'Python will be saved on this device.'}
         {keep && save.phase === 'failed' && save.message}
       </p>
-      {keep && save.phase === 'saving' && <progress className="load-bar mt-2" max={100} value={share ?? 0} aria-label="Saving Python" />}
+      {keep && save.phase === 'saving' && <LoadBar className="mt-2" share={share ?? 0} label="Saving Python" />}
       {keep && save.phase === 'failed' && navigator.onLine && (
         <button type="button" className="btn btn-line mt-2" onClick={() => void savePython()}>
           Try again

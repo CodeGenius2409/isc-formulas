@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { manifest } from '../data/book';
 import { useStore } from '../lib/store';
-import { contrastStore, themeStore, type ContrastChoice, type ThemeChoice } from '../state/prefs';
+import { contrastStore, motionStore, themeStore, type ContrastChoice, type MotionChoice, type ThemeChoice } from '../state/prefs';
 import { OfflineStatus } from '../components/OfflineStatus';
 import { PythonOffline } from '../components/PythonOffline';
 import { TourSettings } from '../tour/TourSettings';
 import { cleanGap, ensureFactHistory, factGapStore, resetFactHistory, seenFactsStore } from '../practice/fact-history';
+import '../styles/motion-later.css';
 
 const THEMES: { id: ThemeChoice; label: string }[] = [
   { id: 'system', label: 'Match device' },
@@ -18,9 +19,16 @@ const CONTRASTS: { id: ContrastChoice; label: string }[] = [
   { id: 'high', label: 'High' },
 ];
 
+const MOTIONS: { id: MotionChoice; label: string }[] = [
+  { id: 'device', label: 'Match device' },
+  { id: 'reduce', label: 'Reduced' },
+  { id: 'full', label: 'Full' },
+];
+
 export default function Settings() {
   const theme = useStore(themeStore);
   const contrast = useStore(contrastStore);
+  const motion = useStore(motionStore);
   const gap = useStore(factGapStore);
   const seen = useStore(seenFactsStore);
   const [asking, setAsking] = useState(false);
@@ -55,6 +63,17 @@ export default function Settings() {
               </button>
             ))}
           </div>
+          <p className="lbl mt-3" id="motion-label">
+            Reduce motion
+          </p>
+          <div className="seg" role="group" aria-labelledby="motion-label">
+            {MOTIONS.map((m) => (
+              <button key={m.id} type="button" aria-pressed={motion === m.id} onClick={() => motionStore.set(m.id)}>
+                {m.label}
+              </button>
+            ))}
+          </div>
+          <p className="mt-1 text-step--1 text-ink-2">Reduced keeps fades and drops all movement. Match device follows your device's own setting.</p>
         </section>
 
         <section className="today-section" aria-labelledby="repeats-h">

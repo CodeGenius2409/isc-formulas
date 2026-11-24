@@ -1,12 +1,21 @@
 // What the Java and Python tracers share: the code pane with its current line, the step buttons, the playing
 // speed and the dry-run table. Each tracer keeps its own call stack and variables, as the languages differ.
-import { useEffect, useMemo, useRef, type KeyboardEvent } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, type KeyboardEvent, type RefObject } from 'react';
+import { flash } from '../lib/motion-kit';
 import { Pause, Play, SkipBack, SkipForward, StepBack, StepForward } from 'lucide-react';
 import { JavaTokens } from '../components/JavaCode';
 import type { TraceRow } from '../java/trace';
 import { tokenizeJava, type Token } from '../java/tokens';
+import '../styles/motion-later.css';
 
 export const SHOWN_ROWS = 200;
+
+/** Values that changed on this step are washed with the highlighter for a moment, each time they change. */
+export function useFlashChanged(ref: RefObject<HTMLElement | null>, step: unknown): void {
+  useLayoutEffect(() => {
+    ref.current?.querySelectorAll('td[data-changed]').forEach((cell) => flash(cell));
+  }, [ref, step]);
+}
 
 /** Tokens grouped by line, for a pane that draws one line at a time. Java's unless another tokeniser is given. */
 export function tokenizeLines(code: string, tokenize: (code: string) => Token[] = tokenizeJava): Token[][] {
@@ -29,6 +38,26 @@ export const SPEEDS = [
 export function CodeView({ code, currentLine, errorLine, onKeyDown, tokenize }: { code: string; currentLine?: number; errorLine?: number; onKeyDown: (e: KeyboardEvent) => void; tokenize?: (code: string) => Token[] }) {
   const pane = useRef<HTMLDivElement>(null);
   const lines = useMemo(() => tokenizeLines(code, tokenize), [code, tokenize]);
+  // The highlight is one band that glides from line to line, so the eye follows the program.
+  const glide = useRef<HTMLDivElement>(null);
+  const glided = useRef(false);
+  useLayoutEffect(() => {
+    const band = glide.current;
+    const row = pane.current?.querySelector<HTMLElement>('[data-current="true"]');
+    if (!band) return;
+    if (!row) {
+      band.style.opacity = '0';
+      glided.current = false;
+      return;
+    }
+    // The first time it appears, it is simply there; after that it travels.
+    band.style.transition = glided.current ? '' : 'none';
+    band.style.opacity = '1';
+    band.style.height = `${row.offsetHeight}px`;
+    band.style.width = `${row.offsetWidth}px`;
+    band.style.transform = `translateY(${row.offsetTop}px)`;
+    glided.current = true;
+  }, [currentLine, lines]);
 
   // Keep the current line in view by scrolling the pane only, never the page.
   useEffect(() => {
@@ -42,7 +71,8 @@ export function CodeView({ code, currentLine, errorLine, onKeyDown, tokenize }: 
   }, [currentLine]);
 
   return (
-    <div ref={pane} className="code-pane" tabIndex={0} role="region" aria-label="Program code. Left and right arrow keys step through it." onKeyDown={onKeyDown}>
+    <div ref={pane} className="code-pane" data-glide tabIndex={0} role="region" aria-label="Program code. Left and right arrow keys step through it." onKeyDown={onKeyDown}>
+      <div ref={glide} className="code-glide" aria-hidden="true" />
       {lines.map((tokens, i) => (
         <div key={i} className="code-line" data-current={currentLine === i + 1 || undefined} data-error={errorLine === i + 1 || undefined}>
           <span>{i + 1}</span>

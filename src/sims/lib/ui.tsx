@@ -2,6 +2,7 @@
 import { useSimQuestion } from './question-mode';
 import { useId, type ReactNode } from 'react';
 import { Math as MathTex } from '../../components/Math';
+import '../../styles/motion-later.css';
 
 export function ToolLayout({ controls, children }: { controls: ReactNode; children?: ReactNode }) {
   return (
