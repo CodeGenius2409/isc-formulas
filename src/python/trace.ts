@@ -82,11 +82,11 @@ export interface PyLoop {
 }
 
 /**
- * Input that was read, shown after its prompt; the point where input ran out; anything sent to stderr; and a
- * chart that plt.show() or savefig() drew.
+ * Input that was read, shown after its prompt; the point where input ran out; anything sent to stderr; a
+ * chart that plt.show() or savefig() drew; and a warning that a NumPy whole number wrapped around.
  */
 export interface ConsoleExtra {
-  kind: 'in' | 'eof' | 'err' | 'fig';
+  kind: 'in' | 'eof' | 'err' | 'fig' | 'warn';
   /** Where in the output it goes. */
   at: number;
   /** The text, or for a chart its index in the run's figures. */

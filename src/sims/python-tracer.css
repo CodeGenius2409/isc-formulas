@@ -24,6 +24,15 @@
   color: var(--bad);
 }
 
+/* A NumPy whole number that wrapped around: a note from the tracer, not the program's own output. */
+.console-warn {
+  display: block;
+  color: var(--warn);
+  font-family: var(--font-body);
+  font-weight: 600;
+  white-space: pre-wrap;
+}
+
 .py-error {
   font-family: var(--font-mono);
   font-size: var(--step--1);

@@ -92,6 +92,40 @@ test('each library loads when a program imports it, with a message, and only wha
   expect(problems).toEqual([]);
 });
 
+test('a program that imports NumPy notes its 32-bit whole numbers, and a sum that wraps around is warned of after its output', async ({ page }) => {
+  test.setTimeout(300_000);
+  const problems = watchProblems(page);
+  await openTracer(page);
+  const note = page.getByTestId('numpy-int-note');
+  await runSample(page, 'Marks as a NumPy array: mean, median and standard deviation');
+  await expect(consoleText(page)).toContainText('Mean: 77.75');
+  await expect(note).toHaveText('In this browser, NumPy’s whole numbers are 32-bit, so very large results can wrap around without an error. Use dtype=np.int64 for big numbers.');
+  await expect(page.getByTestId('overflow-warning'), 'the sample’s numbers are small').toHaveCount(0);
+
+  await writeProgram(page, ['import numpy as np', 'total = np.arange(100000).sum()', 'print("Total:", total)', 'print("Right:", np.arange(100000, dtype=np.int64).sum())'].join('\n'));
+  await page.getByRole('button', { name: 'Trace', exact: true }).click();
+  await page.getByRole('button', { name: 'Run to the end' }).click({ timeout: LIBRARY_TIMEOUT });
+  await expect(consoleText(page)).toContainText('Right: 4999950000');
+  const warning = page.getByTestId('overflow-warning');
+  await expect(warning).toHaveCount(1);
+  await expect(warning).toHaveText('⚠ Line 2: this sum went past 2,147,483,647, the biggest 32-bit whole number, and wrapped around to 704982704. With dtype=np.int64 it is 4999950000.');
+  await expect(note).toBeVisible();
+  // It appears once line 2 has run, before line 3 prints.
+  expect(await consoleText(page).innerText()).toMatch(/^⚠ Line 2: [^\n]+\nTotal: 704982704\nRight: 4999950000/);
+  await page.getByRole('button', { name: 'Previous step' }).click();
+  await page.getByRole('button', { name: 'Previous step' }).click();
+  await page.getByRole('button', { name: 'Previous step' }).click();
+  await expect(warning).toHaveCount(0);
+
+  // A program that doesn't import NumPy has no note.
+  await writeProgram(page, 'print(sum(range(100000)))');
+  await page.getByRole('button', { name: 'Trace', exact: true }).click();
+  await page.getByRole('button', { name: 'Run to the end' }).click({ timeout: PYTHON_TIMEOUT });
+  await expect(consoleText(page)).toContainText('4999950000');
+  await expect(note).toHaveCount(0);
+  expect(problems).toEqual([]);
+});
+
 test('charts appear in the console at the step that drew them, crisp, with alt text, in the theme', async ({ page, context }) => {
   test.setTimeout(300_000);
   await setTheme(context, 'board');

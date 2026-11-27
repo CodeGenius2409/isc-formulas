@@ -9,7 +9,7 @@ import { useStore } from '../python/state';
 import { tokenizePython } from '../java/tokens';
 import { closePython, libraryLoadStore, loadPython, pythonLoadStore, retryPython, RunStopped, runPython, stopPython, WATCHDOG_MS, type LibraryState, type LoadState } from '../python/client';
 import type { ChartTheme } from '../python/engine';
-import { beyondNote, explainError, libraryNote } from '../python/explain';
+import { beyondNote, explainError, libraryNote, numpyNote } from '../python/explain';
 import { keepPythonStore, megabytes, PYTHON_BYTES, pythonOfferedStore, pythonSaveStore } from '../python/offline';
 import { PY_SAMPLES } from '../python/samples';
 import { LIMITS, stopMessage, type ConsoleExtra, type PyFigure, type PyFrame, type PyRunResult, type PyStep, type PyVar, type PyView } from '../python/trace';
@@ -474,6 +474,7 @@ function describeStep(run: PyRunResult, step: PyStep, at: number, total: number,
 function Findings({ run, atEnd }: { run: PyRunResult; atEnd: boolean }) {
   const note = beyondNote(run.beyond);
   const libraries = libraryNote(run.libraries);
+  const numpy = numpyNote(run.libraries);
   const plain = run.error ? explainError(run.error) : null;
   return (
     <>
@@ -481,6 +482,12 @@ function Findings({ run, atEnd }: { run: PyRunResult; atEnd: boolean }) {
         <p className="notice" data-testid="library-note">
           <Info size={16} aria-hidden="true" />
           <span>{libraries}</span>
+        </p>
+      )}
+      {numpy && (
+        <p className="notice" data-testid="numpy-int-note">
+          <Info size={16} aria-hidden="true" />
+          <span>{numpy}</span>
         </p>
       )}
       {note && (
@@ -732,7 +739,15 @@ function ConsoleText({ output, extras, figures, upTo, at, atEnd }: { output: str
     if (!atEnd && (extra.step > at || extra.at > upTo)) return;
     if (extra.at > from) parts.push(output.slice(from, extra.at));
     from = Math.max(from, extra.at);
-    if (extra.kind === 'fig') {
+    if (extra.kind === 'warn') {
+      // A line of its own, even after output that hasn't ended its line.
+      parts.push(
+        <span key={i} className="console-warn" role="note" data-testid="overflow-warning">
+          <span aria-hidden="true">⚠ </span>
+          {extra.text}
+        </span>,
+      );
+    } else if (extra.kind === 'fig') {
       const figure = figures[Number(extra.text)];
       if (figure) parts.push(<Chart key={i} figure={figure} />);
     } else if (extra.kind === 'in') parts.push(<span key={i} className="console-in">{`${extra.text}\n`}</span>);

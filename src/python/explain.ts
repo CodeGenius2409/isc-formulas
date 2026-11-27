@@ -52,7 +52,10 @@ const RULES: Record<string, Rule[]> = {
   ],
   RecursionError: [[/./, 'A function kept calling itself and never reached a case that returns without calling again. Check the base case, and that each call moves towards it.']],
   EOFError: [[/./, 'The program asked for more input than the Input box has. Add a line to the box for each input(), then trace again.']],
-  OverflowError: [[/./, 'The result is too large for a decimal number.']],
+  OverflowError: [
+    [/too large to convert to C long|out of bounds for u?int(8|16|32)\b/, 'The number is too big for a 32-bit whole number. If it goes into a NumPy array, make the array with dtype=np.int64.'],
+    [/./, 'The result is too large for a decimal number.'],
+  ],
   ModuleNotFoundError: [[/No module named '(\w+)'/, (m) => `The tracer has only the parts of Python’s library that school programs use, such as math, random, statistics, fractions, datetime and collections, so ${m[1]} isn’t here.`]],
   IndentationError: [
     [/expected an indented block after '(\w+)' statement on line (\d+)/, (m) => `The line after the ${m[1]} on line ${m[2]} must be indented, as the ${m[1]}'s block.`],
@@ -96,6 +99,17 @@ export function libraryNote(libraries: string[]): string | null {
   const names = libraries.map((name) => LIBRARY_NAMES[name] ?? name);
   const list = names.length === 1 ? names[0] : `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}`;
   return names.length === 1 ? `${list} isn’t in the ISC syllabus, but it’s useful to learn.` : `${list} aren’t in the ISC syllabus, but they’re useful to learn.`;
+}
+
+/**
+ * In WebAssembly NumPy's default whole number is 32-bit, as on a 32-bit computer, where a PC's is 64-bit, so a
+ * big sum can wrap around to a wrong answer with no error. The tracer warns when it sees one, but it can't see
+ * every one, so a program that imports NumPy always gets this note.
+ */
+export const NUMPY_INT_NOTE = 'In this browser, NumPy’s whole numbers are 32-bit, so very large results can wrap around without an error. Use dtype=np.int64 for big numbers.';
+
+export function numpyNote(libraries: string[]): string | null {
+  return libraries.includes('numpy') ? NUMPY_INT_NOTE : null;
 }
 
 /** A gentle note when a program goes beyond the ISC Python units. It still runs, as it would anywhere. */

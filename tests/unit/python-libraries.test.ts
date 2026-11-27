@@ -8,7 +8,7 @@ import { join } from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { libraryStdlib, packageClosure, pyodideLock, pythonPackages } from '../../scripts/lib/pyodide-packages.mjs';
 import { PYODIDE_DIR, pythonFiles, zipEntries } from '../../scripts/lib/pyodide-files.mjs';
-import { libraryNote } from '../../src/python/explain';
+import { explainError, libraryNote, NUMPY_INT_NOTE, numpyNote } from '../../src/python/explain';
 import { PY_SAMPLES } from '../../src/python/samples';
 import type { PyRunResult, PyStep } from '../../src/python/trace';
 import { comparablePython, libraryEngine, nodeEngine, realPythonHas, runRealPython, startPyodide } from './lib/python-node';
@@ -106,6 +106,7 @@ describe('the samples that use NumPy, pandas and Matplotlib', () => {
     expect(r.beyond).toEqual([]);
     expect([...r.libraries].sort()).toEqual([...sample.libraries!].sort());
     expect(r.truncated).toBe(false);
+    expect(r.extras.filter((e) => e.kind === 'warn' || e.kind === 'err'), 'no NumPy whole number wraps around').toEqual([]);
     if (sample.libraries!.includes('matplotlib')) expect(r.figures.length, 'its chart').toBe(1);
   });
 
@@ -292,10 +293,111 @@ describe('tracing a program that uses the libraries', () => {
 describe('a known difference from NumPy on a PC', () => {
   // Pyodide is 32-bit WebAssembly, so NumPy's default whole number is int32, where a 64-bit PC's is int64. A sum
   // past 2,147,483,647 wraps round, with no error. Nothing in the tracer can change NumPy's build; DECISIONS.md
-  // says so. This test is here so that a Pyodide that changes it is noticed.
+  // says so. The tracer notes it whenever a program imports NumPy, and warns when it sees a number wrap. This
+  // test is here so that a Pyodide that changes it is noticed.
   it('makes whole-number arrays int32, which wrap round past about 2.1 billion', async () => {
     const r = await run('import numpy as np\nprint(np.arange(3).dtype, np.arange(100000).sum(), np.arange(100000, dtype=np.int64).sum())');
     expect(r.output).toBe('int32 704982704 4999950000\n');
+  });
+});
+
+describe('NumPy’s 32-bit whole numbers', () => {
+  const warnings = (r: PyRunResult) => r.extras.filter((e) => e.kind === 'warn');
+
+  it('notes them for every program that imports NumPy, and only those', async () => {
+    const note = 'In this browser, NumPy’s whole numbers are 32-bit, so very large results can wrap around without an error. Use dtype=np.int64 for big numbers.';
+    expect(NUMPY_INT_NOTE).toBe(note);
+    for (const code of ['import numpy as np', 'from numpy import array', 'import numpy.random', 'import matplotlib.pyplot as plt\nimport numpy']) {
+      expect(numpyNote((await run(code)).libraries), code).toBe(note);
+    }
+    for (const code of ['import pandas as pd', 'import matplotlib.pyplot as plt', 'import math']) expect(numpyNote((await run(code)).libraries), code).toBeNull();
+  });
+
+  it('warns after the output of a line whose sum or product wrapped around, with the right answer', async () => {
+    const r = await run('import numpy as np\nmarks = np.arange(100000)\nprint(marks.sum())\nprint(np.prod(np.arange(1, 21)))\nprint("done")');
+    expect(r.output, 'the program’s own output is NumPy’s, wrong answers and all').toBe('704982704\n-2102132736\ndone\n');
+    expect(warnings(r).map((w) => w.text)).toEqual([
+      'Line 3: this sum went past 2,147,483,647, the biggest 32-bit whole number, and wrapped around to 704982704. With dtype=np.int64 it is 4999950000.',
+      'Line 4: this product went past 2,147,483,647, the biggest 32-bit whole number, and wrapped around to -2102132736. With dtype=np.int64 it is 2432902008176640000.',
+    ]);
+    // Each just after the wrong number its line printed, and from the step after that line.
+    expect(warnings(r).map((w) => r.output.slice(0, w.at))).toEqual(['704982704\n', '704982704\n-2102132736\n']);
+    const lines = r.steps.map((s) => s.line);
+    expect(warnings(r).map((w) => [lines[w.step - 1], lines[w.step]])).toEqual([[3, 4], [4, 5]]);
+  });
+
+  it('watches np.sum, np.prod, np.cumsum and np.cumprod and an array’s sum() and prod(), and says when the answer is an array', async () => {
+    const r = await run(
+      [
+        'import numpy as np',
+        'a = np.arange(100000)',
+        'b = np.sum(a)',
+        'c = a.prod()',
+        'd = np.cumsum(a)',
+        'e = np.cumprod(np.arange(1, 30))',
+        'out = np.empty(100000, dtype=np.int32)',
+        'f = np.cumsum(a, out=out)',
+        'g = np.sum(a.reshape(2, 50000), axis=1)',
+        'print(b, d[-1], f is out, g)',
+      ].join('\n'),
+    );
+    expect(r.error).toBeNull();
+    expect(r.output).toBe('704982704 704982704 True [1249975000 -544992296]\n');
+    // a.prod() of numbers from 0 is 0, which is right, so line 4 has no warning.
+    expect(warnings(r).map((w) => w.text.match(/^Line \d+: this (sum|product|running total|running product)/)?.[0])).toEqual([
+      'Line 3: this sum',
+      'Line 5: this running total',
+      'Line 6: this running product',
+      'Line 8: this running total',
+      'Line 9: this sum',
+    ]);
+    expect(warnings(r)[1].text).toBe('Line 5: this running total went past 2,147,483,647, the biggest 32-bit whole number, and wrapped around, so some of its numbers are wrong. Use dtype=np.int64.');
+  });
+
+  it('says nothing when the answer is right: small sums, int64, decimals, means and pandas', async () => {
+    const r = await run(
+      [
+        'import numpy as np',
+        'import pandas as pd',
+        'a = np.arange(100000)',
+        'print(np.arange(10).sum(), a.astype(np.int64).sum(), np.arange(100000, dtype=np.int64).cumsum()[-1])',
+        'print(np.sum(a, dtype=np.int64), a.mean(), np.arange(100000.0).sum(), pd.Series(a).sum(), np.prod([2, 3]))',
+      ].join('\n'),
+    );
+    expect(r.output).toBe('45 4999950000 4999950000\n4999950000 49999.5 4999950000.0 4999950000 6\n');
+    expect(warnings(r)).toEqual([]);
+  });
+
+  it('warns once for each line, however often its loop runs', async () => {
+    const r = await run('import numpy as np\nfor i in range(5):\n    t = np.arange(100000).sum()\nprint(t)');
+    expect(warnings(r).map((w) => w.text.slice(0, 15))).toEqual(['Line 3: this su']);
+  });
+
+  it('keeps NumPy’s own warning for a whole-number scalar, and says it plainly after it', async () => {
+    const r = await run('import numpy as np\nbig = np.int32(2147483647)\nnext_one = big + np.int32(1)\nprint(next_one)\nprint(sum(np.arange(100000)))');
+    expect(r.output).toBe('-2147483648\n704982704\n');
+    expect(r.extras.map((e) => [e.kind, e.text.slice(0, 40)])).toEqual([
+      ['err', '<program>:3: RuntimeWarning: overflow en'],
+      ['warn', 'Line 3: a NumPy whole number went past t'],
+      ['err', '<program>:5: RuntimeWarning: overflow en'],
+      ['warn', 'Line 5: a NumPy whole number went past t'],
+    ]);
+  });
+
+  it('leaves NumPy’s functions as they were, and each run starts with no warnings', async () => {
+    const r = await run('import numpy as np\nfrom numpy import sum as total\nprint(np.sum.__name__, np.sum is total, np.sum([1, 2, 3]), np.prod([[1, 2], [3, 4]], axis=0))');
+    expect(r.output).toBe('sum True 6 [3 8]\n');
+    expect(warnings(r)).toEqual([]);
+    const again = await run('import numpy as np\nprint(np.arange(100000).sum())');
+    expect(warnings(again)).toHaveLength(1);
+    expect(warnings(await run('import numpy as np\nprint(np.arange(100000).sum())'))).toHaveLength(1);
+  });
+
+  it('explains NumPy’s OverflowError for a number too big for an int32 array', async () => {
+    const r = await run('import numpy as np\nprint(np.arange(5) + 3_000_000_000)');
+    expect(r.error?.type).toBe('OverflowError');
+    expect(explainError(r.error!)).toBe('The number is too big for a 32-bit whole number. If it goes into a NumPy array, make the array with dtype=np.int64.');
+    expect(explainError({ type: 'OverflowError', text: 'OverflowError: math range error', line: 1, kind: 'runtime' })).toBe('The result is too large for a decimal number.');
   });
 });
 

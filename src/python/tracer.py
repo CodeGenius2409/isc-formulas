@@ -18,6 +18,7 @@ import sys
 import time
 import traceback
 import types
+import warnings
 
 PROGRAM = '<program>'
 
@@ -645,6 +646,84 @@ def prepare_libraries(names_json):
             matplotlib.use('Agg')
             import matplotlib.pyplot  # noqa: F401
             _catch_charts()
+        # pandas brings NumPy with it.
+        if 'numpy' in sys.modules:
+            _watch_numpy()
+
+
+# ---- NumPy's whole numbers are 32-bit here, so a big sum wraps around without an error
+
+# What each watched function works out, in words.
+_WRAP_WORDS = {'sum': 'sum', 'prod': 'product', 'cumsum': 'running total', 'cumprod': 'running product'}
+# At most this many warnings in one run, one for each line and function.
+MAX_WRAPS = 10
+
+
+def _watch_numpy():
+    """
+    In WebAssembly NumPy's default whole number is 32-bit, as on a 32-bit computer, so np.arange(100000).sum()
+    wraps around to a wrong answer where a PC gives the right one. NumPy says nothing about it. During a run,
+    np.sum, np.prod, np.cumsum and np.cumprod, and an array's sum() and prod(), work the answer out again in
+    64 bits, and a different answer is a warning in the console. Arithmetic on whole arrays, such as a * b,
+    can't be watched, as it happens inside NumPy.
+    """
+    import functools
+    import numpy
+    from numpy._core import _methods
+    if getattr(numpy.sum, 'tracer', False):
+        return
+
+    def watched(kind, original):
+        @functools.wraps(original)
+        def call(*args, **kwargs):
+            result = original(*args, **kwargs)
+            if _active is not None:
+                _check_wrap(kind, original, args, kwargs, result)
+            return result
+        call.tracer = True
+        return call
+
+    for kind in ('sum', 'prod', 'cumsum', 'cumprod'):
+        setattr(numpy, kind, watched(kind, getattr(numpy, kind)))
+    # An array's own sum() and prod() hand their work to these.
+    _methods.umr_sum = watched('sum', _methods.umr_sum)
+    _methods.umr_prod = watched('prod', _methods.umr_prod)
+
+
+def _check_wrap(kind, original, args, kwargs, result):
+    """Works out a 32-bit (or smaller) whole-number answer again in 64 bits, and warns if it wrapped around."""
+    run = _active
+    if run is None or len(run.wrap_seen) >= MAX_WRAPS:
+        return
+    try:
+        import numpy
+        got = numpy.asarray(result)
+        if got.dtype.kind not in 'iu' or got.dtype.itemsize >= 8:
+            return
+        wide = numpy.int64 if got.dtype.kind == 'i' else numpy.uint64
+        # (a, axis, dtype, out, ...) for all of them: the same work, in 64 bits and into a new array.
+        args = list(args)
+        kwargs = dict(kwargs)
+        if len(args) > 2:
+            args[2] = wide
+        else:
+            kwargs['dtype'] = wide
+        if len(args) > 3:
+            args[3] = None
+        kwargs.pop('out', None)
+        right = numpy.asarray(original(*args, **kwargs))
+        if numpy.array_equal(right, got.astype(wide)):
+            return
+        limit = f'{numpy.iinfo(got.dtype).max:,}'
+        bits = got.dtype.itemsize * 8
+        what = _WRAP_WORDS[kind]
+        if got.ndim == 0:
+            text = f'this {what} went past {limit}, the biggest {bits}-bit whole number, and wrapped around to {got.item()}. With dtype=np.int64 it is {right.item()}.'
+        else:
+            text = f'this {what} went past {limit}, the biggest {bits}-bit whole number, and wrapped around, so some of its numbers are wrong. Use dtype=np.int64.'
+        run.note_wrap(kind, text)
+    except Exception:
+        pass
 
 
 def _catch_charts():
@@ -885,6 +964,9 @@ class _Run:
         self.base = 0
         self.live = 0
         self.overflow = None
+        # NumPy whole numbers that wrapped around, waiting to be shown after what their line prints.
+        self.wraps = []
+        self.wrap_seen = set()
 
     @property
     def out_length(self):
@@ -895,6 +977,32 @@ class _Run:
             text = self.stderr.getvalue()[self.err_seen:]
             self.err_seen = self.stderr.tell()
             self.extras.append(['err', self.out_length, text, len(self.steps)])
+        # A wrapped-around number goes after the output of its line, which is where its wrong answer shows.
+        for text in self.wraps:
+            self.extras.append(['warn', self.out_length, text, len(self.steps)])
+        self.wraps.clear()
+
+    def note_wrap(self, kind, text, line=None):
+        """A NumPy whole number wrapped around, once for each line and kind of work in a run."""
+        if line is None:
+            frame = sys._getframe()
+            while frame is not None and frame.f_code.co_filename != PROGRAM:
+                frame = frame.f_back
+            line = frame.f_lineno if frame is not None else self.last_line
+        if (line, kind) in self.wrap_seen or len(self.wrap_seen) >= MAX_WRAPS:
+            return
+        self.wrap_seen.add((line, kind))
+        self.wraps.append(f'Line {line}: {text}')
+
+    def show_warning(self, message, category, filename, lineno, file=None, line=None):
+        """
+        warnings.showwarning during a run. A warning is printed as Python prints it, and NumPy's overflow warning
+        for a whole number is also said in plain words after it.
+        """
+        _real_showwarning(message, category, filename, lineno, file, line)
+        if issubclass(category, RuntimeWarning) and str(message).startswith('overflow encountered in scalar'):
+            # WebAssembly can't flag a float that overflows, so in this browser the warning is a whole number's.
+            self.note_wrap('scalar', 'a NumPy whole number went past the biggest number its type holds and wrapped around, so this answer is wrong. Use np.int64, or Python’s own int, for big numbers.', lineno if filename == PROGRAM else None)
 
     def read_line(self, line):
         self.take_stderr()
@@ -1044,6 +1152,7 @@ class _SysProxy:
 
 _real_getrecursionlimit = sys.getrecursionlimit
 _real_setrecursionlimit = sys.setrecursionlimit
+_real_showwarning = warnings.showwarning
 
 
 def _last_line(kind, value):
@@ -1165,11 +1274,13 @@ def trace_program(source, input_text, max_steps, max_recorded, max_output, max_s
     sys.setrecursionlimit = proxy.set
     try:
         _active = run
+        warnings.showwarning = run.show_warning
         sys.settrace(run.trace)
         try:
             exec(code, program_globals)
         finally:
             sys.settrace(None)
+            warnings.showwarning = _real_showwarning
             _active = None
     except _Stop:
         # The last step shows where the program was when it was stopped.
