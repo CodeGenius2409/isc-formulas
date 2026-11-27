@@ -5,33 +5,22 @@
 // a different version from Pyodide's, as error messages change between versions. GitHub's runners, for one,
 // have an older Python.
 import { spawnSync } from 'node:child_process';
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterAll, describe, expect, it } from 'vitest';
-import { pythonFiles } from '../../scripts/lib/pyodide-files.mjs';
 import { PY_SAMPLES } from '../../src/python/samples';
-import { nodeEngine, realPythonCommand } from './lib/python-node';
+import { comparablePython, nodeEngine, runRealPython } from './lib/python-node';
 import { PY_PROGRAMS, type PyProgram } from './python-programs';
 
-const python = realPythonCommand(spawnSync);
-const minor = (version: string) => version.split('.').slice(0, 2).join('.');
-const pyodidePython = minor(pythonFiles().lock.info.python);
-const localPython = python ? minor(spawnSync(python, ['-c', 'import platform; print(platform.python_version())'], { encoding: 'utf8' }).stdout.trim()) : '';
-const ALL: PyProgram[] = [...PY_SAMPLES.map((s) => ({ name: `sample: ${s.title}`, code: s.code, input: s.input })), ...PY_PROGRAMS];
+const { python, pyodide: pyodidePython } = comparablePython();
+// The samples that use NumPy, pandas or Matplotlib are compared in python-libraries.test.ts, with a real
+// Python that has them.
+const ALL: PyProgram[] = [...PY_SAMPLES.filter((s) => !s.libraries).map((s) => ({ name: `sample: ${s.title}`, code: s.code, input: s.input })), ...PY_PROGRAMS];
 
-describe.skipIf(!python || localPython !== pyodidePython)(`against a real Python ${pyodidePython}`, () => {
+describe.skipIf(!python)(`against a real Python ${pyodidePython}`, () => {
   const dir = mkdtempSync(join(tmpdir(), 'isc-python-'));
   afterAll(() => rmSync(dir, { recursive: true, force: true }));
-
-  /** Runs a program as a file, as a student would, and gives its output and the last line of any error. */
-  const real = (program: PyProgram, i: number) => {
-    const file = join(dir, `p${i}.py`);
-    writeFileSync(file, program.code);
-    const run = spawnSync(python!, ['-I', '-X', 'utf8', file], { input: program.input ?? '', encoding: 'utf8', timeout: 60_000 });
-    const stderr = (run.stderr ?? '').replace(/\r\n/g, '\n').trimEnd();
-    return { stdout: (run.stdout ?? '').replace(/\r\n/g, '\n'), error: run.status === 0 ? null : (stderr.split('\n').pop() ?? '') };
-  };
 
   it('is the same version of Python', async () => {
     const engine = await nodeEngine();
@@ -42,7 +31,7 @@ describe.skipIf(!python || localPython !== pyodidePython)(`against a real Python
 
   it.each(ALL.map((p, i) => [p.name, p, i] as const))('%s', async (_name, program, i) => {
     const engine = await nodeEngine();
-    const theirs = real(program, i);
+    const theirs = runRealPython(python!, dir, `p${i}`, program.code, program.input ?? '');
     const ours = engine.run(program.code, program.input ?? '');
     expect(ours.output).toBe(theirs.stdout);
     expect(ours.stopped).toBeNull();

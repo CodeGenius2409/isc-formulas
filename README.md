@@ -57,6 +57,13 @@ its `.wasm` and `.mjs` files correctly. It's downloaded only by someone who open
 tracer, and it isn't part of the offline download unless they turn on "Keep Python for offline
 use" in Settings.
 
+NumPy, pandas and Matplotlib are there too, about 17 MB more of Pyodide's own wheels, fetched
+only by a program that imports one of them, and kept offline only if "Also keep NumPy, pandas
+and Matplotlib" is on as well. The npm package has no wheels, so the build downloads them from
+Pyodide's release for the pinned version the first time, checks each against the SHA-256 in
+Pyodide's lock file, and stops if one doesn't match. They're kept in `node_modules/.cache`, and
+`npm run packages` fetches them on its own. The app itself never asks a CDN for anything.
+
 ## The tour
 
 A short tour opens on the first visit, after asking whether you're a student or a teacher. Skip it at any point; take it again from the `?` beside Today's date, or from Settings, which can also bring back the one-time tips. Under automation, as in the browser tests, it opens only if `isc-tour-test` is `on` in local storage.
@@ -137,7 +144,10 @@ checks it automatically.
 
 **A Python sample.** Add it to `src/python/samples.ts` with its expected output. A test runs it
 in the Python tracer, and `tests/unit/python-real.test.ts` runs it through the Python on your
-computer too, if there is one, and requires the same output.
+computer too, if there is one, and requires the same output. A sample using NumPy, pandas or
+Matplotlib lists them in `libraries`, and `tests/unit/python-libraries.test.ts` compares it with a
+Python that has them; set `ISC_REAL_PYTHON` to one, such as a virtual environment's, if yours
+hasn't.
 
 **A generated Python output question.** Add its program to `src/data/blueprints/python-programs.ts`,
 then record what Python prints for each of its programs, in PowerShell:
@@ -146,7 +156,9 @@ then record what Python prints for each of its programs, in PowerShell:
 
 **A newer Pyodide.** Change the exact version of `pyodide` in `package.json`. If Python then
 needs a library file the tracer leaves out, `tests/unit/python-stdlib.test.ts` fails and names it;
-add it to `KEEP_FILES` in `scripts/lib/pyodide-files.mjs`.
+add it to `KEEP_FILES` in `scripts/lib/pyodide-files.mjs`. If NumPy, pandas or Matplotlib then
+needs one, `tests/unit/python-libraries.test.ts` names it; add it to `EXTRA_FILES` in
+`scripts/lib/pyodide-packages.mjs`.
 
 **App icons and splash screens.** Change `scripts/make-icons.mjs`, then run
 `node scripts/make-icons.mjs`. The results in `public/` are committed, so a normal build

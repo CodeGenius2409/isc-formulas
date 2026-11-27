@@ -7,11 +7,12 @@ import { lazyRetry } from '../lib/retry-import';
 import { readJson, writeJson } from '../lib/storage';
 import { useStore } from '../python/state';
 import { tokenizePython } from '../java/tokens';
-import { closePython, loadPython, pythonLoadStore, retryPython, RunStopped, runPython, stopPython, WATCHDOG_MS, type LoadState } from '../python/client';
-import { beyondNote, explainError } from '../python/explain';
+import { closePython, libraryLoadStore, loadPython, pythonLoadStore, retryPython, RunStopped, runPython, stopPython, WATCHDOG_MS, type LibraryState, type LoadState } from '../python/client';
+import type { ChartTheme } from '../python/engine';
+import { beyondNote, explainError, libraryNote } from '../python/explain';
 import { keepPythonStore, megabytes, PYTHON_BYTES, pythonOfferedStore, pythonSaveStore } from '../python/offline';
 import { PY_SAMPLES } from '../python/samples';
-import { LIMITS, stopMessage, type ConsoleExtra, type PyFrame, type PyRunResult, type PyStep, type PyVar } from '../python/trace';
+import { LIMITS, stopMessage, type ConsoleExtra, type PyFigure, type PyFrame, type PyRunResult, type PyStep, type PyVar, type PyView } from '../python/trace';
 import { CodeView, DryRun, SPEEDS, SpeedPicker, StepControls, useFlashChanged } from './tracer-parts';
 import './python-tracer.css';
 import { LoadBar } from '../components/LoadBar';
@@ -32,6 +33,22 @@ interface Draft {
 
 const TOPICS = [...new Set(PY_SAMPLES.map((s) => s.topic))];
 
+/** The theme's colours, read when a program runs, so its charts are drawn in them: chalk on the blackboard. */
+function chartTheme(): ChartTheme {
+  const css = getComputedStyle(document.documentElement);
+  const token = (name: string) => css.getPropertyValue(`--${name}`).trim();
+  const board = document.documentElement.dataset.theme === 'board';
+  return {
+    ink: token('ink'),
+    ink2: token('ink-2'),
+    faint: token('rule-2'),
+    paper: token('paper'),
+    grid: token('plot-grid'),
+    // On paper, Matplotlib's own colours, as a student sees them anywhere else; on the board, the coloured chalks.
+    palette: board ? ['physics', 'accent', 'chemistry', 'bad', 'mathematics', 'computerscience'].map(token) : null,
+  };
+}
+
 export function PythonTracer() {
   const [own, setOwn] = useState<Draft>(() => readJson<Draft>(OWN_KEY, { code: STARTER, input: 'Asha' }));
   const [programId, setProgramId] = useState(PY_SAMPLES[0].id);
@@ -40,6 +57,7 @@ export function PythonTracer() {
   const input = sample ? (sample.input ?? '') : own.input;
 
   const load = useStore(pythonLoadStore);
+  const libraries = useStore(libraryLoadStore);
   const ready = load.phase === 'ready';
   const [run, setRun] = useState<PyRunResult | null>(null);
   const [ranInput, setRanInput] = useState('');
@@ -62,7 +80,7 @@ export function PythonTracer() {
     setStopNote(null);
     setPlaying(false);
     try {
-      const result = await runPython(source, text);
+      const result = await runPython(source, text, chartTheme());
       setRun(result);
       setRanInput(text);
       setAt(0);
@@ -71,6 +89,8 @@ export function PythonTracer() {
     } catch (err) {
       if (err instanceof RunStopped) {
         setStopNote(err.message === 'time' ? `This program ran for over ${WATCHDOG_MS / 1000} seconds without finishing, so it was stopped. It may be an infinite loop.` : 'Stopped. Python is starting again, ready for the next run.');
+      } else if (['offline', 'failed'].includes(libraryLoadStore.get().phase)) {
+        // The library panel says what happened, with Retry.
       } else if (!(err instanceof Error && err.message === 'offline')) {
         setStopNote(`The tracer stopped unexpectedly: ${err instanceof Error ? err.message : String(err)} Press Trace to try again.`);
       }
@@ -154,7 +174,7 @@ export function PythonTracer() {
   const currentLine = showing && (!atEnd || stoppedHere) ? (syntax ? run?.error?.line : step?.line) : undefined;
   const outputLength = run ? (atEnd ? run.output.length : (step?.outputLength ?? 0)) : 0;
 
-  const status = running ? 'Tracing.' : !showing ? (ready ? 'Editing. Press Trace to run this program.' : loadingWords(load)) : !steps.length ? 'This program could not start.' : describeStep(run!, step!, at, steps.length, atEnd);
+  const status = running ? (libraries.phase === 'downloading' || libraries.phase === 'installing' ? `Getting ${libraries.label} ready.` : 'Tracing.') : !showing ? (ready ? 'Editing. Press Trace to run this program.' : loadingWords(load)) : !steps.length ? 'This program could not start.' : describeStep(run!, step!, at, steps.length, atEnd);
 
   const keep = useStore(keepPythonStore);
   const offered = useStore(pythonOfferedStore);
@@ -207,6 +227,7 @@ export function PythonTracer() {
       </div>
 
       <LoadPanel load={load} />
+      <LibraryPanel state={libraries} onRetry={() => void trace(code, input)} />
       {ready && !offered && !keep && <KeepOffer />}
 
       {showing && ranInput !== input && <p className="tool-hint">The input has changed. Press Trace again to use it.</p>}
@@ -267,7 +288,7 @@ export function PythonTracer() {
               Console
             </h2>
             <pre className="console-pane" tabIndex={0} role="log" aria-labelledby="python-out-h" aria-live={playing ? 'off' : 'polite'}>
-              {showing && run ? <ConsoleText output={run.output} extras={run.extras} upTo={outputLength} at={at} atEnd={atEnd} /> : ''}
+              {showing && run ? <ConsoleText output={run.output} extras={run.extras} figures={run.figures} upTo={outputLength} at={at} atEnd={atEnd} /> : ''}
             </pre>
           </section>
         </div>
@@ -349,6 +370,57 @@ function LoadPanel({ load }: { load: LoadState }) {
   );
 }
 
+/** NumPy, pandas or Matplotlib loading before a program that imports them runs, or why they couldn't. */
+function LibraryPanel({ state, onRetry }: { state: LibraryState; onRetry: () => void }) {
+  if (state.phase === 'idle') return null;
+  if (state.phase === 'offline') {
+    return (
+      <div className="notice" role="status">
+        <Info size={16} aria-hidden="true" />
+        <div>
+          <p>This program uses {state.label}, which needs a connection the first time. You’re offline, and it isn’t saved on this device.</p>
+          <p className="mt-1 text-ink-2">
+            Connect and press Retry. To use it offline another time, turn on Also keep NumPy, pandas and Matplotlib in <a href="#/settings">Settings</a> while you’re online.
+          </p>
+          <button type="button" className="btn btn-line mt-2" onClick={onRetry}>
+            <RotateCcw size={16} aria-hidden="true" />
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+  if (state.phase === 'failed') {
+    return (
+      <div className="notice" data-tone="bad" role="alert">
+        <CircleAlert size={16} aria-hidden="true" />
+        <div>
+          <p>
+            {state.label} couldn’t load. {state.message}
+          </p>
+          <button type="button" className="btn btn-line mt-2" onClick={onRetry}>
+            <RotateCcw size={16} aria-hidden="true" />
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+  const share = state.phase === 'downloading' && state.total ? Math.round((state.loaded / state.total) * 100) : null;
+  return (
+    <div className="py-load" role="status" aria-live="polite">
+      <p>
+        {state.phase === 'installing'
+          ? `Starting ${state.label}.`
+          : state.total
+            ? `Loading ${state.label}, about ${megabytes(state.total)}, the first time a program uses it this visit. ${share ?? 0}%`
+            : `Loading ${state.label}.`}
+      </p>
+      <LoadBar share={share} label={state.phase === 'installing' ? `Starting ${state.label}` : `Loading ${state.label}`} />
+    </div>
+  );
+}
+
 function KeepOffer() {
   const save = useStore(pythonSaveStore);
   return (
@@ -401,9 +473,16 @@ function describeStep(run: PyRunResult, step: PyStep, at: number, total: number,
 
 function Findings({ run, atEnd }: { run: PyRunResult; atEnd: boolean }) {
   const note = beyondNote(run.beyond);
+  const libraries = libraryNote(run.libraries);
   const plain = run.error ? explainError(run.error) : null;
   return (
     <>
+      {libraries && (
+        <p className="notice" data-testid="library-note">
+          <Info size={16} aria-hidden="true" />
+          <span>{libraries}</span>
+        </p>
+      )}
       {note && (
         <p className="notice">
           <Info size={16} aria-hidden="true" />
@@ -428,6 +507,11 @@ function Findings({ run, atEnd }: { run: PyRunResult; atEnd: boolean }) {
         </p>
       )}
       {run.truncated && atEnd && <p className="notice">Only the first {run.steps.length.toLocaleString('en-GB')} steps can be stepped through. The console shows everything the program printed.</p>}
+      {run.droppedFigures > 0 && atEnd && (
+        <p className="notice">
+          The console shows the first {run.figures.length} charts. This program drew {run.droppedFigures} more.
+        </p>
+      )}
     </>
   );
 }
@@ -455,7 +539,8 @@ function CallStack({ step, selected, onSelect }: { step?: PyStep; selected: numb
 const frameAt = (step: PyStep | undefined, index: number): PyFrame | undefined => (step ? step.frames[step.frames.length - 1 - index] : undefined);
 
 /** What kind of thing two names share, in words. */
-const sharedKind = (type: string) => (type === 'list' || type === 'dict' || type === 'set' ? (type === 'dict' ? 'dictionary' : type) : 'object');
+const SHARED_KINDS: Record<string, string> = { list: 'list', dict: 'dictionary', set: 'set', deque: 'deque', Counter: 'Counter', defaultdict: 'dictionary', OrderedDict: 'dictionary', ndarray: 'array', DataFrame: 'DataFrame', Series: 'Series' };
+const sharedKind = (type: string) => SHARED_KINDS[type] ?? 'object';
 
 function joinWords(words: string[]): string {
   return words.length < 2 ? (words[0] ?? '') : `${words.slice(0, -1).join(', ')} and ${words[words.length - 1]}`;
@@ -468,7 +553,103 @@ function sameNote(v: PyVar, step: PyStep, frameIndex: number): string | null {
     notes.push(`Same ${sharedKind(v.type)} as ${joinWords(names)}.`);
   }
   for (const group of v.inside ?? []) notes.push(`${joinWords(group)} are one list.`);
+  if (v.shares?.length) {
+    const names = v.shares.map((p) => (p.frame === frameIndex ? p.path : `${p.path} in ${step.frames[p.frame]?.fn ?? ''}`));
+    notes.push(`Shares its data with ${joinWords(names)}, so changing one changes the other.`);
+  }
   return notes.length ? notes.join(' ') : null;
+}
+
+const plural = (n: number, word: string) => `${n.toLocaleString('en-GB')} ${word}${n === 1 ? '' : 's'}`;
+
+/** What a table holds, in words, as its caption. */
+function viewCaption(view: PyView): string {
+  if (view.kind === 'array') {
+    const size = view.shape.length === 1 ? plural(view.shape[0], 'value') : `${view.shape.join(' × ')} array`;
+    return `${size}, ${view.dtype}${view.slice ? `, showing ${view.slice}` : ''}`;
+  }
+  const shown = view.kind === 'frame' ? view.rows.length : view.values.length;
+  const rows = view.kind === 'frame' ? `${plural(view.shape[0], 'row')} × ${plural(view.shape[1], 'column')}` : `${plural(view.shape[0], 'value')}, ${view.dtype}`;
+  const name = view.kind === 'series' && view.name ? `${view.name}: ` : '';
+  return `${name}${rows}${view.more > 0 ? `, the first ${shown} shown` : ''}`;
+}
+
+/** A NumPy array, DataFrame or Series in the variables table, as a small table of its first rows. */
+function ValueTable({ view }: { view: PyView }) {
+  const caption = viewCaption(view);
+  if (view.kind === 'array') {
+    const width = Math.max(...view.rows.map((r) => r?.length ?? 0));
+    return (
+      <table className="value-table" data-kind="array">
+        <caption>{caption}</caption>
+        <tbody>
+          {view.rows.map((row, i) =>
+            row ? (
+              <tr key={i}>
+                {row.map((cell, j) => (
+                  <td key={j}>{cell}</td>
+                ))}
+              </tr>
+            ) : (
+              <tr key={i} className="value-gap">
+                <td colSpan={width}>⋮</td>
+              </tr>
+            ),
+          )}
+        </tbody>
+      </table>
+    );
+  }
+  if (view.kind === 'series') {
+    return (
+      <table className="value-table" data-kind="series">
+        <caption>{caption}</caption>
+        <tbody>
+          {view.values.map((value, i) => (
+            <tr key={i}>
+              <th scope="row">{view.index[i]}</th>
+              <td>{value}</td>
+            </tr>
+          ))}
+          {view.more > 0 && (
+            <tr className="value-gap">
+              <td colSpan={2}>⋮ {plural(view.more, 'more value')}</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    );
+  }
+  return (
+    <table className="value-table" data-kind="frame">
+      <caption>{caption}</caption>
+      <thead>
+        <tr>
+          <td />
+          {view.columns.map((column, i) => (
+            <th key={i} scope="col">
+              {column}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {view.rows.map((row, i) => (
+          <tr key={i}>
+            <th scope="row">{view.index[i]}</th>
+            {row.map((cell, j) => (
+              <td key={j}>{cell}</td>
+            ))}
+          </tr>
+        ))}
+        {view.more > 0 && (
+          <tr className="value-gap">
+            <td colSpan={view.columns.length + 1}>⋮ {plural(view.more, 'more row')}</td>
+          </tr>
+        )}
+      </tbody>
+    </table>
+  );
 }
 
 function VarTable({ frame, frameIndex, step, before, label }: { frame: PyFrame; frameIndex: number; step: PyStep; before?: PyFrame; label: string }) {
@@ -476,7 +657,7 @@ function VarTable({ frame, frameIndex, step, before, label }: { frame: PyFrame; 
   useFlashChanged(tableRef, step);
   return (
     <div ref={tableRef} className="table-scroll" tabIndex={0} role="region" aria-label={label}>
-      <table className="trace-table var-table">
+      <table className="trace-table var-table py-vars">
         <thead>
           <tr>
             <th scope="col">Name</th>
@@ -487,13 +668,21 @@ function VarTable({ frame, frameIndex, step, before, label }: { frame: PyFrame; 
         <tbody>
           {frame.vars.map((v) => {
             const note = sameNote(v, step, frameIndex);
-            const changed = Boolean(before) && before?.vars.find((b) => b.name === v.name)?.value !== v.value;
+            const was = before?.vars.find((b) => b.name === v.name);
+            // A table's text is a summary, so its cells are compared too.
+            const changed = Boolean(before) && (was?.value !== v.value || (Boolean(v.view) && JSON.stringify(was?.view) !== JSON.stringify(v.view)));
             return (
               <tr key={v.name}>
                 <th scope="row">{v.name}</th>
                 <td>{v.type}</td>
                 <td data-changed={changed || undefined}>
-                  {v.value}
+                  {v.view ? (
+                    <div className="value-scroll">
+                      <ValueTable view={v.view} />
+                    </div>
+                  ) : (
+                    v.value
+                  )}
                   {note && <span className="var-same">{note}</span>}
                 </td>
               </tr>
@@ -529,15 +718,24 @@ function Variables({ step, previous, frameIndex }: { step?: PyStep; previous?: P
   );
 }
 
-/** The console as a terminal shows it: the program's output, with what was typed after each prompt. */
-function ConsoleText({ output, extras, upTo, at, atEnd }: { output: string; extras: ConsoleExtra[]; upTo: number; at: number; atEnd: boolean }) {
+/** A chart as a picture: an SVG, crisp at any size, or a PNG for a very large one. */
+function Chart({ figure }: { figure: PyFigure }) {
+  const src = figure.mime === 'image/svg+xml' ? `data:image/svg+xml;charset=utf-8,${encodeURIComponent(figure.data)}` : `data:image/png;base64,${figure.data}`;
+  return <img className="console-fig" src={src} alt={figure.alt} width={figure.width} height={figure.height} style={{ maxWidth: `${figure.width}px` }} />;
+}
+
+/** The console as a terminal shows it: the program's output, with what was typed after each prompt, and its charts. */
+function ConsoleText({ output, extras, figures, upTo, at, atEnd }: { output: string; extras: ConsoleExtra[]; figures: PyFigure[]; upTo: number; at: number; atEnd: boolean }) {
   const parts: ReactNode[] = [];
   let from = 0;
   extras.forEach((extra, i) => {
     if (!atEnd && (extra.step > at || extra.at > upTo)) return;
     if (extra.at > from) parts.push(output.slice(from, extra.at));
     from = Math.max(from, extra.at);
-    if (extra.kind === 'in') parts.push(<span key={i} className="console-in">{`${extra.text}\n`}</span>);
+    if (extra.kind === 'fig') {
+      const figure = figures[Number(extra.text)];
+      if (figure) parts.push(<Chart key={i} figure={figure} />);
+    } else if (extra.kind === 'in') parts.push(<span key={i} className="console-in">{`${extra.text}\n`}</span>);
     else if (extra.kind === 'eof') parts.push(<span key={i} className="console-err">{'(no more input)\n'}</span>);
     else parts.push(<span key={i} className="console-err">{extra.text}</span>);
   });

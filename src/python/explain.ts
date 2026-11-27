@@ -53,7 +53,7 @@ const RULES: Record<string, Rule[]> = {
   RecursionError: [[/./, 'A function kept calling itself and never reached a case that returns without calling again. Check the base case, and that each call moves towards it.']],
   EOFError: [[/./, 'The program asked for more input than the Input box has. Add a line to the box for each input(), then trace again.']],
   OverflowError: [[/./, 'The result is too large for a decimal number.']],
-  ModuleNotFoundError: [[/No module named '(\w+)'/, (m) => `The tracer has only the parts of Python’s library that the syllabus uses, such as math and random, so ${m[1]} isn’t here.`]],
+  ModuleNotFoundError: [[/No module named '(\w+)'/, (m) => `The tracer has only the parts of Python’s library that school programs use, such as math, random, statistics, fractions, datetime and collections, so ${m[1]} isn’t here.`]],
   IndentationError: [
     [/expected an indented block after '(\w+)' statement on line (\d+)/, (m) => `The line after the ${m[1]} on line ${m[2]} must be indented, as the ${m[1]}'s block.`],
     [/expected an indented block/, 'The line after one that ends in a colon must be indented, as its block.'],
@@ -86,6 +86,16 @@ export function explainError(error: PyError): string | null {
     if (m) return typeof say === 'string' ? say : say(m);
   }
   return null;
+}
+
+const LIBRARY_NAMES: Record<string, string> = { numpy: 'NumPy', pandas: 'pandas', matplotlib: 'Matplotlib' };
+
+/** A warm note when a program uses NumPy, pandas or Matplotlib, which the syllabus doesn't cover but are worth learning. */
+export function libraryNote(libraries: string[]): string | null {
+  if (!libraries.length) return null;
+  const names = libraries.map((name) => LIBRARY_NAMES[name] ?? name);
+  const list = names.length === 1 ? names[0] : `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}`;
+  return names.length === 1 ? `${list} isn’t in the ISC syllabus, but it’s useful to learn.` : `${list} aren’t in the ISC syllabus, but they’re useful to learn.`;
 }
 
 /** A gentle note when a program goes beyond the ISC Python units. It still runs, as it would anywhere. */

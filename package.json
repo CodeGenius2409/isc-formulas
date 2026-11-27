@@ -14,7 +14,8 @@
     "test:watch": "vitest",
     "e2e": "playwright test",
     "lighthouse": "node scripts/lighthouse.mjs",
-    "sizes": "node scripts/report-sizes.mjs"
+    "sizes": "node scripts/report-sizes.mjs",
+    "packages": "node scripts/fetch-pyodide-packages.mjs"
   },
   "dependencies": {
     "@codemirror/autocomplete": "^6.20.4",

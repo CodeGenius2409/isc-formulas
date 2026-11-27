@@ -8,11 +8,17 @@ import { readString, writeString } from '../lib/storage';
 
 const KEEP_KEY = 'isc-keep-python';
 const OFFERED_KEY = 'isc-keep-python-offered';
+/** "Also keep NumPy, pandas and Matplotlib", which python-libraries.tsx owns. Only its undoing is here. */
+export const KEEP_LIBRARIES_KEY = 'isc-keep-python-libraries';
 
 export const keepPythonStore = createStore<boolean>(readString(KEEP_KEY) === 'on', (on) => {
   writeString(KEEP_KEY, on ? 'on' : 'off');
   if (on) void savePython();
-  else void forgetPython();
+  else {
+    // The libraries are kept only with Python itself, so they go too.
+    writeString(KEEP_LIBRARIES_KEY, 'off');
+    void forgetPython();
+  }
 });
 
 /** Whether the offer to keep Python has been shown, so it's made only once. */
@@ -170,11 +176,12 @@ export function savePython(): Promise<void> {
   return saving;
 }
 
+/** Deletes Python's saved files, and the libraries' with them. */
 export async function forgetPython(): Promise<void> {
   pythonSaveStore.set({ phase: 'idle' });
   if (!hasCaches()) return;
   try {
-    for (const name of await caches.keys()) if (name.startsWith('python-offline-')) await caches.delete(name);
+    for (const name of await caches.keys()) if (name.startsWith('python-offline-') || name.startsWith('python-libraries-')) await caches.delete(name);
   } catch {
     /* Nothing more can be done: the files were unreachable anyway. */
   }

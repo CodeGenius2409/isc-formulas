@@ -3,6 +3,8 @@
 import { mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { basename, join, relative } from 'node:path';
 import { brotliCompressSync, gzipSync } from 'node:zlib';
+import { EVERYDAY_FILES, zipEntries } from './lib/pyodide-files.mjs';
+import { LIBRARIES, LIBRARY_LABELS, pythonPackages } from './lib/pyodide-packages.mjs';
 
 const DIST = 'dist';
 
@@ -32,8 +34,10 @@ const sw = readFileSync(join(DIST, 'sw.js'), 'utf8');
 const precached = files.filter((f) => sw.includes(`"${f.path}"`) || sw.includes(`url:"${f.path}"`));
 
 // Pyodide's own files, and the Python tracer's page, editor and worker, which are kept with it rather than precached.
-const pyodide = files.filter((f) => f.path.startsWith('pyodide/') && /\.(mjs|wasm|zip)$/.test(f.path));
-const pythonCode = named(/^(PythonTracer|PythonEditor|python-worker)-.*\.(js|css)$/);
+const pyodide = files.filter((f) => f.path.startsWith('pyodide/') && /\.(mjs|wasm|zip)$/.test(f.path) && !basename(f.path).startsWith('python_stdlib_libraries-'));
+const pythonCode = named(/^(PythonTracer|PythonEditor|python-worker|python-libraries)-.*\.(js|css)$/);
+// NumPy, pandas and Matplotlib: their wheels, and the part of the standard library they need.
+const libraryFiles = files.filter((f) => f.path.startsWith('pyodide/') && (f.path.endsWith('.whl') || basename(f.path).startsWith('python_stdlib_libraries-')));
 
 const groups = [
   ['First load: HTML, CSS and JS needed to show the first screen', firstLoad],
@@ -48,6 +52,7 @@ const groups = [
   ['Java tracer', named(/^JavaTracer-.*\.js$/)],
   ['Python tracer: its own code, worker and editor', pythonCode],
   ['Pyodide: downloaded when the Python tracer first opens', pyodide],
+  ['NumPy, pandas and Matplotlib: downloaded only by a program that imports one', libraryFiles],
   ['Everything saved for offline use', precached],
 ];
 
@@ -67,6 +72,60 @@ lines.push(
 );
 for (const f of pyodide) lines.push(`| ${f.path.replace(/^pyodide\/[^/]+\//, '')} | ${kb(f.raw)} | ${kb(f.gzip)} | ${kb(f.brotli)} |`);
 lines.push(`| All of it | ${kb(sum(pyodide, 'raw'))} | ${kb(sum(pyodide, 'gzip'))} | ${kb(sum(pyodide, 'brotli'))} |`);
+
+// The everyday library modules, inside the standard library's zip. Each entry is stored compressed already,
+// so its stored size is what it adds to the download, compressed or not.
+const stdlibFile = pyodide.find((f) => /python_stdlib-\w+\.zip$/.test(f.path));
+if (stdlibFile) {
+  const entries = zipEntries(readFileSync(join(DIST, stdlibFile.path))).filter((e) => EVERYDAY_FILES.includes(e.name));
+  lines.push(
+    '',
+    '### statistics, fractions, decimal, datetime and csv',
+    '',
+    `These are in the standard library zip above, with Python itself, so they are saved whenever Python is. collections, itertools, string, time, copy, functools and json were there already. Each file is stored compressed in the zip, so gzip and brotli can’t shrink it further: with its zip headers, the eight add ${kb(sum(entries, 'total'))} to Python’s download, raw or compressed.`,
+    '',
+    '| File | Source | In the zip, with headers |',
+    '| --- | ---: | ---: |',
+  );
+  for (const e of entries) lines.push(`| ${e.name} | ${kb(e.size)} | ${kb(e.total)} |`);
+  lines.push(`| All eight | ${kb(sum(entries, 'size'))} | ${kb(sum(entries, 'total'))} |`);
+}
+
+// What a program importing each library downloads: the library, what it depends on, and the libraries' part of
+// the standard library, which comes with the first library a visit loads.
+const { lock, files: shipped } = pythonPackages();
+const fileOf = (name) => libraryFiles.find((f) => basename(f.path) === name);
+const extras = shipped.find((f) => f.package === null);
+const closure = (roots) => {
+  const order = [];
+  const visit = (name) => {
+    if (order.includes(name)) return;
+    lock.packages[name].depends.forEach(visit);
+    order.push(name);
+  };
+  roots.forEach(visit);
+  return order;
+};
+const filesFor = (roots) => [fileOf(extras.name), ...closure(roots).map((name) => fileOf(lock.packages[name].file_name))];
+lines.push(
+  '',
+  '## NumPy, pandas and Matplotlib',
+  '',
+  'Pyodide’s own builds, at the same pinned version, served from `pyodide/` on this site. None of them is in the first load, the offline download or Python’s own download. A program that imports one fetches it and what it depends on the first time in a visit, and "Also keep NumPy, pandas and Matplotlib" saves them all, in a cache of their own. Wheels are zip files already, so a server’s compression saves little.',
+  '',
+  `Their files in the service worker's precache: ${libraryFiles.filter((f) => precached.includes(f)).length} of ${libraryFiles.length}.`,
+  '',
+  '| A program that imports | Files | Raw | Gzip | Brotli |',
+  '| --- | ---: | ---: | ---: | ---: |',
+);
+for (const library of LIBRARIES) {
+  const list = filesFor([library]);
+  lines.push(`| ${LIBRARY_LABELS[library]} | ${list.length} | ${kb(sum(list, 'raw'))} | ${kb(sum(list, 'gzip'))} | ${kb(sum(list, 'brotli'))} |`);
+}
+const all = filesFor(LIBRARIES);
+lines.push(`| All three | ${all.length} | ${kb(sum(all, 'raw'))} | ${kb(sum(all, 'gzip'))} | ${kb(sum(all, 'brotli'))} |`);
+lines.push('', 'Each includes the libraries’ part of the standard library; a second library in the same visit doesn’t fetch it, or NumPy, again.', '', '| File | Raw | Gzip | Brotli |', '| --- | ---: | ---: | ---: |');
+for (const f of [...libraryFiles].sort((a, b) => b.raw - a.raw)) lines.push(`| ${basename(f.path)} | ${kb(f.raw)} | ${kb(f.gzip)} | ${kb(f.brotli)} |`);
 
 lines.push('', '## Largest JavaScript files', '', '| File | Raw | Gzip |', '| --- | ---: | ---: |');
 const biggest = files.filter((f) => f.path.endsWith('.js') && f.path.startsWith('assets/')).sort((a, b) => b.raw - a.raw).slice(0, 15);

@@ -13,7 +13,8 @@ const varOf = (step: PyStep, name: string, frame = step.frames.length - 1) => st
 const lineSteps = (r: PyRunResult) => r.steps.filter((s) => s.event === 'line');
 
 describe('the samples', () => {
-  it.each(PY_SAMPLES.map((s) => [s.title, s] as const))('%s prints what it should, in the tracer', async (_t, sample) => {
+  // Those using NumPy, pandas or Matplotlib are run in python-libraries.test.ts, which installs them.
+  it.each(PY_SAMPLES.filter((s) => !s.libraries).map((s) => [s.title, s] as const))('%s prints what it should, in the tracer', async (_t, sample) => {
     const r = await run(sample.code, sample.input ?? '');
     expect(r.error).toBeNull();
     expect(r.output).toBe(sample.expected);
@@ -23,7 +24,7 @@ describe('the samples', () => {
 
   it('has 15 or more, across the topics', () => {
     expect(PY_SAMPLES.length).toBeGreaterThanOrEqual(15);
-    expect(new Set(PY_SAMPLES.map((s) => s.topic))).toEqual(new Set(['Lists', 'Tuples', 'Strings', 'Searching and sorting', 'Recursion', 'Functions', 'Loops and numbers']));
+    expect(new Set(PY_SAMPLES.map((s) => s.topic))).toEqual(new Set(['Lists', 'Tuples', 'Strings', 'Searching and sorting', 'Recursion', 'Functions', 'Loops and numbers', 'Python’s library', 'NumPy', 'pandas', 'Matplotlib']));
     expect(new Set(PY_SAMPLES.map((s) => s.id)).size).toBe(PY_SAMPLES.length);
   });
 });
@@ -64,6 +65,63 @@ describe('steps and variables', () => {
     expect(value('big')!.endsWith('…')).toBe(true);
     expect(value('long')!.length).toBeLessThanOrEqual(160);
   });
+
+  it('writes fractions, decimals and dates as a student would, and as their reprs inside a list', async () => {
+    const r = await run(
+      [
+        'from fractions import Fraction',
+        'from decimal import Decimal',
+        'from datetime import date, datetime, timedelta',
+        'f = Fraction(3, 4)',
+        'd = Decimal("0.1") + Decimal("0.2")',
+        'day = date(2028, 2, 14)',
+        'when = datetime(2028, 2, 14, 9, 30)',
+        'gap = timedelta(days=3, hours=2)',
+        'items = [Fraction(1, 2), Decimal("1.5"), date(2028, 1, 1)]',
+        'pass',
+      ].join('\n'),
+    );
+    const last = lineSteps(r).pop()!;
+    const shown = (name: string) => [varOf(last, name)?.type, varOf(last, name)?.value];
+    expect(shown('f')).toEqual(['Fraction', '3/4']);
+    expect(shown('d')).toEqual(['Decimal', '0.3']);
+    expect(shown('day')).toEqual(['date', '2028-02-14']);
+    expect(shown('when')).toEqual(['datetime', '2028-02-14 09:30:00']);
+    expect(shown('gap')).toEqual(['timedelta', '3 days, 2:00:00']);
+    expect(shown('items')).toEqual(['list', "[Fraction(1, 2), Decimal('1.5'), datetime.date(2028, 1, 1)]"]);
+  });
+
+  it('writes Counter, deque, defaultdict and named tuples as their reprs do', async () => {
+    const r = await run(
+      [
+        'from collections import Counter, deque, defaultdict, namedtuple, OrderedDict',
+        'c = Counter("banana")',
+        'q = deque([1, 2, 3], maxlen=5)',
+        'q.appendleft(0)',
+        'g = defaultdict(list)',
+        'g["a"].append(1)',
+        'empty = Counter()',
+        'Point = namedtuple("Point", "x y")',
+        'p = Point(3, 4)',
+        'o = OrderedDict(b=2, a=1)',
+        'pass',
+      ].join('\n'),
+    );
+    const last = lineSteps(r).pop()!;
+    const value = (name: string) => varOf(last, name)?.value;
+    expect(value('c')).toBe("Counter({'a': 3, 'n': 2, 'b': 1})");
+    expect(value('q')).toBe('deque([0, 1, 2, 3], maxlen=5)');
+    expect(value('g')).toBe("defaultdict(<class 'list'>, {'a': [1]})");
+    expect(value('empty')).toBe('Counter()');
+    expect(value('p')).toBe('Point(x=3, y=4)');
+    expect(value('o')).toBe("OrderedDict({'b': 2, 'a': 1})");
+  });
+
+  it('never calls a __repr__ the program wrote, even on a subclass of a library type', async () => {
+    const r = await run('from fractions import Fraction\nclass Loud(Fraction):\n    def __repr__(self):\n        print("called!")\n        return "loud"\nx = Loud(1, 2)\npass');
+    expect(r.output).toBe('');
+    expect(varOf(lineSteps(r).pop()!, 'x')?.value).not.toContain('loud');
+  });
 });
 
 describe('aliasing', () => {
@@ -93,6 +151,13 @@ describe('aliasing', () => {
       { frame: 0, path: 'grid[1]' },
       { frame: 0, path: 'grid[2]' },
     ]);
+  });
+
+  it('marks two names for one deque or Counter', async () => {
+    const r = await run('from collections import Counter, deque\nq = deque([1])\nr = q\nc = Counter("ab")\nd = c\npass');
+    const last = lineSteps(r).pop()!;
+    expect(varOf(last, 'r')?.same).toEqual([{ frame: 0, path: 'q' }]);
+    expect(varOf(last, 'd')?.same).toEqual([{ frame: 0, path: 'c' }]);
   });
 
   it('doesn’t mark numbers or strings, which can’t be changed', async () => {
