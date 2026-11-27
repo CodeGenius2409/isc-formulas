@@ -86,6 +86,45 @@ test('shows when two names are one list', async ({ page }) => {
   await expect(page.locator('.trace-table').last()).toBeVisible();
 });
 
+test('statistics, fractions, collections and the rest of the everyday library work, and read clearly', async ({ page }) => {
+  test.setTimeout(120_000);
+  await openTracer(page);
+  await page.getByLabel('Program', { exact: true }).selectOption({ label: 'Exact fractions, where floats are slightly out' });
+  await page.getByRole('button', { name: 'Run to the end' }).click();
+  await expect(consoleText(page)).toContainText('With fractions: 1 True');
+  await expect(consoleText(page)).toContainText('2/3 + 5/6 = 3/2');
+  await page.getByRole('button', { name: 'Previous step' }).click();
+  const vars = page.getByRole('region', { name: 'Table of variables' });
+  await expect(vars.getByRole('row', { name: /^a Fraction 2\/3/ })).toBeVisible();
+  // These are normal Python, so no note says they go beyond the syllabus.
+  await expect(page.locator('.notice').filter({ hasText: 'don’t cover' })).toHaveCount(0);
+
+  await writeProgram(
+    page,
+    [
+      'import statistics, json, csv',
+      'from collections import Counter, deque',
+      'from decimal import Decimal',
+      'from datetime import date',
+      'c = Counter("banana")',
+      'q = deque([1, 2])',
+      'd = Decimal("0.1") + Decimal("0.2")',
+      'gap = date(2028, 2, 14) - date(2027, 11, 27)',
+      'rows = list(csv.reader(["a,b", "1,2"]))',
+      'print(statistics.median([3, 1, 2]), json.dumps(rows), gap.days)',
+    ].join('\n'),
+  );
+  await page.getByRole('button', { name: 'Trace', exact: true }).click();
+  await page.getByRole('button', { name: 'Run to the end' }).click();
+  await expect(consoleText(page)).toHaveText('2 [["a", "b"], ["1", "2"]] 79\n');
+  await page.getByRole('button', { name: 'Previous step' }).click();
+  await expect(vars.getByRole('row', { name: /^c Counter/ })).toContainText("Counter({'a': 3, 'n': 2, 'b': 1})");
+  await expect(vars.getByRole('row', { name: /^q deque/ })).toContainText('deque([1, 2])');
+  await expect(vars.getByRole('row', { name: /^d Decimal/ })).toContainText('0.3');
+  await expect(vars.getByRole('row', { name: /^gap timedelta/ })).toContainText('79 days, 0:00:00');
+  await expect(page.locator('.notice').filter({ hasText: 'don’t cover' })).toHaveCount(0);
+});
+
 test('reads input() from the input box, a line at a time', async ({ page }) => {
   await openTracer(page);
   await page.getByLabel('Program', { exact: true }).selectOption({ label: 'Is a word a palindrome?' });
@@ -209,6 +248,13 @@ test('with Keep Python for offline use on, the tracer works with no connection',
   await page.getByLabel('Program', { exact: true }).selectOption({ label: 'Bubble sort' });
   await page.getByRole('button', { name: 'Run to the end' }).click();
   await expect(consoleText(page)).toContainText('Sorted: [10, 13, 14, 29, 37]');
+  // The everyday library modules are saved with Python itself.
+  await page.getByLabel('Program', { exact: true }).selectOption({ label: 'Class marks: mean, median, mode and standard deviation' });
+  await page.getByRole('button', { name: 'Run to the end' }).click();
+  await expect(consoleText(page)).toContainText('Standard deviation: 11.71');
+  await page.getByLabel('Program', { exact: true }).selectOption({ label: 'Permutations and combinations for a P&C problem' });
+  await page.getByRole('button', { name: 'Run to the end' }).click();
+  await expect(consoleText(page)).toContainText('6 committees, and 4C2 = 6');
   expect(problems).toEqual([]);
 
   // Turning it off deletes the copy.

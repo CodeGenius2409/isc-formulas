@@ -3,6 +3,7 @@
 import { mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { basename, join, relative } from 'node:path';
 import { brotliCompressSync, gzipSync } from 'node:zlib';
+import { EVERYDAY_FILES, zipEntries } from './lib/pyodide-files.mjs';
 
 const DIST = 'dist';
 
@@ -67,6 +68,24 @@ lines.push(
 );
 for (const f of pyodide) lines.push(`| ${f.path.replace(/^pyodide\/[^/]+\//, '')} | ${kb(f.raw)} | ${kb(f.gzip)} | ${kb(f.brotli)} |`);
 lines.push(`| All of it | ${kb(sum(pyodide, 'raw'))} | ${kb(sum(pyodide, 'gzip'))} | ${kb(sum(pyodide, 'brotli'))} |`);
+
+// The everyday library modules, inside the standard library's zip. Each entry is stored compressed already,
+// so its stored size is what it adds to the download, compressed or not.
+const stdlibFile = pyodide.find((f) => /python_stdlib-\w+\.zip$/.test(f.path));
+if (stdlibFile) {
+  const entries = zipEntries(readFileSync(join(DIST, stdlibFile.path))).filter((e) => EVERYDAY_FILES.includes(e.name));
+  lines.push(
+    '',
+    '### statistics, fractions, decimal, datetime and csv',
+    '',
+    `These are in the standard library zip above, with Python itself, so they are saved whenever Python is. collections, itertools, string, time, copy, functools and json were there already. Each file is stored compressed in the zip, so gzip and brotli can’t shrink it further: with its zip headers, the eight add ${kb(sum(entries, 'total'))} to Python’s download, raw or compressed.`,
+    '',
+    '| File | Source | In the zip, with headers |',
+    '| --- | ---: | ---: |',
+  );
+  for (const e of entries) lines.push(`| ${e.name} | ${kb(e.size)} | ${kb(e.total)} |`);
+  lines.push(`| All eight | ${kb(sum(entries, 'size'))} | ${kb(sum(entries, 'total'))} |`);
+}
 
 lines.push('', '## Largest JavaScript files', '', '| File | Raw | Gzip |', '| --- | ---: | ---: |');
 const biggest = files.filter((f) => f.path.endsWith('.js') && f.path.startsWith('assets/')).sort((a, b) => b.raw - a.raw).slice(0, 15);

@@ -364,4 +364,84 @@ print("done", end="!\\n")`,
     input: '4',
     expected: 'Rows: 1 \n1 2 \n1 2 3 \n1 2 3 4 \n1-2-3\ndone!\n',
   },
+  {
+    id: 'lib-statistics',
+    title: 'Class marks: mean, median, mode and standard deviation',
+    topic: 'Python’s library',
+    code: `import statistics
+
+marks = [72, 85, 91, 64, 85, 78, 59, 88]
+mean = statistics.mean(marks)
+print("Mean:", mean)
+print("Median:", statistics.median(marks))
+print("Mode:", statistics.mode(marks))
+print("Standard deviation:", round(statistics.stdev(marks), 2))
+above = []
+for m in marks:
+    if m > mean:
+        above.append(m)
+print("Above the mean:", above)`,
+    expected: 'Mean: 77.75\nMedian: 81.5\nMode: 85\nStandard deviation: 11.71\nAbove the mean: [85, 91, 85, 78, 88]\n',
+  },
+  {
+    id: 'lib-fractions',
+    title: 'Exact fractions, where floats are slightly out',
+    topic: 'Python’s library',
+    code: `from fractions import Fraction
+
+tenth = Fraction(1, 10)
+total = Fraction(0)
+float_total = 0.0
+for i in range(10):
+    total = total + tenth
+    float_total = float_total + 0.1
+print("With fractions:", total, total == 1)
+print("With floats:", float_total, float_total == 1)
+
+a = Fraction(2, 3)
+b = Fraction(5, 6)
+print(a, "+", b, "=", a + b)
+print(a, "*", b, "=", a * b)
+print(a, "/", b, "=", a / b)
+print("3/4 as a decimal:", float(Fraction(3, 4)))`,
+    expected: 'With fractions: 1 True\nWith floats: 0.9999999999999999 False\n2/3 + 5/6 = 3/2\n2/3 * 5/6 = 5/9\n2/3 / 5/6 = 4/5\n3/4 as a decimal: 0.75\n',
+  },
+  {
+    id: 'lib-counter',
+    title: 'Counting letters and words with Counter',
+    topic: 'Python’s library',
+    code: `from collections import Counter
+
+sentence = "the quick brown fox jumps over the lazy dog"
+letters = Counter(sentence.replace(" ", ""))
+print("Most common:", letters.most_common(3))
+print("How many o's:", letters["o"])
+print("How many z's:", letters["z"])
+words = Counter(sentence.split())
+word, count = words.most_common(1)[0]
+print("Most used word:", word, "appears", count, "times")
+print("Every letter used?", len(letters) == 26)`,
+    expected: "Most common: [('o', 4), ('e', 3), ('t', 2)]\nHow many o's: 4\nHow many z's: 1\nMost used word: the appears 2 times\nEvery letter used? True\n",
+  },
+  {
+    id: 'lib-permutations',
+    title: 'Permutations and combinations for a P&C problem',
+    topic: 'Python’s library',
+    code: `from itertools import permutations, combinations
+from math import comb, factorial
+
+# In how many ways can A, B and C stand in a line?
+ways = list(permutations("ABC"))
+for w in ways:
+    print("".join(w))
+print(len(ways), "ways, and 3! =", factorial(3))
+
+# A committee of 2 chosen from 4 students
+students = ["Asha", "Ravi", "Meera", "Kabir"]
+pairs = list(combinations(students, 2))
+for p in pairs:
+    print(p[0], "and", p[1])
+print(len(pairs), "committees, and 4C2 =", comb(4, 2))`,
+    expected: 'ABC\nACB\nBAC\nBCA\nCAB\nCBA\n6 ways, and 3! = 6\nAsha and Ravi\nAsha and Meera\nAsha and Kabir\nRavi and Meera\nRavi and Kabir\nMeera and Kabir\n6 committees, and 4C2 = 6\n',
+  },
 ];

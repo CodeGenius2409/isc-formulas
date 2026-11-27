@@ -10,6 +10,7 @@ them to a real Python.
 import ast
 import builtins
 import io
+import itertools
 import json
 import sys
 import time
@@ -18,8 +19,12 @@ import types
 
 PROGRAM = '<program>'
 
-# Imports the syllabus uses. Anything else still runs, if it's in the bundled library, with a note.
-SYLLABUS_IMPORTS = {'math', 'random'}
+# Imports the syllabus uses, and the parts of the standard library a school program uses as freely. Anything
+# else still runs, if it's in the bundled library, with a note.
+SYLLABUS_IMPORTS = {
+    'math', 'random', 'statistics', 'fractions', 'decimal', 'datetime', 'collections', 'itertools',
+    'string', 'time', 'copy', 'functools', 'json', 'csv',
+}
 
 # Modules that reach out of Python into the worker. A student's program has no use for them.
 BLOCKED_MODULES = ('js', 'pyodide', 'pyodide_js', '_pyodide', '_pyodide_core', 'micropip')
@@ -142,11 +147,29 @@ def _analyse(tree, source):
 
 
 def _is_mutable(value):
-    return isinstance(value, (list, dict, set, bytearray)) or type(value).__module__ == '__main__'
+    kind = type(value)
+    return isinstance(value, (list, dict, set, bytearray)) or kind.__module__ == '__main__' or (kind.__module__ == 'collections' and kind.__name__ == 'deque')
 
 
 def _short(text):
     return text if len(text) <= MAX_REPR else text[: MAX_REPR - 1] + '…'
+
+
+# Numbers and dates from the standard library. Their own repr and str run none of the program's code, so long
+# as the type is exactly the library's: a subclass the program wrote could do anything in its __repr__.
+_NUMBER_TYPES = {('fractions', 'Fraction'), ('decimal', 'Decimal')}
+_DATE_TYPES = {('datetime', 'date'), ('datetime', 'datetime'), ('datetime', 'time'), ('datetime', 'timedelta'), ('datetime', 'timezone')}
+
+
+def _library_value(value, kind):
+    """True for a Fraction, Decimal or date whose repr is the library's own."""
+    key = (kind.__module__, kind.__name__)
+    if key in _NUMBER_TYPES:
+        return True
+    if key in _DATE_TYPES:
+        zone = getattr(value, 'tzinfo', None)
+        return zone is None or type(zone).__module__ == 'datetime'
+    return False
 
 
 class _Shower:
@@ -158,10 +181,46 @@ class _Shower:
 
     def show(self, value, frame_index, path):
         self._seen_here = set()
+        kind = type(value)
+        # On its own, a fraction, decimal or date is shown as a student writes it, 3/4 rather than
+        # Fraction(3, 4). Inside a list it keeps its repr, as print() shows it there.
+        if _library_value(value, kind):
+            return _short(str(value))
         return _short(self._repr(value, frame_index, path, 0))
 
     def _register(self, value, frame_index, path):
         self.places.setdefault(id(value), []).append((frame_index, path))
+
+    def _dict_body(self, items, frame_index, path, depth):
+        parts = [f'{self._repr(k, frame_index, path, depth + 1)}: {self._repr(v, frame_index, f"{path}[{k!r}]", depth + 1)}' for k, v in items[:MAX_ITEMS]]
+        if len(items) > MAX_ITEMS:
+            parts.append('…')
+        return '{' + ', '.join(parts) + '}'
+
+    def _collection(self, value, kind, frame_index, path, depth):
+        """Counter, deque, defaultdict and OrderedDict, written as their own reprs write them."""
+        name = kind.__name__
+        if name == 'deque':
+            parts = [self._repr(v, frame_index, f'{path}[{i}]', depth + 1) for i, v in enumerate(itertools.islice(value, MAX_ITEMS))]
+            if len(value) > MAX_ITEMS:
+                parts.append('…')
+            limit = '' if value.maxlen is None else f', maxlen={value.maxlen}'
+            return f'deque([{", ".join(parts)}]{limit})'
+        if name == 'Counter':
+            # Most common first, as Counter's repr lists them.
+            items = list(dict.items(value))
+            try:
+                items.sort(key=lambda item: item[1], reverse=True)
+            except TypeError:
+                pass
+            return f'Counter({self._dict_body(items, frame_index, path, depth)})' if items else 'Counter()'
+        if name == 'OrderedDict':
+            items = list(dict.items(value))
+            return f'OrderedDict({self._dict_body(items, frame_index, path, depth)})' if items else 'OrderedDict()'
+        if name == 'defaultdict':
+            factory = self._repr(value.default_factory, frame_index, path, depth + 1)
+            return f'defaultdict({factory}, {self._dict_body(list(dict.items(value)), frame_index, path, depth)})'
+        return None
 
     def _repr(self, value, frame_index, path, depth):
         kind = type(value)
@@ -177,6 +236,16 @@ class _Shower:
                 self._register(value, frame_index, path)
             self._seen_here.add(id(value))
         try:
+            if _library_value(value, kind):
+                return repr(value)
+            if kind.__module__ == 'collections':
+                shown = self._collection(value, kind, frame_index, path, depth)
+                if shown is not None:
+                    return shown
+            if isinstance(value, tuple) and hasattr(kind, '_fields') and isinstance(kind._fields, tuple):
+                # A named tuple, written as its repr would be, without calling it.
+                inner = ', '.join(f'{f}={self._repr(v, frame_index, f"{path}.{f}", depth + 1)}' for f, v in zip(kind._fields, value))
+                return f'{kind.__name__}({inner})'
             if isinstance(value, (list, tuple)):
                 parts = [self._repr(v, frame_index, f'{path}[{i}]', depth + 1) for i, v in enumerate(value[:MAX_ITEMS])]
                 if len(value) > MAX_ITEMS:
@@ -478,7 +547,15 @@ def _error_of(exc, overflow):
     return {'type': type(exc).__name__, 'text': text, 'line': line}, (frames[-1][0] if frames else None)
 
 
+def _fresh_state():
+    """Undoes what an earlier program changed in a library module, so each run starts as a new Python does."""
+    decimal = sys.modules.get('decimal')
+    if decimal is not None:
+        decimal.setcontext(decimal.Context(prec=28, rounding=decimal.ROUND_HALF_EVEN, Emin=-999999, Emax=999999, capitals=1, clamp=0, flags=[], traps=[decimal.InvalidOperation, decimal.DivisionByZero, decimal.Overflow]))
+
+
 def trace_program(source, input_text, max_steps, max_recorded, max_output, max_seconds):
+    _fresh_state()
     run = _Run(max_steps, max_recorded, max_output, max_seconds)
     result = {'steps': run.steps, 'error': None, 'loops': [], 'beyond': [], 'stopped': None}
 

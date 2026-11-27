@@ -1,5 +1,6 @@
 // The Python tracer in Node: the same Pyodide, the same cut-down standard library and the same tracer.py as
 // the app's worker, so a test of this is a test of what students run.
+import { spawnSync } from 'node:child_process';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -37,4 +38,29 @@ export function realPythonCommand(spawn: typeof import('node:child_process').spa
     if (check.status === 0 && /Python 3/.test(`${check.stdout}${check.stderr}`)) return cmd;
   }
   return null;
+}
+
+const minor = (version: string) => version.split('.').slice(0, 2).join('.');
+
+/** The real Python to compare with: only one of Pyodide's own minor version, as error messages change between versions. */
+export function comparablePython(): { python: string | null; version: string; pyodide: string } {
+  const pyodide = minor(pythonFiles().lock.info.python);
+  const python = realPythonCommand(spawnSync);
+  const version = python ? minor(spawnSync(python, ['-c', 'import platform; print(platform.python_version())'], { encoding: 'utf8' }).stdout.trim()) : '';
+  return { python: python && version === pyodide ? python : null, version, pyodide };
+}
+
+/** Whether real Python here can import these modules, such as numpy. */
+export function realPythonHas(python: string, modules: string[]): boolean {
+  return spawnSync(python, ['-I', '-c', modules.map((m) => `import ${m}`).join('; ')], { encoding: 'utf8' }).status === 0;
+}
+
+/** Runs a program as a file, as a student would, and gives its output and the last line of any error. */
+export function runRealPython(python: string, dir: string, name: string, code: string, input = ''): { stdout: string; error: string | null } {
+  const file = join(dir, `${name}.py`);
+  writeFileSync(file, code);
+  // A chart is drawn off screen, so plt.show() has no window to open.
+  const run = spawnSync(python, ['-I', '-X', 'utf8', file], { input, encoding: 'utf8', timeout: 120_000, cwd: dir, env: { ...process.env, MPLBACKEND: 'Agg' } });
+  const stderr = (run.stderr ?? '').replace(/\r\n/g, '\n').trimEnd();
+  return { stdout: (run.stdout ?? '').replace(/\r\n/g, '\n'), error: run.status === 0 ? null : (stderr.split('\n').pop() ?? '') };
 }

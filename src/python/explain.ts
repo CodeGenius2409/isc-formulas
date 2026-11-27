@@ -53,7 +53,7 @@ const RULES: Record<string, Rule[]> = {
   RecursionError: [[/./, 'A function kept calling itself and never reached a case that returns without calling again. Check the base case, and that each call moves towards it.']],
   EOFError: [[/./, 'The program asked for more input than the Input box has. Add a line to the box for each input(), then trace again.']],
   OverflowError: [[/./, 'The result is too large for a decimal number.']],
-  ModuleNotFoundError: [[/No module named '(\w+)'/, (m) => `The tracer has only the parts of Python’s library that the syllabus uses, such as math and random, so ${m[1]} isn’t here.`]],
+  ModuleNotFoundError: [[/No module named '(\w+)'/, (m) => `The tracer has only the parts of Python’s library that school programs use, such as math, random, statistics, fractions, datetime and collections, so ${m[1]} isn’t here.`]],
   IndentationError: [
     [/expected an indented block after '(\w+)' statement on line (\d+)/, (m) => `The line after the ${m[1]} on line ${m[2]} must be indented, as the ${m[1]}'s block.`],
     [/expected an indented block/, 'The line after one that ends in a colon must be indented, as its block.'],

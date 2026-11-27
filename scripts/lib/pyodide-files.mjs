@@ -15,6 +15,14 @@ export const PYODIDE_VERSION = JSON.parse(readFileSync(join(PYODIDE_DIR, 'packag
 /** Whole folders of the library to keep. Pyodide's own packages, and what its startup imports. */
 const KEEP_FOLDERS = ['pyodide/', '_pyodide/', 'asyncio/', 're/', 'json/', 'collections/', 'string/', 'logging/', 'pathlib/', 'compression/', 'zipfile/', 'concurrent/futures/'];
 
+/**
+ * Library modules a school program uses as freely as math and random: statistics, fractions, decimal, datetime
+ * and csv. Their C halves (_decimal, _datetime, _csv, _statistics) are built into Pyodide; these are the Python
+ * halves, and what they import: numbers for statistics and fractions, and _strptime and calendar for
+ * datetime.strptime. collections, itertools, string, time, copy, functools and json were already here.
+ */
+export const EVERYDAY_FILES = ['statistics.py', 'fractions.py', 'decimal.py', 'numbers.py', 'datetime.py', '_strptime.py', 'calendar.py', 'csv.py'];
+
 /** Single files. Pyodide's startup needs most of these, and the tracer the rest. */
 const KEEP_FILES = [
   '__future__.py', '_collections_abc.py', '_colorize.py', '_opcode_metadata.py', '_py_warnings.py', '_sitebuiltins.py', '_ssl.py', '_weakrefset.py',
@@ -23,6 +31,7 @@ const KEEP_FILES = [
   'locale.py', 'lzma.py', 'ntpath.py', 'opcode.py', 'operator.py', 'os.py', 'posixpath.py', 'random.py', 'reprlib.py', 'selectors.py', 'shutil.py', 'signal.py',
   'site.py', 'socket.py', 'ssl.py', 'stat.py', 'struct.py', 'subprocess.py', 'tempfile.py', 'textwrap.py', 'threading.py', 'token.py', 'tokenize.py', 'traceback.py',
   'types.py', 'typing.py', 'warnings.py', 'weakref.py', 'zipimport.py', 'concurrent/__init__.py',
+  ...EVERYDAY_FILES,
   'importlib/__init__.py', 'importlib/_abc.py', 'importlib/_bootstrap.py', 'importlib/_bootstrap_external.py', 'importlib/abc.py', 'importlib/machinery.py', 'importlib/util.py',
   // Text encodings a program can meet: UTF-8 and the common single-byte ones.
   'encodings/__init__.py', 'encodings/aliases.py', 'encodings/utf_8.py', 'encodings/utf_8_sig.py', 'encodings/ascii.py', 'encodings/latin_1.py', 'encodings/cp1252.py',
@@ -34,6 +43,26 @@ const keepEntry = (name) =>
   KEEP_FILES.includes(name) ||
   KEEP_FOLDERS.some((folder) => name.startsWith(folder)) ||
   (name.endsWith('/') && [...KEEP_FOLDERS, 'encodings/', 'importlib/', 'concurrent/'].some((folder) => folder.startsWith(name)));
+
+/** The entries of a zip, with their stored and full sizes, read from its central directory. */
+export function zipEntries(zip) {
+  let end = zip.length - 22;
+  while (end >= 0 && zip.readUInt32LE(end) !== 0x06054b50) end--;
+  if (end < 0) throw new Error('Not a zip file');
+  const entries = [];
+  let at = zip.readUInt32LE(end + 16);
+  for (let i = 0, count = zip.readUInt16LE(end + 10); i < count; i++) {
+    const nameLength = zip.readUInt16LE(at + 28);
+    const central = 46 + nameLength + zip.readUInt16LE(at + 30) + zip.readUInt16LE(at + 32);
+    const local = zip.readUInt32LE(at + 42);
+    const stored = zip.readUInt32LE(at + 20);
+    // Everything the entry adds to the zip: its local header, its data and its line in the directory.
+    const total = 30 + zip.readUInt16LE(local + 26) + zip.readUInt16LE(local + 28) + stored + central;
+    entries.push({ name: zip.toString('utf8', at + 46, at + 46 + nameLength), stored, size: zip.readUInt32LE(at + 24), total });
+    at += central;
+  }
+  return entries;
+}
 
 /** Copies the kept entries of a zip into a new one. Nothing is decompressed, so every checksum still holds. */
 export function trimZip(zip, keep) {

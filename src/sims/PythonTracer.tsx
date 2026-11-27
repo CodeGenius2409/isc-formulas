@@ -455,7 +455,8 @@ function CallStack({ step, selected, onSelect }: { step?: PyStep; selected: numb
 const frameAt = (step: PyStep | undefined, index: number): PyFrame | undefined => (step ? step.frames[step.frames.length - 1 - index] : undefined);
 
 /** What kind of thing two names share, in words. */
-const sharedKind = (type: string) => (type === 'list' || type === 'dict' || type === 'set' ? (type === 'dict' ? 'dictionary' : type) : 'object');
+const SHARED_KINDS: Record<string, string> = { list: 'list', dict: 'dictionary', set: 'set', deque: 'deque', Counter: 'Counter', defaultdict: 'dictionary', OrderedDict: 'dictionary' };
+const sharedKind = (type: string) => SHARED_KINDS[type] ?? 'object';
 
 function joinWords(words: string[]): string {
   return words.length < 2 ? (words[0] ?? '') : `${words.slice(0, -1).join(', ')} and ${words[words.length - 1]}`;
