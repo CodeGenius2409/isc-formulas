@@ -24,11 +24,15 @@ export const PYODIDE_DIR: string;
 /** The standard library files added for statistics, fractions, decimal, datetime and csv. */
 export const EVERYDAY_FILES: string[];
 export const PYODIDE_VERSION: string;
-export function trimZip(zip: Buffer, keep: (name: string) => boolean): Buffer;
+export function trimZip(zip: Buffer, keep: (name: string) => boolean, options?: { utf8Names?: boolean }): Buffer;
+/** Whether a standard library zip entry is in the core zip. */
+export function keepEntry(name: string): boolean;
 /** A zip's entries: stored (compressed) and full sizes, and all the bytes each adds to the zip, headers included. */
 export function zipEntries(zip: Buffer): { name: string; stored: number; size: number; total: number }[];
 export function pythonFiles(): PythonFiles;
 export function pyodidePlugin(): Plugin;
 /** Globs for the Python tracer's own chunks, which are saved with Pyodide rather than precached. */
 export const TRACER_CHUNKS: string[];
+/** Matches the path of one of those chunks. */
+export const TRACER_CHUNK: RegExp;
 export const TRACER_LIST: string;

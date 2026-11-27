@@ -88,6 +88,16 @@ export function explainError(error: PyError): string | null {
   return null;
 }
 
+const LIBRARY_NAMES: Record<string, string> = { numpy: 'NumPy', pandas: 'pandas', matplotlib: 'Matplotlib' };
+
+/** A warm note when a program uses NumPy, pandas or Matplotlib, which the syllabus doesn't cover but are worth learning. */
+export function libraryNote(libraries: string[]): string | null {
+  if (!libraries.length) return null;
+  const names = libraries.map((name) => LIBRARY_NAMES[name] ?? name);
+  const list = names.length === 1 ? names[0] : `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}`;
+  return names.length === 1 ? `${list} isn’t in the ISC syllabus, but it’s useful to learn.` : `${list} aren’t in the ISC syllabus, but they’re useful to learn.`;
+}
+
 /** A gentle note when a program goes beyond the ISC Python units. It still runs, as it would anywhere. */
 export function beyondNote(beyond: string[]): string | null {
   if (!beyond.length) return null;

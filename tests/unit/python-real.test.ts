@@ -14,7 +14,9 @@ import { comparablePython, nodeEngine, runRealPython } from './lib/python-node';
 import { PY_PROGRAMS, type PyProgram } from './python-programs';
 
 const { python, pyodide: pyodidePython } = comparablePython();
-const ALL: PyProgram[] = [...PY_SAMPLES.map((s) => ({ name: `sample: ${s.title}`, code: s.code, input: s.input })), ...PY_PROGRAMS];
+// The samples that use NumPy, pandas or Matplotlib are compared in python-libraries.test.ts, with a real
+// Python that has them.
+const ALL: PyProgram[] = [...PY_SAMPLES.filter((s) => !s.libraries).map((s) => ({ name: `sample: ${s.title}`, code: s.code, input: s.input })), ...PY_PROGRAMS];
 
 describe.skipIf(!python)(`against a real Python ${pyodidePython}`, () => {
   const dir = mkdtempSync(join(tmpdir(), 'isc-python-'));

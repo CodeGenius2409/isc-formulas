@@ -24,6 +24,13 @@ export interface PyPlace {
   path: string;
 }
 
+/** A NumPy array or a pandas DataFrame or Series, as a small table: only its first rows, and a gap marked. */
+export type PyView =
+  /** rows holds a 1-D array as one row; null is a gap of rows, and '…' a gap of columns. */
+  | { kind: 'array'; shape: number[]; dtype: string; rows: (string[] | null)[]; slice?: string }
+  | { kind: 'frame'; shape: [number, number]; columns: string[]; index: string[]; rows: string[][]; more: number }
+  | { kind: 'series'; shape: [number]; name: string | null; dtype: string; index: string[]; values: string[]; more: number };
+
 export interface PyVar {
   name: string;
   type: string;
@@ -32,6 +39,10 @@ export interface PyVar {
   same?: PyPlace[];
   /** Places inside this value that are one object, such as the rows of [[0] * 3] * 3. */
   inside?: string[][];
+  /** An array or table, drawn as one. */
+  view?: PyView;
+  /** Other arrays that share this one's data, such as a slice of it, so that changing one changes the other. */
+  shares?: PyPlace[];
 }
 
 export interface PyFrame {
@@ -70,11 +81,15 @@ export interface PyLoop {
   target: string;
 }
 
-/** Input that was read, shown after its prompt; the point where input ran out; and anything sent to stderr. */
+/**
+ * Input that was read, shown after its prompt; the point where input ran out; anything sent to stderr; and a
+ * chart that plt.show() or savefig() drew.
+ */
 export interface ConsoleExtra {
-  kind: 'in' | 'eof' | 'err';
+  kind: 'in' | 'eof' | 'err' | 'fig';
   /** Where in the output it goes. */
   at: number;
+  /** The text, or for a chart its index in the run's figures. */
   text: string;
   /** The first step at which it has happened. */
   step: number;
@@ -91,6 +106,17 @@ export interface PyError {
 
 export type StopReason = 'steps' | 'time' | 'output';
 
+/** A chart, drawn by Matplotlib as an SVG, or a PNG when an SVG would be very large. */
+export interface PyFigure {
+  mime: 'image/svg+xml' | 'image/png';
+  /** The SVG's text, or the PNG in base64. */
+  data: string;
+  alt: string;
+  /** Its natural size in CSS pixels. */
+  width: number;
+  height: number;
+}
+
 export interface PyRunResult {
   steps: PyStep[];
   /** Everything the program printed to standard output, exactly. */
@@ -106,10 +132,15 @@ export interface PyRunResult {
   totalSteps: number;
   /** What the program uses that the ISC Python units don't, such as "classes" or "import sys". */
   beyond: string[];
+  /** NumPy, pandas or Matplotlib, if the program imports them: beyond the syllabus too, and noted more warmly. */
+  libraries: string[];
   loops: PyLoop[];
+  figures: PyFigure[];
+  /** Charts drawn after the most a run shows. */
+  droppedFigures: number;
 }
 
-type RawVar = [string, string, string, [number, string][] | null, string[][] | null];
+type RawVar = [string, string, string, [number, string][] | null, string[][] | null, PyView | null, [number, string][] | null];
 type RawFrame = [string, number, number, number, RawVar[]];
 type RawStep = [number, PyEvent, RawFrame[], number, number, string | null];
 
@@ -123,6 +154,9 @@ export interface RawRun {
   truncated: boolean;
   loops: PyLoop[];
   beyond: string[];
+  libraries?: string[];
+  figures?: PyFigure[];
+  droppedFigures?: number;
 }
 
 function frameOf([fn, line, first, key, vars]: RawFrame): PyFrame {
@@ -131,12 +165,14 @@ function frameOf([fn, line, first, key, vars]: RawFrame): PyFrame {
     line,
     first,
     key,
-    vars: vars.map(([name, type, value, same, inside]) => ({
+    vars: vars.map(([name, type, value, same, inside, view, shares]) => ({
       name,
       type,
       value,
       ...(same ? { same: same.map(([frame, path]) => ({ frame, path })) } : {}),
       ...(inside ? { inside } : {}),
+      ...(view ? { view } : {}),
+      ...(shares ? { shares: shares.map(([frame, path]) => ({ frame, path })) } : {}),
     })),
   };
 }
@@ -230,7 +266,10 @@ export function shapeRun(raw: RawRun): PyRunResult {
     truncated: raw.truncated,
     totalSteps: raw.totalSteps,
     beyond: raw.beyond,
+    libraries: raw.libraries ?? [],
     loops: raw.loops,
+    figures: raw.figures ?? [],
+    droppedFigures: raw.droppedFigures ?? 0,
   };
 }
 

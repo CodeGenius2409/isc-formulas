@@ -64,13 +64,16 @@ export default defineConfig({
         // Nor is Pyodide, at over 10 MB, or the Python tracer's own code, which is no use without it. Both are
         // kept for offline use only if someone asks, in a cache of their own. The list of the tracer's files
         // is saved, so the page can tell offline whether they're all there.
-        globIgnores: ['splash/**', 'pyodide/**/*.{mjs,wasm,zip}', ...TRACER_CHUNKS],
+        // NumPy, pandas and Matplotlib's wheels too, which are kept only if someone asks for them as well.
+        globIgnores: ['splash/**', 'pyodide/**/*.{mjs,wasm,zip,whl}', ...TRACER_CHUNKS],
         runtimeCaching: [
           {
             // The Python tracer's code comes from that cache when it's there, and from the network when not.
             // When the cache exists, which is only while "Keep Python for offline use" is on, a newer copy
             // goes into it, so an update to the app keeps the tracer working offline.
-            urlPattern: ({ url }) => /\/assets\/(PythonTracer|PythonEditor|python-worker)-[\w-]+\.(js|css)$/.test(url.pathname),
+            // Written out here, as this function is copied into the service worker. TRACER_CHUNK in
+            // pyodide-files.mjs is the same pattern, and a test holds the two together.
+            urlPattern: ({ url }) => /\/assets\/(PythonTracer|PythonEditor|python-worker|python-libraries)-[\w-]+\.(js|css)$/.test(url.pathname),
             handler: async ({ request }) => {
               // A host may send Vary: Origin, and a module's request carries an Origin the saved copy doesn't.
               const saved = await caches.match(request, { ignoreVary: true });
@@ -91,6 +94,12 @@ export default defineConfig({
   build: {
     target: 'es2020',
     sourcemap: false,
+    modulePreload: {
+      // Settings loads the libraries' option only while Keep Python is on, and everything that chunk imports is
+      // loaded by then: the first screen's files and Settings' own. Listing them all to preload would add 600
+      // bytes to Settings, which is in the offline download, for no gain.
+      resolveDependencies: (filename, deps) => (/python-libraries-[\w-]+\.js$/.test(filename) ? [] : deps),
+    },
     chunkSizeWarningLimit: 900,
     // The motion core is shared by the first screen and by pages that load later. On its own it would be one
     // more file on the first load, so it travels with the stores, which every screen loads anyway.

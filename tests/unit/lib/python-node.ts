@@ -6,11 +6,15 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { loadPyodide, type PyodideAPI } from 'pyodide';
 import { PYODIDE_DIR, pythonFiles } from '../../../scripts/lib/pyodide-files.mjs';
+import { ensurePackages, PACKAGE_DIR, pythonPackages } from '../../../scripts/lib/pyodide-packages.mjs';
 import { createEngine, LIMITS, type PythonEngine } from '../../../src/python/engine';
 
 let started: Promise<PyodideAPI> | null = null;
 
-/** Starts Pyodide once per test file, from the files the app serves. */
+/**
+ * Starts Pyodide once per test file, from the files the app serves, with the lock file the app's worker starts
+ * with. Its packages are read from the checked wheels on disk, never from the network.
+ */
 export function startPyodide(): Promise<PyodideAPI> {
   started ??= (async () => {
     const files = pythonFiles();
@@ -18,7 +22,9 @@ export function startPyodide(): Promise<PyodideAPI> {
     mkdirSync(dir, { recursive: true });
     const stdlib = join(dir, files.stdlibName);
     writeFileSync(stdlib, files.files.find((f) => f.name === files.stdlibName)!.data);
-    return loadPyodide({ indexURL: `${PYODIDE_DIR}/`, stdLibURL: stdlib, lockFileContents: files.lock, stdout: () => undefined, stderr: () => undefined });
+    await ensurePackages(() => undefined);
+    const wheels = `${PACKAGE_DIR.replace(/\\/g, '/')}/`;
+    return loadPyodide({ indexURL: `${PYODIDE_DIR}/`, stdLibURL: stdlib, lockFileContents: pythonPackages().lock, packageBaseUrl: wheels, packageCacheDir: wheels, stdout: () => undefined, stderr: () => undefined });
   })();
   return started;
 }
@@ -31,9 +37,26 @@ export function nodeEngine(limits = LIMITS): Promise<PythonEngine> {
   return engine;
 }
 
-/** Real Python on this computer, if there is one: the same command the other Python tests use. */
+/** The extra standard library the libraries need, as the worker is sent it. */
+export const libraryExtras = () => new Uint8Array(pythonPackages().files.find((f) => f.package === null)!.data);
+
+let withLibraries: Promise<PythonEngine> | null = null;
+
+/** The engine with NumPy, pandas and Matplotlib installed, as the worker installs them. */
+export function libraryEngine(): Promise<PythonEngine> {
+  withLibraries ??= nodeEngine().then(async (e) => {
+    await e.install(['numpy', 'pandas', 'matplotlib'], libraryExtras());
+    return e;
+  });
+  return withLibraries;
+}
+
+/**
+ * Real Python on this computer, if there is one: the same command the other Python tests use. ISC_REAL_PYTHON
+ * can name another, such as a virtual environment's, to compare with one that has NumPy, pandas and Matplotlib.
+ */
 export function realPythonCommand(spawn: typeof import('node:child_process').spawnSync): string | null {
-  for (const cmd of ['python', 'python3']) {
+  for (const cmd of [process.env.ISC_REAL_PYTHON, 'python', 'python3'].filter((c): c is string => Boolean(c))) {
     const check = spawn(cmd, ['--version'], { encoding: 'utf8' });
     if (check.status === 0 && /Python 3/.test(`${check.stdout}${check.stderr}`)) return cmd;
   }

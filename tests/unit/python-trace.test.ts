@@ -13,7 +13,8 @@ const varOf = (step: PyStep, name: string, frame = step.frames.length - 1) => st
 const lineSteps = (r: PyRunResult) => r.steps.filter((s) => s.event === 'line');
 
 describe('the samples', () => {
-  it.each(PY_SAMPLES.map((s) => [s.title, s] as const))('%s prints what it should, in the tracer', async (_t, sample) => {
+  // Those using NumPy, pandas or Matplotlib are run in python-libraries.test.ts, which installs them.
+  it.each(PY_SAMPLES.filter((s) => !s.libraries).map((s) => [s.title, s] as const))('%s prints what it should, in the tracer', async (_t, sample) => {
     const r = await run(sample.code, sample.input ?? '');
     expect(r.error).toBeNull();
     expect(r.output).toBe(sample.expected);
@@ -23,7 +24,7 @@ describe('the samples', () => {
 
   it('has 15 or more, across the topics', () => {
     expect(PY_SAMPLES.length).toBeGreaterThanOrEqual(15);
-    expect(new Set(PY_SAMPLES.map((s) => s.topic))).toEqual(new Set(['Lists', 'Tuples', 'Strings', 'Searching and sorting', 'Recursion', 'Functions', 'Loops and numbers', 'Python’s library']));
+    expect(new Set(PY_SAMPLES.map((s) => s.topic))).toEqual(new Set(['Lists', 'Tuples', 'Strings', 'Searching and sorting', 'Recursion', 'Functions', 'Loops and numbers', 'Python’s library', 'NumPy', 'pandas', 'Matplotlib']));
     expect(new Set(PY_SAMPLES.map((s) => s.id)).size).toBe(PY_SAMPLES.length);
   });
 });
